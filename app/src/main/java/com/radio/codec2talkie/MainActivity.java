@@ -7,6 +7,8 @@ import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final static int REQUEST_CONNECT_BT = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -15,7 +17,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void startBluetoothConnectActivity() {
-        Intent intent = new Intent(this, BluetoothConnectActivity.class);
-        startActivity(intent);
+        Intent bluetoothConnectIntent = new Intent(this, BluetoothConnectActivity.class);
+        startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_BT);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent Data) {
+        super.onActivityResult(requestCode, resultCode, Data);
+        if (requestCode == REQUEST_CONNECT_BT) {
+            if (resultCode == RESULT_OK) {
+            } else {
+            }
+        }
     }
 }
