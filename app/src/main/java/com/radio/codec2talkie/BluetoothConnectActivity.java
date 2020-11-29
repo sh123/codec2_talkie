@@ -30,12 +30,13 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
     private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-    private BluetoothAdapter _bluetoothAdapter;
-    private BluetoothSocket _bluetoothSocket;
+    private BluetoothAdapter _btAdapter;
+    private BluetoothSocket _btSocket;
     private ArrayAdapter<String> _btArrayAdapter;
+    private String _btSelectedName;
 
     public BluetoothSocket getSocket() {
-        return _bluetoothSocket;
+        return _btSocket;
     }
 
     @Override
@@ -43,7 +44,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_connect);
 
-        _bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        _btAdapter = BluetoothAdapter.getDefaultAdapter();
         _btArrayAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item);
         ListView _btDevicesList = (ListView) findViewById(R.id.btDevicesList);
         _btDevicesList.setAdapter(_btArrayAdapter);
@@ -53,11 +54,11 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     }
 
     private void enableBluetooth() {
-        if (_bluetoothAdapter == null) {
+        if (_btAdapter == null) {
             Message resultMsg = new Message();
             resultMsg.what = BT_ADAPTER_FAILURE;
             onBtStateChanged.sendMessage(resultMsg);
-        } else if (_bluetoothAdapter.isEnabled()) {
+        } else if (_btAdapter.isEnabled()) {
             populateBondedDevices();
         }
         else {
@@ -69,7 +70,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
     private void populateBondedDevices() {
         _btArrayAdapter.clear();
-        for (BluetoothDevice device : _bluetoothAdapter.getBondedDevices()) {
+        for (BluetoothDevice device : _btAdapter.getBondedDevices()) {
             _btArrayAdapter.add(device.getName() + " | " + device.getAddress());
         }
     }
@@ -79,18 +80,18 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         new Thread() {
             @Override
             public void run() {
-                BluetoothDevice btDevice = _bluetoothAdapter.getRemoteDevice(address);
+                BluetoothDevice btDevice = _btAdapter.getRemoteDevice(address);
                 Message resultMsg = Message.obtain();
                 resultMsg.what = BT_CONNECT_SUCCESS;
                 try {
-                    _bluetoothSocket = btDevice.createRfcommSocketToServiceRecord(BT_MODULE_UUID);
+                    _btSocket = btDevice.createRfcommSocketToServiceRecord(BT_MODULE_UUID);
                 } catch (IOException e) {
                     resultMsg.what = BT_SOCKET_FAILURE;
                     onBtStateChanged.sendMessage(resultMsg);
                     return;
                 }
                 try {
-                    _bluetoothSocket.connect();
+                    _btSocket.connect();
                 } catch (IOException e) {
                     resultMsg.what = BT_CONNECT_FAILURE;
                 }
@@ -111,8 +112,10 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                 toastMsg = "Bluetooth adapter is not found";
             } else {
                 toastMsg = "Connected";
-                BluetoothSocketHandler.setSocket(_bluetoothSocket);
-                setResult(Activity.RESULT_OK);
+                BluetoothSocketHandler.setSocket(_btSocket);
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("name", _btSelectedName);
+                setResult(Activity.RESULT_OK, resultIntent);
             }
             Toast.makeText(getBaseContext(), toastMsg, Toast.LENGTH_SHORT).show();
             if (msg.what == BT_CONNECT_SUCCESS) {
@@ -124,10 +127,10 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     private final AdapterView.OnItemClickListener onBtDeviceClickListener  = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String btName = (String)parent.getAdapter().getItem(position);
-            String address = btName.substring(btName.length() - 17);
+            _btSelectedName = (String)parent.getAdapter().getItem(position);
+            String address = _btSelectedName.substring(_btSelectedName.length() - 17);
 
-            Toast.makeText(getApplicationContext(),"Connecting to " + btName, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"Connecting to " + _btSelectedName, Toast.LENGTH_LONG).show();
             connectToBluetoothClient(address);
         }
     };

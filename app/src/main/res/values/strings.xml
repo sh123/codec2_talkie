@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Codec2Talkie</string>
+    <string name="push_to_talk">push-to-talk</string>
 </resources>
