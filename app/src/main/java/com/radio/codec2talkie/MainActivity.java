@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, Data);
         if (requestCode == REQUEST_CONNECT_BT) {
             if (resultCode == RESULT_OK) {
+            } else if (resultCode == RESULT_CANCELED) {
+                finish();
             } else {
             }
         }
