@@ -2,8 +2,12 @@ package com.radio.codec2talkie;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -12,8 +16,8 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_CONNECT_BT = 1;
 
     private TextView _textBtName;
-    private Button _btnPtt;
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,13 +25,29 @@ public class MainActivity extends AppCompatActivity {
         startBluetoothConnectActivity();
 
         _textBtName = (TextView)findViewById(R.id.textBtName);
-        _btnPtt = (Button)findViewById(R.id.btnPtt);
+        Button _btnPtt = (Button) findViewById(R.id.btnPtt);
+        _btnPtt.setOnTouchListener(onBtnPttTouchListener);
     }
 
     protected void startBluetoothConnectActivity() {
         Intent bluetoothConnectIntent = new Intent(this, BluetoothConnectActivity.class);
         startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_BT);
     }
+
+    private final View.OnTouchListener onBtnPttTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    // Start streaming from mic
+                    break;
+                case MotionEvent.ACTION_UP:
+                    // Start receiving from bluetooth
+                    break;
+            }
+            return false;
+        }
+    };
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
