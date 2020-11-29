@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.ustadmobile.codec2.Codec2;
+
 public class Codec2Player extends Thread {
 
     private final InputStream _btInputStream;
@@ -24,6 +26,8 @@ public class Codec2Player extends Thread {
     private final AudioTrack _audioPlayer;
     private final int _audioPlayerMinBufferSize;
 
+    private final long _codec2Con;
+
     public Codec2Player(BluetoothSocket btSocket) throws IOException {
 
         _btInputStream = btSocket.getInputStream();
@@ -35,7 +39,8 @@ public class Codec2Player extends Thread {
                 AudioFormat.ENCODING_PCM_16BIT);
         _audioRecorder = new AudioRecord(
                 MediaRecorder.AudioSource.MIC,
-                AudioSampleRate,AudioFormat.CHANNEL_IN_MONO,
+                AudioSampleRate,
+                AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
                 _audioRecorderMinBufferSize);
 
@@ -55,6 +60,8 @@ public class Codec2Player extends Thread {
                         .build())
                 .setBufferSizeInBytes(_audioPlayerMinBufferSize)
                 .build();
+
+        _codec2Con = Codec2.create(Codec2.CODEC2_MODE_1300);
     }
 
     @Override
