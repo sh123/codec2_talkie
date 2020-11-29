@@ -11,11 +11,15 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity {
 
     private final static int REQUEST_CONNECT_BT = 1;
 
     private TextView _textBtName;
+
+    private Codec2Player _codec2Player;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -42,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
                     // Start streaming from mic
                     break;
                 case MotionEvent.ACTION_UP:
+                    v.performClick();
                     // Start receiving from bluetooth
                     break;
             }
@@ -57,6 +62,11 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             } else if (resultCode == RESULT_OK) {
                 _textBtName.setText(data.getStringExtra("name"));
+                try {
+                    _codec2Player = new Codec2Player(BluetoothSocketHandler.getSocket());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
