@@ -34,6 +34,10 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     private BluetoothSocket _bluetoothSocket;
     private ArrayAdapter<String> _btArrayAdapter;
 
+    public BluetoothSocket getSocket() {
+        return _bluetoothSocket;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +56,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         if (_bluetoothAdapter == null) {
             Message resultMsg = new Message();
             resultMsg.what = BT_ADAPTER_FAILURE;
-            _onBtStateChanged.sendMessage(resultMsg);
+            onBtStateChanged.sendMessage(resultMsg);
         } else if (_bluetoothAdapter.isEnabled()) {
             populateBondedDevices();
         }
@@ -66,7 +70,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     private void populateBondedDevices() {
         _btArrayAdapter.clear();
         for (BluetoothDevice device : _bluetoothAdapter.getBondedDevices()) {
-            _btArrayAdapter.add(device.getName() + " " + device.getAddress());
+            _btArrayAdapter.add(device.getName() + " | " + device.getAddress());
         }
     }
 
@@ -82,7 +86,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                     _bluetoothSocket = btDevice.createRfcommSocketToServiceRecord(BT_MODULE_UUID);
                 } catch (IOException e) {
                     resultMsg.what = BT_SOCKET_FAILURE;
-                    _onBtStateChanged.sendMessage(resultMsg);
+                    onBtStateChanged.sendMessage(resultMsg);
                     return;
                 }
                 try {
@@ -90,12 +94,12 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     resultMsg.what = BT_CONNECT_FAILURE;
                 }
-                _onBtStateChanged.sendMessage(resultMsg);
+                onBtStateChanged.sendMessage(resultMsg);
             }
         }.start();
     }
 
-    private final Handler _onBtStateChanged = new Handler(Looper.getMainLooper()) {
+    private final Handler onBtStateChanged = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             String toastMsg;
@@ -107,6 +111,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                 toastMsg = "Bluetooth adapter is not found";
             } else {
                 toastMsg = "Connected";
+                BluetoothSocketHandler.setSocket(_bluetoothSocket);
                 setResult(Activity.RESULT_OK);
             }
             Toast.makeText(getBaseContext(), toastMsg, Toast.LENGTH_SHORT).show();
@@ -132,7 +137,9 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         if (requestCode == BT_ENABLE) {
             if (resultCode == RESULT_OK) {
                 populateBondedDevices();
-            } else {
+            } else if (resultCode == RESULT_CANCELED){
+                setResult(RESULT_CANCELED);
+                finish();
             }
         }
     }
