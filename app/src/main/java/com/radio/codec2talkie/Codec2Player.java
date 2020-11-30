@@ -67,6 +67,12 @@ public class Codec2Player extends Thread {
     @Override
     public void run() {
         while (true) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
             // read from bluetooth, decode and playback
             try {
                 int countBytes = _btInputStream.available();

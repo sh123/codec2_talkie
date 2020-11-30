@@ -1,21 +1,35 @@
 package com.radio.codec2talkie;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private final static int REQUEST_CONNECT_BT = 1;
+    private final static int REQUEST_PERMISSIONS = 2;
+
+    private final String[] _requiredPermissions = new String[] {
+            Manifest.permission.BLUETOOTH,
+            Manifest.permission.RECORD_AUDIO
+    };
 
     private TextView _textBtName;
 
@@ -26,16 +40,37 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        startBluetoothConnectActivity();
 
         _textBtName = (TextView)findViewById(R.id.textBtName);
         Button _btnPtt = (Button) findViewById(R.id.btnPtt);
         _btnPtt.setOnTouchListener(onBtnPttTouchListener);
+
+        if (requestPermissions()) {
+            startBluetoothConnectActivity();
+        }
     }
 
     protected void startBluetoothConnectActivity() {
         Intent bluetoothConnectIntent = new Intent(this, BluetoothConnectActivity.class);
         startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_BT);
+    }
+
+    protected boolean requestPermissions() {
+        List<String> permissionsToRequest = new LinkedList<String>();
+
+        for (String permission : _requiredPermissions) {
+            if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
+                permissionsToRequest.add(permission);
+            }
+        }
+        if (permissionsToRequest.size() > 0) {
+            ActivityCompat.requestPermissions(
+                    MainActivity.this,
+                    permissionsToRequest.toArray(new String[0]),
+                    REQUEST_PERMISSIONS);
+            return false;
+        }
+        return true;
     }
 
     private final View.OnTouchListener onBtnPttTouchListener = new View.OnTouchListener() {
@@ -53,6 +88,27 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     };
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_PERMISSIONS) {
+            boolean allGranted = true;
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    allGranted = false;
+                    break;
+                }
+            }
+            if (allGranted) {
+                Toast.makeText(MainActivity.this, "Permissions Granted", Toast.LENGTH_SHORT).show();
+                startBluetoothConnectActivity();
+            } else {
+                Toast.makeText(MainActivity.this, "Permissions Denied", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
