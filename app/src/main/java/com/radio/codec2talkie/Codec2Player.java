@@ -61,7 +61,7 @@ public class Codec2Player extends Thread {
                 .setBufferSizeInBytes(_audioPlayerMinBufferSize)
                 .build();
 
-        _codec2Con = Codec2.create(Codec2.CODEC2_MODE_1300);
+        _codec2Con = Codec2.create(Codec2.CODEC2_MODE_1200);
     }
 
     @Override
@@ -73,13 +73,36 @@ public class Codec2Player extends Thread {
                 e.printStackTrace();
             }
 
-            // read from bluetooth, decode and playback
-            try {
-                int countBytes = _btInputStream.available();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             // read from mic, encode and write to bluetooth
+            if (_audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+                int audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
+                int encodedBufferSize = (Codec2.getBitsSize(_codec2Con) + 7) / 8;
+
+                short[] recordAudioBuffer = new short[audioBufferSize];
+                char[] recordEncodedBuffer = new char[encodedBufferSize];
+
+                _audioRecorder.read(recordAudioBuffer, 0, audioBufferSize);
+                Codec2.encode(_codec2Con, recordAudioBuffer, recordEncodedBuffer);
+
+                // encode with KISS and send to bluetooth
+                try {
+                    for (char b : recordEncodedBuffer) {
+                        _btOutputStream.write(b);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            } else {
+                try {
+                    int btBytes = _btInputStream.available();
+                    if (btBytes > 0) {
+
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
