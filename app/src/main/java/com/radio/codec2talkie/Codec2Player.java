@@ -15,6 +15,7 @@ import com.ustadmobile.codec2.Codec2;
 
 public class Codec2Player extends Thread {
 
+    // kiss constants  and state
     private final byte KISS_FEND = (byte)0xc0;
     private final byte KISS_FESC = (byte)0xdb;
     private final byte KISS_TFEND = (byte)0xdc;
@@ -33,18 +34,22 @@ public class Codec2Player extends Thread {
     private KissState _kissState = KissState.VOID;
     private byte _kissCmd = KISS_CMD_NOCMD;
 
-    private final InputStream _btInputStream;
-    private final OutputStream _btOutputStream;
-
+    // common audio
     private final int AudioSampleRate = 8000;
 
-    private final AudioRecord _audioRecorder;
-    private final int _audioRecorderMinBufferSize;
+    private final long _codec2Con;
+
+    // input data, bt -> audio
+    private final InputStream _btInputStream;
 
     private final AudioTrack _audioPlayer;
     private final int _audioPlayerMinBufferSize;
 
-    private final long _codec2Con;
+    // output data., mic -> bt
+    private final OutputStream _btOutputStream;
+
+    private final AudioRecord _audioRecorder;
+    private final int _audioRecorderMinBufferSize;
 
     public Codec2Player(BluetoothSocket btSocket) throws IOException {
 
