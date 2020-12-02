@@ -78,11 +78,11 @@ public class MainActivity extends AppCompatActivity {
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    // Start streaming from mic
+                    _codec2Player.startRecording();
                     break;
                 case MotionEvent.ACTION_UP:
                     v.performClick();
-                    // Start receiving from bluetooth
+                    _codec2Player.startPlayback();
                     break;
             }
             return false;

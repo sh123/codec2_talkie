@@ -35,9 +35,13 @@ public class Codec2Player extends Thread {
     private byte _kissCmd = KISS_CMD_NOCMD;
 
     // common audio
-    private final int AudioSampleRate = 8000;
-
     private final long _codec2Con;
+
+    private final int AudioSampleRate = 8000;
+    private final int SleepDelayMs = 50;
+
+    private int _audioBufferSize;
+    private int _audioEncodedBufferSize;
 
     // input data, bt -> audio
     private final InputStream _btInputStream;
@@ -45,11 +49,19 @@ public class Codec2Player extends Thread {
     private final AudioTrack _audioPlayer;
     private final int _audioPlayerMinBufferSize;
 
+    private final short[] _playbackAudioBuffer;
+    private final byte[] _playbackAudioEncodedBuffer;
+
+    private int _playbackAudioAudioEncodedBufferIndex;
+
     // output data., mic -> bt
     private final OutputStream _btOutputStream;
 
     private final AudioRecord _audioRecorder;
     private final int _audioRecorderMinBufferSize;
+
+    private final short[] _recordAudioBuffer;
+    private final char[] _recordAudioEncodedBuffer;
 
     public Codec2Player(BluetoothSocket btSocket) throws IOException {
 
@@ -85,22 +97,27 @@ public class Codec2Player extends Thread {
                 .build();
 
         _codec2Con = Codec2.create(Codec2.CODEC2_MODE_1200);
+
+        _audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
+        _audioEncodedBufferSize = (Codec2.getBitsSize(_codec2Con) + 7) / 8;
+
+        _recordAudioBuffer = new short[_audioBufferSize];
+        _recordAudioEncodedBuffer = new char[_audioEncodedBufferSize];
+
+        _playbackAudioAudioEncodedBufferIndex = 0;
+
+        _playbackAudioBuffer = new short[_audioBufferSize];
+        _playbackAudioEncodedBuffer = new byte[_audioEncodedBufferSize];
     }
 
     private void processRecording() {
-        int audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
-        int encodedBufferSize = (Codec2.getBitsSize(_codec2Con) + 7) / 8;
-
-        short[] recordAudioBuffer = new short[audioBufferSize];
-        char[] recordEncodedBuffer = new char[encodedBufferSize];
-
-        _audioRecorder.read(recordAudioBuffer, 0, audioBufferSize);
-        Codec2.encode(_codec2Con, recordAudioBuffer, recordEncodedBuffer);
+        _audioRecorder.read(_recordAudioBuffer, 0, _audioBufferSize);
+        Codec2.encode(_codec2Con, _recordAudioBuffer, _recordAudioEncodedBuffer);
 
         try {
             _btOutputStream.write(KISS_FEND);
             _btOutputStream.write(KISS_CMD_DATA);
-            for (char c : recordEncodedBuffer) {
+            for (char c : _recordAudioEncodedBuffer) {
                 byte b = (byte)c;
                 if (b == KISS_FEND) {
                     _btOutputStream.write(KISS_FESC);
@@ -118,7 +135,7 @@ public class Codec2Player extends Thread {
         }
     }
 
-    private void processPlayback() {
+    private boolean processPlayback() {
         try {
             int btBytes = _btInputStream.available();
             if (btBytes > 0) {
@@ -136,7 +153,7 @@ public class Codec2Player extends Thread {
                         case GET_CMD:
                             if (b != KISS_FEND) {
                                 if (b == KISS_CMD_DATA) {
-                                    // reset buffer
+                                    _playbackAudioAudioEncodedBufferIndex = 0;
                                     _kissCmd = b;
                                     _kissState = KissState.GET_DATA;
                                 } else {
@@ -150,21 +167,23 @@ public class Codec2Player extends Thread {
                                 _kissState = KissState.ESCAPE;
                             } else if (b == KISS_FEND) {
                                 if (_kissCmd == KISS_CMD_DATA) {
-                                    // decode buffer and write to audio out
+                                    Codec2.decode(_codec2Con, _playbackAudioBuffer, _playbackAudioEncodedBuffer);
+                                    _audioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
+                                    _playbackAudioAudioEncodedBufferIndex = 0;
                                 }
                                 _kissCmd = KISS_CMD_NOCMD;
                                 _kissState = KissState.VOID;
                             } else {
-                                // add byte to decode buffer
+                                _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = b;
                             }
                             break;
                         case ESCAPE:
                             if (b == KISS_TFEND) {
-                                // write FEND to buffer
+                                _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = KISS_FEND;
                                 _kissState = KissState.GET_DATA;
                             }
                             else if (b == KISS_TFESC) {
-                                // write FESC to buffer
+                                _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = KISS_FESC;
                                 _kissState = KissState.GET_DATA;
                             }
                             else {
@@ -175,11 +194,22 @@ public class Codec2Player extends Thread {
                         default:
                             break;
                     }
+
+                    return true;
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return false;
+    }
+
+    public void startPlayback() {
+        _audioRecorder.stop();
+    }
+
+    public void startRecording() {
+        _audioRecorder.startRecording();
     }
 
     @Override
@@ -189,7 +219,13 @@ public class Codec2Player extends Thread {
                 processRecording();
             }
             else {
-                processPlayback();
+                if (!processPlayback()) {
+                    try {
+                        Thread.sleep(SleepDelayMs);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
