@@ -135,6 +135,11 @@ public class Codec2Player extends Thread {
         }
     }
 
+    private void kissResetState() {
+        _kissCmd = KISS_CMD_NOCMD;
+        _kissState = KissState.VOID;
+    }
+
     private boolean processPlayback() {
         try {
             int btBytes = _btInputStream.available();
@@ -157,8 +162,7 @@ public class Codec2Player extends Thread {
                                     _kissCmd = b;
                                     _kissState = KissState.GET_DATA;
                                 } else {
-                                    _kissCmd = KISS_CMD_NOCMD;
-                                    _kissState = KissState.VOID;
+                                    kissResetState();
                                 }
                             }
                             break;
@@ -171,8 +175,7 @@ public class Codec2Player extends Thread {
                                     _audioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
                                     _playbackAudioAudioEncodedBufferIndex = 0;
                                 }
-                                _kissCmd = KISS_CMD_NOCMD;
-                                _kissState = KissState.VOID;
+                                kissResetState();
                             } else {
                                 _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = b;
                             }
@@ -187,8 +190,7 @@ public class Codec2Player extends Thread {
                                 _kissState = KissState.GET_DATA;
                             }
                             else {
-                                _kissCmd = KISS_CMD_NOCMD;
-                                _kissState = KissState.VOID;
+                                kissResetState();
                             }
                             break;
                         default:
