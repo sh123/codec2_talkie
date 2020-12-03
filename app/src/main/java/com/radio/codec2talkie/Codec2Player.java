@@ -98,7 +98,7 @@ public class Codec2Player extends Thread {
                 .setBufferSizeInBytes(_audioPlayerMinBufferSize)
                 .build();
 
-        _codec2Con = Codec2.create(Codec2.CODEC2_MODE_1200);
+        _codec2Con = Codec2.create(Codec2.CODEC2_MODE_700C);
 
         _audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
         _audioEncodedBufferSize = (Codec2.getBitsSize(_codec2Con) + 7) / 8;
@@ -216,20 +216,24 @@ public class Codec2Player extends Thread {
         _isRecording = true;
     }
 
+    private void processRecordPlaybackToggle() {
+        if (_isRecording && _audioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
+            _audioRecorder.startRecording();
+        }
+        if (!_isRecording && _audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+            _audioRecorder.stop();
+        }
+    }
+
     @Override
     public void run() {
         while (true) {
-            int s = _audioRecorder.getRecordingState();
-            if (_isRecording && _audioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
-                _audioRecorder.startRecording();
-            }
-            if (!_isRecording && _audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
-                _audioRecorder.stop();
-            }
+            processRecordPlaybackToggle();
+
             if (_audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
                 processRecording();
             }
-            else {/*
+            else {
                 if (!processPlayback()) {
                     try {
                         Thread.sleep(SleepDelayMs);
@@ -237,7 +241,6 @@ public class Codec2Player extends Thread {
                         e.printStackTrace();
                     }
                 }
-                */
             }
         }
     }
