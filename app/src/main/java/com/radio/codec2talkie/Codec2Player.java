@@ -37,7 +37,7 @@ public class Codec2Player extends Thread {
     private byte _kissCmd = KISS_CMD_NOCMD;
 
     // common audio
-    public static int PLAYER_EXIT = 1;
+    public static int PLAYER_DISCONNECT = 1;
 
     private final long _codec2Con;
 
@@ -164,14 +164,12 @@ public class Codec2Player extends Thread {
                     }
                     break;
                 case GET_CMD:
-                    if (b != KISS_FEND) {
-                        if (b == KISS_CMD_DATA) {
-                            _playbackAudioAudioEncodedBufferIndex = 0;
-                            _kissCmd = b;
-                            _kissState = KissState.GET_DATA;
-                        } else {
-                            kissResetState();
-                        }
+                    if (b == KISS_CMD_DATA) {
+                        _playbackAudioAudioEncodedBufferIndex = 0;
+                        _kissCmd = b;
+                        _kissState = KissState.GET_DATA;
+                    } else if (b != KISS_FEND) {
+                        kissResetState();
                     }
                     break;
                 case GET_DATA:
@@ -253,7 +251,7 @@ public class Codec2Player extends Thread {
         Codec2.destroy(_codec2Con);
 
         Message msg = Message.obtain();
-        msg.what = PLAYER_EXIT;
+        msg.what = PLAYER_DISCONNECT;
         _onPlayerStateChanged.sendMessage(msg);
     }
 }

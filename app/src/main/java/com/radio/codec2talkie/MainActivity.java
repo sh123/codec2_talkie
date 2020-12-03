@@ -6,7 +6,6 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -15,13 +14,11 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -117,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
     private final Handler onPlayerStateChanged = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == Codec2Player.PLAYER_EXIT) {
+            if (msg.what == Codec2Player.PLAYER_DISCONNECT) {
                 Toast.makeText(getBaseContext(), "Bluetooth disconnected", Toast.LENGTH_SHORT).show();
                 startBluetoothConnectActivity();
             }
