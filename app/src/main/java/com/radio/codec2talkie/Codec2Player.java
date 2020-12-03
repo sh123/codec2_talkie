@@ -101,7 +101,7 @@ public class Codec2Player extends Thread {
         _codec2Con = Codec2.create(Codec2.CODEC2_MODE_1200);
 
         _audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
-        _audioEncodedBufferSize = Codec2.getBitsSize(_codec2Con);
+        _audioEncodedBufferSize = (Codec2.getBitsSize(_codec2Con) + 7) / 8;
 
         _recordAudioBuffer = new short[_audioBufferSize];
         _recordAudioEncodedBuffer = new char[_audioEncodedBufferSize];
@@ -219,10 +219,11 @@ public class Codec2Player extends Thread {
     @Override
     public void run() {
         while (true) {
+            int s = _audioRecorder.getRecordingState();
             if (_isRecording && _audioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
                 _audioRecorder.startRecording();
             }
-            if (!_isRecording && _audioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
+            if (!_isRecording && _audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
                 _audioRecorder.stop();
             }
             if (_audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
