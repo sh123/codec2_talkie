@@ -43,6 +43,8 @@ public class Codec2Player extends Thread {
     private int _audioBufferSize;
     private int _audioEncodedBufferSize;
 
+    private boolean _isRecording = false;
+
     // input data, bt -> audio
     private final InputStream _btInputStream;
 
@@ -99,7 +101,7 @@ public class Codec2Player extends Thread {
         _codec2Con = Codec2.create(Codec2.CODEC2_MODE_1200);
 
         _audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
-        _audioEncodedBufferSize = (Codec2.getBitsSize(_codec2Con) + 7) / 8;
+        _audioEncodedBufferSize = Codec2.getBitsSize(_codec2Con);
 
         _recordAudioBuffer = new short[_audioBufferSize];
         _recordAudioEncodedBuffer = new char[_audioEncodedBufferSize];
@@ -128,8 +130,8 @@ public class Codec2Player extends Thread {
                 } else {
                     _btOutputStream.write(b);
                 }
-                _btOutputStream.write(KISS_FEND);
             }
+            _btOutputStream.write(KISS_FEND);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -207,20 +209,26 @@ public class Codec2Player extends Thread {
     }
 
     public void startPlayback() {
-        _audioRecorder.stop();
+        _isRecording = false;
     }
 
     public void startRecording() {
-        _audioRecorder.startRecording();
+        _isRecording = true;
     }
 
     @Override
     public void run() {
         while (true) {
+            if (_isRecording && _audioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
+                _audioRecorder.startRecording();
+            }
+            if (!_isRecording && _audioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
+                _audioRecorder.stop();
+            }
             if (_audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
                 processRecording();
             }
-            else {
+            else {/*
                 if (!processPlayback()) {
                     try {
                         Thread.sleep(SleepDelayMs);
@@ -228,6 +236,7 @@ public class Codec2Player extends Thread {
                         e.printStackTrace();
                     }
                 }
+                */
             }
         }
     }

@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 _textBtName.setText(data.getStringExtra("name"));
                 try {
                     _codec2Player = new Codec2Player(BluetoothSocketHandler.getSocket());
+                    _codec2Player.start();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
