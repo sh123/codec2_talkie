@@ -154,59 +154,57 @@ public class Codec2Player extends Thread {
         if (btBytes > 0) {
             byte[] br = new byte[1];
             int bytesRead = _btInputStream.read(br);
-            if (bytesRead == 1) {
-                byte b = br[0];
-                switch (_kissState) {
-                    case VOID:
-                        if (b == KISS_FEND) {
-                            _kissCmd = KISS_CMD_NOCMD;
-                            _kissState = KissState.GET_CMD;
-                        }
-                        break;
-                    case GET_CMD:
-                        if (b != KISS_FEND) {
-                            if (b == KISS_CMD_DATA) {
-                                _playbackAudioAudioEncodedBufferIndex = 0;
-                                _kissCmd = b;
-                                _kissState = KissState.GET_DATA;
-                            } else {
-                                kissResetState();
-                            }
-                        }
-                        break;
-                    case GET_DATA:
-                        if (b == KISS_FESC) {
-                            _kissState = KissState.ESCAPE;
-                        } else if (b == KISS_FEND) {
-                            if (_kissCmd == KISS_CMD_DATA) {
-                                Codec2.decode(_codec2Con, _playbackAudioBuffer, _playbackAudioEncodedBuffer);
-                                _audioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
-                                _playbackAudioAudioEncodedBufferIndex = 0;
-                            }
-                            kissResetState();
+            if (bytesRead == 0) return false;
+            byte b = br[0];
+            switch (_kissState) {
+                case VOID:
+                    if (b == KISS_FEND) {
+                        _kissCmd = KISS_CMD_NOCMD;
+                        _kissState = KissState.GET_CMD;
+                    }
+                    break;
+                case GET_CMD:
+                    if (b != KISS_FEND) {
+                        if (b == KISS_CMD_DATA) {
+                            _playbackAudioAudioEncodedBufferIndex = 0;
+                            _kissCmd = b;
+                            _kissState = KissState.GET_DATA;
                         } else {
-                            _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = b;
-                        }
-                        break;
-                    case ESCAPE:
-                        if (b == KISS_TFEND) {
-                            _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = KISS_FEND;
-                            _kissState = KissState.GET_DATA;
-                        }
-                        else if (b == KISS_TFESC) {
-                            _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = KISS_FESC;
-                            _kissState = KissState.GET_DATA;
-                        }
-                        else {
                             kissResetState();
                         }
-                        break;
-                    default:
-                        break;
-                }
-
-                return true;
+                    }
+                    break;
+                case GET_DATA:
+                    if (b == KISS_FESC) {
+                        _kissState = KissState.ESCAPE;
+                    } else if (b == KISS_FEND) {
+                        if (_kissCmd == KISS_CMD_DATA) {
+                            Codec2.decode(_codec2Con, _playbackAudioBuffer, _playbackAudioEncodedBuffer);
+                            _audioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
+                            _playbackAudioAudioEncodedBufferIndex = 0;
+                        }
+                        kissResetState();
+                    } else {
+                        _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = b;
+                    }
+                    break;
+                case ESCAPE:
+                    if (b == KISS_TFEND) {
+                        _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = KISS_FEND;
+                        _kissState = KissState.GET_DATA;
+                    }
+                    else if (b == KISS_TFESC) {
+                        _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = KISS_FESC;
+                        _kissState = KissState.GET_DATA;
+                    }
+                    else {
+                        kissResetState();
+                    }
+                    break;
+                default:
+                    break;
             }
+            return true;
         }
         return false;
     }
