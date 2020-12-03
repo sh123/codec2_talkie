@@ -6,6 +6,8 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
+import android.os.Handler;
+import android.os.Message;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,7 +37,13 @@ public class Codec2Player extends Thread {
     private byte _kissCmd = KISS_CMD_NOCMD;
 
     // common audio
+    public static int PLAYER_EXIT = 1;
+
     private final long _codec2Con;
+
+    private final BluetoothSocket _btSocket;
+
+    private final Handler _onPlayerStateChanged;
 
     private final int AudioSampleRate = 8000;
     private final int SleepDelayMs = 50;
@@ -65,10 +73,13 @@ public class Codec2Player extends Thread {
     private final short[] _recordAudioBuffer;
     private final char[] _recordAudioEncodedBuffer;
 
-    public Codec2Player(BluetoothSocket btSocket) throws IOException {
+    public Codec2Player(BluetoothSocket btSocket, Handler onPlayerStateChanged) throws IOException {
 
-        _btInputStream = btSocket.getInputStream();
-        _btOutputStream = btSocket.getOutputStream();
+        _onPlayerStateChanged = onPlayerStateChanged;
+
+        _btSocket = btSocket;
+        _btInputStream = _btSocket.getInputStream();
+        _btOutputStream = _btSocket.getOutputStream();
 
         _audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
                 AudioSampleRate,
@@ -112,29 +123,25 @@ public class Codec2Player extends Thread {
         _playbackAudioEncodedBuffer = new byte[_audioEncodedBufferSize];
     }
 
-    private void processRecording() {
+    private void processRecording() throws IOException {
         _audioRecorder.read(_recordAudioBuffer, 0, _audioBufferSize);
         Codec2.encode(_codec2Con, _recordAudioBuffer, _recordAudioEncodedBuffer);
 
-        try {
-            _btOutputStream.write(KISS_FEND);
-            _btOutputStream.write(KISS_CMD_DATA);
-            for (char c : _recordAudioEncodedBuffer) {
-                byte b = (byte)c;
-                if (b == KISS_FEND) {
-                    _btOutputStream.write(KISS_FESC);
-                    _btOutputStream.write(KISS_TFEND);
-                } else if (b == KISS_FESC){
-                    _btOutputStream.write(KISS_FESC);
-                    _btOutputStream.write(KISS_TFESC);
-                } else {
-                    _btOutputStream.write(b);
-                }
+        _btOutputStream.write(KISS_FEND);
+        _btOutputStream.write(KISS_CMD_DATA);
+        for (char c : _recordAudioEncodedBuffer) {
+            byte b = (byte)c;
+            if (b == KISS_FEND) {
+                _btOutputStream.write(KISS_FESC);
+                _btOutputStream.write(KISS_TFEND);
+            } else if (b == KISS_FESC){
+                _btOutputStream.write(KISS_FESC);
+                _btOutputStream.write(KISS_TFESC);
+            } else {
+                _btOutputStream.write(b);
             }
-            _btOutputStream.write(KISS_FEND);
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        _btOutputStream.write(KISS_FEND);
     }
 
     private void kissResetState() {
@@ -142,68 +149,64 @@ public class Codec2Player extends Thread {
         _kissState = KissState.VOID;
     }
 
-    private boolean processPlayback() {
-        try {
-            int btBytes = _btInputStream.available();
-            if (btBytes > 0) {
-                byte[] br = new byte[1];
-                int bytesRead = _btInputStream.read(br);
-                if (bytesRead == 1) {
-                    byte b = br[0];
-                    switch (_kissState) {
-                        case VOID:
-                            if (b == KISS_FEND) {
-                                _kissCmd = KISS_CMD_NOCMD;
-                                _kissState = KissState.GET_CMD;
-                            }
-                            break;
-                        case GET_CMD:
-                            if (b != KISS_FEND) {
-                                if (b == KISS_CMD_DATA) {
-                                    _playbackAudioAudioEncodedBufferIndex = 0;
-                                    _kissCmd = b;
-                                    _kissState = KissState.GET_DATA;
-                                } else {
-                                    kissResetState();
-                                }
-                            }
-                            break;
-                        case GET_DATA:
-                            if (b == KISS_FESC) {
-                                _kissState = KissState.ESCAPE;
-                            } else if (b == KISS_FEND) {
-                                if (_kissCmd == KISS_CMD_DATA) {
-                                    Codec2.decode(_codec2Con, _playbackAudioBuffer, _playbackAudioEncodedBuffer);
-                                    _audioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
-                                    _playbackAudioAudioEncodedBufferIndex = 0;
-                                }
-                                kissResetState();
+    private boolean processPlayback() throws IOException {
+        int btBytes = _btInputStream.available();
+        if (btBytes > 0) {
+            byte[] br = new byte[1];
+            int bytesRead = _btInputStream.read(br);
+            if (bytesRead == 1) {
+                byte b = br[0];
+                switch (_kissState) {
+                    case VOID:
+                        if (b == KISS_FEND) {
+                            _kissCmd = KISS_CMD_NOCMD;
+                            _kissState = KissState.GET_CMD;
+                        }
+                        break;
+                    case GET_CMD:
+                        if (b != KISS_FEND) {
+                            if (b == KISS_CMD_DATA) {
+                                _playbackAudioAudioEncodedBufferIndex = 0;
+                                _kissCmd = b;
+                                _kissState = KissState.GET_DATA;
                             } else {
-                                _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = b;
-                            }
-                            break;
-                        case ESCAPE:
-                            if (b == KISS_TFEND) {
-                                _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = KISS_FEND;
-                                _kissState = KissState.GET_DATA;
-                            }
-                            else if (b == KISS_TFESC) {
-                                _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = KISS_FESC;
-                                _kissState = KissState.GET_DATA;
-                            }
-                            else {
                                 kissResetState();
                             }
-                            break;
-                        default:
-                            break;
-                    }
-
-                    return true;
+                        }
+                        break;
+                    case GET_DATA:
+                        if (b == KISS_FESC) {
+                            _kissState = KissState.ESCAPE;
+                        } else if (b == KISS_FEND) {
+                            if (_kissCmd == KISS_CMD_DATA) {
+                                Codec2.decode(_codec2Con, _playbackAudioBuffer, _playbackAudioEncodedBuffer);
+                                _audioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
+                                _playbackAudioAudioEncodedBufferIndex = 0;
+                            }
+                            kissResetState();
+                        } else {
+                            _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = b;
+                        }
+                        break;
+                    case ESCAPE:
+                        if (b == KISS_TFEND) {
+                            _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = KISS_FEND;
+                            _kissState = KissState.GET_DATA;
+                        }
+                        else if (b == KISS_TFESC) {
+                            _playbackAudioEncodedBuffer[_playbackAudioAudioEncodedBufferIndex++] = KISS_FESC;
+                            _kissState = KissState.GET_DATA;
+                        }
+                        else {
+                            kissResetState();
+                        }
+                        break;
+                    default:
+                        break;
                 }
+
+                return true;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return false;
     }
@@ -227,21 +230,32 @@ public class Codec2Player extends Thread {
 
     @Override
     public void run() {
-        while (true) {
-            processRecordPlaybackToggle();
+        try {
+            while (_btSocket.isConnected()) {
+                processRecordPlaybackToggle();
 
-            if (_audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
-                processRecording();
-            }
-            else {
-                if (!processPlayback()) {
-                    try {
-                        Thread.sleep(SleepDelayMs);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                if (_audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+                    processRecording();
+                } else {
+                    if (!processPlayback()) {
+                        try {
+                            Thread.sleep(SleepDelayMs);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
         }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        _audioRecorder.stop();
+        _audioPlayer.stop();
+        Codec2.destroy(_codec2Con);
+
+        Message msg = Message.obtain();
+        msg.what = PLAYER_EXIT;
+        _onPlayerStateChanged.sendMessage(msg);
     }
 }

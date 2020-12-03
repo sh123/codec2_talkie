@@ -6,9 +6,13 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -110,6 +114,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private final Handler onPlayerStateChanged = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == Codec2Player.PLAYER_EXIT) {
+                Toast.makeText(getBaseContext(), "Bluetooth disconnected", Toast.LENGTH_SHORT).show();
+                startBluetoothConnectActivity();
+            }
+        }
+    };
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -119,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (resultCode == RESULT_OK) {
                 _textBtName.setText(data.getStringExtra("name"));
                 try {
-                    _codec2Player = new Codec2Player(BluetoothSocketHandler.getSocket());
+                    _codec2Player = new Codec2Player(BluetoothSocketHandler.getSocket(), onPlayerStateChanged);
                     _codec2Player.start();
                 } catch (IOException e) {
                     e.printStackTrace();
