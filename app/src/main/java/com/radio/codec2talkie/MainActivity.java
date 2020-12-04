@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.radio.codec2talkie.bluetooth.ConnectActivity;
+import com.radio.codec2talkie.bluetooth.SocketHandler;
 import com.ustadmobile.codec2.Codec2;
 
 import java.io.IOException;
@@ -54,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void startBluetoothConnectActivity() {
-        Intent bluetoothConnectIntent = new Intent(this, BluetoothConnectActivity.class);
+        Intent bluetoothConnectIntent = new Intent(this, ConnectActivity.class);
         startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_BT);
     }
 
@@ -133,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 _textBtName.setText(data.getStringExtra("name"));
                 try {
                     _codec2Player = new Codec2Player(
-                            BluetoothSocketHandler.getSocket(),
+                            SocketHandler.getSocket(),
                             onPlayerStateChanged,
                             Codec2.CODEC2_MODE_450,
                             true);

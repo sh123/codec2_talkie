@@ -1,4 +1,4 @@
-package com.radio.codec2talkie;
+package com.radio.codec2talkie.bluetooth;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -17,10 +17,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.radio.codec2talkie.R;
+
 import java.io.IOException;
 import java.util.UUID;
 
-public class BluetoothConnectActivity extends AppCompatActivity {
+public class ConnectActivity extends AppCompatActivity {
 
     private final static int BT_ENABLE = 1;
     private final static int BT_CONNECT_SUCCESS = 2;
@@ -112,7 +114,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                 toastMsg = "Bluetooth adapter is not found";
             } else {
                 toastMsg = "Connected";
-                BluetoothSocketHandler.setSocket(_btSocket);
+                SocketHandler.setSocket(_btSocket);
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("name", _btSelectedName);
                 setResult(Activity.RESULT_OK, resultIntent);
