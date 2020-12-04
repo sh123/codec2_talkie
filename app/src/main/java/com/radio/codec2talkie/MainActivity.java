@@ -18,6 +18,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ustadmobile.codec2.Codec2;
+
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
@@ -130,7 +132,11 @@ public class MainActivity extends AppCompatActivity {
             } else if (resultCode == RESULT_OK) {
                 _textBtName.setText(data.getStringExtra("name"));
                 try {
-                    _codec2Player = new Codec2Player(BluetoothSocketHandler.getSocket(), onPlayerStateChanged);
+                    _codec2Player = new Codec2Player(
+                            BluetoothSocketHandler.getSocket(),
+                            onPlayerStateChanged,
+                            Codec2.CODEC2_MODE_450,
+                            true);
                     _codec2Player.start();
                 } catch (IOException e) {
                     e.printStackTrace();

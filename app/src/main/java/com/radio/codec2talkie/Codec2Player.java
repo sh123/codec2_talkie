@@ -8,7 +8,6 @@ import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,7 +28,7 @@ public class Codec2Player extends Thread {
     private final byte KISS_CMD_DATA = (byte)0x00;
     private final byte KISS_CMD_NOCMD = (byte)0x80;
 
-    private final int KISS_FRAME_MAX_SIZE = 16;
+    private final int KISS_FRAME_MAX_SIZE = 32;
 
     private enum KissState {
         VOID,
@@ -43,6 +42,8 @@ public class Codec2Player extends Thread {
 
     private int _kissOutputFramePos;
     private int _kissInputFramePos;
+
+    private final boolean _kissLoopbackMode;
 
     // common audio
     public static int PLAYER_DISCONNECT = 1;
@@ -81,9 +82,10 @@ public class Codec2Player extends Thread {
 
     private ByteBuffer _loopbackBuffer;
 
-    public Codec2Player(BluetoothSocket btSocket, Handler onPlayerStateChanged) throws IOException {
+    public Codec2Player(BluetoothSocket btSocket, Handler onPlayerStateChanged, int codec2Mode, boolean loopbackMode) throws IOException {
 
         _onPlayerStateChanged = onPlayerStateChanged;
+        _kissLoopbackMode = loopbackMode;
 
         _btSocket = btSocket;
         _btInputStream = _btSocket.getInputStream();
@@ -120,7 +122,7 @@ public class Codec2Player extends Thread {
                 .build();
         _audioPlayer.play();
 
-        _codec2Con = Codec2.create(Codec2.CODEC2_MODE_450);
+        _codec2Con = Codec2.create(codec2Mode);
 
         _audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
         _audioEncodedBufferSize = Codec2.getBitsSize(_codec2Con); // returns number of bytes
@@ -133,13 +135,15 @@ public class Codec2Player extends Thread {
         _playbackAudioEncodedBuffer = new byte[_audioEncodedBufferSize];
         _kissInputFramePos = 0;
 
-        _loopbackBuffer = ByteBuffer.allocateDirect(100000);
+        _loopbackBuffer = ByteBuffer.allocateDirect(1024 * _audioEncodedBufferSize);
     }
 
     private void kissWriteByte(byte b) throws IOException{
-        //_btOutputStream.write(b);
-        //Log.d("write stream", String.format("%x", b));
-        _loopbackBuffer.put(b);
+        if (_kissLoopbackMode) {
+            _loopbackBuffer.put(b);
+        } else {
+            _btOutputStream.write(b);
+        }
         _kissOutputFramePos++;
     }
 
@@ -261,6 +265,9 @@ public class Codec2Player extends Thread {
     }
 
     private boolean processPlayback() throws IOException {
+        if (_kissLoopbackMode) {
+            return processLoopbackPlayback();
+        }
         int btBytes = _btInputStream.available();
         if (btBytes > 0) {
             byte[] br = new byte[1];
@@ -328,7 +335,7 @@ public class Codec2Player extends Thread {
                 if (_audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
                     processRecording();
                 } else {
-                    if (!processLoopbackPlayback()) {
+                    if (!processPlayback()) {
                         try {
                             Thread.sleep(SLEEP_DELAY_MS);
                         } catch (InterruptedException e) {
