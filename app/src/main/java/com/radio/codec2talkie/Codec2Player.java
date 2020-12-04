@@ -99,6 +99,7 @@ public class Codec2Player extends Thread {
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
                 3 * _audioRecorderMinBufferSize);
+        _audioRecorder.startRecording();
 
         _audioPlayerMinBufferSize = AudioTrack.getMinBufferSize(
                 AUDIO_SAMPLE_SIZE,
@@ -119,7 +120,7 @@ public class Codec2Player extends Thread {
                 .build();
         _audioPlayer.play();
 
-        _codec2Con = Codec2.create(Codec2.CODEC2_MODE_700C);
+        _codec2Con = Codec2.create(Codec2.CODEC2_MODE_450);
 
         _audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
         _audioEncodedBufferSize = Codec2.getBitsSize(_codec2Con); // returns number of bytes
@@ -214,10 +215,10 @@ public class Codec2Player extends Thread {
         for (char c : inputBuffer) {
             switch ((byte)c) {
                 case KISS_FEND:
-                    escapedBuffer.put(KISS_FESC).put(KISS_TFEND).put((byte)c);
+                    escapedBuffer.put(KISS_FESC).put(KISS_TFEND);
                     break;
                 case KISS_FESC:
-                    escapedBuffer.put(KISS_FESC).put(KISS_TFESC).put((byte)c);
+                    escapedBuffer.put(KISS_FESC).put(KISS_TFESC);
                    break;
                 default:
                     escapedBuffer.put((byte)c);
@@ -280,12 +281,14 @@ public class Codec2Player extends Thread {
     }
 
     private void processRecordPlaybackToggle() throws IOException {
+        // playback -> recording
         if (_isRecording && _audioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
             _audioRecorder.startRecording();
             _audioPlayer.stop();
 
             _loopbackBuffer.clear();
         }
+        // recording -> playback
         if (!_isRecording && _audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
             _audioRecorder.stop();
             _audioPlayer.play();
@@ -294,6 +297,25 @@ public class Codec2Player extends Thread {
             _kissInputFramePos = 0;
 
             _loopbackBuffer.flip();
+        }
+    }
+
+    void runLoopback() {
+        short[] buffer = new short[Codec2.getSamplesPerFrame(_codec2Con)];
+        short[] buffer_ = new short[Codec2.getSamplesPerFrame(_codec2Con)];
+        char[] buffer2 = new char[Codec2.getBitsSize(_codec2Con)];
+        byte[] buffer3 = new byte[Codec2.getBitsSize(_codec2Con)];
+
+        _audioRecorder.startRecording();
+        _audioPlayer.play();
+        while (_btSocket.isConnected()) {
+            int n = _audioRecorder.read(buffer, 0, buffer.length);
+            Codec2.encode(_codec2Con, buffer, buffer2);
+            for (int i = 0; i < buffer3.length; i++) {
+                buffer3[i] = (byte) buffer2[i];
+            }
+            Codec2.decode(_codec2Con, buffer_, buffer3);
+            _audioPlayer.write(buffer_, 0, buffer_.length);
         }
     }
 
@@ -315,11 +337,9 @@ public class Codec2Player extends Thread {
                     }
                 }
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
         try {
             kissCompleteFrame();
         } catch (IOException e) {
@@ -327,7 +347,11 @@ public class Codec2Player extends Thread {
         }
 
         _audioRecorder.stop();
+        _audioRecorder.release();
+
         _audioPlayer.stop();
+        _audioPlayer.release();
+
         Codec2.destroy(_codec2Con);
 
         Message msg = Message.obtain();
