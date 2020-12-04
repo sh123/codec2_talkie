@@ -15,35 +15,11 @@ import java.io.OutputStream;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
+import com.radio.codec2talkie.kiss.KissCallback;
+import com.radio.codec2talkie.kiss.KissProcessor;
 import com.ustadmobile.codec2.Codec2;
 
 public class Codec2Player extends Thread {
-
-    // kiss constants  and state
-    private final byte KISS_FEND = (byte)0xc0;
-    private final byte KISS_FESC = (byte)0xdb;
-    private final byte KISS_TFEND = (byte)0xdc;
-    private final byte KISS_TFESC = (byte)0xdd;
-
-    private final byte KISS_CMD_DATA = (byte)0x00;
-    private final byte KISS_CMD_NOCMD = (byte)0x80;
-
-    private final int KISS_FRAME_MAX_SIZE = 32;
-
-    private enum KissState {
-        VOID,
-        GET_CMD,
-        GET_DATA,
-        ESCAPE
-    };
-
-    private KissState _kissState = KissState.VOID;
-    private byte _kissCmd = KISS_CMD_NOCMD;
-
-    private int _kissOutputFramePos;
-    private int _kissInputFramePos;
-
-    private final boolean _kissLoopbackMode;
 
     // common audio
     public static int PLAYER_DISCONNECT = 1;
@@ -57,8 +33,8 @@ public class Codec2Player extends Thread {
     private final int AUDIO_SAMPLE_SIZE = 8000;
     private final int SLEEP_DELAY_MS = 10;
 
-    private int _audioBufferSize;
-    private int _audioEncodedBufferSize;
+    private final int _audioBufferSize;
+    private final int _audioEncodedBufferSize;
 
     private boolean _isRecording = false;
 
@@ -80,12 +56,15 @@ public class Codec2Player extends Thread {
     private final short[] _recordAudioBuffer;
     private final char[] _recordAudioEncodedBuffer;
 
-    private ByteBuffer _loopbackBuffer;
+    private final boolean _loopbackMode;
+    private final ByteBuffer _loopbackBuffer;
+
+    private final KissProcessor _kissProcessor;
 
     public Codec2Player(BluetoothSocket btSocket, Handler onPlayerStateChanged, int codec2Mode, boolean loopbackMode) throws IOException {
 
         _onPlayerStateChanged = onPlayerStateChanged;
-        _kissLoopbackMode = loopbackMode;
+        _loopbackMode = loopbackMode;
 
         _btSocket = btSocket;
         _btInputStream = _btSocket.getInputStream();
@@ -129,154 +108,13 @@ public class Codec2Player extends Thread {
 
         _recordAudioBuffer = new short[_audioBufferSize];
         _recordAudioEncodedBuffer = new char[_audioEncodedBufferSize];
-        _kissOutputFramePos = 0;
 
         _playbackAudioBuffer = new short[_audioBufferSize];
         _playbackAudioEncodedBuffer = new byte[_audioEncodedBufferSize];
-        _kissInputFramePos = 0;
 
         _loopbackBuffer = ByteBuffer.allocateDirect(1024 * _audioEncodedBufferSize);
-    }
 
-    private void kissWriteByte(byte b) throws IOException{
-        if (_kissLoopbackMode) {
-            _loopbackBuffer.put(b);
-        } else {
-            _btOutputStream.write(b);
-        }
-        _kissOutputFramePos++;
-    }
-
-    private void kissResetState() {
-        _kissCmd = KISS_CMD_NOCMD;
-        _kissState = KissState.VOID;
-    }
-
-    private void kissStartFrame() throws IOException {
-        kissWriteByte(KISS_FEND);
-        kissWriteByte(KISS_CMD_DATA);
-    }
-
-    private void kissCompleteFrame() throws IOException {
-        if (_kissOutputFramePos > 0) {
-            kissWriteByte(KISS_FEND);
-            _kissOutputFramePos = 0;
-        }
-    }
-
-    private void kissProcessInputByte(byte b) {
-        switch (_kissState) {
-            case VOID:
-                if (b == KISS_FEND) {
-                    _kissCmd = KISS_CMD_NOCMD;
-                    _kissState = KissState.GET_CMD;
-                }
-                break;
-            case GET_CMD:
-                if (b == KISS_CMD_DATA) {
-                    _kissCmd = b;
-                    _kissState = KissState.GET_DATA;
-                } else if (b != KISS_FEND) {
-                    kissResetState();
-                }
-                break;
-            case GET_DATA:
-                if (b == KISS_FESC) {
-                    _kissState = KissState.ESCAPE;
-                } else if (b == KISS_FEND) {
-                    if (_kissCmd == KISS_CMD_DATA) {
-                        // end of packet
-                    }
-                    kissResetState();
-                } else {
-                    _playbackAudioEncodedBuffer[_kissInputFramePos++] = b;
-                    //Log.d("play", String.format("%x", b));
-                }
-                break;
-            case ESCAPE:
-                if (b == KISS_TFEND) {
-                    _playbackAudioEncodedBuffer[_kissInputFramePos++] = KISS_FEND;
-                    _kissState = KissState.GET_DATA;
-                } else if (b == KISS_TFESC) {
-                    _playbackAudioEncodedBuffer[_kissInputFramePos++] = KISS_FESC;
-                    _kissState = KissState.GET_DATA;
-                } else {
-                    kissResetState();
-                }
-                break;
-            default:
-                break;
-        }
-        if (_kissInputFramePos >= _audioEncodedBufferSize) {
-            Codec2.decode(_codec2Con, _playbackAudioBuffer, _playbackAudioEncodedBuffer);
-            _audioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
-            _kissInputFramePos = 0;
-        }
-    }
-
-    private ByteBuffer kissEscape(char [] inputBuffer) {
-        ByteBuffer escapedBuffer = ByteBuffer.allocate(4 * inputBuffer.length);
-        for (char c : inputBuffer) {
-            switch ((byte)c) {
-                case KISS_FEND:
-                    escapedBuffer.put(KISS_FESC).put(KISS_TFEND);
-                    break;
-                case KISS_FESC:
-                    escapedBuffer.put(KISS_FESC).put(KISS_TFESC);
-                   break;
-                default:
-                    escapedBuffer.put((byte)c);
-                    break;
-            }
-        }
-        return escapedBuffer;
-    }
-
-    private void processRecording() throws IOException {
-        _audioRecorder.read(_recordAudioBuffer, 0, _audioBufferSize);
-        Codec2.encode(_codec2Con, _recordAudioBuffer, _recordAudioEncodedBuffer);
-
-        ByteBuffer escapedBuffer = kissEscape(_recordAudioEncodedBuffer);
-        int numItems = escapedBuffer.position();
-        escapedBuffer.rewind();
-
-        if (_kissOutputFramePos == 0) {
-            kissStartFrame();
-        }
-        // new data does not fit, complete and create new frame
-        if (numItems +_kissOutputFramePos >= KISS_FRAME_MAX_SIZE) {
-            kissCompleteFrame();
-            kissStartFrame();
-        }
-        // write new data
-        while (escapedBuffer.position() < numItems) {
-            kissWriteByte(escapedBuffer.get());
-        }
-    }
-
-    private boolean processLoopbackPlayback() {
-        try {
-            byte b = _loopbackBuffer.get();
-            kissProcessInputByte(b);
-            return true;
-        } catch (BufferUnderflowException e) {
-            return false;
-        }
-    }
-
-    private boolean processPlayback() throws IOException {
-        if (_kissLoopbackMode) {
-            return processLoopbackPlayback();
-        }
-        int btBytes = _btInputStream.available();
-        if (btBytes > 0) {
-            byte[] br = new byte[1];
-            int bytesRead = _btInputStream.read(br);
-            if (bytesRead == 0) return false;
-            kissProcessInputByte(br[0]);
-            return true;
-        }
-        return false;
+        _kissProcessor = new KissProcessor(_audioEncodedBufferSize, _kissCallback);
     }
 
     public void startPlayback() {
@@ -287,22 +125,76 @@ public class Codec2Player extends Thread {
         _isRecording = true;
     }
 
+    private final KissCallback _kissCallback = new KissCallback() {
+        @Override
+        protected void sendByte(byte b) {
+            if (_loopbackMode) {
+                _loopbackBuffer.put(b);
+            } else {
+                try {
+                    _btOutputStream.write(b);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        @Override
+        protected void receiveFrame(byte[] frame) {
+            Codec2.decode(_codec2Con, _playbackAudioBuffer, frame);
+            _audioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
+        }
+    };
+
+    private void processRecording() throws IOException {
+        _audioRecorder.read(_recordAudioBuffer, 0, _audioBufferSize);
+        Codec2.encode(_codec2Con, _recordAudioBuffer, _recordAudioEncodedBuffer);
+
+        byte [] frame = new byte[_recordAudioEncodedBuffer.length];
+
+        for (int i = 0; i < _recordAudioEncodedBuffer.length; i++) {
+            frame[i] = (byte)_recordAudioEncodedBuffer[i];
+        }
+        _kissProcessor.sendFrame(frame);
+    }
+
+    private boolean processLoopbackPlayback() {
+        try {
+            byte b = _loopbackBuffer.get();
+            _kissProcessor.receiveByte(b);
+            return true;
+        } catch (BufferUnderflowException e) {
+            return false;
+        }
+    }
+
+    private boolean processPlayback() throws IOException {
+        if (_loopbackMode) {
+            return processLoopbackPlayback();
+        }
+        int btBytes = _btInputStream.available();
+        if (btBytes > 0) {
+            byte[] br = new byte[1];
+            int bytesRead = _btInputStream.read(br);
+            if (bytesRead == 0) return false;
+            _kissProcessor.receiveByte(br[0]);
+            return true;
+        }
+        return false;
+    }
+
     private void processRecordPlaybackToggle() throws IOException {
         // playback -> recording
         if (_isRecording && _audioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
             _audioRecorder.startRecording();
             _audioPlayer.stop();
-
             _loopbackBuffer.clear();
         }
         // recording -> playback
         if (!_isRecording && _audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
             _audioRecorder.stop();
             _audioPlayer.play();
-
-            kissCompleteFrame();
-            _kissInputFramePos = 0;
-
+            _kissProcessor.flush();
             _loopbackBuffer.flip();
         }
     }
@@ -326,6 +218,22 @@ public class Codec2Player extends Thread {
         }
     }
 
+    private void cleanup() {
+        try {
+            _kissProcessor.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        _audioRecorder.stop();
+        _audioRecorder.release();
+
+        _audioPlayer.stop();
+        _audioPlayer.release();
+
+        Codec2.destroy(_codec2Con);
+    }
+
     @Override
     public void run() {
         try {
@@ -347,19 +255,8 @@ public class Codec2Player extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try {
-            kissCompleteFrame();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
-        _audioRecorder.stop();
-        _audioRecorder.release();
-
-        _audioPlayer.stop();
-        _audioPlayer.release();
-
-        Codec2.destroy(_codec2Con);
+        cleanup();
 
         Message msg = Message.obtain();
         msg.what = PLAYER_DISCONNECT;
