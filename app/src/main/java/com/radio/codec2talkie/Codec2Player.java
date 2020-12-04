@@ -21,20 +21,16 @@ import com.ustadmobile.codec2.Codec2;
 
 public class Codec2Player extends Thread {
 
-    // common audio
     public static int PLAYER_DISCONNECT = 1;
+
+    private final int AUDIO_SAMPLE_SIZE = 8000;
+    private final int SLEEP_DELAY_MS = 10;
 
     private final long _codec2Con;
 
     private final BluetoothSocket _btSocket;
 
-    private final Handler _onPlayerStateChanged;
-
-    private final int AUDIO_SAMPLE_SIZE = 8000;
-    private final int SLEEP_DELAY_MS = 10;
-
     private final int _audioBufferSize;
-    private final int _audioEncodedBufferSize;
 
     private boolean _isRecording = false;
 
@@ -42,24 +38,24 @@ public class Codec2Player extends Thread {
     private final InputStream _btInputStream;
 
     private final AudioTrack _audioPlayer;
-    private final int _audioPlayerMinBufferSize;
 
     private final short[] _playbackAudioBuffer;
-    private final byte[] _playbackAudioEncodedBuffer;
 
     // output data., mic -> bt
     private final OutputStream _btOutputStream;
 
     private final AudioRecord _audioRecorder;
-    private final int _audioRecorderMinBufferSize;
 
     private final short[] _recordAudioBuffer;
     private final char[] _recordAudioEncodedBuffer;
 
+    // loopback mode
     private final boolean _loopbackMode;
     private final ByteBuffer _loopbackBuffer;
 
+    // callbacks
     private final KissProcessor _kissProcessor;
+    private final Handler _onPlayerStateChanged;
 
     public Codec2Player(BluetoothSocket btSocket, Handler onPlayerStateChanged, int codec2Mode, boolean loopbackMode) throws IOException {
 
@@ -70,7 +66,7 @@ public class Codec2Player extends Thread {
         _btInputStream = _btSocket.getInputStream();
         _btOutputStream = _btSocket.getOutputStream();
 
-        _audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
+        int _audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
                 AUDIO_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
@@ -82,7 +78,7 @@ public class Codec2Player extends Thread {
                 3 * _audioRecorderMinBufferSize);
         _audioRecorder.startRecording();
 
-        _audioPlayerMinBufferSize = AudioTrack.getMinBufferSize(
+        int _audioPlayerMinBufferSize = AudioTrack.getMinBufferSize(
                 AUDIO_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
@@ -104,13 +100,12 @@ public class Codec2Player extends Thread {
         _codec2Con = Codec2.create(codec2Mode);
 
         _audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
-        _audioEncodedBufferSize = Codec2.getBitsSize(_codec2Con); // returns number of bytes
+        int _audioEncodedBufferSize = Codec2.getBitsSize(_codec2Con); // returns number of bytes
 
         _recordAudioBuffer = new short[_audioBufferSize];
         _recordAudioEncodedBuffer = new char[_audioEncodedBufferSize];
 
         _playbackAudioBuffer = new short[_audioBufferSize];
-        _playbackAudioEncodedBuffer = new byte[_audioEncodedBufferSize];
 
         _loopbackBuffer = ByteBuffer.allocateDirect(1024 * _audioEncodedBufferSize);
 
