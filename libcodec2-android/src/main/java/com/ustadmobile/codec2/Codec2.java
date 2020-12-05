@@ -16,10 +16,7 @@ public class Codec2 {
     public static final int CODEC2_MODE_1400 = 3;
     public static final int CODEC2_MODE_1300 = 4;
     public static final int CODEC2_MODE_1200 = 5;
-    public static final int CODEC2_MODE_700 = 6;
-    public static final int CODEC2_MODE_700B = 7;
     public static final int CODEC2_MODE_700C = 8;
-    public static final int CODEC2_MODE_WB = 9;
     public static final int CODEC2_MODE_450=10;
     public static final int CODEC2_MODE_450PWB=11;
 

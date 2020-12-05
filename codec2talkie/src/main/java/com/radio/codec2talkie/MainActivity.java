@@ -14,7 +14,9 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
 
     private final static int REQUEST_CONNECT_BT = 1;
     private final static int REQUEST_PERMISSIONS = 2;
+
+    private final static int CODEC2_DEFAULT_MODE = Codec2.CODEC2_MODE_450;
+    private final static int CODEC2_DEFAULT_MODE_POS = 0;
 
     private final String[] _requiredPermissions = new String[] {
             Manifest.permission.BLUETOOTH,
@@ -49,6 +54,10 @@ public class MainActivity extends AppCompatActivity {
         _textBtName = (TextView)findViewById(R.id.textBtName);
         Button _btnPtt = (Button) findViewById(R.id.btnPtt);
         _btnPtt.setOnTouchListener(onBtnPttTouchListener);
+
+        Spinner _spinnerCodec2Mode = (Spinner) findViewById(R.id.spinnerCodecMode);
+        _spinnerCodec2Mode.setSelection(CODEC2_DEFAULT_MODE_POS);
+        _spinnerCodec2Mode.setOnItemSelectedListener(onCodecModeSelectedListener);
 
         if (requestPermissions()) {
             startBluetoothConnectActivity();
@@ -77,6 +86,20 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+
+    private final AdapterView.OnItemSelectedListener onCodecModeSelectedListener = new AdapterView.OnItemSelectedListener() {
+        @Override
+        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+            String selectedCodec = getResources().getStringArray(R.array.codec2_modes)[position];
+            String [] codecNameCodecId = selectedCodec.split("=");
+            if (_codec2Player != null)
+                _codec2Player.setCodecMode(Integer.parseInt(codecNameCodecId[1]));
+        }
+
+        @Override
+        public void onNothingSelected(AdapterView<?> parent) {
+        }
+    };
 
     private final View.OnTouchListener onBtnPttTouchListener = new View.OnTouchListener() {
         @Override
@@ -137,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
                     _codec2Player = new Codec2Player(
                             SocketHandler.getSocket(),
                             onPlayerStateChanged,
-                            Codec2.CODEC2_MODE_450);
+                            CODEC2_DEFAULT_MODE);
                     _codec2Player.setLoopbackMode(true);
                     _codec2Player.start();
                 } catch (IOException e) {

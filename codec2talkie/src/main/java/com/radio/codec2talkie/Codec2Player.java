@@ -26,11 +26,11 @@ public class Codec2Player extends Thread {
     private final int AUDIO_SAMPLE_SIZE = 8000;
     private final int SLEEP_DELAY_MS = 10;
 
-    private final long _codec2Con;
+    private long _codec2Con;
 
     private final BluetoothSocket _btSocket;
 
-    private final int _audioBufferSize;
+    private int _audioBufferSize;
 
     private boolean _isRecording = false;
 
@@ -39,22 +39,22 @@ public class Codec2Player extends Thread {
 
     private final AudioTrack _audioPlayer;
 
-    private final short[] _playbackAudioBuffer;
+    private short[] _playbackAudioBuffer;
 
     // output data., mic -> bt
     private final OutputStream _btOutputStream;
 
     private final AudioRecord _audioRecorder;
 
-    private final short[] _recordAudioBuffer;
-    private final char[] _recordAudioEncodedBuffer;
+    private short[] _recordAudioBuffer;
+    private char[] _recordAudioEncodedBuffer;
 
     // loopback mode
     private boolean _isLoopbackMode;
-    private final ByteBuffer _loopbackBuffer;
+    private ByteBuffer _loopbackBuffer;
 
     // callbacks
-    private final KissProcessor _kissProcessor;
+    private KissProcessor _kissProcessor;
     private final Handler _onPlayerStateChanged;
 
     public Codec2Player(BluetoothSocket btSocket, Handler onPlayerStateChanged, int codec2Mode) throws IOException {
@@ -97,7 +97,28 @@ public class Codec2Player extends Thread {
                 .build();
         _audioPlayer.play();
 
-        _codec2Con = Codec2.create(codec2Mode);
+        setCodecModeInternal(codec2Mode);
+    }
+
+    public void setLoopbackMode(boolean isLoopbackMode) {
+        _isLoopbackMode = isLoopbackMode;
+    }
+
+    public void setCodecMode(int codecMode) {
+        Codec2.destroy(_codec2Con);
+        setCodecModeInternal(codecMode);
+    }
+
+    public void startPlayback() {
+        _isRecording = false;
+    }
+
+    public void startRecording() {
+        _isRecording = true;
+    }
+
+    private void setCodecModeInternal(int codecMode) {
+        _codec2Con = Codec2.create(codecMode);
 
         _audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
         int _audioEncodedBufferSize = Codec2.getBitsSize(_codec2Con); // returns number of bytes
@@ -110,18 +131,6 @@ public class Codec2Player extends Thread {
         _loopbackBuffer = ByteBuffer.allocateDirect(1024 * _audioEncodedBufferSize);
 
         _kissProcessor = new KissProcessor(_audioEncodedBufferSize, _kissCallback);
-    }
-
-    public void setLoopbackMode(boolean isLoopbackMode) {
-        _isLoopbackMode = isLoopbackMode;
-    }
-
-    public void startPlayback() {
-        _isRecording = false;
-    }
-
-    public void startRecording() {
-        _isRecording = true;
     }
 
     private final KissCallback _kissCallback = new KissCallback() {
