@@ -28,21 +28,21 @@ public class Codec2Player extends Thread {
 
     private long _codec2Con;
 
-    private final BluetoothSocket _btSocket;
+    private BluetoothSocket _btSocket;
 
     private int _audioBufferSize;
 
     private boolean _isRecording = false;
 
     // input data, bt -> audio
-    private final InputStream _btInputStream;
+    private InputStream _btInputStream;
 
     private final AudioTrack _audioPlayer;
 
     private short[] _playbackAudioBuffer;
 
     // output data., mic -> bt
-    private final OutputStream _btOutputStream;
+    private OutputStream _btOutputStream;
 
     private final AudioRecord _audioRecorder;
 
@@ -57,14 +57,10 @@ public class Codec2Player extends Thread {
     private KissProcessor _kissProcessor;
     private final Handler _onPlayerStateChanged;
 
-    public Codec2Player(BluetoothSocket btSocket, Handler onPlayerStateChanged, int codec2Mode) throws IOException {
+    public Codec2Player(Handler onPlayerStateChanged, int codec2Mode) {
 
         _onPlayerStateChanged = onPlayerStateChanged;
         _isLoopbackMode = false;
-
-        _btSocket = btSocket;
-        _btInputStream = _btSocket.getInputStream();
-        _btOutputStream = _btSocket.getOutputStream();
 
         int _audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
                 AUDIO_SAMPLE_SIZE,
@@ -98,6 +94,12 @@ public class Codec2Player extends Thread {
         _audioPlayer.play();
 
         setCodecModeInternal(codec2Mode);
+    }
+
+    public void setSocket(BluetoothSocket btSocket) throws IOException {
+        _btSocket = btSocket;
+        _btInputStream = _btSocket.getInputStream();
+        _btOutputStream = _btSocket.getOutputStream();
     }
 
     public void setLoopbackMode(boolean isLoopbackMode) {

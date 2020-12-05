@@ -16,6 +16,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,12 +54,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         _textBtName = (TextView)findViewById(R.id.textBtName);
-        Button _btnPtt = (Button) findViewById(R.id.btnPtt);
-        _btnPtt.setOnTouchListener(onBtnPttTouchListener);
+        Button btnPtt = (Button)findViewById(R.id.btnPtt);
+        btnPtt.setOnTouchListener(onBtnPttTouchListener);
 
-        Spinner _spinnerCodec2Mode = (Spinner) findViewById(R.id.spinnerCodecMode);
-        _spinnerCodec2Mode.setSelection(CODEC2_DEFAULT_MODE_POS);
-        _spinnerCodec2Mode.setOnItemSelectedListener(onCodecModeSelectedListener);
+        Spinner spinnerCodec2Mode = (Spinner)findViewById(R.id.spinnerCodecMode);
+        spinnerCodec2Mode.setSelection(CODEC2_DEFAULT_MODE_POS);
+        spinnerCodec2Mode.setOnItemSelectedListener(onCodecModeSelectedListener);
+
+        CheckBox checkBoxLoopback = (CheckBox)findViewById(R.id.checkBoxLoopback);
+        checkBoxLoopback.setOnCheckedChangeListener(onLoopbackCheckedChangeListener);
+
+        _codec2Player = new Codec2Player(onPlayerStateChanged, CODEC2_DEFAULT_MODE);
 
         if (requestPermissions()) {
             startBluetoothConnectActivity();
@@ -87,13 +94,19 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private final CompoundButton.OnCheckedChangeListener onLoopbackCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            _codec2Player.setLoopbackMode(isChecked);
+        }
+    };
+
     private final AdapterView.OnItemSelectedListener onCodecModeSelectedListener = new AdapterView.OnItemSelectedListener() {
         @Override
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             String selectedCodec = getResources().getStringArray(R.array.codec2_modes)[position];
             String [] codecNameCodecId = selectedCodec.split("=");
-            if (_codec2Player != null)
-                _codec2Player.setCodecMode(Integer.parseInt(codecNameCodecId[1]));
+            _codec2Player.setCodecMode(Integer.parseInt(codecNameCodecId[1]));
         }
 
         @Override
@@ -155,17 +168,13 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_CANCELED) {
                 finish();
             } else if (resultCode == RESULT_OK) {
-                _textBtName.setText(data.getStringExtra("name"));
+                _textBtName.setText(String.format("BT: %s", data.getStringExtra("name")));
                 try {
-                    _codec2Player = new Codec2Player(
-                            SocketHandler.getSocket(),
-                            onPlayerStateChanged,
-                            CODEC2_DEFAULT_MODE);
-                    _codec2Player.setLoopbackMode(true);
-                    _codec2Player.start();
+                    _codec2Player.setSocket(SocketHandler.getSocket());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                _codec2Player.start();
             }
         }
     }
