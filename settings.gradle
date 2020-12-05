@@ -1,2 +1,2 @@
-include ':app'
+include ':codec2talkie'
 rootProject.name = "Codec2Talkie"
