@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/sh/Downloads/hackrf/codec2/src/comp.h
+
+/home/sh/Downloads/hackrf/codec2/src/freedv_api.h
+sys/types.h
+-
+comp.h
+/home/sh/Downloads/hackrf/codec2/src/comp.h
+
+/home/sh/Downloads/hackrf/codec2/src/freedv_data_rx.c
+assert.h
+-
+stdlib.h
+-
+stdio.h
+-
+string.h
+-
+errno.h
+-
+stdlib.h
+-
+stdio.h
+-
+stdint.h
+-
+stdbool.h
+-
+freedv_api.h
+/home/sh/Downloads/hackrf/codec2/src/freedv_api.h
+

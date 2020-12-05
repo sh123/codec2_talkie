@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/tst_codec2_fft_init.dir/tst_codec2_fft_init.c.o  -o tst_codec2_fft_init -Wl,-rpath,/home/sh/Downloads/hackrf/codec2/build_linux/src -lm ../src/libcodec2.so.0.9 -lm 

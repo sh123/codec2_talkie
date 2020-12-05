@@ -1,0 +1,2 @@
+/usr/bin/ar qc libfunction_trace.a  CMakeFiles/function_trace.dir/function_trace.c.o
+/usr/bin/ranlib libfunction_trace.a

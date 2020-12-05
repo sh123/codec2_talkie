@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/sh/Downloads/hackrf/codec2/misc/tlininterp.c
+assert.h
+-
+getopt.h
+-
+string.h
+-
+stdlib.h
+-
+stdio.h
+-
+stdint.h
+-
+

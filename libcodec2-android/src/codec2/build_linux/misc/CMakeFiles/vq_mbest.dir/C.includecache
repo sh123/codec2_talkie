@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../misc/../src/mbest.h
+
+/home/sh/Downloads/hackrf/codec2/misc/vq_mbest.c
+assert.h
+-
+getopt.h
+-
+math.h
+-
+stdlib.h
+-
+stdio.h
+-
+string.h
+-
+mbest.h
+/home/sh/Downloads/hackrf/codec2/misc/mbest.h
+

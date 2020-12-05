@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/sh/Downloads/hackrf/codec2/src/drs232.c
+assert.h
+-
+stdlib.h
+-
+errno.h
+-
+stdio.h
+-
+string.h
+-
+stdint.h
+-
+

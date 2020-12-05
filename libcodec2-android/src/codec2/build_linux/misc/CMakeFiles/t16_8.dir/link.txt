@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/t16_8.dir/t16_8.c.o CMakeFiles/t16_8.dir/__/src/fdmdv.c.o CMakeFiles/t16_8.dir/__/src/kiss_fft.c.o  -o t16_8 -Wl,-rpath,/home/sh/Downloads/hackrf/codec2/build_linux/src ../src/libcodec2.so.0.9 -lm 

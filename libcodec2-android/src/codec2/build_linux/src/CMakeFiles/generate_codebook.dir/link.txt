@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/generate_codebook.dir/generate_codebook.c.o  -o generate_codebook -lm -lm 

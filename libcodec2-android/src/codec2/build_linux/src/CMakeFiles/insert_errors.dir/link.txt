@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/insert_errors.dir/insert_errors.c.o  -o insert_errors -lm 

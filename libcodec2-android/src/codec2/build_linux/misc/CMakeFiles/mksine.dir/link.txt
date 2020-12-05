@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/mksine.dir/mksine.c.o  -o mksine -lm 

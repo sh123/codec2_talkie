@@ -1,0 +1,809 @@
+Archive member included to satisfy reference by file (symbol)
+
+libfunction_trace.a(function_trace.c.o)
+                              CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o (__cyg_profile_func_enter)
+/usr/lib/gcc/x86_64-linux-gnu/8/libgcc.a(_mulsc3.o)
+                              CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o (__mulsc3)
+//usr/lib/x86_64-linux-gnu/libc_nonshared.a(elf-init.oS)
+                              /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o (__libc_csu_init)
+
+Discarded input sections
+
+ .note.GNU-stack
+                0x0000000000000000        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crti.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/crtbegin.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 CMakeFiles/ofdm_stack.dir/__/src/octave.c.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 CMakeFiles/ofdm_stack.dir/__/src/modem_probe.c.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 CMakeFiles/ofdm_stack.dir/__/src/filter.c.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 libfunction_trace.a(function_trace.c.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/libgcc.a(_mulsc3.o)
+ .note.GNU-stack
+                0x0000000000000000        0x0 //usr/lib/x86_64-linux-gnu/libc_nonshared.a(elf-init.oS)
+ .note.GNU-stack
+                0x0000000000000000        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/crtend.o
+ .note.GNU-stack
+                0x0000000000000000        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crtn.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+LOAD /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crti.o
+LOAD /usr/lib/gcc/x86_64-linux-gnu/8/crtbegin.o
+LOAD CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+LOAD CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+LOAD CMakeFiles/ofdm_stack.dir/__/src/octave.c.o
+LOAD CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+LOAD CMakeFiles/ofdm_stack.dir/__/src/modem_probe.c.o
+LOAD CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+LOAD CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+LOAD CMakeFiles/ofdm_stack.dir/__/src/filter.c.o
+LOAD libfunction_trace.a
+LOAD /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libm.so
+START GROUP
+LOAD //lib/x86_64-linux-gnu/libm.so.6
+LOAD //usr/lib/x86_64-linux-gnu/libmvec_nonshared.a
+LOAD //lib/x86_64-linux-gnu/libmvec.so.1
+END GROUP
+LOAD /usr/lib/gcc/x86_64-linux-gnu/8/libgcc.a
+LOAD /usr/lib/gcc/x86_64-linux-gnu/8/libgcc_s.so
+START GROUP
+LOAD /usr/lib/gcc/x86_64-linux-gnu/8/libgcc_s.so.1
+LOAD /usr/lib/gcc/x86_64-linux-gnu/8/libgcc.a
+END GROUP
+LOAD /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/libc.so
+START GROUP
+LOAD //lib/x86_64-linux-gnu/libc.so.6
+LOAD //usr/lib/x86_64-linux-gnu/libc_nonshared.a
+LOAD //lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+END GROUP
+LOAD /usr/lib/gcc/x86_64-linux-gnu/8/libgcc.a
+LOAD /usr/lib/gcc/x86_64-linux-gnu/8/libgcc_s.so
+START GROUP
+LOAD /usr/lib/gcc/x86_64-linux-gnu/8/libgcc_s.so.1
+LOAD /usr/lib/gcc/x86_64-linux-gnu/8/libgcc.a
+END GROUP
+LOAD /usr/lib/gcc/x86_64-linux-gnu/8/crtend.o
+LOAD /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crtn.o
+                [!provide]                        PROVIDE (__executable_start = SEGMENT_START ("text-segment", 0x400000))
+                0x00000000004002a8                . = (SEGMENT_START ("text-segment", 0x400000) + SIZEOF_HEADERS)
+
+.interp         0x00000000004002a8       0x1c
+ *(.interp)
+ .interp        0x00000000004002a8       0x1c /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+
+.note.ABI-tag   0x00000000004002c4       0x20
+ .note.ABI-tag  0x00000000004002c4       0x20 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+
+.note.gnu.build-id
+                0x00000000004002e4       0x24
+ *(.note.gnu.build-id)
+ .note.gnu.build-id
+                0x00000000004002e4       0x24 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+
+.hash
+ *(.hash)
+
+.gnu.hash       0x0000000000400308      0x2c0
+ *(.gnu.hash)
+ .gnu.hash      0x0000000000400308      0x2c0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+
+.dynsym         0x00000000004005c8      0xb10
+ *(.dynsym)
+ .dynsym        0x00000000004005c8      0xb10 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+
+.dynstr         0x00000000004010d8      0x687
+ *(.dynstr)
+ .dynstr        0x00000000004010d8      0x687 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+
+.gnu.version    0x0000000000401760       0xec
+ *(.gnu.version)
+ .gnu.version   0x0000000000401760       0xec /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+
+.gnu.version_d  0x0000000000401850        0x0
+ *(.gnu.version_d)
+ .gnu.version_d
+                0x0000000000401850        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+
+.gnu.version_r  0x0000000000401850       0x50
+ *(.gnu.version_r)
+ .gnu.version_r
+                0x0000000000401850       0x50 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+
+.rela.dyn       0x00000000004018a0       0x60
+ *(.rela.init)
+ *(.rela.text .rela.text.* .rela.gnu.linkonce.t.*)
+ .rela.text     0x00000000004018a0        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+ *(.rela.fini)
+ *(.rela.rodata .rela.rodata.* .rela.gnu.linkonce.r.*)
+ *(.rela.data .rela.data.* .rela.gnu.linkonce.d.*)
+ .rela.data.rel.ro
+                0x00000000004018a0        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+ *(.rela.tdata .rela.tdata.* .rela.gnu.linkonce.td.*)
+ *(.rela.tbss .rela.tbss.* .rela.gnu.linkonce.tb.*)
+ *(.rela.ctors)
+ *(.rela.dtors)
+ *(.rela.got)
+ .rela.got      0x00000000004018a0       0x60 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+ *(.rela.bss .rela.bss.* .rela.gnu.linkonce.b.*)
+ .rela.bss      0x0000000000401900        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+ *(.rela.ldata .rela.ldata.* .rela.gnu.linkonce.l.*)
+ *(.rela.lbss .rela.lbss.* .rela.gnu.linkonce.lb.*)
+ *(.rela.lrodata .rela.lrodata.* .rela.gnu.linkonce.lr.*)
+ *(.rela.ifunc)
+
+.rela.plt       0x0000000000401900      0x240
+ *(.rela.plt)
+ .rela.plt      0x0000000000401900      0x240 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+                [!provide]                        PROVIDE (__rela_iplt_start = .)
+ *(.rela.iplt)
+ .rela.iplt     0x0000000000401b40        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+                [!provide]                        PROVIDE (__rela_iplt_end = .)
+                0x0000000000402000                . = ALIGN (CONSTANT (MAXPAGESIZE))
+
+.init           0x0000000000402000       0x17
+ *(SORT_NONE(.init))
+ .init          0x0000000000402000       0x12 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crti.o
+                0x0000000000402000                _init
+ .init          0x0000000000402012        0x5 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crtn.o
+
+.plt            0x0000000000402020      0x190
+ *(.plt)
+ .plt           0x0000000000402020      0x190 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+                0x0000000000402030                sincosf@@GLIBC_2.2.5
+                0x0000000000402040                free@@GLIBC_2.2.5
+                0x0000000000402050                strcpy@@GLIBC_2.2.5
+                0x0000000000402060                vsnprintf@@GLIBC_2.2.5
+                0x0000000000402070                roundf@@GLIBC_2.2.5
+                0x0000000000402080                fclose@@GLIBC_2.2.5
+                0x0000000000402090                strlen@@GLIBC_2.2.5
+                0x00000000004020a0                cabsf@@GLIBC_2.2.5
+                0x00000000004020b0                __assert_fail@@GLIBC_2.2.5
+                0x00000000004020c0                fputc@@GLIBC_2.2.5
+                0x00000000004020d0                calloc@@GLIBC_2.2.5
+                0x00000000004020e0                strcmp@@GLIBC_2.2.5
+                0x00000000004020f0                fprintf@@GLIBC_2.2.5
+                0x0000000000402100                log10f@@GLIBC_2.2.5
+                0x0000000000402110                strtol@@GLIBC_2.2.5
+                0x0000000000402120                memcpy@@GLIBC_2.14
+                0x0000000000402130                sqrtf@@GLIBC_2.2.5
+                0x0000000000402140                malloc@@GLIBC_2.2.5
+                0x0000000000402150                atan2f@@GLIBC_2.2.5
+                0x0000000000402160                memmove@@GLIBC_2.2.5
+                0x0000000000402170                fopen@@GLIBC_2.2.5
+                0x0000000000402180                getopt@@GLIBC_2.2.5
+                0x0000000000402190                exit@@GLIBC_2.2.5
+                0x00000000004021a0                fwrite@@GLIBC_2.2.5
+ *(.iplt)
+ .iplt          0x00000000004021b0        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+
+.plt.got        0x00000000004021b0        0x0
+ *(.plt.got)
+ .plt.got       0x00000000004021b0        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+
+.plt.sec
+ *(.plt.sec)
+
+.text           0x00000000004021b0     0x9f91
+ *(.text.unlikely .text.*_unlikely .text.unlikely.*)
+ *(.text.exit .text.exit.*)
+ .text.exit     0x00000000004021b0       0x12 libfunction_trace.a(function_trace.c.o)
+                0x00000000004021b0                trace_end
+ *(.text.startup .text.startup.*)
+ *fill*         0x00000000004021c2        0xe 
+ .text.startup  0x00000000004021d0      0x44f CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+                0x00000000004021d0                main
+ *fill*         0x000000000040261f        0x1 
+ .text.startup  0x0000000000402620       0x23 libfunction_trace.a(function_trace.c.o)
+                0x0000000000402620                trace_begin
+ *(.text.hot .text.hot.*)
+ *(.text .stub .text.* .gnu.linkonce.t.*)
+ *fill*         0x0000000000402643        0xd 
+ .text          0x0000000000402650       0x31 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+                0x0000000000402650                _start
+                0x0000000000402680                _dl_relocate_static_pie
+ .text          0x0000000000402681        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crti.o
+ *fill*         0x0000000000402681        0xf 
+ .text          0x0000000000402690       0xa2 /usr/lib/gcc/x86_64-linux-gnu/8/crtbegin.o
+ *fill*         0x0000000000402732        0xe 
+ .text          0x0000000000402740      0x304 CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+                0x0000000000402740                dummy_code
+                0x00000000004027a0                run_modem
+ *fill*         0x0000000000402a44        0xc 
+ .text          0x0000000000402a50     0x4d48 CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+                0x0000000000402a50                qpsk_mod
+                0x0000000000402ad0                qpsk_demod
+                0x0000000000402bc0                ofdm_get_config_param
+                0x0000000000402bf0                ofdm_get_high_doppler
+                0x0000000000402c30                ofdm_get_nin
+                0x0000000000402c70                ofdm_get_samples_per_frame
+                0x0000000000402cb0                ofdm_get_max_samples_per_frame
+                0x0000000000402cf0                ofdm_get_bits_per_frame
+                0x0000000000402d30                ofdm_set_verbose
+                0x0000000000402d70                ofdm_set_timing_enable
+                0x0000000000402dc0                ofdm_set_foff_est_enable
+                0x0000000000402e00                ofdm_set_phase_est_enable
+                0x0000000000402e40                ofdm_set_off_est_hz
+                0x0000000000402f30                ofdm_sync_state_machine
+                0x0000000000403110                ofdm_rand
+                0x0000000000403180                ofdm_assemble_modem_frame
+                0x0000000000403310                ofdm_assemble_modem_frame_symbols
+                0x0000000000403520                ofdm_disassemble_modem_frame
+                0x0000000000403ab0                ofdm_create
+                0x0000000000404880                allocate_tx_bpf
+                0x00000000004048f0                deallocate_tx_bpf
+                0x0000000000404940                ofdm_destroy
+                0x0000000000404a10                ofdm_set_tx_bpf
+                0x0000000000404a80                ofdm_txframe
+                0x0000000000404dd0                ofdm_mod
+                0x0000000000404f10                ofdm_generate_payload_data_bits
+                0x0000000000404f90                ofdm_print_info
+                0x0000000000405dc0                ofdm_sync_search
+                0x0000000000405e50                ofdm_sync_search_shorts
+                0x0000000000407280                ofdm_demod
+                0x0000000000407360                ofdm_demod_shorts
+                0x0000000000407450                ofdm_get_demod_stats
+                0x00000000004076b0                ofdm_set_high_doppler
+                0x00000000004076f0                ofdm_set_sync
+ *fill*         0x0000000000407798        0x8 
+ .text          0x00000000004077a0      0x79e CMakeFiles/ofdm_stack.dir/__/src/octave.c.o
+                0x00000000004077a0                flush_buffer
+                0x0000000000407800                handle_buffer
+                0x0000000000407870                printf_buffer
+                0x0000000000407970                printf_header
+                0x0000000000407a50                octave_save_int
+                0x0000000000407be0                octave_save_float
+                0x0000000000407d90                octave_save_complex
+ *fill*         0x0000000000407f3e        0x2 
+ .text          0x0000000000407f40     0x1291 CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+                0x00000000004087b0                kiss_fft_cleanup
+                0x00000000004087e0                kiss_fft_next_fast_size
+                0x0000000000408bd0                kiss_fft_alloc
+                0x00000000004090c0                kiss_fft_stride
+                0x0000000000409180                kiss_fft
+ *fill*         0x00000000004091d1        0xf 
+ .text          0x00000000004091e0      0x5d2 CMakeFiles/ofdm_stack.dir/__/src/modem_probe.c.o
+                0x00000000004091e0                modem_probe_init_int
+                0x0000000000409280                gather_data
+                0x0000000000409350                modem_probe_close_int
+                0x00000000004094c0                modem_probe_get_trace
+                0x0000000000409580                modem_probe_samp_i_int
+                0x0000000000409640                modem_probe_samp_f_int
+                0x0000000000409700                modem_probe_samp_c_int
+ *fill*         0x00000000004097b2        0xe 
+ .text          0x00000000004097c0     0x1823 CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+                0x00000000004097c0                encode
+                0x0000000000409870                sd_to_llr
+                0x00000000004099c0                Demod2D
+                0x0000000000409b90                init_c_v_nodes
+                0x000000000040a500                SumProduct
+                0x000000000040a960                run_ldpc_decoder
+                0x000000000040acb0                Somap
+                0x000000000040add0                symbols_to_llrs
+                0x000000000040aec0                ldpc_print_info
+ *fill*         0x000000000040afe3        0xd 
+ .text          0x000000000040aff0      0x702 CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+                0x000000000040aff0                phi0
+ *fill*         0x000000000040b6f2        0xe 
+ .text          0x000000000040b700      0x609 CMakeFiles/ofdm_stack.dir/__/src/filter.c.o
+                0x000000000040b700                quisk_filt_cfInit
+                0x000000000040b780                quisk_ccfFilter
+                0x000000000040b920                quisk_filt_destroy
+                0x000000000040b9a0                quisk_cfInterpDecim
+                0x000000000040bbd0                quisk_cfTune
+ *fill*         0x000000000040bd09        0x7 
+ .text          0x000000000040bd10       0x59 libfunction_trace.a(function_trace.c.o)
+                0x000000000040bd10                __cyg_profile_func_enter
+                0x000000000040bd40                __cyg_profile_func_exit
+ *fill*         0x000000000040bd69        0x7 
+ .text          0x000000000040bd70      0x363 /usr/lib/gcc/x86_64-linux-gnu/8/libgcc.a(_mulsc3.o)
+                0x000000000040bd70                __mulsc3
+ *fill*         0x000000000040c0d3        0xd 
+ .text          0x000000000040c0e0       0x61 //usr/lib/x86_64-linux-gnu/libc_nonshared.a(elf-init.oS)
+                0x000000000040c0e0                __libc_csu_init
+                0x000000000040c140                __libc_csu_fini
+ .text          0x000000000040c141        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/crtend.o
+ .text          0x000000000040c141        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crtn.o
+ *(.gnu.warning)
+
+.fini           0x000000000040c144        0x9
+ *(SORT_NONE(.fini))
+ .fini          0x000000000040c144        0x4 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crti.o
+                0x000000000040c144                _fini
+ .fini          0x000000000040c148        0x5 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crtn.o
+                [!provide]                        PROVIDE (__etext = .)
+                [!provide]                        PROVIDE (_etext = .)
+                [!provide]                        PROVIDE (etext = .)
+                0x000000000040d000                . = ALIGN (CONSTANT (MAXPAGESIZE))
+                0x000000000040d000                . = SEGMENT_START ("rodata-segment", (ALIGN (CONSTANT (MAXPAGESIZE)) + (. & (CONSTANT (MAXPAGESIZE) - 0x1))))
+
+.rodata         0x000000000040d000     0x1740
+ *(.rodata .rodata.* .gnu.linkonce.r.*)
+ .rodata.cst4   0x000000000040d000        0x4 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+                0x000000000040d000                _IO_stdin_used
+ *fill*         0x000000000040d004       0x1c 
+ .rodata        0x000000000040d020      0x7d8 CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+                0x000000000040d040                test_codeword
+                0x000000000040d3c0                payload_data_bits
+                0x000000000040d440                test_bits_ofdm
+ .rodata.str1.1
+                0x000000000040d7f8       0x4f CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+ *fill*         0x000000000040d847        0x1 
+ .rodata.str1.8
+                0x000000000040d848       0x86 CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+ *fill*         0x000000000040d8ce        0x2 
+ .rodata.str1.8
+                0x000000000040d8d0      0x28f CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+ .rodata.str1.1
+                0x000000000040db5f      0x410 CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+                                        0x41d (size before relaxing)
+ *fill*         0x000000000040df6f       0x11 
+ .rodata        0x000000000040df80      0x140 CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+ .rodata.cst4   0x000000000040e0c0       0x5c CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+ *fill*         0x000000000040e11c        0x4 
+ .rodata.cst8   0x000000000040e120        0x8 CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+ *fill*         0x000000000040e128        0x8 
+ .rodata.cst16  0x000000000040e130       0x20 CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+ .rodata.str1.1
+                0x000000000040e150       0x56 CMakeFiles/ofdm_stack.dir/__/src/octave.c.o
+                                         0x5f (size before relaxing)
+ *fill*         0x000000000040e1a6        0x2 
+ .rodata.cst8   0x000000000040e1a8       0x18 CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+ .rodata.cst16  0x000000000040e1c0       0x10 CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+                                         0x30 (size before relaxing)
+ .rodata.cst4   0x000000000040e1d0        0x8 CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+                                         0x10 (size before relaxing)
+ .rodata.str1.1
+                0x000000000040e1d8        0x2 CMakeFiles/ofdm_stack.dir/__/src/modem_probe.c.o
+ *fill*         0x000000000040e1da        0x6 
+ .rodata.str1.8
+                0x000000000040e1e0       0xa8 CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+                                         0xa1 (size before relaxing)
+ .rodata.str1.1
+                0x000000000040e288      0x134 CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+ *fill*         0x000000000040e3bc        0x4 
+ .rodata        0x000000000040e3c0       0x27 CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+ *fill*         0x000000000040e3e7        0x9 
+ .rodata.cst16  0x000000000040e3f0       0x10 CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+                                         0x30 (size before relaxing)
+ .rodata.cst8   0x000000000040e400       0x28 CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+ .rodata.cst4   0x000000000040e428        0x4 CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+                                          0x8 (size before relaxing)
+ .rodata        0x000000000040e42c      0x128 CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+ .rodata.cst4   0x000000000040e554      0x198 CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+                                        0x19c (size before relaxing)
+ *fill*         0x000000000040e6ec        0x4 
+ .rodata.cst8   0x000000000040e6f0        0x8 CMakeFiles/ofdm_stack.dir/__/src/filter.c.o
+                                         0x18 (size before relaxing)
+ .rodata.str1.1
+                0x000000000040e6f8       0x25 libfunction_trace.a(function_trace.c.o)
+                                         0x27 (size before relaxing)
+ *fill*         0x000000000040e71d        0x3 
+ .rodata.cst4   0x000000000040e720        0x4 /usr/lib/gcc/x86_64-linux-gnu/8/libgcc.a(_mulsc3.o)
+                                          0x8 (size before relaxing)
+ *fill*         0x000000000040e724        0xc 
+ .rodata.cst16  0x000000000040e730       0x10 /usr/lib/gcc/x86_64-linux-gnu/8/libgcc.a(_mulsc3.o)
+                                         0x30 (size before relaxing)
+
+.rodata1
+ *(.rodata1)
+
+.eh_frame_hdr   0x000000000040e740      0x314
+ *(.eh_frame_hdr)
+ .eh_frame_hdr  0x000000000040e740      0x314 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+                0x000000000040e740                __GNU_EH_FRAME_HDR
+ *(.eh_frame_entry .eh_frame_entry.*)
+
+.eh_frame       0x000000000040ea58     0x1558
+ *(.eh_frame)
+ .eh_frame      0x000000000040ea58       0x58 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+                                         0x5c (size before relaxing)
+ *fill*         0x000000000040eab0        0x0 
+ .eh_frame      0x000000000040eab0       0x28 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+                                         0x40 (size before relaxing)
+ .eh_frame      0x000000000040ead8        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+ .eh_frame      0x000000000040ead8       0x90 CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+                                         0xa8 (size before relaxing)
+ .eh_frame      0x000000000040eb68      0x868 CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+                                        0x880 (size before relaxing)
+ .eh_frame      0x000000000040f3d0      0x238 CMakeFiles/ofdm_stack.dir/__/src/octave.c.o
+                                        0x250 (size before relaxing)
+ .eh_frame      0x000000000040f608      0x2d8 CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+                                        0x2f0 (size before relaxing)
+ .eh_frame      0x000000000040f8e0      0x1e0 CMakeFiles/ofdm_stack.dir/__/src/modem_probe.c.o
+                                        0x1f8 (size before relaxing)
+ .eh_frame      0x000000000040fac0      0x2b0 CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+                                        0x2c8 (size before relaxing)
+ .eh_frame      0x000000000040fd70       0x28 CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+                                         0x40 (size before relaxing)
+ .eh_frame      0x000000000040fd98      0x148 CMakeFiles/ofdm_stack.dir/__/src/filter.c.o
+                                        0x160 (size before relaxing)
+ .eh_frame      0x000000000040fee0       0x58 libfunction_trace.a(function_trace.c.o)
+                                         0x70 (size before relaxing)
+ .eh_frame      0x000000000040ff38       0x18 /usr/lib/gcc/x86_64-linux-gnu/8/libgcc.a(_mulsc3.o)
+                                         0x30 (size before relaxing)
+ .eh_frame      0x000000000040ff50       0x5c //usr/lib/x86_64-linux-gnu/libc_nonshared.a(elf-init.oS)
+                                         0x78 (size before relaxing)
+ .eh_frame      0x000000000040ffac        0x4 /usr/lib/gcc/x86_64-linux-gnu/8/crtend.o
+ *(.eh_frame.*)
+
+.gcc_except_table
+ *(.gcc_except_table .gcc_except_table.*)
+
+.gnu_extab
+ *(.gnu_extab*)
+
+.exception_ranges
+ *(.exception_ranges .exception_ranges*)
+                0x0000000000411de0                . = DATA_SEGMENT_ALIGN (CONSTANT (MAXPAGESIZE), CONSTANT (COMMONPAGESIZE))
+
+.eh_frame
+ *(.eh_frame)
+ *(.eh_frame.*)
+
+.gnu_extab
+ *(.gnu_extab)
+
+.gcc_except_table
+ *(.gcc_except_table .gcc_except_table.*)
+
+.exception_ranges
+ *(.exception_ranges .exception_ranges*)
+
+.tdata          0x0000000000411de0        0x0
+                [!provide]                        PROVIDE (__tdata_start = .)
+ *(.tdata .tdata.* .gnu.linkonce.td.*)
+
+.tbss
+ *(.tbss .tbss.* .gnu.linkonce.tb.*)
+ *(.tcommon)
+
+.preinit_array  0x0000000000411de0        0x0
+                [!provide]                        PROVIDE (__preinit_array_start = .)
+ *(.preinit_array)
+                [!provide]                        PROVIDE (__preinit_array_end = .)
+
+.init_array     0x0000000000411de0       0x10
+                0x0000000000411de0                PROVIDE (__init_array_start = .)
+ *(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*))
+ *(.init_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .ctors)
+ .init_array    0x0000000000411de0        0x8 /usr/lib/gcc/x86_64-linux-gnu/8/crtbegin.o
+ .init_array    0x0000000000411de8        0x8 libfunction_trace.a(function_trace.c.o)
+                0x0000000000411df0                PROVIDE (__init_array_end = .)
+
+.fini_array     0x0000000000411df0       0x10
+                [!provide]                        PROVIDE (__fini_array_start = .)
+ *(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*))
+ *(.fini_array EXCLUDE_FILE(*crtend?.o *crtend.o *crtbegin?.o *crtbegin.o) .dtors)
+ .fini_array    0x0000000000411df0        0x8 /usr/lib/gcc/x86_64-linux-gnu/8/crtbegin.o
+ .fini_array    0x0000000000411df8        0x8 libfunction_trace.a(function_trace.c.o)
+                [!provide]                        PROVIDE (__fini_array_end = .)
+
+.ctors
+ *crtbegin.o(.ctors)
+ *crtbegin?.o(.ctors)
+ *(EXCLUDE_FILE(*crtend?.o *crtend.o) .ctors)
+ *(SORT_BY_NAME(.ctors.*))
+ *(.ctors)
+
+.dtors
+ *crtbegin.o(.dtors)
+ *crtbegin?.o(.dtors)
+ *(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
+ *(SORT_BY_NAME(.dtors.*))
+ *(.dtors)
+
+.jcr
+ *(.jcr)
+
+.data.rel.ro    0x0000000000411e00        0x0
+ *(.data.rel.ro.local* .gnu.linkonce.d.rel.ro.local.*)
+ *(.data.rel.ro .data.rel.ro.* .gnu.linkonce.d.rel.ro.*)
+ .data.rel.ro   0x0000000000411e00        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+
+.dynamic        0x0000000000411e00      0x1e0
+ *(.dynamic)
+ .dynamic       0x0000000000411e00      0x1e0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+                0x0000000000411e00                _DYNAMIC
+
+.got            0x0000000000411fe0       0x20
+ *(.got)
+ .got           0x0000000000411fe0       0x20 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+ *(.igot)
+                0x0000000000412fe8                . = DATA_SEGMENT_RELRO_END (., (SIZEOF (.got.plt) >= 0x18)?0x18:0x0)
+
+.got.plt        0x0000000000412000       0xd8
+ *(.got.plt)
+ .got.plt       0x0000000000412000       0xd8 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+                0x0000000000412000                _GLOBAL_OFFSET_TABLE_
+ *(.igot.plt)
+ .igot.plt      0x00000000004120d8        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+
+.data           0x00000000004120e0      0xa40
+ *(.data .data.* .gnu.linkonce.d.*)
+ .data          0x00000000004120e0        0x4 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+                0x00000000004120e0                data_start
+                0x00000000004120e0                __data_start
+ .data          0x00000000004120e4        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crti.o
+ *fill*         0x00000000004120e4        0x4 
+ .data          0x00000000004120e8        0x8 /usr/lib/gcc/x86_64-linux-gnu/8/crtbegin.o
+                0x00000000004120e8                __dso_handle
+ .data          0x00000000004120f0        0x0 CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+ .data          0x00000000004120f0        0x0 CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+ .data          0x00000000004120f0        0x0 CMakeFiles/ofdm_stack.dir/__/src/octave.c.o
+ .data          0x00000000004120f0        0x0 CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+ .data          0x00000000004120f0        0x0 CMakeFiles/ofdm_stack.dir/__/src/modem_probe.c.o
+ *fill*         0x00000000004120f0       0x10 
+ .data          0x0000000000412100       0x20 CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+ .data          0x0000000000412120        0x0 CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+ .data          0x0000000000412120      0xa00 CMakeFiles/ofdm_stack.dir/__/src/filter.c.o
+                0x0000000000412120                quiskFilt120t480
+                0x00000000004128a0                filtP550S750
+ .data          0x0000000000412b20        0x0 libfunction_trace.a(function_trace.c.o)
+ .data          0x0000000000412b20        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/libgcc.a(_mulsc3.o)
+ .data          0x0000000000412b20        0x0 //usr/lib/x86_64-linux-gnu/libc_nonshared.a(elf-init.oS)
+ .data          0x0000000000412b20        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/crtend.o
+ .data          0x0000000000412b20        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crtn.o
+
+.tm_clone_table
+                0x0000000000412b20        0x0
+ .tm_clone_table
+                0x0000000000412b20        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/crtbegin.o
+ .tm_clone_table
+                0x0000000000412b20        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/crtend.o
+
+.data1
+ *(.data1)
+                0x0000000000412b20                _edata = .
+                [!provide]                        PROVIDE (edata = .)
+                0x0000000000412b20                . = .
+                0x0000000000412b20                __bss_start = .
+
+.bss            0x0000000000412b20      0x118
+ *(.dynbss)
+ .dynbss        0x0000000000412b20        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+ *(.bss .bss.* .gnu.linkonce.b.*)
+ .bss           0x0000000000412b20        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crt1.o
+ .bss           0x0000000000412b20        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crti.o
+ .bss           0x0000000000412b20        0x1 /usr/lib/gcc/x86_64-linux-gnu/8/crtbegin.o
+ *fill*         0x0000000000412b21        0x7 
+ .bss           0x0000000000412b28       0x38 CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+ .bss           0x0000000000412b60       0xb4 CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+ .bss           0x0000000000412c14        0x0 CMakeFiles/ofdm_stack.dir/__/src/octave.c.o
+ .bss           0x0000000000412c14        0x0 CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+ *fill*         0x0000000000412c14        0x4 
+ .bss           0x0000000000412c18       0x18 CMakeFiles/ofdm_stack.dir/__/src/modem_probe.c.o
+ .bss           0x0000000000412c30        0x0 CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+ .bss           0x0000000000412c30        0x0 CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+ .bss           0x0000000000412c30        0x0 CMakeFiles/ofdm_stack.dir/__/src/filter.c.o
+ .bss           0x0000000000412c30        0x8 libfunction_trace.a(function_trace.c.o)
+ .bss           0x0000000000412c38        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/libgcc.a(_mulsc3.o)
+ .bss           0x0000000000412c38        0x0 //usr/lib/x86_64-linux-gnu/libc_nonshared.a(elf-init.oS)
+ .bss           0x0000000000412c38        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/crtend.o
+ .bss           0x0000000000412c38        0x0 /usr/lib/gcc/x86_64-linux-gnu/8/../../../x86_64-linux-gnu/crtn.o
+ *(COMMON)
+                0x0000000000412c38                . = ALIGN ((. != 0x0)?0x8:0x1)
+
+.lbss
+ *(.dynlbss)
+ *(.lbss .lbss.* .gnu.linkonce.lb.*)
+ *(LARGE_COMMON)
+                0x0000000000412c38                . = ALIGN (0x8)
+                0x0000000000412c38                . = SEGMENT_START ("ldata-segment", .)
+
+.lrodata
+ *(.lrodata .lrodata.* .gnu.linkonce.lr.*)
+
+.ldata          0x0000000000414c38        0x0
+ *(.ldata .ldata.* .gnu.linkonce.l.*)
+                0x0000000000414c38                . = ALIGN ((. != 0x0)?0x8:0x1)
+                0x0000000000414c38                . = ALIGN (0x8)
+                0x0000000000414c38                _end = .
+                [!provide]                        PROVIDE (end = .)
+                0x0000000000414c38                . = DATA_SEGMENT_END (.)
+
+.stab
+ *(.stab)
+
+.stabstr
+ *(.stabstr)
+
+.stab.excl
+ *(.stab.excl)
+
+.stab.exclstr
+ *(.stab.exclstr)
+
+.stab.index
+ *(.stab.index)
+
+.stab.indexstr
+ *(.stab.indexstr)
+
+.comment        0x0000000000000000       0x1c
+ *(.comment)
+ .comment       0x0000000000000000       0x1c /usr/lib/gcc/x86_64-linux-gnu/8/crtbegin.o
+                                         0x1d (size before relaxing)
+ .comment       0x000000000000001c       0x1d CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+ .comment       0x000000000000001c       0x1d CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+ .comment       0x000000000000001c       0x1d CMakeFiles/ofdm_stack.dir/__/src/octave.c.o
+ .comment       0x000000000000001c       0x1d CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+ .comment       0x000000000000001c       0x1d CMakeFiles/ofdm_stack.dir/__/src/modem_probe.c.o
+ .comment       0x000000000000001c       0x1d CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+ .comment       0x000000000000001c       0x1d CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+ .comment       0x000000000000001c       0x1d CMakeFiles/ofdm_stack.dir/__/src/filter.c.o
+ .comment       0x000000000000001c       0x1d libfunction_trace.a(function_trace.c.o)
+ .comment       0x000000000000001c       0x1d /usr/lib/gcc/x86_64-linux-gnu/8/crtend.o
+
+.debug
+ *(.debug)
+
+.line
+ *(.line)
+
+.debug_srcinfo
+ *(.debug_srcinfo)
+
+.debug_sfnames
+ *(.debug_sfnames)
+
+.debug_aranges  0x0000000000000000      0x1e0
+ *(.debug_aranges)
+ .debug_aranges
+                0x0000000000000000       0x40 CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+ .debug_aranges
+                0x0000000000000040       0x30 CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+ .debug_aranges
+                0x0000000000000070       0x30 CMakeFiles/ofdm_stack.dir/__/src/octave.c.o
+ .debug_aranges
+                0x00000000000000a0       0x30 CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+ .debug_aranges
+                0x00000000000000d0       0x30 CMakeFiles/ofdm_stack.dir/__/src/modem_probe.c.o
+ .debug_aranges
+                0x0000000000000100       0x30 CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+ .debug_aranges
+                0x0000000000000130       0x30 CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+ .debug_aranges
+                0x0000000000000160       0x30 CMakeFiles/ofdm_stack.dir/__/src/filter.c.o
+ .debug_aranges
+                0x0000000000000190       0x50 libfunction_trace.a(function_trace.c.o)
+
+.debug_pubnames
+ *(.debug_pubnames)
+
+.debug_info     0x0000000000000000     0xb1ae
+ *(.debug_info .gnu.linkonce.wi.*)
+ .debug_info    0x0000000000000000     0x1154 CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+ .debug_info    0x0000000000001154     0x46fd CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+ .debug_info    0x0000000000005851      0xed0 CMakeFiles/ofdm_stack.dir/__/src/octave.c.o
+ .debug_info    0x0000000000006721     0x1268 CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+ .debug_info    0x0000000000007989      0xde1 CMakeFiles/ofdm_stack.dir/__/src/modem_probe.c.o
+ .debug_info    0x000000000000876a     0x1b1d CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+ .debug_info    0x000000000000a287      0x14e CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+ .debug_info    0x000000000000a3d5      0x954 CMakeFiles/ofdm_stack.dir/__/src/filter.c.o
+ .debug_info    0x000000000000ad29      0x485 libfunction_trace.a(function_trace.c.o)
+
+.debug_abbrev   0x0000000000000000     0x15dd
+ *(.debug_abbrev)
+ .debug_abbrev  0x0000000000000000      0x2c1 CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+ .debug_abbrev  0x00000000000002c1      0x477 CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+ .debug_abbrev  0x0000000000000738      0x205 CMakeFiles/ofdm_stack.dir/__/src/octave.c.o
+ .debug_abbrev  0x000000000000093d      0x2bc CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+ .debug_abbrev  0x0000000000000bf9      0x2a9 CMakeFiles/ofdm_stack.dir/__/src/modem_probe.c.o
+ .debug_abbrev  0x0000000000000ea2      0x30d CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+ .debug_abbrev  0x00000000000011af       0xbd CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+ .debug_abbrev  0x000000000000126c      0x225 CMakeFiles/ofdm_stack.dir/__/src/filter.c.o
+ .debug_abbrev  0x0000000000001491      0x14c libfunction_trace.a(function_trace.c.o)
+
+.debug_line     0x0000000000000000     0x5f69
+ *(.debug_line .debug_line.* .debug_line_end)
+ .debug_line    0x0000000000000000      0x62d CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+ .debug_line    0x000000000000062d     0x2725 CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+ .debug_line    0x0000000000002d52      0x30e CMakeFiles/ofdm_stack.dir/__/src/octave.c.o
+ .debug_line    0x0000000000003060      0xf9d CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+ .debug_line    0x0000000000003ffd      0x4f0 CMakeFiles/ofdm_stack.dir/__/src/modem_probe.c.o
+ .debug_line    0x00000000000044ed      0xf9b CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+ .debug_line    0x0000000000005488      0x4a0 CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+ .debug_line    0x0000000000005928      0x48d CMakeFiles/ofdm_stack.dir/__/src/filter.c.o
+ .debug_line    0x0000000000005db5      0x1b4 libfunction_trace.a(function_trace.c.o)
+
+.debug_frame
+ *(.debug_frame)
+
+.debug_str      0x0000000000000000     0x17d8
+ *(.debug_str)
+ .debug_str     0x0000000000000000      0x7f6 CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+                                        0x988 (size before relaxing)
+ .debug_str     0x00000000000007f6      0x6fc CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+                                       0x1003 (size before relaxing)
+ .debug_str     0x0000000000000ef2      0x142 CMakeFiles/ofdm_stack.dir/__/src/octave.c.o
+                                        0x47f (size before relaxing)
+ .debug_str     0x0000000000001034      0x193 CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+                                        0x52b (size before relaxing)
+ .debug_str     0x00000000000011c7      0x176 CMakeFiles/ofdm_stack.dir/__/src/modem_probe.c.o
+                                        0x529 (size before relaxing)
+ .debug_str     0x000000000000133d      0x312 CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+                                        0x719 (size before relaxing)
+ .debug_str     0x000000000000164f       0x2c CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+                                        0x16e (size before relaxing)
+ .debug_str     0x000000000000167b       0xb4 CMakeFiles/ofdm_stack.dir/__/src/filter.c.o
+                                        0x4ff (size before relaxing)
+ .debug_str     0x000000000000172f       0xa9 libfunction_trace.a(function_trace.c.o)
+                                        0x362 (size before relaxing)
+
+.debug_loc      0x0000000000000000     0xf55a
+ *(.debug_loc)
+ .debug_loc     0x0000000000000000      0xd81 CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+ .debug_loc     0x0000000000000d81     0x5e32 CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+ .debug_loc     0x0000000000006bb3      0xce2 CMakeFiles/ofdm_stack.dir/__/src/octave.c.o
+ .debug_loc     0x0000000000007895     0x2c46 CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+ .debug_loc     0x000000000000a4db      0xa53 CMakeFiles/ofdm_stack.dir/__/src/modem_probe.c.o
+ .debug_loc     0x000000000000af2e     0x35c4 CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+ .debug_loc     0x000000000000e4f2      0x326 CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+ .debug_loc     0x000000000000e818      0xba6 CMakeFiles/ofdm_stack.dir/__/src/filter.c.o
+ .debug_loc     0x000000000000f3be      0x19c libfunction_trace.a(function_trace.c.o)
+
+.debug_macinfo
+ *(.debug_macinfo)
+
+.debug_weaknames
+ *(.debug_weaknames)
+
+.debug_funcnames
+ *(.debug_funcnames)
+
+.debug_typenames
+ *(.debug_typenames)
+
+.debug_varnames
+ *(.debug_varnames)
+
+.debug_pubtypes
+ *(.debug_pubtypes)
+
+.debug_ranges   0x0000000000000000      0x2c0
+ *(.debug_ranges)
+ .debug_ranges  0x0000000000000000       0x60 CMakeFiles/ofdm_stack.dir/ofdm_stack.c.o
+ .debug_ranges  0x0000000000000060      0x130 CMakeFiles/ofdm_stack.dir/__/src/ofdm.c.o
+ .debug_ranges  0x0000000000000190       0x30 CMakeFiles/ofdm_stack.dir/__/src/kiss_fft.c.o
+ .debug_ranges  0x00000000000001c0       0x30 CMakeFiles/ofdm_stack.dir/__/src/mpdecode_core.c.o
+ .debug_ranges  0x00000000000001f0       0x60 CMakeFiles/ofdm_stack.dir/__/src/phi0.c.o
+ .debug_ranges  0x0000000000000250       0x30 CMakeFiles/ofdm_stack.dir/__/src/filter.c.o
+ .debug_ranges  0x0000000000000280       0x40 libfunction_trace.a(function_trace.c.o)
+
+.debug_macro
+ *(.debug_macro)
+
+.debug_addr
+ *(.debug_addr)
+
+.gnu.attributes
+ *(.gnu.attributes)
+
+/DISCARD/
+ *(.note.GNU-stack)
+ *(.gnu_debuglink)
+ *(.gnu.lto_*)
+OUTPUT(ofdm_stack elf64-x86-64)

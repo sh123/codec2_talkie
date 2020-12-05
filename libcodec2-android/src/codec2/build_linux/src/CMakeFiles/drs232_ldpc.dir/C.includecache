@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/sh/Downloads/hackrf/codec2/src/H2064_516_sparse.h
+stdint.h
+-
+
+/home/sh/Downloads/hackrf/codec2/src/comp.h
+
+/home/sh/Downloads/hackrf/codec2/src/drs232_ldpc.c
+assert.h
+-
+stdlib.h
+-
+errno.h
+-
+stdio.h
+-
+string.h
+-
+stdint.h
+-
+mpdecode_core.h
+/home/sh/Downloads/hackrf/codec2/src/mpdecode_core.h
+H2064_516_sparse.h
+/home/sh/Downloads/hackrf/codec2/src/H2064_516_sparse.h
+
+/home/sh/Downloads/hackrf/codec2/src/mpdecode_core.h
+stdint.h
+-
+comp.h
+/home/sh/Downloads/hackrf/codec2/src/comp.h
+

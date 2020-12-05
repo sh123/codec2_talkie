@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2  -rdynamic CMakeFiles/drs232_ldpc.dir/drs232_ldpc.c.o  -o drs232_ldpc -Wl,-rpath,/home/sh/Downloads/hackrf/codec2/build_linux/src: libcodec2.so.0.9 -lm 

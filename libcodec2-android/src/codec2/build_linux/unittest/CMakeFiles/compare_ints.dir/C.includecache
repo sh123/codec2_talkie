@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/sh/Downloads/hackrf/codec2/unittest/compare_ints.c
+stdint.h
+-
+stdio.h
+-
+stdlib.h
+-
+getopt.h
+-
+errno.h
+-
+

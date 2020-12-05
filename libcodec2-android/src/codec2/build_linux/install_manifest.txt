@@ -1,0 +1,16 @@
+/opt/install/codec2/lib/pkgconfig/codec2.pc
+/opt/install/codec2/lib/cmake/codec2/codec2-config.cmake
+/opt/install/codec2/lib/cmake/codec2/codec2-config-debug.cmake
+/opt/install/codec2/lib/libcodec2.so.0.9
+/opt/install/codec2/lib/libcodec2.so
+/opt/install/codec2/include/codec2/codec2.h
+/opt/install/codec2/include/codec2/codec2_fdmdv.h
+/opt/install/codec2/include/codec2/codec2_cohpsk.h
+/opt/install/codec2/include/codec2/codec2_fm.h
+/opt/install/codec2/include/codec2/codec2_ofdm.h
+/opt/install/codec2/include/codec2/fsk.h
+/opt/install/codec2/include/codec2/codec2_fifo.h
+/opt/install/codec2/include/codec2/comp.h
+/opt/install/codec2/include/codec2/modem_stats.h
+/opt/install/codec2/include/codec2/freedv_api.h
+/opt/install/codec2/include/codec2/version.h

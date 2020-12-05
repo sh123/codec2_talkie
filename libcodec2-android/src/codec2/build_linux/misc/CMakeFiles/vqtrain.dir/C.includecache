@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/sh/Downloads/hackrf/codec2/misc/vqtrain.c
+assert.h
+-
+stdio.h
+-
+stdlib.h
+-
+string.h
+-
+math.h
+-
+ctype.h
+-
+getopt.h
+-
+

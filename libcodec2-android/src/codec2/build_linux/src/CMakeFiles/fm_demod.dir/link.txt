@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/fm_demod.dir/fm_demod.c.o CMakeFiles/fm_demod.dir/fm.c.o  -o fm_demod -lm -lm 

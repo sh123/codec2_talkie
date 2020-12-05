@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/c2sim.dir/c2sim.c.o  -o c2sim -Wl,-rpath,/home/sh/Downloads/hackrf/codec2/build_linux/src -lm libcodec2.so.0.9 -lm 

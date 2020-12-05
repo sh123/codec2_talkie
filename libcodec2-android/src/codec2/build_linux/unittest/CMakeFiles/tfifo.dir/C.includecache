@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../unittest/../src/codec2_fifo.h
+
+/home/sh/Downloads/hackrf/codec2/src/codec2_fifo.c
+assert.h
+-
+stdlib.h
+-
+stdio.h
+-
+codec2_fifo.h
+/home/sh/Downloads/hackrf/codec2/src/codec2_fifo.h
+
+/home/sh/Downloads/hackrf/codec2/src/codec2_fifo.h
+
+/home/sh/Downloads/hackrf/codec2/unittest/tfifo.c
+assert.h
+-
+stdio.h
+-
+pthread.h
+-
+codec2_fifo.h
+/home/sh/Downloads/hackrf/codec2/unittest/codec2_fifo.h
+

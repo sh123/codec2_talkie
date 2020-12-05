@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/tqam16.dir/tqam16.c.o  -o tqam16 -Wl,-rpath,/home/sh/Downloads/hackrf/codec2/build_linux/src ../src/libcodec2.so.0.9 -lm 

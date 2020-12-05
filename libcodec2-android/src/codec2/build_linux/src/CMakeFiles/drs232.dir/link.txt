@@ -1,0 +1,1 @@
+/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2  -rdynamic CMakeFiles/drs232.dir/drs232.c.o  -o drs232 

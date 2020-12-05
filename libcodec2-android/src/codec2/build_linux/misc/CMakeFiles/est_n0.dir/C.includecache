@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../misc/../src/defines.h
+
+/home/sh/Downloads/hackrf/codec2/misc/est_n0.c
+assert.h
+-
+complex.h
+-
+getopt.h
+-
+math.h
+-
+stdlib.h
+-
+stdio.h
+-
+defines.h
+/home/sh/Downloads/hackrf/codec2/misc/defines.h
+
