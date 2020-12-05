@@ -168,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_CANCELED) {
                 finish();
             } else if (resultCode == RESULT_OK) {
-                _textBtName.setText(String.format("BT: %s", data.getStringExtra("name")));
+                _textBtName.setText(data.getStringExtra("name"));
                 try {
                     _codec2Player.setSocket(SocketHandler.getSocket());
                 } catch (IOException e) {

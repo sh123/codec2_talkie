@@ -214,7 +214,7 @@ public class Codec2Player extends Thread {
         }
     }
 
-    void runLoopback() {
+    private void runPureLoopback() {
         short[] buffer = new short[Codec2.getSamplesPerFrame(_codec2Con)];
         short[] buffer_ = new short[Codec2.getSamplesPerFrame(_codec2Con)];
         char[] buffer2 = new char[Codec2.getBitsSize(_codec2Con)];
