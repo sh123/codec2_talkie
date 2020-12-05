@@ -12,6 +12,7 @@ import android.os.Message;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
@@ -139,7 +140,11 @@ public class Codec2Player extends Thread {
         @Override
         protected void sendByte(byte b) {
             if (_isLoopbackMode) {
-                _loopbackBuffer.put(b);
+                try {
+                    _loopbackBuffer.put(b);
+                } catch (BufferOverflowException e) {
+                    e.printStackTrace();
+                }
             } else {
                 try {
                     _btOutputStream.write(b);
