@@ -23,6 +23,9 @@ import com.ustadmobile.codec2.Codec2;
 public class Codec2Player extends Thread {
 
     public static int PLAYER_DISCONNECT = 1;
+    public static int PLAYER_LISTENING = 2;
+    public static int PLAYER_RECORDING = 3;
+    public static int PLAYER_PLAYING = 4;
 
     private final int AUDIO_SAMPLE_SIZE = 8000;
     private final int SLEEP_DELAY_MS = 10;
@@ -34,6 +37,7 @@ public class Codec2Player extends Thread {
     private int _audioBufferSize;
 
     private boolean _isRecording = false;
+    private int _currentStatus = PLAYER_DISCONNECT;
 
     // input data, bt -> audio
     private InputStream _btInputStream;
@@ -138,7 +142,7 @@ public class Codec2Player extends Thread {
 
     private final KissCallback _kissCallback = new KissCallback() {
         @Override
-        protected void sendByte(byte b) {
+        protected void sendByte(byte b) throws IOException {
             if (_isLoopbackMode) {
                 try {
                     _loopbackBuffer.put(b);
@@ -146,11 +150,7 @@ public class Codec2Player extends Thread {
                     e.printStackTrace();
                 }
             } else {
-                try {
-                    _btOutputStream.write(b);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                _btOutputStream.write(b);
             }
         }
 
@@ -249,6 +249,15 @@ public class Codec2Player extends Thread {
         Codec2.destroy(_codec2Con);
     }
 
+    private void setStatus(int status) {
+        if (status != _currentStatus) {
+            _currentStatus = status;
+            Message msg = Message.obtain();
+            msg.what = status;
+            _onPlayerStateChanged.sendMessage(msg);
+        }
+    }
+
     @Override
     public void run() {
         try {
@@ -257,10 +266,14 @@ public class Codec2Player extends Thread {
 
                 if (_audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
                     processRecording();
+                    setStatus(PLAYER_RECORDING);
                 } else {
-                    if (!processPlayback()) {
+                    if (processPlayback()) {
+                        setStatus(PLAYER_PLAYING);
+                    } else {
                         try {
                             Thread.sleep(SLEEP_DELAY_MS);
+                            setStatus(PLAYER_LISTENING);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
@@ -272,9 +285,6 @@ public class Codec2Player extends Thread {
         }
 
         cleanup();
-
-        Message msg = Message.obtain();
-        msg.what = PLAYER_DISCONNECT;
-        _onPlayerStateChanged.sendMessage(msg);
+        setStatus(PLAYER_DISCONNECT);
     }
 }

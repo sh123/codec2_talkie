@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private TextView _textBtName;
+    private TextView _textStatus;
 
     private Codec2Player _codec2Player;
 
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         _textBtName = (TextView)findViewById(R.id.textBtName);
+        _textStatus = (TextView)findViewById(R.id.textStatus);
+
         Button btnPtt = (Button)findViewById(R.id.btnPtt);
         btnPtt.setOnTouchListener(onBtnPttTouchListener);
 
@@ -63,8 +66,6 @@ public class MainActivity extends AppCompatActivity {
 
         CheckBox checkBoxLoopback = (CheckBox)findViewById(R.id.checkBoxLoopback);
         checkBoxLoopback.setOnCheckedChangeListener(onLoopbackCheckedChangeListener);
-
-        _codec2Player = new Codec2Player(onPlayerStateChanged, CODEC2_DEFAULT_MODE);
 
         if (requestPermissions()) {
             startBluetoothConnectActivity();
@@ -97,7 +98,9 @@ public class MainActivity extends AppCompatActivity {
     private final CompoundButton.OnCheckedChangeListener onLoopbackCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            _codec2Player.setLoopbackMode(isChecked);
+            if (_codec2Player != null) {
+                _codec2Player.setLoopbackMode(isChecked);
+            }
         }
     };
 
@@ -106,7 +109,9 @@ public class MainActivity extends AppCompatActivity {
         public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
             String selectedCodec = getResources().getStringArray(R.array.codec2_modes)[position];
             String [] codecNameCodecId = selectedCodec.split("=");
-            _codec2Player.setCodecMode(Integer.parseInt(codecNameCodecId[1]));
+            if (_codec2Player != null) {
+                _codec2Player.setCodecMode(Integer.parseInt(codecNameCodecId[1]));
+            }
         }
 
         @Override
@@ -155,8 +160,18 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == Codec2Player.PLAYER_DISCONNECT) {
+                _textStatus.setText("Disconnected from Bluetooth");
                 Toast.makeText(getBaseContext(), "Bluetooth disconnected", Toast.LENGTH_SHORT).show();
                 startBluetoothConnectActivity();
+            }
+            else if (msg.what == Codec2Player.PLAYER_LISTENING) {
+                _textStatus.setText("Waiting...");
+            }
+            else if (msg.what == Codec2Player.PLAYER_RECORDING) {
+                _textStatus.setText("Transmitting to radio");
+            }
+            else if (msg.what == Codec2Player.PLAYER_PLAYING) {
+                _textStatus.setText("Receiving from radio");
             }
         }
     };
@@ -169,6 +184,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             } else if (resultCode == RESULT_OK) {
                 _textBtName.setText(data.getStringExtra("name"));
+                _codec2Player = new Codec2Player(onPlayerStateChanged, CODEC2_DEFAULT_MODE);
                 try {
                     _codec2Player.setSocket(SocketHandler.getSocket());
                 } catch (IOException e) {

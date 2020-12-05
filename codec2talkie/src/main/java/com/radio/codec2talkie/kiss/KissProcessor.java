@@ -111,7 +111,7 @@ public class KissProcessor {
         completeFrame();
     }
 
-    private void send(byte b) {
+    private void send(byte b) throws IOException {
         _callback.sendByte(b);
         _outputFramePos++;
     }
