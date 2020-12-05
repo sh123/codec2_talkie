@@ -137,8 +137,8 @@ public class MainActivity extends AppCompatActivity {
                     _codec2Player = new Codec2Player(
                             SocketHandler.getSocket(),
                             onPlayerStateChanged,
-                            Codec2.CODEC2_MODE_450,
-                            true);
+                            Codec2.CODEC2_MODE_450);
+                    _codec2Player.setLoopbackMode(true);
                     _codec2Player.start();
                 } catch (IOException e) {
                     e.printStackTrace();

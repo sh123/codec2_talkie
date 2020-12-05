@@ -50,17 +50,17 @@ public class Codec2Player extends Thread {
     private final char[] _recordAudioEncodedBuffer;
 
     // loopback mode
-    private final boolean _loopbackMode;
+    private boolean _isLoopbackMode;
     private final ByteBuffer _loopbackBuffer;
 
     // callbacks
     private final KissProcessor _kissProcessor;
     private final Handler _onPlayerStateChanged;
 
-    public Codec2Player(BluetoothSocket btSocket, Handler onPlayerStateChanged, int codec2Mode, boolean loopbackMode) throws IOException {
+    public Codec2Player(BluetoothSocket btSocket, Handler onPlayerStateChanged, int codec2Mode) throws IOException {
 
         _onPlayerStateChanged = onPlayerStateChanged;
-        _loopbackMode = loopbackMode;
+        _isLoopbackMode = false;
 
         _btSocket = btSocket;
         _btInputStream = _btSocket.getInputStream();
@@ -112,6 +112,10 @@ public class Codec2Player extends Thread {
         _kissProcessor = new KissProcessor(_audioEncodedBufferSize, _kissCallback);
     }
 
+    public void setLoopbackMode(boolean isLoopbackMode) {
+        _isLoopbackMode = isLoopbackMode;
+    }
+
     public void startPlayback() {
         _isRecording = false;
     }
@@ -123,7 +127,7 @@ public class Codec2Player extends Thread {
     private final KissCallback _kissCallback = new KissCallback() {
         @Override
         protected void sendByte(byte b) {
-            if (_loopbackMode) {
+            if (_isLoopbackMode) {
                 _loopbackBuffer.put(b);
             } else {
                 try {
@@ -164,7 +168,7 @@ public class Codec2Player extends Thread {
     }
 
     private boolean processPlayback() throws IOException {
-        if (_loopbackMode) {
+        if (_isLoopbackMode) {
             return processLoopbackPlayback();
         }
         int btBytes = _btInputStream.available();
