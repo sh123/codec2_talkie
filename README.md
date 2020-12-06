@@ -28,3 +28,4 @@ This Android application is a digital voice frontend for your radio. It connects
 # Related Projects
 - Codec2 codec: https://github.com/drowe67/codec2
 - Android Codec2 wrapper code: https://github.com/UstadMobile/Codec2-Android
+- iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
