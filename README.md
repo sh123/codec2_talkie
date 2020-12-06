@@ -33,4 +33,4 @@ This Android application is a digital voice frontend for your radio. It connects
 # TODO
 - Parrot mode, so speech coming from aether will be transmitted back
 - Support for USB KISS TNC 
-- QSO log, voicemail style recording of incoming speech
+- QSO log, voicemail style recording of incoming speech so that incoming transmissions are not missed
