@@ -1,6 +1,8 @@
 # Android Codec2 Walkie-Talkie
 Android KISS Bluetooth modem client for Amateur Radio digital voice communication by using open source Codec2.
 
+![alt text](images/screenshot.jpg)
+
 # Introduction
 This Android application is a digital voice frontend for your radio. It connects to your radio KISS Bluetooth modem, sends and receives Codec2 audio frames, which are encapsulated inside KISS frames. It does not deal with radio management, modulation, etc, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK or any other radio. Radio just needs to expose KISS Bluetooth interface.
 
