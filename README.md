@@ -16,8 +16,8 @@ This Android application is a digital voice frontend for your radio. It connects
 - Codec2 loopback mode, which records and plays your recorded voice back to test and evaluate different modes
 
 # Suitable radios
-- AFSK1200 MicroModem: https://unsigned.io/micromodem
 - LoRa modem: https://github.com/sh123/esp32_loraprs
+- AFSK1200 MicroModem (needs USB support): https://unsigned.io/micromodem
 
 # Related Projects
 - Codec2 codec: https://github.com/drowe67/codec2
