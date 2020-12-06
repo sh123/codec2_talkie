@@ -1,2 +1,2 @@
-# codec2_talkie
-Android kiss bluetooth modem client for codec2 digital voice communication
+# Android Codec2 Walkie-Talkie
+Android KISS Bluetooth modem client for Amateur Radio digital voice communication by using open source Codec2.
