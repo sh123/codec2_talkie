@@ -2,13 +2,13 @@
     <string name="app_name">Codec2 Walkie Talkie</string>
     <string name="push_to_talk">push-to-talk</string>
     <string-array name="codec2_modes">
-        <item>CODEC2_MODE_450=10</item>
-        <item>CODEC2_MODE_700C=8</item>
-        <item>CODEC2_MODE_1200=5</item>
-        <item>CODEC2_MODE_1300=4</item>
-        <item>CODEC2_MODE_1400=3</item>
-        <item>CODEC2_MODE_1600=2</item>
-        <item>CODEC2_MODE_2400=1</item>
-        <item>CODEC2_MODE_3200=0</item>
+        <item>MODE_450=10</item>
+        <item>MODE_700C=8</item>
+        <item>MODE_1200=5</item>
+        <item>MODE_1300=4</item>
+        <item>MODE_1400=3</item>
+        <item>MODE_1600=2</item>
+        <item>MODE_2400=1</item>
+        <item>MODE_3200=0</item>
     </string-array>
 </resources>

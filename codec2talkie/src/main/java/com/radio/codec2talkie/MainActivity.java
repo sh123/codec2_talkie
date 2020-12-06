@@ -160,18 +160,18 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == Codec2Player.PLAYER_DISCONNECT) {
-                _textStatus.setText("Disconnected from Bluetooth");
+                _textStatus.setText("DISC");
                 Toast.makeText(getBaseContext(), "Bluetooth disconnected", Toast.LENGTH_SHORT).show();
                 startBluetoothConnectActivity();
             }
             else if (msg.what == Codec2Player.PLAYER_LISTENING) {
-                _textStatus.setText("Waiting...");
+                _textStatus.setText("IDLE");
             }
             else if (msg.what == Codec2Player.PLAYER_RECORDING) {
-                _textStatus.setText("Transmitting to radio");
+                _textStatus.setText("TX");
             }
             else if (msg.what == Codec2Player.PLAYER_PLAYING) {
-                _textStatus.setText("Receiving from radio");
+                _textStatus.setText("RX");
             }
         }
     };

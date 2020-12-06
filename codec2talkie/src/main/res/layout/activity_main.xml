@@ -20,12 +20,12 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnPtt"
-        android:layout_width="270dp"
-        android:layout_height="230dp"
-        android:layout_marginStart="134dp"
-        android:layout_marginTop="526dp"
-        android:layout_marginEnd="134dp"
-        android:layout_marginBottom="157dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/btn_ptt"
         android:hapticFeedbackEnabled="false"
         android:text="@string/push_to_talk"
@@ -33,8 +33,9 @@
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.598"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/checkBoxLoopback" />
 
     <CheckBox
         android:id="@+id/checkBoxLoopback"
@@ -42,7 +43,7 @@
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Codec2 loopback test"
+        android:text="codec2 loopback"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/spinnerCodecMode" />
 
@@ -51,19 +52,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:entries="@array/codec2_modes"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textStatus" />
+        app:layout_constraintTop_toBottomOf="@+id/textBtName" />
 
     <TextView
         android:id="@+id/textStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
         android:text="Disconnected"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textBtName" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
