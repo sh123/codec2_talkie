@@ -16,8 +16,13 @@ This Android application is a digital voice frontend for your radio. It connects
 - Codec2 loopback mode, which records and plays your recorded voice back to test and evaluate different modes
 
 # Suitable radios
+Tested:
 - LoRa modem: https://github.com/sh123/esp32_loraprs
-- AFSK1200 MicroModem (needs USB support): https://unsigned.io/micromodem
+Could work, needs testing:
+- Kenwood TH-D74A: https://dl1gkk.com/kenwood-th-d74-bluetooth-packet-radio-setup/
+Need USB support:
+- AFSK1200 MicroModem: https://unsigned.io/micromodem
+- AFSK1200 PicoAPRS: http://www.db1nto.de/index_en.html
 
 # Related Projects
 - Codec2 codec: https://github.com/drowe67/codec2
