@@ -31,6 +31,7 @@ This Android application is a digital voice frontend for your radio. It connects
 - iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
 
 # TODO
-- Parrot mode, so speech coming from aether will be transmitted back
 - Support for USB KISS TNC 
+- Parrot mode, so speech coming from aether will be transmitted back
+- Separate settings to avoid repeated operations
 - QSO log, voicemail style recording of incoming speech so that incoming transmissions are not missed
