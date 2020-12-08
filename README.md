@@ -1,5 +1,5 @@
 # Android Codec2 Walkie-Talkie
-Android KISS Bluetooth modem client for Amateur Radio digital voice communication by using open source [Codec2](https://github.com/drowe67/codec2).
+Android KISS Bluetooth modem client for Amateur Radio DV (digital voice) communication by using open source [Codec2](https://github.com/drowe67/codec2).
 
 ![alt text](images/screenshot.png)
 
@@ -8,7 +8,7 @@ This Android application is a digital voice frontend for your radio. It connects
 
 # Requirements
 - Android 6.0 (API 23) or higher
-- Modem or transceiver which support [KISS protocol](https://en.wikipedia.org/wiki/KISS_(TNC)) over Bluetooth
+- Modem or transceiver which supports [KISS protocol](https://en.wikipedia.org/wiki/KISS_(TNC)) over Bluetooth
 
 # Features
 - PTT button, push and talk, encoded speech will be transmitted to the modem
