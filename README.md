@@ -15,7 +15,7 @@ This Android application is a digital voice frontend for your radio. It connects
 - USB serial connectivity at 115200 bps, 8 data bits, 1 stop bit and none parity
 - Bluetooth connectivity on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from the Settings
 - Voice codec2 mode selection, which allows you to select various codec2 modes from 450 up to 3200 bps.
-- Codec2 loopback mode, which records and plays your recorded voice back to test and evaluate different Codec2 modes
+- Codec2 loopback mode, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality
 
 # Suitable radios
 - Tested, works:
