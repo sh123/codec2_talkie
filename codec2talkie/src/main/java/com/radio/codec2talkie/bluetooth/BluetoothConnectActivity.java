@@ -22,7 +22,7 @@ import com.radio.codec2talkie.R;
 import java.io.IOException;
 import java.util.UUID;
 
-public class ConnectActivity extends AppCompatActivity {
+public class BluetoothConnectActivity extends AppCompatActivity {
 
     private final static int BT_ENABLE = 1;
     private final static int BT_CONNECT_SUCCESS = 2;
@@ -37,18 +37,14 @@ public class ConnectActivity extends AppCompatActivity {
     private ArrayAdapter<String> _btArrayAdapter;
     private String _btSelectedName;
 
-    public BluetoothSocket getSocket() {
-        return _btSocket;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_connect);
 
         _btAdapter = BluetoothAdapter.getDefaultAdapter();
-        _btArrayAdapter = new ArrayAdapter<String>(this, R.layout.support_simple_spinner_dropdown_item);
-        ListView _btDevicesList = (ListView) findViewById(R.id.btDevicesList);
+        _btArrayAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item);
+        ListView _btDevicesList = findViewById(R.id.btDevicesList);
         _btDevicesList.setAdapter(_btArrayAdapter);
         _btDevicesList.setOnItemClickListener(onBtDeviceClickListener);
 

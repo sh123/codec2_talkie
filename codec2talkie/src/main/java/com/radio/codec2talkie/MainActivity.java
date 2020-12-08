@@ -22,8 +22,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.radio.codec2talkie.bluetooth.ConnectActivity;
+import com.radio.codec2talkie.bluetooth.BluetoothConnectActivity;
 import com.radio.codec2talkie.bluetooth.SocketHandler;
+import com.radio.codec2talkie.usb.UsbConnectActivity;
+import com.radio.codec2talkie.usb.UsbPortHandler;
 import com.ustadmobile.codec2.Codec2;
 
 import java.io.IOException;
@@ -33,7 +35,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private final static int REQUEST_CONNECT_BT = 1;
-    private final static int REQUEST_PERMISSIONS = 2;
+    private final static int REQUEST_CONNECT_USB = 2;
+    private final static int REQUEST_PERMISSIONS = 3;
 
     private final static int CODEC2_DEFAULT_MODE = Codec2.CODEC2_MODE_450;
     private final static int CODEC2_DEFAULT_MODE_POS = 0;
@@ -43,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.RECORD_AUDIO
     };
 
-    private TextView _textBtName;
+    private TextView _textConnInfo;
     private TextView _textStatus;
 
     private Codec2Player _codec2Player;
@@ -54,26 +57,31 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        _textBtName = (TextView)findViewById(R.id.textBtName);
-        _textStatus = (TextView)findViewById(R.id.textStatus);
+        _textConnInfo = findViewById(R.id.textBtName);
+        _textStatus = findViewById(R.id.textStatus);
 
-        Button btnPtt = (Button)findViewById(R.id.btnPtt);
+        Button btnPtt = findViewById(R.id.btnPtt);
         btnPtt.setOnTouchListener(onBtnPttTouchListener);
 
-        Spinner spinnerCodec2Mode = (Spinner)findViewById(R.id.spinnerCodecMode);
+        Spinner spinnerCodec2Mode = findViewById(R.id.spinnerCodecMode);
         spinnerCodec2Mode.setSelection(CODEC2_DEFAULT_MODE_POS);
         spinnerCodec2Mode.setOnItemSelectedListener(onCodecModeSelectedListener);
 
-        CheckBox checkBoxLoopback = (CheckBox)findViewById(R.id.checkBoxLoopback);
+        CheckBox checkBoxLoopback = findViewById(R.id.checkBoxLoopback);
         checkBoxLoopback.setOnCheckedChangeListener(onLoopbackCheckedChangeListener);
 
         if (requestPermissions()) {
-            startBluetoothConnectActivity();
+            startUsbConnectActivity();
         }
     }
 
+    protected void startUsbConnectActivity() {
+        Intent usbConnectIntent = new Intent(this, UsbConnectActivity.class);
+        startActivityForResult(usbConnectIntent, REQUEST_CONNECT_USB);
+    }
+
     protected void startBluetoothConnectActivity() {
-        Intent bluetoothConnectIntent = new Intent(this, ConnectActivity.class);
+        Intent bluetoothConnectIntent = new Intent(this, BluetoothConnectActivity.class);
         startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_BT);
     }
 
@@ -124,11 +132,13 @@ public class MainActivity extends AppCompatActivity {
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    _codec2Player.startRecording();
+                    if (_codec2Player != null)
+                        _codec2Player.startRecording();
                     break;
                 case MotionEvent.ACTION_UP:
                     v.performClick();
-                    _codec2Player.startPlayback();
+                    if (_codec2Player != null)
+                        _codec2Player.startPlayback();
                     break;
             }
             return false;
@@ -148,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
             }
             if (allGranted) {
                 Toast.makeText(MainActivity.this, "Permissions Granted", Toast.LENGTH_SHORT).show();
-                startBluetoothConnectActivity();
+                startUsbConnectActivity();
             } else {
                 Toast.makeText(MainActivity.this, "Permissions Denied", Toast.LENGTH_SHORT).show();
                 finish();
@@ -161,8 +171,8 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             if (msg.what == Codec2Player.PLAYER_DISCONNECT) {
                 _textStatus.setText("DISC");
-                Toast.makeText(getBaseContext(), "Bluetooth disconnected", Toast.LENGTH_SHORT).show();
-                startBluetoothConnectActivity();
+                Toast.makeText(getBaseContext(), "Disconnected from modem", Toast.LENGTH_SHORT).show();
+                startUsbConnectActivity();
             }
             else if (msg.what == Codec2Player.PLAYER_LISTENING) {
                 _textStatus.setText("IDLE");
@@ -183,13 +193,23 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == RESULT_CANCELED) {
                 finish();
             } else if (resultCode == RESULT_OK) {
-                _textBtName.setText(data.getStringExtra("name"));
+                _textConnInfo.setText(data.getStringExtra("name"));
                 _codec2Player = new Codec2Player(onPlayerStateChanged, CODEC2_DEFAULT_MODE);
                 try {
                     _codec2Player.setSocket(SocketHandler.getSocket());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                _codec2Player.start();
+            }
+        }
+        if (requestCode == REQUEST_CONNECT_USB) {
+            if (resultCode == RESULT_CANCELED) {
+                startBluetoothConnectActivity();
+            } else if (resultCode == RESULT_OK) {
+                _textConnInfo.setText(data.getStringExtra("name"));
+                _codec2Player = new Codec2Player(onPlayerStateChanged, CODEC2_DEFAULT_MODE);
+                _codec2Player.setUsbPort(UsbPortHandler.getPort());
                 _codec2Player.start();
             }
         }

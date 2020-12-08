@@ -16,6 +16,7 @@ import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
+import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.radio.codec2talkie.kiss.KissCallback;
 import com.radio.codec2talkie.kiss.KissProcessor;
 import com.ustadmobile.codec2.Codec2;
@@ -30,9 +31,13 @@ public class Codec2Player extends Thread {
     private final int AUDIO_SAMPLE_SIZE = 8000;
     private final int SLEEP_DELAY_MS = 10;
 
+    private final int RX_TIMEOUT = 100;
+    private final int TX_TIMEOUT = 2000;
+
     private long _codec2Con;
 
     private BluetoothSocket _btSocket;
+    private UsbSerialPort _usbPort;
 
     private int _audioBufferSize;
 
@@ -63,9 +68,10 @@ public class Codec2Player extends Thread {
     private final Handler _onPlayerStateChanged;
 
     public Codec2Player(Handler onPlayerStateChanged, int codec2Mode) {
-
         _onPlayerStateChanged = onPlayerStateChanged;
         _isLoopbackMode = false;
+
+        setCodecModeInternal(codec2Mode);
 
         int _audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
                 AUDIO_SAMPLE_SIZE,
@@ -97,14 +103,16 @@ public class Codec2Player extends Thread {
                 .setBufferSizeInBytes(3 * _audioPlayerMinBufferSize)
                 .build();
         _audioPlayer.play();
-
-        setCodecModeInternal(codec2Mode);
     }
 
     public void setSocket(BluetoothSocket btSocket) throws IOException {
         _btSocket = btSocket;
         _btInputStream = _btSocket.getInputStream();
         _btOutputStream = _btSocket.getOutputStream();
+    }
+
+    public void setUsbPort(UsbSerialPort port) {
+        _usbPort = port;
     }
 
     public void setLoopbackMode(boolean isLoopbackMode) {
@@ -150,7 +158,13 @@ public class Codec2Player extends Thread {
                     e.printStackTrace();
                 }
             } else {
-                _btOutputStream.write(b);
+                byte [] ba = new byte[1];
+                ba[0] = b;
+                if (_btOutputStream != null)
+                    _btOutputStream.write(b);
+                if (_usbPort != null) {
+                    _usbPort.write(ba, TX_TIMEOUT);
+                }
             }
         }
 
@@ -187,15 +201,23 @@ public class Codec2Player extends Thread {
         if (_isLoopbackMode) {
             return processLoopbackPlayback();
         }
-        int btBytes = _btInputStream.available();
-        if (btBytes > 0) {
-            byte[] br = new byte[1];
-            int bytesRead = _btInputStream.read(br);
-            if (bytesRead == 0) return false;
+        int bytesRead = 0;
+        byte[] br = new byte[1];
+        if (_btInputStream != null) {
+            bytesRead = _btInputStream.available();
+            if (bytesRead > 0) {
+                bytesRead = _btInputStream.read(br);
+            }
+        }
+        if (_usbPort != null) {
+            bytesRead = _usbPort.read(br, RX_TIMEOUT);
+        }
+        if (bytesRead > 0) {
             _kissProcessor.receiveByte(br[0]);
+            return false;
+        } else {
             return true;
         }
-        return false;
     }
 
     private void processRecordPlaybackToggle() throws IOException {
@@ -261,7 +283,7 @@ public class Codec2Player extends Thread {
     @Override
     public void run() {
         try {
-            while (_btSocket.isConnected()) {
+            while (true) {
                 processRecordPlaybackToggle();
 
                 if (_audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
