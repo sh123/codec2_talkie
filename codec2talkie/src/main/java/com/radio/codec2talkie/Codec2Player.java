@@ -34,6 +34,8 @@ public class Codec2Player extends Thread {
     private final int RX_TIMEOUT = 100;
     private final int TX_TIMEOUT = 2000;
 
+    private final byte CSMA_PERSISTENCE = (byte)0xff;
+
     private long _codec2Con;
 
     private BluetoothSocket _btSocket;
@@ -145,7 +147,7 @@ public class Codec2Player extends Thread {
 
         _loopbackBuffer = ByteBuffer.allocateDirect(1024 * _audioEncodedBufferSize);
 
-        _kissProcessor = new KissProcessor(_audioEncodedBufferSize, _kissCallback);
+        _kissProcessor = new KissProcessor(_audioEncodedBufferSize, CSMA_PERSISTENCE, _kissCallback);
     }
 
     private final KissCallback _kissCallback = new KissCallback() {
@@ -283,6 +285,9 @@ public class Codec2Player extends Thread {
     @Override
     public void run() {
         try {
+            if (!_isLoopbackMode) {
+                _kissProcessor.setupCsma();
+            }
             while (true) {
                 processRecordPlaybackToggle();
 

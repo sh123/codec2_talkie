@@ -13,6 +13,7 @@ public class KissProcessor {
     private final byte KISS_TFESC = (byte)0xdd;
 
     private final byte KISS_CMD_DATA = (byte)0x00;
+    private final byte KISS_CMD_P = (byte)0x02;
     private final byte KISS_CMD_NOCMD = (byte)0x80;
 
     private enum KissState {
@@ -26,6 +27,7 @@ public class KissProcessor {
     private byte _kissCmd = KISS_CMD_NOCMD;
 
     private final int _frameSize;
+    private final byte _csmaPersistence;
 
     private final byte[] _inputFrameBuffer;
 
@@ -34,10 +36,18 @@ public class KissProcessor {
     private int _outputFramePos;
     private int _inputFramePos;
 
-    public KissProcessor(int frameSize, KissCallback callback) {
+    public KissProcessor(int frameSize, byte csmaPersistence, KissCallback callback) {
         _frameSize = frameSize;
         _callback = callback;
         _inputFrameBuffer = new byte[frameSize];
+        _csmaPersistence = csmaPersistence;
+    }
+
+    public void setupCsma() throws IOException {
+        _callback.sendByte(KISS_FEND);
+        _callback.sendByte(KISS_CMD_P);
+        _callback.sendByte(_csmaPersistence);
+        _callback.sendByte(KISS_FEND);
     }
 
     public void sendFrame(byte [] frame) throws IOException {
