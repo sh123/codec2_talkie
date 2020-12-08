@@ -20,11 +20,11 @@ This Android application is a digital voice frontend for your radio. It connects
 # Suitable radios
 - Tested, works:
   - LoRa modem: https://github.com/sh123/esp32_loraprs
+  - AFSK1200 PicoAPRS: http://www.db1nto.de/index_en.html
 - Tested, needs more research:
   - Kenwood TH-D74A (RX works, TX does not): https://dl1gkk.com/kenwood-th-d74-bluetooth-packet-radio-setup/
 - Could work, needs testing:
   - AFSK1200 MicroModem: https://unsigned.io/micromodem
-  - AFSK1200 PicoAPRS: http://www.db1nto.de/index_en.html
 
 # Related Projects
 - Codec2 codec: https://github.com/drowe67/codec2
