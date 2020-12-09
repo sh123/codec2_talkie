@@ -35,3 +35,8 @@ This minimalistic Android application is a digital voice frontend for your radio
 - Parrot mode, so speech coming from aether will be transmitted back (testing or digirepeating)
 - QSO log, voicemail style recording of incoming speech so that incoming transmissions are not missed
 - Separate settings to avoid repeated operations
+  - Override default USB serial parameters
+  - Default Bluetooth device name to connect upon startup
+  - Default codec2 bitrate on startup
+  - Settings for parrot mode
+  - Settings for QSO log
