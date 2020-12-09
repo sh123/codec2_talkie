@@ -17,7 +17,7 @@ This minimalistic Android application is a digital voice frontend for your radio
 - **Voice codec2 mode selection**, which allows you to select various codec2 modes from 450 up to 3200 bps.
 - **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality
 
-# Suitable radios
+# Suitable radios and modems
 - Tested, works:
   - LoRa modem (BT): https://github.com/sh123/esp32_loraprs
   - AFSK1200 PicoAPRS (USB): http://www.db1nto.de/index_en.html
