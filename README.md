@@ -34,8 +34,7 @@ This minimalistic Android application is a digital voice frontend for your radio
 
 # TODO
 - Parrot mode, so speech coming from aether will be transmitted back (testing or digirepeating)
-- VOX support
-- Speech level indicator
+- Speech level indicator on TX and when in codec2 loopback mode
 - QSO log, voicemail style recording of incoming speech so that incoming transmissions are not missed
 - Separate settings to avoid repeated operations
   - Override default USB serial parameters
