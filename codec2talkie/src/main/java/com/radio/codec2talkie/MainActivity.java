@@ -8,6 +8,8 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView _textConnInfo;
     private TextView _textStatus;
+    private ProgressBar _progressRxLevel;
+    private ProgressBar _progressTxLevel;
 
     private Codec2Player _codec2Player;
 
@@ -59,6 +64,10 @@ public class MainActivity extends AppCompatActivity {
 
         _textConnInfo = findViewById(R.id.textBtName);
         _textStatus = findViewById(R.id.textStatus);
+        _progressRxLevel = findViewById(R.id.progressRxLevel);
+        _progressRxLevel.setMax(-Codec2Player.getAudioMinLevel());
+        _progressTxLevel = findViewById(R.id.progressTxLevel);
+        _progressTxLevel.setMax(-Codec2Player.getAudioMinLevel());
 
         Button btnPtt = findViewById(R.id.btnPtt);
         btnPtt.setOnTouchListener(onBtnPttTouchListener);
@@ -101,6 +110,15 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    private int colorFromAudioLevel(int audioLevel) {
+        int color = Color.GREEN;
+        if (audioLevel > Codec2Player.getAudioHighLevel())
+            color = Color.RED;
+        else if (audioLevel == Codec2Player.getAudioMinLevel())
+            color = Color.LTGRAY;
+        return color;
     }
 
     private final CompoundButton.OnCheckedChangeListener onLoopbackCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
@@ -182,6 +200,14 @@ public class MainActivity extends AppCompatActivity {
             }
             else if (msg.what == Codec2Player.PLAYER_PLAYING) {
                 _textStatus.setText("RX");
+            }
+            else if (msg.what == Codec2Player.PLAYER_RX_LEVEL) {
+                _progressRxLevel.getProgressDrawable().setColorFilter(colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN);
+                _progressRxLevel.setProgress(msg.arg1 - Codec2Player.getAudioMinLevel());
+            }
+            else if (msg.what == Codec2Player.PLAYER_TX_LEVEL) {
+                _progressTxLevel.getProgressDrawable().setColorFilter(colorFromAudioLevel((msg.arg1)), PorterDuff.Mode.SRC_IN);
+                _progressTxLevel.setProgress(msg.arg1 - Codec2Player.getAudioMinLevel());
             }
         }
     };

@@ -2,6 +2,7 @@ package com.radio.codec2talkie;
 
 import android.bluetooth.BluetoothSocket;
 import android.media.AudioAttributes;
+import android.media.AudioDeviceCallback;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
@@ -27,9 +28,14 @@ public class Codec2Player extends Thread {
     public static int PLAYER_LISTENING = 2;
     public static int PLAYER_RECORDING = 3;
     public static int PLAYER_PLAYING = 4;
+    public static int PLAYER_RX_LEVEL = 5;
+    public static int PLAYER_TX_LEVEL = 6;
+
+    private static int AUDIO_MIN_LEVEL = -70;
+    private static int AUDIO_HIGH_LEVEL = -15;
 
     private final int AUDIO_SAMPLE_SIZE = 8000;
-    private final int SLEEP_DELAY_MS = 10;
+    private final int SLEEP_IDLE_DELAY_MS = 10;
 
     private final int RX_TIMEOUT = 100;
     private final int TX_TIMEOUT = 2000;
@@ -126,6 +132,14 @@ public class Codec2Player extends Thread {
         setCodecModeInternal(codecMode);
     }
 
+    public static int getAudioMinLevel() {
+        return AUDIO_MIN_LEVEL;
+    }
+
+    public static int getAudioHighLevel() {
+        return AUDIO_HIGH_LEVEL;
+    }
+
     public void startPlayback() {
         _isRecording = false;
     }
@@ -173,12 +187,33 @@ public class Codec2Player extends Thread {
         @Override
         protected void receiveFrame(byte[] frame) {
             Codec2.decode(_codec2Con, _playbackAudioBuffer, frame);
+            notifyAudioLevel(_playbackAudioBuffer, false);
             _audioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
         }
     };
 
+    private void notifyAudioLevel(short [] audioSamples, boolean isTx) {
+        double db = getAudioMinLevel();
+        if (audioSamples != null) {
+            double acc = 0;
+            for (short v : audioSamples) {
+                acc += Math.abs(v);
+            }
+            double avg = acc / audioSamples.length;
+            db = (20.0 * Math.log10(avg / 32768.0));
+        }
+        Message msg = Message.obtain();
+        if (isTx)
+            msg.what = PLAYER_TX_LEVEL;
+        else
+            msg.what = PLAYER_RX_LEVEL;
+        msg.arg1 = (int)db;
+        _onPlayerStateChanged.sendMessage(msg);
+    }
+
     private void processRecording() throws IOException {
         _audioRecorder.read(_recordAudioBuffer, 0, _audioBufferSize);
+        notifyAudioLevel(_recordAudioBuffer, true);
         Codec2.encode(_codec2Con, _recordAudioBuffer, _recordAudioEncodedBuffer);
 
         byte [] frame = new byte[_recordAudioEncodedBuffer.length];
@@ -227,6 +262,7 @@ public class Codec2Player extends Thread {
             _audioRecorder.startRecording();
             _audioPlayer.stop();
             _loopbackBuffer.clear();
+            notifyAudioLevel(null, false);
         }
         // recording -> playback
         if (!_isRecording && _audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
@@ -234,6 +270,7 @@ public class Codec2Player extends Thread {
             _audioPlayer.play();
             _kissProcessor.flush();
             _loopbackBuffer.flip();
+            notifyAudioLevel(null, true);
         }
     }
 
@@ -290,15 +327,22 @@ public class Codec2Player extends Thread {
             while (true) {
                 processRecordPlaybackToggle();
 
+                // recording
                 if (_audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
                     processRecording();
                     setStatus(PLAYER_RECORDING);
                 } else {
+                    // playback
                     if (processPlayback()) {
                         setStatus(PLAYER_PLAYING);
+                    // idling
                     } else {
                         try {
-                            Thread.sleep(SLEEP_DELAY_MS);
+                            Thread.sleep(SLEEP_IDLE_DELAY_MS);
+                            if (_currentStatus != PLAYER_LISTENING) {
+                                notifyAudioLevel(null, false);
+                                notifyAudioLevel(null, true);
+                            }
                             setStatus(PLAYER_LISTENING);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
