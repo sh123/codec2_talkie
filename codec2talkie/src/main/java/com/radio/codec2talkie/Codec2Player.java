@@ -35,7 +35,7 @@ public class Codec2Player extends Thread {
     private static int AUDIO_HIGH_LEVEL = -15;
 
     private final int AUDIO_SAMPLE_SIZE = 8000;
-    private final int SLEEP_IDLE_DELAY_MS = 10;
+    private final int SLEEP_IDLE_DELAY_MS = 20;
 
     private final int RX_TIMEOUT = 100;
     private final int TX_TIMEOUT = 2000;
@@ -239,7 +239,7 @@ public class Codec2Player extends Thread {
             return processLoopbackPlayback();
         }
         int bytesRead = 0;
-        byte[] br = new byte[1];
+        byte[] br = new byte[8192];
         if (_btInputStream != null) {
             bytesRead = _btInputStream.available();
             if (bytesRead > 0) {
@@ -250,7 +250,9 @@ public class Codec2Player extends Thread {
             bytesRead = _usbPort.read(br, RX_TIMEOUT);
         }
         if (bytesRead > 0) {
-            _kissProcessor.receiveByte(br[0]);
+            for (int i = 0; i < bytesRead; i++) {
+                _kissProcessor.receiveByte(br[i]);
+            }
             return true;
         }
         return false;
@@ -271,25 +273,6 @@ public class Codec2Player extends Thread {
             _kissProcessor.flush();
             _loopbackBuffer.flip();
             notifyAudioLevel(null, true);
-        }
-    }
-
-    private void runPureLoopback() {
-        short[] buffer = new short[Codec2.getSamplesPerFrame(_codec2Con)];
-        short[] buffer_ = new short[Codec2.getSamplesPerFrame(_codec2Con)];
-        char[] buffer2 = new char[Codec2.getBitsSize(_codec2Con)];
-        byte[] buffer3 = new byte[Codec2.getBitsSize(_codec2Con)];
-
-        _audioRecorder.startRecording();
-        _audioPlayer.play();
-        while (_btSocket.isConnected()) {
-            int n = _audioRecorder.read(buffer, 0, buffer.length);
-            Codec2.encode(_codec2Con, buffer, buffer2);
-            for (int i = 0; i < buffer3.length; i++) {
-                buffer3[i] = (byte) buffer2[i];
-            }
-            Codec2.decode(_codec2Con, buffer_, buffer3);
-            _audioPlayer.write(buffer_, 0, buffer_.length);
         }
     }
 
