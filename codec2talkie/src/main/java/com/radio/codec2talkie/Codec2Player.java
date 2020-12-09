@@ -307,6 +307,7 @@ public class Codec2Player extends Thread {
 
     @Override
     public void run() {
+        setPriority(Thread.MAX_PRIORITY);
         try {
             if (!_isLoopbackMode) {
                 _kissProcessor.setupCsma();
