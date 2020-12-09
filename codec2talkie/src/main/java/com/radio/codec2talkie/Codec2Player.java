@@ -216,10 +216,9 @@ public class Codec2Player extends Thread {
         }
         if (bytesRead > 0) {
             _kissProcessor.receiveByte(br[0]);
-            return false;
-        } else {
             return true;
         }
+        return false;
     }
 
     private void processRecordPlaybackToggle() throws IOException {
