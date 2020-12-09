@@ -42,6 +42,8 @@ public class Codec2Player extends Thread {
 
     private final byte CSMA_PERSISTENCE = (byte)0xff;
 
+    private final int RX_BUFFER_SIZE = 8192;
+
     private long _codec2Con;
 
     private BluetoothSocket _btSocket;
@@ -64,6 +66,7 @@ public class Codec2Player extends Thread {
 
     private final AudioRecord _audioRecorder;
 
+    private byte[] _rxDataBuffer;
     private short[] _recordAudioBuffer;
     private char[] _recordAudioEncodedBuffer;
 
@@ -78,6 +81,7 @@ public class Codec2Player extends Thread {
     public Codec2Player(Handler onPlayerStateChanged, int codec2Mode) {
         _onPlayerStateChanged = onPlayerStateChanged;
         _isLoopbackMode = false;
+        _rxDataBuffer = new byte[RX_BUFFER_SIZE];
 
         setCodecModeInternal(codec2Mode);
 
@@ -239,19 +243,18 @@ public class Codec2Player extends Thread {
             return processLoopbackPlayback();
         }
         int bytesRead = 0;
-        byte[] br = new byte[8192];
         if (_btInputStream != null) {
             bytesRead = _btInputStream.available();
             if (bytesRead > 0) {
-                bytesRead = _btInputStream.read(br);
+                bytesRead = _btInputStream.read(_rxDataBuffer);
             }
         }
         if (_usbPort != null) {
-            bytesRead = _usbPort.read(br, RX_TIMEOUT);
+            bytesRead = _usbPort.read(_rxDataBuffer, RX_TIMEOUT);
         }
         if (bytesRead > 0) {
             for (int i = 0; i < bytesRead; i++) {
-                _kissProcessor.receiveByte(br[i]);
+                _kissProcessor.receiveByte(_rxDataBuffer[i]);
             }
             return true;
         }
