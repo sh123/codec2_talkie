@@ -11,19 +11,20 @@ This minimalistic Android application is a digital voice frontend for your radio
 - Modem or transceiver which supports [KISS protocol](https://en.wikipedia.org/wiki/KISS_(TNC)) over Bluetooth or USB
 
 # Features
-- PTT button, push and talk, encoded speech will be transmitted to the modem
-- USB serial connectivity (115200 bps, 8 data bits, 1 stop bit, parity none, DTR/RTS are on), just select this app after connecting to USB and it will use given connection
-- Bluetooth connectivity on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from Android Bluetooth Settings
-- Voice codec2 mode selection, which allows you to select various codec2 modes from 450 up to 3200 bps.
-- Codec2 loopback mode, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality
+- **PTT button**, push and talk, Codec2 speech frames will be transmitted to the modem
+- **USB serial connectivity** (115200 bps, 8 data bits, 1 stop bit, no parity), just select this app after connecting to USB and it will use given connection
+- **Bluetooth connectivity** on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from Android Bluetooth Settings
+- **Voice codec2 mode selection**, which allows you to select various codec2 modes from 450 up to 3200 bps.
+- **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality
 
-# Suitable radios
+# Suitable radios and modems
 - Tested, works:
-  - LoRa modem: https://github.com/sh123/esp32_loraprs
-  - AFSK1200 PicoAPRS: http://www.db1nto.de/index_en.html
-  - Kenwood TH-D74A: https://dl1gkk.com/kenwood-th-d74-bluetooth-packet-radio-setup/
+  - LoRa modem (BT): https://github.com/sh123/esp32_loraprs
+  - AFSK1200 PicoAPRS (USB): http://www.db1nto.de/index_en.html
+  - AFSK1200/GMSK9600 Kenwood TH-D74A (BT): https://dl1gkk.com/kenwood-th-d74-bluetooth-packet-radio-setup/
 - Could work, needs testing:
-  - AFSK1200 MicroModem: https://unsigned.io/micromodem
+  - AFSK1200 MicroModem (USB): https://unsigned.io/micromodem
+  - AFSK1200/GMSK9600 Mobilinkd TNC3 (BT/USB): https://store.mobilinkd.com/products/mobilinkd-tnc3
 
 # Related Projects
 - Codec2 codec: https://github.com/drowe67/codec2
@@ -33,5 +34,11 @@ This minimalistic Android application is a digital voice frontend for your radio
 
 # TODO
 - Parrot mode, so speech coming from aether will be transmitted back (testing or digirepeating)
+- Speech level indicator on TX and when in codec2 loopback mode
 - QSO log, voicemail style recording of incoming speech so that incoming transmissions are not missed
 - Separate settings to avoid repeated operations
+  - Override default USB serial parameters
+  - Default Bluetooth device name to connect upon startup
+  - Default codec2 bitrate on startup
+  - Settings for parrot mode
+  - Settings for QSO log
