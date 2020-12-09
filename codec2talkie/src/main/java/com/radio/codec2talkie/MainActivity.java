@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -202,11 +203,11 @@ public class MainActivity extends AppCompatActivity {
                 _textStatus.setText("RX");
             }
             else if (msg.what == Codec2Player.PLAYER_RX_LEVEL) {
-                _progressRxLevel.getProgressDrawable().setColorFilter(colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN);
+                _progressRxLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
                 _progressRxLevel.setProgress(msg.arg1 - Codec2Player.getAudioMinLevel());
             }
             else if (msg.what == Codec2Player.PLAYER_TX_LEVEL) {
-                _progressTxLevel.getProgressDrawable().setColorFilter(colorFromAudioLevel((msg.arg1)), PorterDuff.Mode.SRC_IN);
+                _progressTxLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
                 _progressTxLevel.setProgress(msg.arg1 - Codec2Player.getAudioMinLevel());
             }
         }
