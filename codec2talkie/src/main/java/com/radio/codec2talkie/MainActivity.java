@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView _textConnInfo;
     private TextView _textStatus;
+    private Spinner _spinnerCodec2Mode;
     private ProgressBar _progressRxLevel;
     private ProgressBar _progressTxLevel;
 
@@ -73,9 +74,9 @@ public class MainActivity extends AppCompatActivity {
         Button btnPtt = findViewById(R.id.btnPtt);
         btnPtt.setOnTouchListener(onBtnPttTouchListener);
 
-        Spinner spinnerCodec2Mode = findViewById(R.id.spinnerCodecMode);
-        spinnerCodec2Mode.setSelection(CODEC2_DEFAULT_MODE_POS);
-        spinnerCodec2Mode.setOnItemSelectedListener(onCodecModeSelectedListener);
+        _spinnerCodec2Mode = findViewById(R.id.spinnerCodecMode);
+        _spinnerCodec2Mode.setSelection(CODEC2_DEFAULT_MODE_POS);
+        _spinnerCodec2Mode.setOnItemSelectedListener(onCodecModeSelectedListener);
 
         CheckBox checkBoxLoopback = findViewById(R.id.checkBoxLoopback);
         checkBoxLoopback.setOnCheckedChangeListener(onLoopbackCheckedChangeListener);
@@ -227,6 +228,7 @@ public class MainActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                _spinnerCodec2Mode.setSelection(CODEC2_DEFAULT_MODE_POS);
                 _codec2Player.start();
             }
         }
@@ -237,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
                 _textConnInfo.setText(data.getStringExtra("name"));
                 _codec2Player = new Codec2Player(onPlayerStateChanged, CODEC2_DEFAULT_MODE);
                 _codec2Player.setUsbPort(UsbPortHandler.getPort());
+                _spinnerCodec2Mode.setSelection(CODEC2_DEFAULT_MODE_POS);
                 _codec2Player.start();
             }
         }
