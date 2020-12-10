@@ -12,9 +12,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Codec2Talkie">
-        <activity android:name=".usb.UsbConnectActivity"></activity>
-        <activity android:name=".bluetooth.BluetoothConnectActivity" />
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".usb.UsbConnectActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity android:name=".bluetooth.BluetoothConnectActivity"
+            android:configChanges="orientation|screenSize"/>
+        <activity android:name=".MainActivity"
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
