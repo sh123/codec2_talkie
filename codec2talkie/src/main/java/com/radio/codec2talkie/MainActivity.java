@@ -6,7 +6,11 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -55,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private Spinner _spinnerCodec2Mode;
     private ProgressBar _progressRxLevel;
     private ProgressBar _progressTxLevel;
+    private CheckBox _checkBoxLoopback;
 
     private Codec2Player _codec2Player;
 
@@ -78,8 +83,10 @@ public class MainActivity extends AppCompatActivity {
         _spinnerCodec2Mode.setSelection(CODEC2_DEFAULT_MODE_POS);
         _spinnerCodec2Mode.setOnItemSelectedListener(onCodecModeSelectedListener);
 
-        CheckBox checkBoxLoopback = findViewById(R.id.checkBoxLoopback);
-        checkBoxLoopback.setOnCheckedChangeListener(onLoopbackCheckedChangeListener);
+        _checkBoxLoopback = findViewById(R.id.checkBoxLoopback);
+        _checkBoxLoopback.setOnCheckedChangeListener(onLoopbackCheckedChangeListener);
+
+        registerReceiver(onBluetoothDisconnected, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
 
         if (requestPermissions()) {
             startUsbConnectActivity();
@@ -147,6 +154,15 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (_codec2Player != null && SocketHandler.getSocket() != null) {
+                _codec2Player.stopRunning();
+            }
+        }
+    };
+
     private final View.OnTouchListener onBtnPttTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
@@ -190,7 +206,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             if (msg.what == Codec2Player.PLAYER_DISCONNECT) {
-                _textStatus.setText("DISC");
+                _textStatus.setText("STOP");
+                _checkBoxLoopback.setChecked(false);
                 Toast.makeText(getBaseContext(), "Disconnected from modem", Toast.LENGTH_SHORT).show();
                 startUsbConnectActivity();
             }
@@ -214,6 +231,17 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private void startPlayer(boolean isUsb) throws IOException {
+        _codec2Player = new Codec2Player(onPlayerStateChanged, CODEC2_DEFAULT_MODE);
+        if (isUsb) {
+            _codec2Player.setUsbPort(UsbPortHandler.getPort());
+        } else {
+            _codec2Player.setSocket(SocketHandler.getSocket());
+        }
+        _spinnerCodec2Mode.setSelection(CODEC2_DEFAULT_MODE_POS);
+        _codec2Player.start();
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -222,14 +250,11 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             } else if (resultCode == RESULT_OK) {
                 _textConnInfo.setText(data.getStringExtra("name"));
-                _codec2Player = new Codec2Player(onPlayerStateChanged, CODEC2_DEFAULT_MODE);
                 try {
-                    _codec2Player.setSocket(SocketHandler.getSocket());
+                    startPlayer(false);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                _spinnerCodec2Mode.setSelection(CODEC2_DEFAULT_MODE_POS);
-                _codec2Player.start();
             }
         }
         if (requestCode == REQUEST_CONNECT_USB) {
@@ -237,10 +262,11 @@ public class MainActivity extends AppCompatActivity {
                 startBluetoothConnectActivity();
             } else if (resultCode == RESULT_OK) {
                 _textConnInfo.setText(data.getStringExtra("name"));
-                _codec2Player = new Codec2Player(onPlayerStateChanged, CODEC2_DEFAULT_MODE);
-                _codec2Player.setUsbPort(UsbPortHandler.getPort());
-                _spinnerCodec2Mode.setSelection(CODEC2_DEFAULT_MODE_POS);
-                _codec2Player.start();
+                try {
+                    startPlayer(true);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

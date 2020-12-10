@@ -1,12 +1,16 @@
 package com.radio.codec2talkie.kiss;
 
+import android.util.Log;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class KissProcessor {
 
-    private final int KISS_FRAME_MAX_SIZE = 32;
+    private static final String TAG = KissProcessor.class.getSimpleName();
+
+    private final int KISS_TX_FRAME_MAX_SIZE = 32;
 
     private final byte KISS_FEND = (byte)0xc0;
     private final byte KISS_FESC = (byte)0xdb;
@@ -29,30 +33,27 @@ public class KissProcessor {
     private KissState _kissState = KissState.VOID;
     private byte _kissCmd = KISS_CMD_NOCMD;
 
-    private final int _frameSize;
-
     private final byte _tncCsmaPersistence;
     private final byte _tncCsmaSlotTime;
     private final byte _tncTxTail;
 
-    private final byte[] _inputFrameBuffer;
     private final byte[] _outputKissBuffer;
+    private final byte[] _inputKissBuffer;
 
     private final KissCallback _callback;
 
-    private int _outputFramePos;
-    private int _inputFramePos;
+    private int _outputKissBufferPos;
+    private int _inputKissBufferPos;
 
-    public KissProcessor(int frameSize, byte csmaPersistence, byte csmaSlotTime, byte txTail, KissCallback callback) {
-        _frameSize = frameSize;
+    public KissProcessor(byte csmaPersistence, byte csmaSlotTime, byte txTail, KissCallback callback) {
         _callback = callback;
-        _inputFrameBuffer = new byte[frameSize];
-        _outputKissBuffer = new byte[KISS_FRAME_MAX_SIZE];
+        _outputKissBuffer = new byte[KISS_TX_FRAME_MAX_SIZE];
+        _inputKissBuffer = new byte[100 * KISS_TX_FRAME_MAX_SIZE];
         _tncCsmaPersistence = csmaPersistence;
         _tncCsmaSlotTime = csmaSlotTime;
         _tncTxTail = txTail;
-        _inputFramePos = 0;
-        _outputFramePos = 0;
+        _outputKissBufferPos = 0;
+        _inputKissBufferPos = 0;
     }
 
     public void initialize() throws IOException {
@@ -70,21 +71,21 @@ public class KissProcessor {
     }
 
     public void send(byte [] frame) throws IOException {
-        ByteBuffer escapedBuffer = escape(frame);
-        int numItems = escapedBuffer.position();
-        escapedBuffer.rewind();
+        ByteBuffer escapedFrame = escape(frame);
+        int escapedFrameSize = escapedFrame.position();
+        escapedFrame.rewind();
 
-        if (_outputFramePos == 0) {
+        if (_outputKissBufferPos == 0) {
             startKissPacket(KISS_CMD_DATA);
         }
         // new frame does not fit, complete and create new frame
-        if (numItems + _outputFramePos >= KISS_FRAME_MAX_SIZE) {
+        if ( _outputKissBufferPos + escapedFrameSize >= KISS_TX_FRAME_MAX_SIZE) {
             completeKissPacket();
             startKissPacket(KISS_CMD_DATA);
         }
         // write new data
-        while (escapedBuffer.position() < numItems) {
-            sendKissByte(escapedBuffer.get());
+        while (escapedFrame.position() < escapedFrameSize) {
+            sendKissByte(escapedFrame.get());
         }
     }
 
@@ -110,7 +111,7 @@ public class KissProcessor {
                         _kissState = KissState.ESCAPE;
                     } else if (b == KISS_FEND) {
                         if (_kissCmd == KISS_CMD_DATA) {
-                            // end of packet
+                            _callback.onReceive(Arrays.copyOf(_inputKissBuffer, _inputKissBufferPos));
                         }
                         resetState();
                     } else {
@@ -131,10 +132,6 @@ public class KissProcessor {
                 default:
                     break;
             }
-            if (_inputFramePos >= _frameSize) {
-                _callback.onReceive(_inputFrameBuffer);
-                _inputFramePos = 0;
-            }
         }
     }
 
@@ -143,18 +140,21 @@ public class KissProcessor {
     }
 
     private void sendKissByte(byte b) {
-        _outputKissBuffer[_outputFramePos] = b;
-        _outputFramePos++;
+        _outputKissBuffer[_outputKissBufferPos++] = b;
     }
 
     private void receiveFrameByte(byte b) {
-        _inputFrameBuffer[_inputFramePos] = b;
-        _inputFramePos++;
+        _inputKissBuffer[_inputKissBufferPos++] = b;
+        if (_inputKissBufferPos >= _inputKissBuffer.length) {
+            Log.e(TAG, "Input KISS buffer overflow, discarding frame");
+            resetState();
+        }
     }
 
     private void resetState() {
         _kissCmd = KISS_CMD_NOCMD;
         _kissState = KissState.VOID;
+        _inputKissBufferPos = 0;
     }
 
     private void startKissPacket(byte commandCode) throws IOException {
@@ -163,10 +163,10 @@ public class KissProcessor {
     }
 
     private void completeKissPacket() throws IOException {
-        if (_outputFramePos > 0) {
+        if (_outputKissBufferPos > 0) {
             sendKissByte(KISS_FEND);
-            _callback.onSend(Arrays.copyOf(_outputKissBuffer, _outputFramePos));
-            _outputFramePos = 0;
+            _callback.onSend(Arrays.copyOf(_outputKissBuffer, _outputKissBufferPos));
+            _outputKissBufferPos = 0;
         }
     }
 
