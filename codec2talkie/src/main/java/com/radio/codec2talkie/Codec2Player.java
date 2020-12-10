@@ -176,28 +176,26 @@ public class Codec2Player extends Thread {
 
     private final KissCallback _kissCallback = new KissCallback() {
         @Override
-        protected void sendByte(byte b) throws IOException {
+        protected void sendData(byte[] kissPacket) throws IOException {
             if (_isLoopbackMode) {
                 try {
-                    _loopbackBuffer.put(b);
+                    _loopbackBuffer.put(kissPacket);
                 } catch (BufferOverflowException e) {
                     e.printStackTrace();
                 }
             } else {
-                byte [] ba = new byte[1];
-                ba[0] = b;
                 if (_btOutputStream != null)
-                    _btOutputStream.write(b);
+                    _btOutputStream.write(kissPacket);
                 if (_usbPort != null) {
-                    _usbPort.write(ba, TX_TIMEOUT);
+                    _usbPort.write(kissPacket, TX_TIMEOUT);
                 }
             }
         }
 
         @Override
         protected void receiveFrame(byte[] frame) {
-            Codec2.decode(_codec2Con, _playbackAudioBuffer, frame);
             notifyAudioLevel(_playbackAudioBuffer, false);
+            Codec2.decode(_codec2Con, _playbackAudioBuffer, frame);
             _audioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
         }
     };
@@ -223,8 +221,8 @@ public class Codec2Player extends Thread {
 
     private void processRecording() throws IOException {
         _audioRecorder.read(_recordAudioBuffer, 0, _audioBufferSize);
-        notifyAudioLevel(_recordAudioBuffer, true);
         Codec2.encode(_codec2Con, _recordAudioBuffer, _recordAudioEncodedBuffer);
+        notifyAudioLevel(_recordAudioBuffer, true);
 
         byte [] frame = new byte[_recordAudioEncodedBuffer.length];
 

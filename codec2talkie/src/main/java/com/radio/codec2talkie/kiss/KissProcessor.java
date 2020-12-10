@@ -2,6 +2,7 @@ package com.radio.codec2talkie.kiss;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class KissProcessor {
 
@@ -35,6 +36,7 @@ public class KissProcessor {
     private final byte _tncTxTail;
 
     private final byte[] _inputFrameBuffer;
+    private final byte[] _outputKissBuffer;
 
     private final KissCallback _callback;
 
@@ -45,26 +47,26 @@ public class KissProcessor {
         _frameSize = frameSize;
         _callback = callback;
         _inputFrameBuffer = new byte[frameSize];
+        _outputKissBuffer = new byte[KISS_FRAME_MAX_SIZE];
         _tncCsmaPersistence = csmaPersistence;
         _tncCsmaSlotTime = csmaSlotTime;
         _tncTxTail = txTail;
+        _inputFramePos = 0;
+        _outputFramePos = 0;
     }
 
     public void setupTnc() throws IOException {
-        _callback.sendByte(KISS_FEND);
-        _callback.sendByte(KISS_CMD_P);
-        _callback.sendByte(_tncCsmaPersistence);
-        _callback.sendByte(KISS_FEND);
+        startKissPacket(KISS_CMD_P);
+        sendKissByte(_tncCsmaPersistence);
+        completeKissPacket();
 
-        _callback.sendByte(KISS_FEND);
-        _callback.sendByte(KISS_CMD_SLOT_TIME);
-        _callback.sendByte(_tncCsmaSlotTime);
-        _callback.sendByte(KISS_FEND);
+        startKissPacket(KISS_CMD_SLOT_TIME);
+        sendKissByte(_tncCsmaSlotTime);
+        completeKissPacket();
 
-        _callback.sendByte(KISS_FEND);
-        _callback.sendByte(KISS_CMD_TX_TAIL);
-        _callback.sendByte(_tncTxTail);
-        _callback.sendByte(KISS_FEND);
+        startKissPacket(KISS_CMD_TX_TAIL);
+        sendKissByte(_tncTxTail);
+        completeKissPacket();
     }
 
     public void sendFrame(byte [] frame) throws IOException {
@@ -73,16 +75,16 @@ public class KissProcessor {
         escapedBuffer.rewind();
 
         if (_outputFramePos == 0) {
-            startFrame();
+            startKissPacket(KISS_CMD_DATA);
         }
-        // new data does not fit, complete and create new frame
+        // new frame does not fit, complete and create new frame
         if (numItems + _outputFramePos >= KISS_FRAME_MAX_SIZE) {
-            completeFrame();
-            startFrame();
+            completeKissPacket();
+            startKissPacket(KISS_CMD_DATA);
         }
         // write new data
         while (escapedBuffer.position() < numItems) {
-            send(escapedBuffer.get());
+            sendKissByte(escapedBuffer.get());
         }
     }
 
@@ -111,15 +113,15 @@ public class KissProcessor {
                     }
                     resetState();
                 } else {
-                    receive(b);
+                    receiveFrameByte(b);
                 }
                 break;
             case ESCAPE:
                 if (b == KISS_TFEND) {
-                    receive(KISS_FEND);
+                    receiveFrameByte(KISS_FEND);
                     _kissState = KissState.GET_DATA;
                 } else if (b == KISS_TFESC) {
-                    receive(KISS_FESC);
+                    receiveFrameByte(KISS_FESC);
                     _kissState = KissState.GET_DATA;
                 } else {
                     resetState();
@@ -135,15 +137,15 @@ public class KissProcessor {
     }
 
     public void flush() throws IOException{
-        completeFrame();
+        completeKissPacket();
     }
 
-    private void send(byte b) throws IOException {
-        _callback.sendByte(b);
+    private void sendKissByte(byte b) {
+        _outputKissBuffer[_outputFramePos] = b;
         _outputFramePos++;
     }
 
-    private void receive(byte b) {
+    private void receiveFrameByte(byte b) {
         _inputFrameBuffer[_inputFramePos] = b;
         _inputFramePos++;
     }
@@ -153,14 +155,15 @@ public class KissProcessor {
         _kissState = KissState.VOID;
     }
 
-    private void startFrame() throws IOException {
-        send(KISS_FEND);
-        send(KISS_CMD_DATA);
+    private void startKissPacket(byte commandCode) throws IOException {
+        sendKissByte(KISS_FEND);
+        sendKissByte(commandCode);
     }
 
-    private void completeFrame() throws IOException {
+    private void completeKissPacket() throws IOException {
         if (_outputFramePos > 0) {
-            send(KISS_FEND);
+            sendKissByte(KISS_FEND);
+            _callback.sendData(Arrays.copyOf(_outputKissBuffer, _outputFramePos));
             _outputFramePos = 0;
         }
     }
