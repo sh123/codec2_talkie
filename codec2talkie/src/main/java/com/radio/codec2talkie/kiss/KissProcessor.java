@@ -15,6 +15,7 @@ public class KissProcessor {
     private final byte KISS_CMD_DATA = (byte)0x00;
     private final byte KISS_CMD_P = (byte)0x02;
     private final byte KISS_CMD_SLOT_TIME = (byte)0x03;
+    private final byte KISS_CMD_TX_TAIL = (byte)0x04;
     private final byte KISS_CMD_NOCMD = (byte)0x80;
 
     private enum KissState {
@@ -28,8 +29,10 @@ public class KissProcessor {
     private byte _kissCmd = KISS_CMD_NOCMD;
 
     private final int _frameSize;
-    private final byte _csmaPersistence;
-    private final byte _csmaSlotTime;
+
+    private final byte _tncCsmaPersistence;
+    private final byte _tncCsmaSlotTime;
+    private final byte _tncTxTail;
 
     private final byte[] _inputFrameBuffer;
 
@@ -38,23 +41,29 @@ public class KissProcessor {
     private int _outputFramePos;
     private int _inputFramePos;
 
-    public KissProcessor(int frameSize, byte csmaPersistence, byte csmaSlotTime, KissCallback callback) {
+    public KissProcessor(int frameSize, byte csmaPersistence, byte csmaSlotTime, byte txTail, KissCallback callback) {
         _frameSize = frameSize;
         _callback = callback;
         _inputFrameBuffer = new byte[frameSize];
-        _csmaPersistence = csmaPersistence;
-        _csmaSlotTime = csmaSlotTime;
+        _tncCsmaPersistence = csmaPersistence;
+        _tncCsmaSlotTime = csmaSlotTime;
+        _tncTxTail = txTail;
     }
 
-    public void setupCsma() throws IOException {
+    public void setupTnc() throws IOException {
         _callback.sendByte(KISS_FEND);
         _callback.sendByte(KISS_CMD_P);
-        _callback.sendByte(_csmaPersistence);
+        _callback.sendByte(_tncCsmaPersistence);
         _callback.sendByte(KISS_FEND);
 
         _callback.sendByte(KISS_FEND);
         _callback.sendByte(KISS_CMD_SLOT_TIME);
-        _callback.sendByte(_csmaSlotTime);
+        _callback.sendByte(_tncCsmaSlotTime);
+        _callback.sendByte(KISS_FEND);
+
+        _callback.sendByte(KISS_FEND);
+        _callback.sendByte(KISS_CMD_TX_TAIL);
+        _callback.sendByte(_tncTxTail);
         _callback.sendByte(KISS_FEND);
     }
 

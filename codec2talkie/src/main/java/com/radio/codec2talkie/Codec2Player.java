@@ -2,7 +2,6 @@ package com.radio.codec2talkie;
 
 import android.bluetooth.BluetoothSocket;
 import android.media.AudioAttributes;
-import android.media.AudioDeviceCallback;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
@@ -42,6 +41,7 @@ public class Codec2Player extends Thread {
 
     private final byte CSMA_PERSISTENCE = (byte)0xff;
     private final byte CSMA_SLOT_TIME = (byte)0x00;
+    private final byte TX_TAIL_10MS_UNITS = (byte)20;   // 200ms
 
     private final int RX_BUFFER_SIZE = 8192;
 
@@ -166,7 +166,12 @@ public class Codec2Player extends Thread {
 
         _loopbackBuffer = ByteBuffer.allocateDirect(1024 * _audioEncodedBufferSize);
 
-        _kissProcessor = new KissProcessor(_audioEncodedBufferSize, CSMA_PERSISTENCE, CSMA_SLOT_TIME, _kissCallback);
+        _kissProcessor = new KissProcessor(
+                _audioEncodedBufferSize,
+                CSMA_PERSISTENCE,
+                CSMA_SLOT_TIME,
+                TX_TAIL_10MS_UNITS,
+                _kissCallback);
     }
 
     private final KissCallback _kissCallback = new KissCallback() {
@@ -310,7 +315,7 @@ public class Codec2Player extends Thread {
         setPriority(Thread.MAX_PRIORITY);
         try {
             if (!_isLoopbackMode) {
-                _kissProcessor.setupCsma();
+                _kissProcessor.setupTnc();
             }
             while (true) {
                 processRecordPlaybackToggle();
