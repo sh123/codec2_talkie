@@ -22,6 +22,7 @@ This minimalistic Android application is a digital voice frontend for your radio
 # Suitable radios and modems
 - Tested, works:
   - LoRa modem (BT): https://github.com/sh123/esp32_loraprs
+- Tested, unstable:
   - AFSK1200 PicoAPRS (USB): http://www.db1nto.de/index_en.html
   - AFSK1200/GMSK9600 Kenwood TH-D74A (BT): https://dl1gkk.com/kenwood-th-d74-bluetooth-packet-radio-setup/
 - Could work, needs testing:
