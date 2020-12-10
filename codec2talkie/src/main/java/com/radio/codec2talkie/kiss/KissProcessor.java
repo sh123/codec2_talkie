@@ -55,7 +55,7 @@ public class KissProcessor {
         _outputFramePos = 0;
     }
 
-    public void setupTnc() throws IOException {
+    public void initialize() throws IOException {
         startKissPacket(KISS_CMD_P);
         sendKissByte(_tncCsmaPersistence);
         completeKissPacket();
@@ -69,7 +69,7 @@ public class KissProcessor {
         completeKissPacket();
     }
 
-    public void sendFrame(byte [] frame) throws IOException {
+    public void send(byte [] frame) throws IOException {
         ByteBuffer escapedBuffer = escape(frame);
         int numItems = escapedBuffer.position();
         escapedBuffer.rewind();
@@ -88,51 +88,53 @@ public class KissProcessor {
         }
     }
 
-    public void receiveByte(byte b) {
-        switch (_kissState) {
-            case VOID:
-                if (b == KISS_FEND) {
-                    _kissCmd = KISS_CMD_NOCMD;
-                    _kissState = KissState.GET_CMD;
-                }
-                break;
-            case GET_CMD:
-                if (b == KISS_CMD_DATA) {
-                    _kissCmd = b;
-                    _kissState = KissState.GET_DATA;
-                } else if (b != KISS_FEND) {
-                    resetState();
-                }
-                break;
-            case GET_DATA:
-                if (b == KISS_FESC) {
-                    _kissState = KissState.ESCAPE;
-                } else if (b == KISS_FEND) {
-                    if (_kissCmd == KISS_CMD_DATA) {
-                        // end of packet
+    public void receive(byte[] data) {
+        for (byte b : data) {
+            switch (_kissState) {
+                case VOID:
+                    if (b == KISS_FEND) {
+                        _kissCmd = KISS_CMD_NOCMD;
+                        _kissState = KissState.GET_CMD;
                     }
-                    resetState();
-                } else {
-                    receiveFrameByte(b);
-                }
-                break;
-            case ESCAPE:
-                if (b == KISS_TFEND) {
-                    receiveFrameByte(KISS_FEND);
-                    _kissState = KissState.GET_DATA;
-                } else if (b == KISS_TFESC) {
-                    receiveFrameByte(KISS_FESC);
-                    _kissState = KissState.GET_DATA;
-                } else {
-                    resetState();
-                }
-                break;
-            default:
-                break;
-        }
-        if (_inputFramePos >= _frameSize) {
-            _callback.receiveFrame(_inputFrameBuffer);
-            _inputFramePos = 0;
+                    break;
+                case GET_CMD:
+                    if (b == KISS_CMD_DATA) {
+                        _kissCmd = b;
+                        _kissState = KissState.GET_DATA;
+                    } else if (b != KISS_FEND) {
+                        resetState();
+                    }
+                    break;
+                case GET_DATA:
+                    if (b == KISS_FESC) {
+                        _kissState = KissState.ESCAPE;
+                    } else if (b == KISS_FEND) {
+                        if (_kissCmd == KISS_CMD_DATA) {
+                            // end of packet
+                        }
+                        resetState();
+                    } else {
+                        receiveFrameByte(b);
+                    }
+                    break;
+                case ESCAPE:
+                    if (b == KISS_TFEND) {
+                        receiveFrameByte(KISS_FEND);
+                        _kissState = KissState.GET_DATA;
+                    } else if (b == KISS_TFESC) {
+                        receiveFrameByte(KISS_FESC);
+                        _kissState = KissState.GET_DATA;
+                    } else {
+                        resetState();
+                    }
+                    break;
+                default:
+                    break;
+            }
+            if (_inputFramePos >= _frameSize) {
+                _callback.onReceive(_inputFrameBuffer);
+                _inputFramePos = 0;
+            }
         }
     }
 
@@ -163,7 +165,7 @@ public class KissProcessor {
     private void completeKissPacket() throws IOException {
         if (_outputFramePos > 0) {
             sendKissByte(KISS_FEND);
-            _callback.sendData(Arrays.copyOf(_outputKissBuffer, _outputFramePos));
+            _callback.onSend(Arrays.copyOf(_outputKissBuffer, _outputFramePos));
             _outputFramePos = 0;
         }
     }

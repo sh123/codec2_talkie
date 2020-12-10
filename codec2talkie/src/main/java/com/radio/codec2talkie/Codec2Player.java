@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.radio.codec2talkie.kiss.KissCallback;
@@ -176,38 +177,46 @@ public class Codec2Player extends Thread {
 
     private final KissCallback _kissCallback = new KissCallback() {
         @Override
-        protected void sendData(byte[] kissPacket) throws IOException {
-            if (_isLoopbackMode) {
-                try {
-                    _loopbackBuffer.put(kissPacket);
-                } catch (BufferOverflowException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                if (_btOutputStream != null)
-                    _btOutputStream.write(kissPacket);
-                if (_usbPort != null) {
-                    _usbPort.write(kissPacket, TX_TIMEOUT);
-                }
-            }
+        protected void onSend(byte[] data) throws IOException {
+            sendRawDataToModem(data);
         }
 
         @Override
-        protected void receiveFrame(byte[] frame) {
-            notifyAudioLevel(_playbackAudioBuffer, false);
-            Codec2.decode(_codec2Con, _playbackAudioBuffer, frame);
-            _audioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
+        protected void onReceive(byte[] audioData) {
+            decodeAndPlayAudio(audioData);
         }
     };
 
-    private void notifyAudioLevel(short [] audioSamples, boolean isTx) {
+    private void sendRawDataToModem(byte[] data) throws IOException {
+        if (_isLoopbackMode) {
+            try {
+                _loopbackBuffer.put(data);
+            } catch (BufferOverflowException e) {
+                e.printStackTrace();
+            }
+        } else {
+            if (_btOutputStream != null)
+                _btOutputStream.write(data);
+            if (_usbPort != null) {
+                _usbPort.write(data, TX_TIMEOUT);
+            }
+        }
+    }
+
+    private void decodeAndPlayAudio(byte[] data) {
+        notifyAudioLevel(_playbackAudioBuffer, false);
+        Codec2.decode(_codec2Con, _playbackAudioBuffer, data);
+        _audioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
+    }
+
+    private void notifyAudioLevel(short [] pcmAudioSamples, boolean isTx) {
         double db = getAudioMinLevel();
-        if (audioSamples != null) {
+        if (pcmAudioSamples != null) {
             double acc = 0;
-            for (short v : audioSamples) {
+            for (short v : pcmAudioSamples) {
                 acc += Math.abs(v);
             }
-            double avg = acc / audioSamples.length;
+            double avg = acc / pcmAudioSamples.length;
             db = (20.0 * Math.log10(avg / 32768.0));
         }
         Message msg = Message.obtain();
@@ -219,7 +228,18 @@ public class Codec2Player extends Thread {
         _onPlayerStateChanged.sendMessage(msg);
     }
 
-    private void processRecording() throws IOException {
+    private boolean processLoopbackPlayback() {
+        try {
+            byte [] ba  = new byte[1];
+            _loopbackBuffer.get(ba);
+            _kissProcessor.receive(ba);
+            return true;
+        } catch (BufferUnderflowException e) {
+            return false;
+        }
+    }
+
+    private void recordAudio() throws IOException {
         _audioRecorder.read(_recordAudioBuffer, 0, _audioBufferSize);
         Codec2.encode(_codec2Con, _recordAudioBuffer, _recordAudioEncodedBuffer);
         notifyAudioLevel(_recordAudioBuffer, true);
@@ -229,20 +249,10 @@ public class Codec2Player extends Thread {
         for (int i = 0; i < _recordAudioEncodedBuffer.length; i++) {
             frame[i] = (byte)_recordAudioEncodedBuffer[i];
         }
-        _kissProcessor.sendFrame(frame);
+        _kissProcessor.send(frame);
     }
 
-    private boolean processLoopbackPlayback() {
-        try {
-            byte b = _loopbackBuffer.get();
-            _kissProcessor.receiveByte(b);
-            return true;
-        } catch (BufferUnderflowException e) {
-            return false;
-        }
-    }
-
-    private boolean processPlayback() throws IOException {
+    private boolean playAudio() throws IOException {
         if (_isLoopbackMode) {
             return processLoopbackPlayback();
         }
@@ -257,29 +267,35 @@ public class Codec2Player extends Thread {
             bytesRead = _usbPort.read(_rxDataBuffer, RX_TIMEOUT);
         }
         if (bytesRead > 0) {
-            for (int i = 0; i < bytesRead; i++) {
-                _kissProcessor.receiveByte(_rxDataBuffer[i]);
-            }
+            _kissProcessor.receive(Arrays.copyOf(_rxDataBuffer, bytesRead));
             return true;
         }
         return false;
     }
 
+    private void toggleRecording() {
+        _audioRecorder.startRecording();
+        _audioPlayer.stop();
+        _loopbackBuffer.clear();
+        notifyAudioLevel(null, false);
+    }
+
+    private void togglePlayback() throws IOException {
+        _audioRecorder.stop();
+        _audioPlayer.play();
+        _kissProcessor.flush();
+        _loopbackBuffer.flip();
+        notifyAudioLevel(null, true);
+    }
+
     private void processRecordPlaybackToggle() throws IOException {
         // playback -> recording
         if (_isRecording && _audioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
-            _audioRecorder.startRecording();
-            _audioPlayer.stop();
-            _loopbackBuffer.clear();
-            notifyAudioLevel(null, false);
+            toggleRecording();
         }
         // recording -> playback
         if (!_isRecording && _audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
-            _audioRecorder.stop();
-            _audioPlayer.play();
-            _kissProcessor.flush();
-            _loopbackBuffer.flip();
-            notifyAudioLevel(null, true);
+            togglePlayback();
         }
     }
 
@@ -313,18 +329,18 @@ public class Codec2Player extends Thread {
         setPriority(Thread.MAX_PRIORITY);
         try {
             if (!_isLoopbackMode) {
-                _kissProcessor.setupTnc();
+                _kissProcessor.initialize();
             }
             while (true) {
                 processRecordPlaybackToggle();
 
                 // recording
                 if (_audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
-                    processRecording();
+                    recordAudio();
                     setStatus(PLAYER_RECORDING);
                 } else {
                     // playback
-                    if (processPlayback()) {
+                    if (playAudio()) {
                         setStatus(PLAYER_PLAYING);
                     // idling
                     } else {
