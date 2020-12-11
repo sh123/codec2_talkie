@@ -195,7 +195,7 @@ public class Codec2Player extends Thread {
             // split by audio frame and play
             byte [] audioFrame = new byte[_audioEncodedBufferSize];
             for (int i = 0; i < data.length; i += _audioEncodedBufferSize) {
-                for (int j = 0; j < _audioEncodedBufferSize; j++)
+                for (int j = 0; j < _audioEncodedBufferSize && (j + i) < data.length; j++)
                     audioFrame[j] = data[i + j];
                 decodeAndPlayAudio(audioFrame);
             }
