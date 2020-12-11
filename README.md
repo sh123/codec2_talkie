@@ -37,7 +37,9 @@ This minimalistic Android application is a digital voice frontend for your radio
 
 # FAQ
 - Gaps in received audio
-  - If indicator often changes between RX/IDLE on the receiver side when sender and recipient are close by then most likey you do not have enough bandwidth, use higher throughput modem mode
+  - If indicator often changes between RX/IDLE on the receiver side when sender and recipient are close by then 
+    - most likey you do not have enough bandwidth, use higher throughput modem mode
+    - modem goes into RX state immediately after sending first packet, increase TxTail parameter for your modem
   
 # TODO
 - Parrot mode, so speech coming from aether will be transmitted back (testing or digirepeating)
