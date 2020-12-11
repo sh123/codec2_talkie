@@ -10,7 +10,7 @@ public class KissProcessor {
 
     private static final String TAG = KissProcessor.class.getSimpleName();
 
-    private final int KISS_TX_FRAME_MAX_SIZE = 32;
+    private final int KISS_TX_FRAME_MAX_SIZE = 48;
 
     private final byte KISS_FEND = (byte)0xc0;
     private final byte KISS_FESC = (byte)0xdb;
