@@ -38,7 +38,7 @@ This minimalistic Android application is a digital voice frontend for your radio
 # FAQ
 - Gaps in received audio
   - If indicator often changes between RX/IDLE on the receiver side when sender and recipient are close by then 
-    - most likey you do not have enough bandwidth, use higher throughput modem mode
+    - most likey you do not have enough bandwidth, use higher throughput modem mode, for LoRa modems you need approximately 170% of data rate for the given codec2 bitrate
     - modem goes into RX state immediately after sending first packet, increase TxTail parameter for your modem
   
 # TODO
