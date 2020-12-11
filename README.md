@@ -35,6 +35,12 @@ This minimalistic Android application is a digital voice frontend for your radio
 - Android USB serial: https://github.com/mik3y/usb-serial-for-android
 - iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
 
+# FAQ
+- Gaps in received audio
+  - If indicator often changes between RX/IDLE on the receiver side when sender and recipient are close by then 
+    - most likey you do not have enough bandwidth, use higher throughput modem mode
+    - modem goes into RX state immediately after sending first packet, increase TxTail parameter for your modem
+  
 # TODO
 - Parrot mode, so speech coming from aether will be transmitted back (testing or digirepeating)
 - QSO log, voicemail style recording of incoming speech so that incoming transmissions are not missed
