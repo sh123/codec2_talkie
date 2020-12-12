@@ -15,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -56,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.RECORD_AUDIO
     };
 
-    static boolean _isActive = false;
+    private boolean _isActive = false;
 
     private TextView _textConnInfo;
     private TextView _textStatus;
@@ -72,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        _isActive = false;
+        _isActive = true;
 
         setContentView(R.layout.activity_main);
 
@@ -94,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         _checkBoxLoopback.setOnCheckedChangeListener(onLoopbackCheckedChangeListener);
 
         registerReceiver(onBluetoothDisconnected, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
+        registerReceiver(onUsbDetached, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
 
         if (requestPermissions()) {
             startUsbConnectActivity();
@@ -101,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         _isActive = false;
         if (_codec2Player != null) {
             _codec2Player.stopRunning();
@@ -173,9 +175,20 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_codec2Player != null && SocketHandler.getSocket() != null) {
-            _codec2Player.stopRunning();
+            if (_codec2Player != null && SocketHandler.getSocket() != null) {
+                Toast.makeText(MainActivity.this, "Bluetooth disconnected", Toast.LENGTH_SHORT).show();
+                _codec2Player.stopRunning();
+            }
         }
+    };
+
+    private final BroadcastReceiver onUsbDetached = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (_codec2Player != null && UsbPortHandler.getPort() != null) {
+                Toast.makeText(MainActivity.this, "USB detached", Toast.LENGTH_SHORT).show();
+                _codec2Player.stopRunning();
+            }
         }
     };
 
