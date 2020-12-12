@@ -340,6 +340,13 @@ public class Codec2Player extends Thread {
                 e.printStackTrace();
             }
         }
+        if (_usbPort != null) {
+            try {
+                _usbPort.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void setStatus(int status, int delayMs) {
