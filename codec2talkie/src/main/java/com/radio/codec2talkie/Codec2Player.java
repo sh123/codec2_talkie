@@ -332,6 +332,14 @@ public class Codec2Player extends Thread {
         _audioPlayer.release();
 
         Codec2.destroy(_codec2Con);
+
+        if (_btSocket != null) {
+            try {
+                _btSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void setStatus(int status, int delayMs) {

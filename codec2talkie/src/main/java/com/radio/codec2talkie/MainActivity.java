@@ -56,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.RECORD_AUDIO
     };
 
+    static boolean _isActive = false;
+
     private TextView _textConnInfo;
     private TextView _textStatus;
     private Spinner _spinnerCodec2Mode;
@@ -69,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        _isActive = false;
+
         setContentView(R.layout.activity_main);
 
         _textConnInfo = findViewById(R.id.textBtName);
@@ -92,6 +97,15 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestPermissions()) {
             startUsbConnectActivity();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        _isActive = false;
+        if (_codec2Player != null) {
+            _codec2Player.stopRunning();
         }
     }
 
@@ -159,9 +173,9 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (_codec2Player != null && SocketHandler.getSocket() != null) {
-                _codec2Player.stopRunning();
-            }
+        if (_codec2Player != null && SocketHandler.getSocket() != null) {
+            _codec2Player.stopRunning();
+        }
         }
     };
 
@@ -207,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
     private final Handler onPlayerStateChanged = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == Codec2Player.PLAYER_DISCONNECT) {
+            if (_isActive && msg.what == Codec2Player.PLAYER_DISCONNECT) {
                 _textStatus.setText("STOP");
                 _checkBoxLoopback.setChecked(false);
                 Toast.makeText(getBaseContext(), "Disconnected from modem", Toast.LENGTH_SHORT).show();
