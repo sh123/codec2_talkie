@@ -28,6 +28,7 @@ This minimalistic Android application is a digital voice frontend for your radio
 - Could work, needs testing:
   - AFSK1200 MicroModem (USB): https://unsigned.io/micromodem
   - AFSK1200/GMSK9600 Mobilinkd TNC3 (BT/USB): https://store.mobilinkd.com/products/mobilinkd-tnc3
+  - nRF2401L01 2.4 GHz (USB): https://github.com/sh123/nrf24l01_arduino_kiss_modem
 
 # Related Projects
 - Codec2 codec: https://github.com/drowe67/codec2
