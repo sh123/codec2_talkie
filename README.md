@@ -16,7 +16,7 @@ This minimalistic Android application is a digital voice frontend for your radio
 - **PTT button**, push and talk, Codec2 speech frames will be transmitted to the modem
 - **USB serial connectivity** (115200 bps, 8 data bits, 1 stop bit, no parity), just select this app after connecting to USB and it will use given connection
 - **Bluetooth connectivity** on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from Android Bluetooth Settings
-- **Voice codec2 mode selection**, which allows you to select various codec2 modes from 450 up to 3200 bps.
+- **Voice codec2 mode selection**, which allows you to select various codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends
 - **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality
 
 # Suitable radios and modems
