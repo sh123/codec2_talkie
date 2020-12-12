@@ -42,6 +42,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     private final static int REQUEST_CONNECT_BT = 1;
     private final static int REQUEST_CONNECT_USB = 2;
     private final static int REQUEST_PERMISSIONS = 3;

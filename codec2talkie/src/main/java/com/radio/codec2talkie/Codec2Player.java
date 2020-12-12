@@ -31,6 +31,8 @@ import com.ustadmobile.codec2.Codec2;
 
 public class Codec2Player extends Thread {
 
+    private static final String TAG = Codec2Player.class.getSimpleName();
+
     public static int PLAYER_DISCONNECT = 1;
     public static int PLAYER_LISTENING = 2;
     public static int PLAYER_RECORDING = 3;
