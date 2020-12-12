@@ -50,4 +50,4 @@ This minimalistic Android application is a digital voice frontend for your radio
   - Default codec2 bitrate on startup
   - Settings for parrot mode
   - Settings for QSO log
-- Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency, modulation scheme or other modem parameters.
+- Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency, modulation scheme or other modem parameters on the fly.
