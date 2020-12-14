@@ -41,6 +41,7 @@ This minimalistic Android application is a digital voice frontend for your radio
   - If indicator often changes between RX/IDLE on the receiver side when sender and recipient are close by then 
     - most likey you do not have enough bandwidth, use higher throughput modem mode, for LoRa modems you need approximately 170% of data rate for the given codec2 bitrate
     - modem goes into RX state too fast after sending first packet, increase TxTail parameter for your modem, so it will longer TX tail before switching to RX
+    - if you are using LibAPRS based modem, set TxTail and TxPreamble programatically by using `APRS_setPreamble` and `APRS_setTail` methods as it does not seem to set these values from `CMD_TXDELAY` and `CMD_TXTAIL` KISS commands
   
 # TODO
 - Parrot mode, so speech coming from aether will be transmitted back (testing or digirepeating)
