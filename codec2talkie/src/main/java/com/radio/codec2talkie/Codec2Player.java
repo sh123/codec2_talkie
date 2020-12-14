@@ -52,7 +52,8 @@ public class Codec2Player extends Thread {
 
     private final byte CSMA_PERSISTENCE = (byte)0xff;
     private final byte CSMA_SLOT_TIME = (byte)0x00;
-    private final byte TX_TAIL_10MS_UNITS = (byte)20;   // 200ms
+    private final byte TX_DELAY_10MS_UNITS = (byte)(250 / 10);
+    private final byte TX_TAIL_10MS_UNITS = (byte)(500 / 10);
 
     private final int RX_BUFFER_SIZE = 8192;
 
@@ -183,7 +184,8 @@ public class Codec2Player extends Thread {
 
         _loopbackBuffer = ByteBuffer.allocateDirect(1024 * _audioEncodedBufferSize);
 
-        _kissProcessor = new KissProcessor(CSMA_PERSISTENCE, CSMA_SLOT_TIME, TX_TAIL_10MS_UNITS, _kissCallback);
+        _kissProcessor = new KissProcessor(CSMA_PERSISTENCE, CSMA_SLOT_TIME,
+                TX_DELAY_10MS_UNITS, TX_TAIL_10MS_UNITS, _kissCallback);
     }
 
     private final KissCallback _kissCallback = new KissCallback() {

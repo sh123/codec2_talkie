@@ -18,6 +18,7 @@ public class KissProcessor {
     private final byte KISS_TFESC = (byte)0xdd;
 
     private final byte KISS_CMD_DATA = (byte)0x00;
+    private final byte KISS_CMD_TX_DELAY = (byte)0x01;
     private final byte KISS_CMD_P = (byte)0x02;
     private final byte KISS_CMD_SLOT_TIME = (byte)0x03;
     private final byte KISS_CMD_TX_TAIL = (byte)0x04;
@@ -35,6 +36,7 @@ public class KissProcessor {
 
     private final byte _tncCsmaPersistence;
     private final byte _tncCsmaSlotTime;
+    private final byte _tncTxDelay;
     private final byte _tncTxTail;
 
     private final byte[] _outputKissBuffer;
@@ -45,12 +47,13 @@ public class KissProcessor {
     private int _outputKissBufferPos;
     private int _inputKissBufferPos;
 
-    public KissProcessor(byte csmaPersistence, byte csmaSlotTime, byte txTail, KissCallback callback) {
+    public KissProcessor(byte csmaPersistence, byte csmaSlotTime, byte txDelay, byte txTail, KissCallback callback) {
         _callback = callback;
         _outputKissBuffer = new byte[KISS_TX_FRAME_MAX_SIZE];
         _inputKissBuffer = new byte[100 * KISS_TX_FRAME_MAX_SIZE];
         _tncCsmaPersistence = csmaPersistence;
         _tncCsmaSlotTime = csmaSlotTime;
+        _tncTxDelay = txDelay;
         _tncTxTail = txTail;
         _outputKissBufferPos = 0;
         _inputKissBufferPos = 0;
@@ -63,6 +66,10 @@ public class KissProcessor {
 
         startKissPacket(KISS_CMD_SLOT_TIME);
         sendKissByte(_tncCsmaSlotTime);
+        completeKissPacket();
+
+        startKissPacket(KISS_CMD_TX_DELAY);
+        sendKissByte(_tncTxTail);
         completeKissPacket();
 
         startKissPacket(KISS_CMD_TX_TAIL);
