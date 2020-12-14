@@ -21,14 +21,15 @@ This minimalistic Android application is a digital voice frontend for your radio
 
 # Suitable radios and modems
 - Tested, works:
-  - LoRa modem (BT): https://github.com/sh123/esp32_loraprs
+  - (BT) LoRa modem (BT) 450/700 @ approx. 1300 bps: https://github.com/sh123/esp32_loraprs
+  - (BT) custom AFSK1200 LibAPRS based modem: 450 works, 700 works, but gaps in RX: https://github.com/markqvist/LibAPRS
 - Tested, works, but not too stable:
-  - AFSK1200 PicoAPRS (USB): http://www.db1nto.de/index_en.html
-  - AFSK1200/GMSK9600 Kenwood TH-D74A (BT): https://dl1gkk.com/kenwood-th-d74-bluetooth-packet-radio-setup/
+  - (USB) AFSK1200 PicoAPRS: http://www.db1nto.de/index_en.html
+  - (BT) AFSK1200/GMSK9600 Kenwood TH-D74A: https://dl1gkk.com/kenwood-th-d74-bluetooth-packet-radio-setup/
 - Could work, needs testing:
-  - AFSK1200 MicroModem (USB): https://unsigned.io/micromodem
-  - AFSK1200/GMSK9600 Mobilinkd TNC3 (BT/USB): https://store.mobilinkd.com/products/mobilinkd-tnc3
-  - nRF2401L01 2.4 GHz (USB): https://github.com/sh123/nrf24l01_arduino_kiss_modem
+  - (USB) AFSK1200 MicroModem: https://unsigned.io/micromodem
+  - (BT/USB) AFSK1200/GMSK9600 Mobilinkd TNC3: https://store.mobilinkd.com/products/mobilinkd-tnc3
+  - (USB) nRF2401L01 2.4 GHz: https://github.com/sh123/nrf24l01_arduino_kiss_modem
 
 # Related Projects
 - Codec2 codec: https://github.com/drowe67/codec2
