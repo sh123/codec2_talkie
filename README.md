@@ -38,7 +38,7 @@ This minimalistic Android application is a digital voice frontend for your radio
   - Android Codec2 wrapper code: https://github.com/UstadMobile/Codec2-Android
 - Fetched with gradle as dependency:
   - Android USB serial: https://github.com/mik3y/usb-serial-for-android
--Other interesting projects:
+- Other interesting projects:
   - iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
 
 # FAQ
@@ -56,4 +56,4 @@ This minimalistic Android application is a digital voice frontend for your radio
   - Default codec2 bitrate on startup
   - Settings for parrot mode
   - Settings for QSO log
-- Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency, modulation scheme or other modem parameters on the fly.
+- Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency, modulation scheme or other modem parameters on the fly from the user interface.
