@@ -33,15 +33,13 @@ This minimalistic Android application is a digital voice frontend for your radio
   - (USB) nRF2401L01 2.4 GHz: https://github.com/sh123/nrf24l01_arduino_kiss_modem
 
 # Related Projects
-Source code is integrated into this project for easier building and customization:
-- Codec2 codec: https://github.com/drowe67/codec2
-- Android Codec2 wrapper code: https://github.com/UstadMobile/Codec2-Android
-
-Fetched with gradle as dependency:
-- Android USB serial: https://github.com/mik3y/usb-serial-for-android
-
-Other interesting projects:
-- iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
+- Source code is integrated into this project for easier building and customization:
+  - Codec2 codec: https://github.com/drowe67/codec2
+  - Android Codec2 wrapper code: https://github.com/UstadMobile/Codec2-Android
+- Fetched with gradle as dependency:
+  - Android USB serial: https://github.com/mik3y/usb-serial-for-android
+-Other interesting projects:
+  - iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
 
 # FAQ
 - Gaps in received audio, indicator often changes between RX/IDLE on the receiver side when sender and recipient are close by then 
