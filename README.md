@@ -23,6 +23,7 @@ This minimalistic Android application is a digital voice frontend for your radio
 - Tested, works:
   - (BT) LoRa modem 450/700 @ approx. 1300 bps: https://github.com/sh123/esp32_loraprs
   - (BT) custom AFSK1200 LibAPRS based modem: 450 works fine, 700 works with small gaps, probably LibAPRS needs some tweaks: https://github.com/markqvist/LibAPRS
+  - (USB) HC-12 modules: works, need to configure modem separately for 115200,8,1 serial speed
 - Tested, works, but not too stable, probably needs TXTail tuning:
   - (USB) AFSK1200 PicoAPRS: http://www.db1nto.de/index_en.html
   - (BT) AFSK1200/GMSK9600 Kenwood TH-D74A: https://dl1gkk.com/kenwood-th-d74-bluetooth-packet-radio-setup/
@@ -30,7 +31,6 @@ This minimalistic Android application is a digital voice frontend for your radio
   - (USB) AFSK1200 MicroModem: https://unsigned.io/micromodem
   - (BT/USB) AFSK1200/GMSK9600 Mobilinkd TNC3: https://store.mobilinkd.com/products/mobilinkd-tnc3
   - (USB) nRF2401L01 2.4 GHz: https://github.com/sh123/nrf24l01_arduino_kiss_modem
-  - (USB) HC-12 modules
 
 # Related Projects
 - Codec2 codec: https://github.com/drowe67/codec2
