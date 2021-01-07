@@ -69,7 +69,7 @@ public class KissProcessor {
         completeKissPacket();
 
         startKissPacket(KISS_CMD_TX_DELAY);
-        sendKissByte(_tncTxTail);
+        sendKissByte(_tncTxDelay);
         completeKissPacket();
 
         startKissPacket(KISS_CMD_TX_TAIL);
