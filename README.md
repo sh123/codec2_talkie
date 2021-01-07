@@ -34,12 +34,14 @@ This minimalistic Android application is a digital voice frontend for your radio
 
 # Related Projects
 Source code is integrated into this project for easier building and customization:
-  - Codec2 codec: https://github.com/drowe67/codec2
-  - Android Codec2 wrapper code: https://github.com/UstadMobile/Codec2-Android
-Fetched as sependincy with gradle:
-  - Android USB serial (fetched automatically with gradle): https://github.com/mik3y/usb-serial-for-android
+- Codec2 codec: https://github.com/drowe67/codec2
+- Android Codec2 wrapper code: https://github.com/UstadMobile/Codec2-Android
+
+Fetched with gradle as dependency:
+- Android USB serial: https://github.com/mik3y/usb-serial-for-android
+
 Other interesting projects:
-  - iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
+- iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
 
 # FAQ
 - Gaps in received audio, indicator often changes between RX/IDLE on the receiver side when sender and recipient are close by then 
