@@ -22,7 +22,7 @@ This minimalistic Android application is a digital voice frontend for your radio
 # Suitable radios and modems
 - Tested, works:
   - (BT) LoRa modem 450/700 @ approx. 1300 bps: https://github.com/sh123/esp32_loraprs
-  - (BT) custom AFSK1200 LibAPRS based modem with increased TXTail parameter: 450 works fine, 700 works with small gaps, probably LibAPRS needs some tweaks: https://github.com/markqvist/LibAPRS
+  - (BT) custom AFSK1200 LibAPRS based modem with increased TXTail parameter and Baofeng handheld transceiver: 450 works fine, 700 works with small gaps, probably LibAPRS needs some tweaks: https://github.com/markqvist/LibAPRS
   - (USB) HC-12 modules: works, need to configure module separately for 115200,8,1 serial speed before using with the application
 - Tested, works, but not too stable, probably needs TXTail tuning:
   - (USB) AFSK1200 PicoAPRS: http://www.db1nto.de/index_en.html
