@@ -21,14 +21,16 @@ This minimalistic Android application is a digital voice frontend for your radio
 
 # Suitable radios and modems
 - Tested, works:
-  - LoRa modem (BT): https://github.com/sh123/esp32_loraprs
-- Tested, works, but not too stable:
-  - AFSK1200 PicoAPRS (USB): http://www.db1nto.de/index_en.html
-  - AFSK1200/GMSK9600 Kenwood TH-D74A (BT): https://dl1gkk.com/kenwood-th-d74-bluetooth-packet-radio-setup/
+  - (BT) LoRa modem 450/700 @ approx. 1300 bps: https://github.com/sh123/esp32_loraprs
+  - (BT) custom AFSK1200 LibAPRS based modem: 450 works fine, 700 works with small gaps, probably LibAPRS needs some tweaks: https://github.com/markqvist/LibAPRS
+- Tested, works, but not too stable, probably needs TXTail tuning:
+  - (USB) AFSK1200 PicoAPRS: http://www.db1nto.de/index_en.html
+  - (BT) AFSK1200/GMSK9600 Kenwood TH-D74A: https://dl1gkk.com/kenwood-th-d74-bluetooth-packet-radio-setup/
 - Could work, needs testing:
-  - AFSK1200 MicroModem (USB): https://unsigned.io/micromodem
-  - AFSK1200/GMSK9600 Mobilinkd TNC3 (BT/USB): https://store.mobilinkd.com/products/mobilinkd-tnc3
-  - nRF2401L01 2.4 GHz (USB): https://github.com/sh123/nrf24l01_arduino_kiss_modem
+  - (USB) AFSK1200 MicroModem: https://unsigned.io/micromodem
+  - (BT/USB) AFSK1200/GMSK9600 Mobilinkd TNC3: https://store.mobilinkd.com/products/mobilinkd-tnc3
+  - (USB) nRF2401L01 2.4 GHz: https://github.com/sh123/nrf24l01_arduino_kiss_modem
+  - (USB) HC-12 modules
 
 # Related Projects
 - Codec2 codec: https://github.com/drowe67/codec2
@@ -38,9 +40,9 @@ This minimalistic Android application is a digital voice frontend for your radio
 
 # FAQ
 - Gaps in received audio, indicator often changes between RX/IDLE on the receiver side when sender and recipient are close by then 
-  - most likey you do not have enough bandwidth, use higher throughput modem mode, for LoRa modems you need approximately 170% of data rate for the given codec2 bitrate, AFSK1200 modems should work at 450 bps codec2 mode, 700 bps might work, but not on all modems
-  - modem goes into RX state too fast after sending first packet, increase TxTail parameter for your modem, so it will longer TX tail before switching to RX
-  - if you are using LibAPRS based modem, set TxTail and TxPreamble programatically by using `APRS_setPreamble` and `APRS_setTail` methods as it does not seem to set these values from `CMD_TXDELAY` and `CMD_TXTAIL` KISS commands
+  - most likely you do not have enough bandwidth, use higher throughput modem mode, for LoRa modems you need approximately 170% of data rate for the given codec2 bitrate, AFSK1200 modems should work at 450 bps codec2 mode, 700 bps might work, but not on all modems, higher speed codec2 modes won't work on AFSK1200
+  - modem goes into RX state too fast after sending first packet, increase TxTail parameter for your modem if it does not handle corresponding KISS command, so it will stay longer in TX before switching to RX
+    - if you are using LibAPRS based modem, set TxTail and TxPreamble programatically by using `APRS_setPreamble` and `APRS_setTail` methods as it does not seem to set these values from `CMD_TXDELAY` and `CMD_TXTAIL` KISS commands
   
 # TODO
 - Parrot mode, so speech coming from aether will be transmitted back (testing or digirepeating)
