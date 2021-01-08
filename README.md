@@ -10,7 +10,7 @@ This minimalistic Android application is a digital voice frontend for your radio
 
 # Requirements
 - Android 6.0 (API 23) or higher
-  - Application could also be used with your Android network radio, such as Inrico TM-7, apk just needs to be installed over USB.
+  - Application could also be used with your Android network radio, such as Inrico TM-7, apk just needs to be installed over USB
 - Modem or transceiver which supports [KISS protocol](https://en.wikipedia.org/wiki/KISS_(TNC)) over Bluetooth or USB
 
 # Features
@@ -58,4 +58,4 @@ This minimalistic Android application is a digital voice frontend for your radio
   - Default codec2 bitrate on startup
   - Settings for parrot mode
   - Settings for QSO log
-- Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency, modulation scheme or other modem parameters on the fly from the user interface.
+- Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency, modulation scheme or other modem parameters on the fly from the user interface
