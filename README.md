@@ -24,7 +24,7 @@ This minimalistic Android application is a digital voice frontend for your radio
 - Tested, works:
   - (BT) LoRa modem 450/700 bps codec2 modes tested at 1300 bps and 900 bps LoRa speeds: https://github.com/sh123/esp32_loraprs
   - (BT) custom AFSK1200 LibAPRS based modem with increased TXTail parameter and Baofeng handheld transceiver: 450 works fine, 700 works with small gaps, probably LibAPRS needs some tweaks: https://github.com/markqvist/LibAPRS
-  - (USB) HC-12 modules: works, need to configure module separately for 115200,8,1 serial speed before using with the application
+  - (USB) HC-12 modules: works, but application needs to use lower USB serial bit rate (separate builds for now), because module RF bit rate is hardwired to its serial bit rate, also module needs to be preconfigured with AT commands first
 - Tested, works, but not too stable, probably needs TXTail tuning:
   - (USB) AFSK1200 PicoAPRS: http://www.db1nto.de/index_en.html
   - (BT) AFSK1200/GMSK9600 Kenwood TH-D74A: https://dl1gkk.com/kenwood-th-d74-bluetooth-packet-radio-setup/
