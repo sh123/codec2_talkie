@@ -10,6 +10,7 @@ This minimalistic Android application is a digital voice frontend for your radio
 
 # Requirements
 - Android 6.0 (API 23) or higher
+  - Application could be also used with your Android network radio, such as Inrico TM-7, apk just needs to be installed over USB.
 - Modem or transceiver which supports [KISS protocol](https://en.wikipedia.org/wiki/KISS_(TNC)) over Bluetooth or USB
 
 # Features
