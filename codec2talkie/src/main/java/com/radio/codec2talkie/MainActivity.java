@@ -20,6 +20,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.SystemClock;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar _progressRxLevel;
     private ProgressBar _progressTxLevel;
     private CheckBox _checkBoxLoopback;
+    private Button _btnPtt;
 
     private Codec2Player _codec2Player;
 
@@ -84,8 +87,8 @@ public class MainActivity extends AppCompatActivity {
         _progressTxLevel = findViewById(R.id.progressTxLevel);
         _progressTxLevel.setMax(-Codec2Player.getAudioMinLevel());
 
-        Button btnPtt = findViewById(R.id.btnPtt);
-        btnPtt.setOnTouchListener(onBtnPttTouchListener);
+        _btnPtt = findViewById(R.id.btnPtt);
+        _btnPtt.setOnTouchListener(onBtnPttTouchListener);
 
         _spinnerCodec2Mode = findViewById(R.id.spinnerCodecMode);
         _spinnerCodec2Mode.setSelection(CODEC2_DEFAULT_MODE_POS);
@@ -191,6 +194,28 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_TV_DATA_SERVICE:
+                _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                        SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
+                return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_TV_DATA_SERVICE:
+                _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                        SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
+                return true;
+        }
+        return super.onKeyUp(keyCode, event);
+    }
 
     private final View.OnTouchListener onBtnPttTouchListener = new View.OnTouchListener() {
         @Override
