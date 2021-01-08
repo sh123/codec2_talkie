@@ -19,7 +19,7 @@ This minimalistic Android application is a digital voice frontend for your radio
 - **PTT hardware button**, `KEYCODE_TV_DATA SERVICE` (230 key code) hardware button is used for PTT (used on some Android network radios)
 - **USB serial connectivity** (115200 bps, 8 data bits, 1 stop bit, no parity), just select this app after connecting to USB and it will use given connection
 - **Bluetooth connectivity** on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from Android Bluetooth Settings
-- **Voice codec2 mode selection**, which allows you to select various codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends
+- **Voice codec2 mode selection**, which allows you to select various codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends as codec2 mode negotiation between clients is not implemented at the moment
 - **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality
 
 # Suitable radios and modems
