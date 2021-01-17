@@ -45,10 +45,13 @@ This minimalistic Android application is a digital voice frontend for your radio
   - iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
 
 # FAQ
-- Gaps in received audio, indicator often changes between RX/IDLE on the receiver side when sender and recipient are close by then 
+- **Gaps in received audio**, indicator often changes between RX/IDLE on the receiver side when sender and recipient are close by then 
   - most likely you do not have enough bandwidth, use higher throughput modem mode, for LoRa modems you need approximately 170% of data rate for the given codec2 bitrate, AFSK1200 modems should work at 450 bps codec2 mode, 700 bps might work, but not on all modems, higher speed codec2 modes won't work on AFSK1200
   - modem goes into RX state too fast after sending first packet, increase TxTail parameter for your modem if it does not handle corresponding KISS command, so it will stay longer in TX before switching to RX
     - if you are using LibAPRS based modem, set TxTail and TxPreamble programatically by using `APRS_setPreamble` and `APRS_setTail` methods as it does not seem to set these values from `CMD_TXDELAY` and `CMD_TXTAIL` KISS commands
+- **Receiving audio on PC/Raspberry**
+  - For raw audio frames `sudo cat /dev/ttyUSB0 | c2dec 700 - - | play -t raw -r 8000 -e signed-integer -b 16 -c 1 -`
+  - For KISS encapsulated audio frames command above could be used, but instead of `cat` use https://pypi.org/project/kiss/
   
 # TODO
 - Parrot mode, so speech coming from aether will be transmitted back (testing or digirepeating)
