@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_CONNECT_BT = 1;
     private final static int REQUEST_CONNECT_USB = 2;
     private final static int REQUEST_PERMISSIONS = 3;
+    private final static int REQUEST_SETTINGS = 4;
 
     private final static int CODEC2_DEFAULT_MODE = Codec2.CODEC2_MODE_450;
     private final static int CODEC2_DEFAULT_MODE_POS = 0;
@@ -192,10 +193,10 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onUsbDetached = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (_codec2Player != null && UsbPortHandler.getPort() != null) {
-                Toast.makeText(MainActivity.this, "USB detached", Toast.LENGTH_SHORT).show();
-                _codec2Player.stopRunning();
-            }
+        if (_codec2Player != null && UsbPortHandler.getPort() != null) {
+            Toast.makeText(MainActivity.this, "USB detached", Toast.LENGTH_SHORT).show();
+            _codec2Player.stopRunning();
+        }
         }
     };
 
@@ -211,8 +212,8 @@ public class MainActivity extends AppCompatActivity {
         int itemId = item.getItemId();
 
         if (itemId == R.id.preferences) {
-            Intent i = new Intent(this, SettingsActivity.class);
-            startActivity(i);
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivityForResult(settingsIntent, REQUEST_SETTINGS);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -334,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        if (requestCode == REQUEST_CONNECT_USB) {
+        else if (requestCode == REQUEST_CONNECT_USB) {
             if (resultCode == RESULT_CANCELED) {
                 startBluetoothConnectActivity();
             } else if (resultCode == RESULT_OK) {
@@ -345,6 +346,10 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+        }
+        else if (requestCode == REQUEST_SETTINGS) {
+            finish();
+            startActivity(getIntent());
         }
     }
 }
