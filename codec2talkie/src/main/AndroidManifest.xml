@@ -15,9 +15,14 @@
         <activity
             android:name=".usb.UsbConnectActivity"
             android:configChanges="orientation|screenSize" />
-        <activity android:name=".bluetooth.BluetoothConnectActivity"
+        <activity
+            android:name=".bluetooth.BluetoothConnectActivity"
             android:configChanges="orientation|screenSize"/>
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".bluetooth.BluetoothSettingsActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".MainActivity"
             android:configChanges="orientation|screenSize">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />

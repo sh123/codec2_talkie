@@ -13,5 +13,15 @@
             app:defaultValue="115200"
             app:summary="%s">
         </ListPreference>
+
+        <Preference
+            app:key="ports_bt_client_name"
+            app:title="@string/usb_bt_client_name_title"
+            app:summary="">
+            <intent
+                android:targetPackage="com.radio.codec2talkie"
+                android:targetClass="com.radio.codec2talkie.bluetooth.BluetoothSettingsActivity">
+            </intent>
+        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

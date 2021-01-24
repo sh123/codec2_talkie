@@ -183,10 +183,10 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (_codec2Player != null && SocketHandler.getSocket() != null) {
-                Toast.makeText(MainActivity.this, "Bluetooth disconnected", Toast.LENGTH_SHORT).show();
-                _codec2Player.stopRunning();
-            }
+        if (_codec2Player != null && SocketHandler.getSocket() != null) {
+            Toast.makeText(MainActivity.this, "Bluetooth disconnected", Toast.LENGTH_SHORT).show();
+            _codec2Player.stopRunning();
+        }
         }
     };
 

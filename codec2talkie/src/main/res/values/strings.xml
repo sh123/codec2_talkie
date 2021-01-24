@@ -14,6 +14,7 @@
     </string-array>
     <string name="ports_category_title">Port settings</string>
     <string name="usb_serial_speed_title">USB Serial Speed</string>
+    <string name="usb_bt_client_name_title">Bluetooth Client</string>
     <string-array name="usb_serial_speed">
         <item>1200</item>
         <item>2400</item>
