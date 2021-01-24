@@ -37,7 +37,7 @@ public class UsbConnectActivity extends AppCompatActivity {
     private final int USB_STOP_BITS = UsbSerialPort.STOPBITS_1;
     private final int USB_PARITY = UsbSerialPort.PARITY_NONE;
 
-    private SharedPreferences _sharedPreferences;
+    private int _baudRate;
 
     private String _usbDeviceName;
     private UsbSerialPort _usbPort;
@@ -47,7 +47,8 @@ public class UsbConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_usb_connect);
 
-        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        _baudRate = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_USB_SERIAL_SPEED, String.valueOf(USB_BAUD_RATE_DEFAULT)));
 
         ProgressBar progressBarUsb = findViewById(R.id.progressBarUsb);
         progressBarUsb.setVisibility(View.VISIBLE);
@@ -87,9 +88,8 @@ public class UsbConnectActivity extends AppCompatActivity {
                 }
 
                 try {
-                    int baudRate = _sharedPreferences.getInt(PreferenceKeys.PORTS_USB_SERIAL_SPEED, USB_BAUD_RATE_DEFAULT);
                     port.open(connection);
-                    port.setParameters(baudRate, USB_DATA_BITS, USB_STOP_BITS, USB_PARITY);
+                    port.setParameters(_baudRate, USB_DATA_BITS, USB_STOP_BITS, USB_PARITY);
                     port.setDTR(true);
                     port.setRTS(true);
                 } catch (IOException e) {
