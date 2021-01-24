@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Codec2 Walkie Talkie</string>
     <string name="push_to_talk">push-to-talk</string>
+    <string name="preferences">Preferences</string>
     <string-array name="codec2_modes">
         <item>MODE_450=10</item>
         <item>MODE_700C=8</item>
