@@ -19,7 +19,7 @@
             android:name=".bluetooth.BluetoothConnectActivity"
             android:configChanges="orientation|screenSize"/>
         <activity
-            android:name=".bluetooth.BluetoothSettingsActivity"
+            android:name=".settings.BluetoothSettingsActivity"
             android:configChanges="orientation|screenSize" />
         <activity
             android:name=".MainActivity"
@@ -34,7 +34,7 @@
                 android:resource="@xml/device_filter" />
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".settings.SettingsActivity"
             android:configChanges="orientation|screenSize" />
     </application>
 </manifest>

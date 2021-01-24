@@ -22,6 +22,7 @@ import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.settings.PreferenceKeys;
 
 import java.io.IOException;
 import java.util.List;
@@ -86,7 +87,7 @@ public class UsbConnectActivity extends AppCompatActivity {
                 }
 
                 try {
-                    int baudRate = _sharedPreferences.getInt("ports_usb_serial_speed", USB_BAUD_RATE_DEFAULT);
+                    int baudRate = _sharedPreferences.getInt(PreferenceKeys.PORTS_USB_SERIAL_SPEED, USB_BAUD_RATE_DEFAULT);
                     port.open(connection);
                     port.setParameters(baudRate, USB_DATA_BITS, USB_STOP_BITS, USB_PARITY);
                     port.setDTR(true);

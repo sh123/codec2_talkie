@@ -2,6 +2,10 @@
     <string name="app_name">Codec2 Talkie</string>
     <string name="push_to_talk">push-to-talk</string>
     <string name="preferences">Preferences</string>
+    <string name="ports_category_title">TNC Settings</string>
+    <string name="usb_serial_speed_title">USB Serial Speed</string>
+    <string name="usb_bt_client_name_title">TNC Bluetooth Device</string>
+    <string name="usb_bt_client_name_summary">Default Bluetooth device to connect on startup</string>
     <string-array name="codec2_modes">
         <item>MODE_450=10</item>
         <item>MODE_700C=8</item>
@@ -12,9 +16,6 @@
         <item>MODE_2400=1</item>
         <item>MODE_3200=0</item>
     </string-array>
-    <string name="ports_category_title">Port settings</string>
-    <string name="usb_serial_speed_title">USB Serial Speed</string>
-    <string name="usb_bt_client_name_title">Bluetooth Client</string>
     <string-array name="usb_serial_speed">
         <item>1200</item>
         <item>2400</item>

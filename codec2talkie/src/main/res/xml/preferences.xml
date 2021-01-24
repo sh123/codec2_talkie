@@ -17,10 +17,10 @@
         <Preference
             app:key="ports_bt_client_name"
             app:title="@string/usb_bt_client_name_title"
-            app:summary="">
+            app:summary="@string/usb_bt_client_name_summary">
             <intent
                 android:targetPackage="com.radio.codec2talkie"
-                android:targetClass="com.radio.codec2talkie.bluetooth.BluetoothSettingsActivity">
+                android:targetClass="com.radio.codec2talkie.settings.BluetoothSettingsActivity">
             </intent>
         </Preference>
     </PreferenceCategory>

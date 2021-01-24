@@ -39,6 +39,7 @@ import android.widget.Toast;
 
 import com.radio.codec2talkie.bluetooth.BluetoothConnectActivity;
 import com.radio.codec2talkie.bluetooth.SocketHandler;
+import com.radio.codec2talkie.settings.SettingsActivity;
 import com.radio.codec2talkie.usb.UsbConnectActivity;
 import com.radio.codec2talkie.usb.UsbPortHandler;
 import com.ustadmobile.codec2.Codec2;
