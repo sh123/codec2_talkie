@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
@@ -29,10 +31,12 @@ public class UsbConnectActivity extends AppCompatActivity {
     private final int USB_NOT_FOUND = 1;
     private final int USB_CONNECTED = 2;
 
-    private final int USB_BAUD_RATE = 115200;
+    private final int USB_BAUD_RATE_DEFAULT = 115200;
     private final int USB_DATA_BITS = 8;
     private final int USB_STOP_BITS = UsbSerialPort.STOPBITS_1;
     private final int USB_PARITY = UsbSerialPort.PARITY_NONE;
+
+    private SharedPreferences _sharedPreferences;
 
     private String _usbDeviceName;
     private UsbSerialPort _usbPort;
@@ -41,6 +45,8 @@ public class UsbConnectActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_usb_connect);
+
+        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         ProgressBar progressBarUsb = findViewById(R.id.progressBarUsb);
         progressBarUsb.setVisibility(View.VISIBLE);
@@ -80,8 +86,9 @@ public class UsbConnectActivity extends AppCompatActivity {
                 }
 
                 try {
+                    int baudRate = _sharedPreferences.getInt("ports_usb_serial_speed", USB_BAUD_RATE_DEFAULT);
                     port.open(connection);
-                    port.setParameters(USB_BAUD_RATE, USB_DATA_BITS, USB_STOP_BITS, USB_PARITY);
+                    port.setParameters(baudRate, USB_DATA_BITS, USB_STOP_BITS, USB_PARITY);
                     port.setDTR(true);
                     port.setRTS(true);
                 } catch (IOException e) {

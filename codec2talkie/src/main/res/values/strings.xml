@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Codec2 Walkie Talkie</string>
+    <string name="app_name">Codec2 Talkie</string>
     <string name="push_to_talk">push-to-talk</string>
     <string name="preferences">Preferences</string>
     <string-array name="codec2_modes">
@@ -11,5 +11,17 @@
         <item>MODE_1600=2</item>
         <item>MODE_2400=1</item>
         <item>MODE_3200=0</item>
+    </string-array>
+    <string name="ports_category_title">Port settings</string>
+    <string name="usb_serial_speed_title">USB Serial Speed</string>
+    <string-array name="usb_serial_speed">
+        <item>1200</item>
+        <item>2400</item>
+        <item>4800</item>
+        <item>9600</item>
+        <item>19200</item>
+        <item>38400</item>
+        <item>57600</item>
+        <item>115200</item>
     </string-array>
 </resources>
