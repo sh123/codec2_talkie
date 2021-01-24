@@ -17,8 +17,8 @@ This minimalistic Android application is a digital voice frontend for your radio
 # Features
 - **PTT UI button**, push and talk, Codec2 speech frames will be transmitted to the modem
 - **PTT hardware button**, `KEYCODE_TV_DATA SERVICE` (230 key code) hardware button is used for PTT (used on some Android network radios)
-- **USB serial connectivity** (115200 bps, 8 data bits, 1 stop bit, no parity), just select this app after connecting to USB and it will use given connection
-- **Bluetooth connectivity** on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from Android Bluetooth Settings
+- **USB serial connectivity** (default 115200 bps, 8 data bits, 1 stop bit, no parity), just select this app after connecting to USB and it will use given connection, baud rate could be changed from Preferences
+- **Bluetooth connectivity** on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from Android Bluetooth Settings, default Bluetooth device could be set from Preferences
 - **Voice codec2 mode selection**, which allows you to select various codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends as codec2 mode negotiation between clients is not implemented at the moment
 - **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality
 - **Preferences**, allow to modify default parameters
@@ -29,7 +29,7 @@ This minimalistic Android application is a digital voice frontend for your radio
 - Tested, works:
   - (BT) LoRa modem 450/700 bps codec2 modes tested at 1300 bps and 900 bps LoRa speeds: https://github.com/sh123/esp32_loraprs
   - (BT) custom AFSK1200 LibAPRS based modem with increased TXTail parameter and Baofeng handheld transceiver: 450 works fine, 700 works with small gaps, probably LibAPRS needs some tweaks: https://github.com/markqvist/LibAPRS
-  - (USB) HC-12 modules: works, but application needs to use lower USB serial bit rate (separate builds for now), because module RF bit rate is hardwired to its serial bit rate, also module needs to be preconfigured with AT commands first
+  - (USB) HC-12 modules: works, but application needs to use lower USB serial bit rate (change from Preferences), because module RF bit rate is hardwired to its serial bit rate, also module needs to be preconfigured with AT commands first
 - Tested, works, but not too stable, probably needs TXTail tuning:
   - (USB) AFSK1200 PicoAPRS: http://www.db1nto.de/index_en.html
   - (BT) AFSK1200/GMSK9600 Kenwood TH-D74A: https://dl1gkk.com/kenwood-th-d74-bluetooth-packet-radio-setup/
@@ -59,13 +59,11 @@ This minimalistic Android application is a digital voice frontend for your radio
 # TODO
 - Parrot mode, so speech coming from aether will be transmitted back (testing or digirepeating)
 - QSO log, voicemail style recording of incoming speech so that incoming transmissions are not missed
-- Separate settings to avoid repeated operations
-  - Override default USB serial parameters
-  - Default Bluetooth device name to connect upon startup
+- Additional settings
   - Default codec2 bitrate on startup
   - Settings for parrot mode
   - Settings for QSO log
-- Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency/channel, modulation scheme, modem speed or other modem parameters on the fly from the user interface
-  - Rig/radio module control by using KISS command extensions
-  - HC-12 module control by using AT commands
+  - Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency/channel, modulation scheme, modem speed or other modem parameters on the fly from the user interface
+    - Rig/radio module control by using KISS command extensions
+    - HC-12 module control by using AT commands
 - Investigate support for other non-KISS frame formats and protocols, switcheable from the UI
