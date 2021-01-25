@@ -34,7 +34,7 @@ public class Codec2Player extends Thread {
     public static int PLAYER_TX_LEVEL = 6;
 
     private static int AUDIO_MIN_LEVEL = -60;
-    private static int AUDIO_HIGH_LEVEL = -15;
+    private static int AUDIO_MAX_LEVEL = -5;
 
     private final int AUDIO_SAMPLE_SIZE = 8000;
     private final int SLEEP_IDLE_DELAY_MS = 20;
@@ -148,8 +148,8 @@ public class Codec2Player extends Thread {
         return AUDIO_MIN_LEVEL;
     }
 
-    public static int getAudioHighLevel() {
-        return AUDIO_HIGH_LEVEL;
+    public static int getAudioMaxLevel() {
+        return AUDIO_MAX_LEVEL;
     }
 
     public void startPlayback() {

@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Codec2 Talkie</string>
-    <string name="push_to_talk">push-to-talk</string>
+    <string name="push_to_talk">PUSH TO TALK</string>
 
     <string name="preferences">Preferences</string>
     <string name="ports_category_title">TNC Settings</string>

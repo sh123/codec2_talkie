@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         _textConnInfo = findViewById(R.id.textBtName);
         _textStatus = findViewById(R.id.textStatus);
 
-        int barMaxValue = Codec2Player.getAudioHighLevel() - Codec2Player.getAudioMinLevel();
+        int barMaxValue = Codec2Player.getAudioMaxLevel() - Codec2Player.getAudioMinLevel();
         _progressAudioLevel = findViewById(R.id.progressAudioLevel);
         _progressAudioLevel.setMax(barMaxValue);
         _progressAudioLevel.getProgressDrawable().setColorFilter(
@@ -144,9 +144,9 @@ public class MainActivity extends AppCompatActivity {
 
     private int colorFromAudioLevel(int audioLevel) {
         int color = Color.GREEN;
-        if (audioLevel > Codec2Player.getAudioHighLevel())
+        if (audioLevel > Codec2Player.getAudioMaxLevel() - 10)
             color = Color.RED;
-        else if (audioLevel == Codec2Player.getAudioMinLevel())
+        else if (audioLevel < Codec2Player.getAudioMinLevel() + 25)
             color = Color.LTGRAY;
         return color;
     }
@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void startPlayer(boolean isUsb) throws IOException {
-        String statusMessage = new String();
+        String statusMessage = "";
 
         String codec2ModePref = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, CODEC2_DEFAULT_MODE);
         String [] codecNameCodecId = codec2ModePref.split("=");
