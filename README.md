@@ -67,6 +67,6 @@ This minimalistic Android application is a digital voice frontend for your radio
   - Settings for parrot mode
   - Settings for QSO log
   - Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency/channel, modulation scheme, modem speed or other modem parameters on the fly from the user interface
-    - Rig/radio module control by using KISS command extensions
+    - Rig/radio module control and signal level reports by using KISS command extensions
     - HC-12 module control by using AT commands
 - Investigate support for other non-KISS frame formats and protocols, switcheable from the UI
