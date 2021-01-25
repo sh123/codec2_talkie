@@ -2,5 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/preferences"
-        android:title="@string/preferences"></item>
+        android:title="@string/menu_preferences"></item>
+    <item
+        android:id="@+id/exit"
+        android:title="@string/menu_exit"></item>
 </menu>

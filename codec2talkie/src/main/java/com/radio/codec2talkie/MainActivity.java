@@ -187,6 +187,10 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(settingsIntent, REQUEST_SETTINGS);
             return true;
         }
+        else if (itemId == R.id.exit) {
+            finish();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
