@@ -4,6 +4,7 @@
 Minimalistic Android KISS Bluetooth/USB modem client for Amateur Radio DV (digital voice) communication by using open source [Codec2](https://github.com/drowe67/codec2).
 
 ![alt text](images/screenshot.png)
+![alt text](images/screenshot_settings.png)
 
 # Introduction
 This minimalistic Android application is a digital voice frontend for your radio. It connects to your radio KISS Bluetooth/USB modem, sends and receives Codec2 audio frames, which are encapsulated inside KISS frames. It does not deal with radio management, modulation, etc, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK, FreeDV or any other modulation scheme. Radio just needs to expose KISS Bluetooth interface for speech frames.
