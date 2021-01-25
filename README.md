@@ -20,10 +20,14 @@ This minimalistic Android application is a digital voice frontend for your radio
 - **USB serial connectivity** (default 115200 bps, 8 data bits, 1 stop bit, no parity), just select this app after connecting to USB and it will use given connection, baud rate could be changed from Preferences
 - **Bluetooth connectivity** on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from Android Bluetooth Settings, default Bluetooth device could be set from Preferences
 - **Voice codec2 mode selection**, which allows you to select various codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends as codec2 mode negotiation between clients is not implemented at the moment
-- **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality
+- **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality, could be enabled or disabled from Preferences
 - **Preferences**, allow to modify default parameters
-  - Change default baud rate for USB port
-  - Set default Bluetooth device for automatic connectivity on startup
+  - **Codec2**
+    - Set Codec2 mode/speed from 450 up to 3200 bps
+    - Enable/disable loopback test mode
+  - **TNC parameters**
+    - Change default baud rate for USB port
+    - Set default Bluetooth device for automatic connectivity on startup
 
 # Suitable radios and modems
 - Tested, works:
@@ -60,7 +64,6 @@ This minimalistic Android application is a digital voice frontend for your radio
 - Parrot mode, so speech coming from aether will be transmitted back (testing or digirepeating)
 - QSO log, voicemail style recording of incoming speech so that incoming transmissions are not missed
 - Additional settings
-  - Default codec2 bitrate on startup
   - Settings for parrot mode
   - Settings for QSO log
   - Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency/channel, modulation scheme, modem speed or other modem parameters on the fly from the user interface
