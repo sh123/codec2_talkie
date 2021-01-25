@@ -15,7 +15,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressRxLevel" />
+        app:layout_constraintTop_toBottomOf="@+id/progressAudioLevel" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnPtt"
@@ -58,22 +58,13 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressRxLevel" />
+        app:layout_constraintTop_toBottomOf="@+id/progressAudioLevel" />
 
     <ProgressBar
-        android:id="@+id/progressRxLevel"
+        android:id="@+id/progressAudioLevel"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
         android:layout_height="11dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressTxLevel" />
-
-    <ProgressBar
-        android:id="@+id/progressTxLevel"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

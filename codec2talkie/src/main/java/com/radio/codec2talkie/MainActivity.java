@@ -67,8 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView _textConnInfo;
     private TextView _textStatus;
     private TextView _textCodecMode;
-    private ProgressBar _progressRxLevel;
-    private ProgressBar _progressTxLevel;
+    private ProgressBar _progressAudioLevel;
     private Button _btnPtt;
 
     private Codec2Player _codec2Player;
@@ -88,14 +87,9 @@ public class MainActivity extends AppCompatActivity {
         _textStatus = findViewById(R.id.textStatus);
 
         int barMaxValue = Codec2Player.getAudioHighLevel() - Codec2Player.getAudioMinLevel();
-        _progressRxLevel = findViewById(R.id.progressRxLevel);
-        _progressRxLevel.setMax(barMaxValue);
-        _progressRxLevel.getProgressDrawable().setColorFilter(
-                new PorterDuffColorFilter(colorFromAudioLevel(Codec2Player.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
-
-        _progressTxLevel = findViewById(R.id.progressTxLevel);
-        _progressTxLevel.setMax(barMaxValue);
-        _progressTxLevel.getProgressDrawable().setColorFilter(
+        _progressAudioLevel = findViewById(R.id.progressAudioLevel);
+        _progressAudioLevel.setMax(barMaxValue);
+        _progressAudioLevel.getProgressDrawable().setColorFilter(
                 new PorterDuffColorFilter(colorFromAudioLevel(Codec2Player.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
 
         _btnPtt = findViewById(R.id.btnPtt);
@@ -274,13 +268,9 @@ public class MainActivity extends AppCompatActivity {
             else if (msg.what == Codec2Player.PLAYER_PLAYING) {
                 _textStatus.setText("RX");
             }
-            else if (msg.what == Codec2Player.PLAYER_RX_LEVEL) {
-                _progressRxLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
-                _progressRxLevel.setProgress(msg.arg1 - Codec2Player.getAudioMinLevel());
-            }
-            else if (msg.what == Codec2Player.PLAYER_TX_LEVEL) {
-                _progressTxLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
-                _progressTxLevel.setProgress(msg.arg1 - Codec2Player.getAudioMinLevel());
+            else if (msg.what == Codec2Player.PLAYER_RX_LEVEL || msg.what == Codec2Player.PLAYER_TX_LEVEL) {
+                _progressAudioLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
+                _progressAudioLevel.setProgress(msg.arg1 - Codec2Player.getAudioMinLevel());
             }
         }
     };
