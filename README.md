@@ -22,6 +22,7 @@ This minimalistic Android application is a digital voice frontend for your radio
 - **Bluetooth connectivity** on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from Android Bluetooth Settings, default Bluetooth device could be set from Preferences
 - **Voice codec2 mode selection**, which allows you to select various codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends as codec2 mode negotiation between clients is not implemented at the moment
 - **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality, could be enabled or disabled from Preferences
+- **Voice level indicators**, which display levels of transmitted and received audio
 - **Preferences**, allow to modify default parameters
   - **Codec2**
     - Set Codec2 mode/speed from 450 up to 3200 bps
