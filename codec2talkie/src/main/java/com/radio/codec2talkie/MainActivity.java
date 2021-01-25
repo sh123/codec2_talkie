@@ -3,6 +3,7 @@ package com.radio.codec2talkie;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -11,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -21,28 +23,22 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
-import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ProgressBar;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.radio.codec2talkie.bluetooth.BluetoothConnectActivity;
 import com.radio.codec2talkie.bluetooth.SocketHandler;
+import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
 import com.radio.codec2talkie.usb.UsbConnectActivity;
 import com.radio.codec2talkie.usb.UsbPortHandler;
-import com.ustadmobile.codec2.Codec2;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -57,22 +53,22 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_PERMISSIONS = 3;
     private final static int REQUEST_SETTINGS = 4;
 
-    private final static int CODEC2_DEFAULT_MODE = Codec2.CODEC2_MODE_450;
-    private final static int CODEC2_DEFAULT_MODE_POS = 0;
+    private final static String CODEC2_DEFAULT_MODE = "MODE_450=10";
 
     private final String[] _requiredPermissions = new String[] {
             Manifest.permission.BLUETOOTH,
             Manifest.permission.RECORD_AUDIO
     };
 
+    SharedPreferences _sharedPreferences;
+
     private boolean _isActive = false;
 
     private TextView _textConnInfo;
     private TextView _textStatus;
-    private Spinner _spinnerCodec2Mode;
+    private TextView _textCodecMode;
     private ProgressBar _progressRxLevel;
     private ProgressBar _progressTxLevel;
-    private CheckBox _checkBoxLoopback;
     private Button _btnPtt;
 
     private Codec2Player _codec2Player;
@@ -84,24 +80,27 @@ public class MainActivity extends AppCompatActivity {
 
         _isActive = true;
 
+        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
         setContentView(R.layout.activity_main);
 
         _textConnInfo = findViewById(R.id.textBtName);
         _textStatus = findViewById(R.id.textStatus);
+
         _progressRxLevel = findViewById(R.id.progressRxLevel);
         _progressRxLevel.setMax(-Codec2Player.getAudioMinLevel());
+        _progressRxLevel.getProgressDrawable().setColorFilter(
+                new PorterDuffColorFilter(colorFromAudioLevel(Codec2Player.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
+
         _progressTxLevel = findViewById(R.id.progressTxLevel);
         _progressTxLevel.setMax(-Codec2Player.getAudioMinLevel());
+        _progressTxLevel.getProgressDrawable().setColorFilter(
+                new PorterDuffColorFilter(colorFromAudioLevel(Codec2Player.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
 
         _btnPtt = findViewById(R.id.btnPtt);
         _btnPtt.setOnTouchListener(onBtnPttTouchListener);
 
-        _spinnerCodec2Mode = findViewById(R.id.spinnerCodecMode);
-        _spinnerCodec2Mode.setSelection(CODEC2_DEFAULT_MODE_POS);
-        _spinnerCodec2Mode.setOnItemSelectedListener(onCodecModeSelectedListener);
-
-        _checkBoxLoopback = findViewById(R.id.checkBoxLoopback);
-        _checkBoxLoopback.setOnCheckedChangeListener(onLoopbackCheckedChangeListener);
+        _textCodecMode = findViewById(R.id.codecMode);
 
         registerReceiver(onBluetoothDisconnected, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
         registerReceiver(onUsbDetached, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
@@ -156,30 +155,6 @@ public class MainActivity extends AppCompatActivity {
             color = Color.LTGRAY;
         return color;
     }
-
-    private final CompoundButton.OnCheckedChangeListener onLoopbackCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (_codec2Player != null) {
-                _codec2Player.setLoopbackMode(isChecked);
-            }
-        }
-    };
-
-    private final AdapterView.OnItemSelectedListener onCodecModeSelectedListener = new AdapterView.OnItemSelectedListener() {
-        @Override
-        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-            String selectedCodec = getResources().getStringArray(R.array.codec2_modes)[position];
-            String [] codecNameCodecId = selectedCodec.split("=");
-            if (_codec2Player != null) {
-                _codec2Player.setCodecMode(Integer.parseInt(codecNameCodecId[1]));
-            }
-        }
-
-        @Override
-        public void onNothingSelected(AdapterView<?> parent) {
-        }
-    };
 
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
@@ -286,7 +261,6 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             if (_isActive && msg.what == Codec2Player.PLAYER_DISCONNECT) {
                 _textStatus.setText("STOP");
-                _checkBoxLoopback.setChecked(false);
                 Toast.makeText(getBaseContext(), "Disconnected from modem", Toast.LENGTH_SHORT).show();
                 startUsbConnectActivity();
             }
@@ -311,14 +285,28 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private void startPlayer(boolean isUsb) throws IOException {
-        _codec2Player = new Codec2Player(onPlayerStateChanged, CODEC2_DEFAULT_MODE);
+        String statusMessage = new String();
+
+        String codec2ModePref = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, CODEC2_DEFAULT_MODE);
+        String [] codecNameCodecId = codec2ModePref.split("=");
+        statusMessage += codecNameCodecId[0];
+        int codec2Mode = Integer.parseInt(codecNameCodecId[1]);
+
+        boolean isTestMode = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_TEST_MODE, false);
+        if (isTestMode) {
+            statusMessage += ", TEST";
+        }
+
+        _codec2Player = new Codec2Player(onPlayerStateChanged, codec2Mode);
         if (isUsb) {
             _codec2Player.setUsbPort(UsbPortHandler.getPort());
         } else {
             _codec2Player.setSocket(SocketHandler.getSocket());
         }
-        _spinnerCodec2Mode.setSelection(CODEC2_DEFAULT_MODE_POS);
+        _codec2Player.setCodecTestMode(isTestMode);
         _codec2Player.start();
+
+        _textCodecMode.setText(statusMessage);
     }
 
     @Override

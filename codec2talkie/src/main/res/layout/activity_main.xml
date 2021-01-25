@@ -22,9 +22,9 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/btn_ptt"
         android:hapticFeedbackEnabled="false"
         android:text="@string/push_to_talk"
@@ -34,24 +34,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.598"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/checkBoxLoopback" />
+        app:layout_constraintTop_toBottomOf="@+id/codecMode" />
 
-    <CheckBox
-        android:id="@+id/checkBoxLoopback"
-        android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_marginStart="16dp"
-        android:text="codec2 loopback test"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerCodecMode" />
-
-    <Spinner
-        android:id="@+id/spinnerCodecMode"
+    <TextView
+        android:id="@+id/codecMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        android:entries="@array/codec2_modes"
+        android:text="Mode"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textBtName" />
 

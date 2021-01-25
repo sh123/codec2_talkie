@@ -1,21 +1,13 @@
 <resources>
     <string name="app_name">Codec2 Talkie</string>
     <string name="push_to_talk">push-to-talk</string>
+
     <string name="preferences">Preferences</string>
     <string name="ports_category_title">TNC Settings</string>
+
     <string name="usb_serial_speed_title">USB Serial Speed</string>
-    <string name="usb_bt_client_name_title">TNC Bluetooth Device</string>
+    <string name="usb_bt_client_name_title">Bluetooth Device</string>
     <string name="usb_bt_client_name_summary">Default Bluetooth device to connect on startup</string>
-    <string-array name="codec2_modes">
-        <item>MODE_450=10</item>
-        <item>MODE_700C=8</item>
-        <item>MODE_1200=5</item>
-        <item>MODE_1300=4</item>
-        <item>MODE_1400=3</item>
-        <item>MODE_1600=2</item>
-        <item>MODE_2400=1</item>
-        <item>MODE_3200=0</item>
-    </string-array>
     <string-array name="usb_serial_speed">
         <item>1200</item>
         <item>2400</item>
@@ -25,5 +17,20 @@
         <item>38400</item>
         <item>57600</item>
         <item>115200</item>
+    </string-array>
+
+    <string name="codec2_category_title">Codec2 Settings</string>
+    <string name="codec2_mode_title">Mode/Speed</string>
+    <string name="codec2_test_mode_title">Record/Playback Test Mode</string>
+    <string name="codec2_test_mode_summary">Enables own voice recording/playback without transmission</string>
+    <string-array name="codec2_modes">
+        <item>MODE_450=10</item>
+        <item>MODE_700C=8</item>
+        <item>MODE_1200=5</item>
+        <item>MODE_1300=4</item>
+        <item>MODE_1400=3</item>
+        <item>MODE_1600=2</item>
+        <item>MODE_2400=1</item>
+        <item>MODE_3200=0</item>
     </string-array>
 </resources>

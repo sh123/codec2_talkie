@@ -1,12 +1,6 @@
 package com.radio.codec2talkie;
 
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -14,7 +8,6 @@ import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -86,7 +79,7 @@ public class Codec2Player extends Thread {
     private char[] _recordAudioEncodedBuffer;
 
     // loopback mode
-    private boolean _isLoopbackMode;
+    private boolean _isCodecTestMode;
     private ByteBuffer _loopbackBuffer;
 
     // callbacks
@@ -95,7 +88,7 @@ public class Codec2Player extends Thread {
 
     public Codec2Player(Handler onPlayerStateChanged, int codec2Mode) {
         _onPlayerStateChanged = onPlayerStateChanged;
-        _isLoopbackMode = false;
+        _isCodecTestMode = false;
         _rxDataBuffer = new byte[RX_BUFFER_SIZE];
 
         setCodecModeInternal(codec2Mode);
@@ -142,8 +135,8 @@ public class Codec2Player extends Thread {
         _usbPort = port;
     }
 
-    public void setLoopbackMode(boolean isLoopbackMode) {
-        _isLoopbackMode = isLoopbackMode;
+    public void setCodecTestMode(boolean isTestMode) {
+        _isCodecTestMode = isTestMode;
     }
 
     public void setCodecMode(int codecMode) {
@@ -207,7 +200,7 @@ public class Codec2Player extends Thread {
     };
 
     private void sendRawDataToModem(byte[] data) throws IOException {
-        if (_isLoopbackMode) {
+        if (_isCodecTestMode) {
             try {
                 _loopbackBuffer.put(data);
             } catch (BufferOverflowException e) {
@@ -273,7 +266,7 @@ public class Codec2Player extends Thread {
     }
 
     private boolean playAudio() throws IOException {
-        if (_isLoopbackMode) {
+        if (_isCodecTestMode) {
             return processLoopbackPlayback();
         }
         int bytesRead = 0;
@@ -365,7 +358,7 @@ public class Codec2Player extends Thread {
         setPriority(Thread.MAX_PRIORITY);
         try {
             setStatus(PLAYER_LISTENING, 0);
-            if (!_isLoopbackMode) {
+            if (!_isCodecTestMode) {
                 _kissProcessor.initialize();
             }
             while (_isRunning) {

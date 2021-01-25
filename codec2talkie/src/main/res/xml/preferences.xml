@@ -2,6 +2,26 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
+        app:key="codec2_category"
+        app:title="@string/codec2_category_title">
+
+        <ListPreference
+            app:key="codec2_mode"
+            app:title="@string/codec2_mode_title"
+            app:entries="@array/codec2_modes"
+            app:entryValues="@array/codec2_modes"
+            app:defaultValue="MODE_450=10"
+            app:summary="%s">
+        </ListPreference>
+
+        <SwitchPreference
+            app:key="codec2_test_mode"
+            app:title="@string/codec2_test_mode_title"
+            app:summary="@string/codec2_test_mode_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+    </PreferenceCategory>
+    <PreferenceCategory
         app:key="ports_category"
         app:title="@string/ports_category_title">
 
