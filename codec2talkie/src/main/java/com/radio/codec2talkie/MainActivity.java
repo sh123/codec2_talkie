@@ -87,13 +87,14 @@ public class MainActivity extends AppCompatActivity {
         _textConnInfo = findViewById(R.id.textBtName);
         _textStatus = findViewById(R.id.textStatus);
 
+        int barMaxValue = Codec2Player.getAudioHighLevel() - Codec2Player.getAudioMinLevel();
         _progressRxLevel = findViewById(R.id.progressRxLevel);
-        _progressRxLevel.setMax(-Codec2Player.getAudioMinLevel());
+        _progressRxLevel.setMax(barMaxValue);
         _progressRxLevel.getProgressDrawable().setColorFilter(
                 new PorterDuffColorFilter(colorFromAudioLevel(Codec2Player.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
 
         _progressTxLevel = findViewById(R.id.progressTxLevel);
-        _progressTxLevel.setMax(-Codec2Player.getAudioMinLevel());
+        _progressTxLevel.setMax(barMaxValue);
         _progressTxLevel.getProgressDrawable().setColorFilter(
                 new PorterDuffColorFilter(colorFromAudioLevel(Codec2Player.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
 

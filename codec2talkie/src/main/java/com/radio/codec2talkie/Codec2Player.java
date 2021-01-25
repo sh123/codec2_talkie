@@ -33,7 +33,7 @@ public class Codec2Player extends Thread {
     public static int PLAYER_RX_LEVEL = 5;
     public static int PLAYER_TX_LEVEL = 6;
 
-    private static int AUDIO_MIN_LEVEL = -70;
+    private static int AUDIO_MIN_LEVEL = -60;
     private static int AUDIO_HIGH_LEVEL = -15;
 
     private final int AUDIO_SAMPLE_SIZE = 8000;
@@ -244,6 +244,7 @@ public class Codec2Player extends Thread {
         try {
             byte [] ba  = new byte[1];
             _loopbackBuffer.get(ba);
+            setStatus(PLAYER_PLAYING, 0);
             _kissProcessor.receive(ba);
             return true;
         } catch (BufferUnderflowException e) {
