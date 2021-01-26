@@ -63,12 +63,9 @@ This minimalistic Android application is a digital voice frontend for your radio
   - For KISS encapsulated audio frames command above could be used, but instead of `cat` use https://pypi.org/project/kiss/
   
 # TODO
+- Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency/channel, modulation scheme, modem speed or other modem parameters on the fly from the user interface
+  - Rig/radio module control and signal level reports by using KISS command extensions
+  - HC-12 module control by using AT commands
 - Parrot mode, so speech coming from aether will be transmitted back (testing or digirepeating)
 - QSO log, voicemail style recording of incoming speech so that incoming transmissions are not missed
-- Additional settings
-  - Settings for parrot mode
-  - Settings for QSO log
-  - Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency/channel, modulation scheme, modem speed or other modem parameters on the fly from the user interface
-    - Rig/radio module control and signal level reports by using KISS command extensions
-    - HC-12 module control by using AT commands
 - Investigate support for other non-KISS frame formats and protocols, switcheable from the UI
