@@ -20,6 +20,9 @@ import java.util.Arrays;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.radio.codec2talkie.kiss.KissCallback;
 import com.radio.codec2talkie.kiss.KissProcessor;
+import com.radio.codec2talkie.transport.Bluetooth;
+import com.radio.codec2talkie.transport.Transport;
+import com.radio.codec2talkie.transport.UsbSerial;
 import com.ustadmobile.codec2.Codec2;
 
 public class Codec2Player extends Thread {
@@ -40,9 +43,6 @@ public class Codec2Player extends Thread {
     private final int SLEEP_IDLE_DELAY_MS = 20;
     private final int POST_PLAY_DELAY_MS = 1000;
 
-    private final int RX_TIMEOUT = 100;
-    private final int TX_TIMEOUT = 2000;
-
     private final byte CSMA_PERSISTENCE = (byte)0xff;
     private final byte CSMA_SLOT_TIME = (byte)0x00;
     private final byte TX_DELAY_10MS_UNITS = (byte)(250 / 10);
@@ -52,9 +52,6 @@ public class Codec2Player extends Thread {
 
     private long _codec2Con;
 
-    private BluetoothSocket _btSocket;
-    private UsbSerialPort _usbPort;
-
     private int _audioBufferSize;
     private int _audioEncodedBufferSize;
 
@@ -62,18 +59,14 @@ public class Codec2Player extends Thread {
     private boolean _isRecording = false;
     private int _currentStatus = PLAYER_DISCONNECT;
 
+    private Transport _transport;
+
     // input data, bt -> audio
-    private InputStream _btInputStream;
-
     private final AudioTrack _audioPlayer;
-
     private short[] _playbackAudioBuffer;
 
     // output data., mic -> bt
-    private OutputStream _btOutputStream;
-
     private final AudioRecord _audioRecorder;
-
     private final byte[] _rxDataBuffer;
     private short[] _recordAudioBuffer;
     private char[] _recordAudioEncodedBuffer;
@@ -86,7 +79,8 @@ public class Codec2Player extends Thread {
     private KissProcessor _kissProcessor;
     private final Handler _onPlayerStateChanged;
 
-    public Codec2Player(Handler onPlayerStateChanged, int codec2Mode) {
+    public Codec2Player(Transport transport, Handler onPlayerStateChanged, int codec2Mode) {
+        _transport = transport;
         _onPlayerStateChanged = onPlayerStateChanged;
         _isCodecTestMode = false;
         _rxDataBuffer = new byte[RX_BUFFER_SIZE];
@@ -125,23 +119,8 @@ public class Codec2Player extends Thread {
         _audioPlayer.play();
     }
 
-    public void setSocket(BluetoothSocket btSocket) throws IOException {
-        _btSocket = btSocket;
-        _btInputStream = _btSocket.getInputStream();
-        _btOutputStream = _btSocket.getOutputStream();
-    }
-
-    public void setUsbPort(UsbSerialPort port) {
-        _usbPort = port;
-    }
-
     public void setCodecTestMode(boolean isTestMode) {
         _isCodecTestMode = isTestMode;
-    }
-
-    public void setCodecMode(int codecMode) {
-        Codec2.destroy(_codec2Con);
-        setCodecModeInternal(codecMode);
     }
 
     public static int getAudioMinLevel() {
@@ -207,11 +186,7 @@ public class Codec2Player extends Thread {
                 e.printStackTrace();
             }
         } else {
-            if (_btOutputStream != null)
-                _btOutputStream.write(data);
-            else if (_usbPort != null) {
-                _usbPort.write(data, TX_TIMEOUT);
-            }
+            _transport.write(data);
         }
     }
 
@@ -270,16 +245,7 @@ public class Codec2Player extends Thread {
         if (_isCodecTestMode) {
             return processLoopbackPlayback();
         }
-        int bytesRead = 0;
-        if (_btInputStream != null) {
-            bytesRead = _btInputStream.available();
-            if (bytesRead > 0) {
-                bytesRead = _btInputStream.read(_rxDataBuffer);
-            }
-        }
-        else if (_usbPort != null) {
-            bytesRead = _usbPort.read(_rxDataBuffer, RX_TIMEOUT);
-        }
+        int bytesRead = _transport.read(_rxDataBuffer);
         if (bytesRead > 0) {
             setStatus(PLAYER_PLAYING, 0);
             _kissProcessor.receive(Arrays.copyOf(_rxDataBuffer, bytesRead));
@@ -329,19 +295,10 @@ public class Codec2Player extends Thread {
 
         Codec2.destroy(_codec2Con);
 
-        if (_btSocket != null) {
-            try {
-                _btSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        if (_usbPort != null) {
-            try {
-                _usbPort.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        try {
+            _transport.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

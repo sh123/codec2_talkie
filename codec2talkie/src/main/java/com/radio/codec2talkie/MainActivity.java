@@ -37,6 +37,9 @@ import com.radio.codec2talkie.bluetooth.BluetoothConnectActivity;
 import com.radio.codec2talkie.bluetooth.SocketHandler;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
+import com.radio.codec2talkie.transport.Bluetooth;
+import com.radio.codec2talkie.transport.Transport;
+import com.radio.codec2talkie.transport.UsbSerial;
 import com.radio.codec2talkie.usb.UsbConnectActivity;
 import com.radio.codec2talkie.usb.UsbPortHandler;
 
@@ -292,12 +295,13 @@ public class MainActivity extends AppCompatActivity {
             statusMessage += ", TEST";
         }
 
-        _codec2Player = new Codec2Player(onPlayerStateChanged, codec2Mode);
+        Transport transport;
         if (isUsb) {
-            _codec2Player.setUsbPort(UsbPortHandler.getPort());
+            transport = new UsbSerial(UsbPortHandler.getPort());
         } else {
-            _codec2Player.setSocket(SocketHandler.getSocket());
+            transport = new Bluetooth(SocketHandler.getSocket());
         }
+        _codec2Player = new Codec2Player(transport, onPlayerStateChanged, codec2Mode);
         _codec2Player.setCodecTestMode(isTestMode);
         _codec2Player.start();
 
