@@ -17,7 +17,7 @@ It is mainly intended for low cost radio modems (such as LoRa), but could be als
 
 # Requirements
 - Android 6.0 (API 23) or higher
-  - Application could also be used with your Android network radio, such as Inrico TM-7, apk just needs to be installed over USB
+  - Application could also be used with your Android network radio, such as Inrico TM-7, apk just needs to be installed over USB, see [Discussion](https://github.com/sh123/codec2_talkie/issues/4)
 - Modem, radio module or transceiver which supports [KISS protocol](https://en.wikipedia.org/wiki/KISS_(TNC)) over Bluetooth or USB 
   - KISS support is not 100% necesssary for experiments, usually radio module needs to decide on protocol, but KISS frames could be sent over aether, there are plans to add support for other selectable frame structures, protocols or raw audio frames
 
