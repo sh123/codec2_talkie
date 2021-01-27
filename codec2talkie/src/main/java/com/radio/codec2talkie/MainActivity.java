@@ -112,11 +112,7 @@ public class MainActivity extends AppCompatActivity {
     private void startTransportConnection() {
         if (_isTestMode) {
             _textConnInfo.setText(R.string.main_status_loopback_test);
-            try {
-                startAudioProcessing(TransportFactory.TransportType.LOOPBACK);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            startAudioProcessing(TransportFactory.TransportType.LOOPBACK);
         } else if (requestPermissions()) {
             startUsbConnectActivity();
         }
@@ -163,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
         if (_audioProcessor != null && SocketHandler.getSocket() != null && !_isTestMode) {
-            Toast.makeText(MainActivity.this, "Bluetooth disconnected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "Bluetooth disconnected", Toast.LENGTH_LONG).show();
             _audioProcessor.stopRunning();
         }
         }
@@ -173,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
         if (_audioProcessor != null && UsbPortHandler.getPort() != null && !_isTestMode) {
-            Toast.makeText(MainActivity.this, "USB detached", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "USB detached", Toast.LENGTH_LONG).show();
             _audioProcessor.stopRunning();
         }
         }
@@ -291,16 +287,21 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void startAudioProcessing(TransportFactory.TransportType transportType) throws IOException {
-        String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
+    private void startAudioProcessing(TransportFactory.TransportType transportType) {
+        try {
+            String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
 
-        String [] codecNameCodecId = codec2ModeName.split("=");
-        _textCodecMode.setText(codecNameCodecId[0]);
+            String[] codecNameCodecId = codec2ModeName.split("=");
+            _textCodecMode.setText(codecNameCodecId[0]);
 
-        int codec2ModeId = Integer.parseInt(codecNameCodecId[1]);
+            int codec2ModeId = Integer.parseInt(codecNameCodecId[1]);
 
-        _audioProcessor = new AudioProcessor(transportType, onAudioProcessorStateChanged, codec2ModeId);
-        _audioProcessor.start();
+            _audioProcessor = new AudioProcessor(transportType, onAudioProcessorStateChanged, codec2ModeId);
+            _audioProcessor.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Toast.makeText(MainActivity.this, "Failed to start audio processing", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -310,19 +311,11 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CONNECT_BT) {
             if (resultCode == RESULT_CANCELED) {
                 // fall back to loopback if bluetooth failed
-                try {
-                    _textConnInfo.setText(R.string.main_status_loopback_test);
-                    startAudioProcessing(TransportFactory.TransportType.LOOPBACK);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                _textConnInfo.setText(R.string.main_status_loopback_test);
+                startAudioProcessing(TransportFactory.TransportType.LOOPBACK);
             } else if (resultCode == RESULT_OK) {
                 _textConnInfo.setText(data.getStringExtra("name"));
-                try {
-                    startAudioProcessing(TransportFactory.TransportType.BLUETOOTH);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                startAudioProcessing(TransportFactory.TransportType.BLUETOOTH);
             }
         }
         else if (requestCode == REQUEST_CONNECT_USB) {
@@ -331,11 +324,7 @@ public class MainActivity extends AppCompatActivity {
                 startBluetoothConnectActivity();
             } else if (resultCode == RESULT_OK) {
                 _textConnInfo.setText(data.getStringExtra("name"));
-                try {
-                    startAudioProcessing(TransportFactory.TransportType.USB);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                startAudioProcessing(TransportFactory.TransportType.USB);
             }
         }
         else if (requestCode == REQUEST_SETTINGS) {
