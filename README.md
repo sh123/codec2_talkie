@@ -1,13 +1,19 @@
 ![CI](https://github.com/sh123/codec2_talkie/workflows/CI/badge.svg)
 
-# Android Codec2 Walkie-Talkie
-Minimalistic Walkie-Talkie style Android KISS Bluetooth/USB modem client for Amateur Radio DV (digital voice) communication by using open source [Codec2](https://github.com/drowe67/codec2).
+# Table of contents
+- [Introduction](#introduction)
+- [Requirements](#requirements)
+- [Features](#features)
+- [Suitable radios and modems](#suitable-radios-and-modems)
+- [Related projects](#related-projects)
+- [FAQ](#faq)
+- [Planned features](#todo)
 
+# Introduction
 ![alt text](images/screenshot.png)
 ![alt text](images/screenshot_settings.png)
 
-# Introduction
-This minimalistic Android application is a Walkie-Talkie style digital voice frontend for your radio. 
+This minimalistic Android application is a Walkie-Talkie style digital voice frontend for your radio by using open source [Codec2](https://github.com/drowe67/codec2). 
 
 It connects to your radio KISS Bluetooth/USB modem, records speech from the phone microphone on transmit, encodes audio into codec2 format, encapsulates into KISS frames and sends to your modem. Modem sends KISS packets to the phone with codec2 speech, application decodes codec2 frames and plays them through phone speaker.
 
