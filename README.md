@@ -76,7 +76,7 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
   
 # TODO
 - Parrot mode, so speech coming from aether will be transmitted back as is (testing or digirepeating)
-- Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency/channel, modulation scheme, modem speed or other modem parameters on the fly from the user interface
+- Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency/channel, modulation scheme, modem speed or other modem parameters on the fly from the application Preferences
   - Rig/radio module control and signal level reports by using KISS command extensions
   - HC-12 module control by using AT commands
 - Investigate support for other non-KISS frame formats and protocols, switcheable from the UI
