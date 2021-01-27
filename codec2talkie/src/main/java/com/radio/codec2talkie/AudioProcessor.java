@@ -30,7 +30,7 @@ public class AudioProcessor extends Thread {
     public static final int PROCESSOR_TX_LEVEL = 6;
 
     private static int AUDIO_MIN_LEVEL = -60;
-    private static int AUDIO_MAX_LEVEL = -5;
+    private static int AUDIO_MAX_LEVEL = 0;
 
     private final int AUDIO_SAMPLE_SIZE = 8000;
     private final int SLEEP_IDLE_DELAY_MS = 20;

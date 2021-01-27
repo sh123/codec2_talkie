@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
         int color = Color.GREEN;
         if (audioLevel > AudioProcessor.getAudioMaxLevel() - 10)
             color = Color.RED;
-        else if (audioLevel < AudioProcessor.getAudioMinLevel() + 25)
+        else if (audioLevel < AudioProcessor.getAudioMinLevel() + 40)
             color = Color.LTGRAY;
         return color;
     }
