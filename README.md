@@ -1,7 +1,7 @@
 ![CI](https://github.com/sh123/codec2_talkie/workflows/CI/badge.svg)
 
 # Android Codec2 Walkie-Talkie
-Minimalistic Android KISS Bluetooth/USB modem client for Amateur Radio DV (digital voice) communication by using open source [Codec2](https://github.com/drowe67/codec2).
+Minimalistic Walkie-Talkie style Android KISS Bluetooth/USB modem client for Amateur Radio DV (digital voice) communication by using open source [Codec2](https://github.com/drowe67/codec2).
 
 ![alt text](images/screenshot.png)
 ![alt text](images/screenshot_settings.png)
