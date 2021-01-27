@@ -72,7 +72,7 @@ public class AudioProcessor extends Thread {
         _onPlayerStateChanged = onPlayerStateChanged;
         _rxDataBuffer = new byte[RX_BUFFER_SIZE];
 
-        _transport  = TransportFactory.create(transportType);;
+        _transport  = TransportFactory.create(transportType);
 
         _protocol = new Kiss(CSMA_PERSISTENCE, CSMA_SLOT_TIME,
                 TX_DELAY_10MS_UNITS, TX_TAIL_10MS_UNITS, _protocolCallback);
