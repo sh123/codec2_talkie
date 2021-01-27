@@ -69,11 +69,11 @@ It is mainly intended for low cost radio modems (such as LoRa), but could be als
   - For KISS encapsulated audio frames command above could be used, but instead of `cat` use https://pypi.org/project/kiss/
   
 # TODO
+- Parrot mode, so speech coming from aether will be transmitted back as is (testing or digirepeating)
 - Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency/channel, modulation scheme, modem speed or other modem parameters on the fly from the user interface
   - Rig/radio module control and signal level reports by using KISS command extensions
   - HC-12 module control by using AT commands
-- Parrot mode, so speech coming from aether will be transmitted back (testing or digirepeating)
-- QSO log, voicemail style recording of incoming speech so that incoming transmissions are not missed
 - Investigate support for other non-KISS frame formats and protocols, switcheable from the UI
   - Raw speech frames without KISS
   - AX.25 packets over existing KISS
+- QSO log, voicemail style recording of incoming speech so that incoming transmissions are not missed
