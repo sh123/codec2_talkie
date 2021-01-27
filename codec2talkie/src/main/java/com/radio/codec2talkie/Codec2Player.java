@@ -13,6 +13,7 @@ import java.util.Arrays;
 
 import com.radio.codec2talkie.kiss.KissCallback;
 import com.radio.codec2talkie.kiss.KissProcessor;
+import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.ustadmobile.codec2.Codec2;
 
@@ -47,7 +48,7 @@ public class Codec2Player extends Thread {
     private int _audioEncodedBufferSize;
 
     private boolean _isRunning = true;
-    private boolean _isRecording = false;
+    private boolean _needsRecording = false;
     private int _currentStatus = PLAYER_DISCONNECT;
 
     private Transport _transport;
@@ -114,11 +115,11 @@ public class Codec2Player extends Thread {
     }
 
     public void startPlayback() {
-        _isRecording = false;
+        _needsRecording = false;
     }
 
     public void startRecording() {
-        _isRecording = true;
+        _needsRecording = true;
     }
 
     public void stopRunning() {
@@ -153,40 +154,44 @@ public class Codec2Player extends Thread {
             for (int i = 0; i < data.length; i += _audioEncodedBufferSize) {
                 for (int j = 0; j < _audioEncodedBufferSize && (j + i) < data.length; j++)
                     audioFrame[j] = data[i + j];
-                decodeAndPlayAudio(audioFrame);
+                decodeAndPlayAudioFrame(audioFrame);
             }
         }
     };
 
-    private void decodeAndPlayAudio(byte[] data) {
-        Codec2.decode(_codec2Con, _playbackAudioBuffer, data);
-        _audioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
-        notifyAudioLevel(_playbackAudioBuffer, false);
+    private void sendStatusUpdate(int status, int delayMs) {
+        if (status == _currentStatus) return;
+
+        _currentStatus = status;
+        Message msg = Message.obtain();
+        msg.what = status;
+
+        _onPlayerStateChanged.sendMessageDelayed(msg, delayMs);
     }
 
-    private void notifyAudioLevel(short [] pcmAudioSamples, boolean isTx) {
-        double db = getAudioMinLevel();
-        if (pcmAudioSamples != null) {
-            double acc = 0;
-            for (short v : pcmAudioSamples) {
-                acc += Math.abs(v);
-            }
-            double avg = acc / pcmAudioSamples.length;
-            db = (20.0 * Math.log10(avg / 32768.0));
-        }
+    private void sendAudioLevelUpdate(short [] pcmAudioSamples, boolean isTx) {
         Message msg = Message.obtain();
         if (isTx)
             msg.what = PLAYER_TX_LEVEL;
         else
             msg.what = PLAYER_RX_LEVEL;
-        msg.arg1 = (int)db;
+        msg.arg1 = AudioTools.getSampleLevelDb(pcmAudioSamples);
         _onPlayerStateChanged.sendMessage(msg);
     }
 
-    private void recordAudio() throws IOException {
-        setStatus(PLAYER_RECORDING, 0);
-        notifyAudioLevel(_recordAudioBuffer, true);
+    private void decodeAndPlayAudioFrame(byte[] data) {
+        Codec2.decode(_codec2Con, _playbackAudioBuffer, data);
+
+        _audioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
+        sendAudioLevelUpdate(_playbackAudioBuffer, false);
+    }
+
+    private void recordAndSendAudioFrame() throws IOException {
+        sendStatusUpdate(PLAYER_RECORDING, 0);
+
         _audioRecorder.read(_recordAudioBuffer, 0, _audioBufferSize);
+        sendAudioLevelUpdate(_recordAudioBuffer, true);
+
         Codec2.encode(_codec2Con, _recordAudioBuffer, _recordAudioEncodedBuffer);
 
         byte [] frame = new byte[_recordAudioEncodedBuffer.length];
@@ -197,37 +202,29 @@ public class Codec2Player extends Thread {
         _kissProcessor.send(frame);
     }
 
-    private boolean playAudio() throws IOException {
+    private boolean receiveAndPlayAudioFrame() throws IOException {
         int bytesRead = _transport.read(_rxDataBuffer);
         if (bytesRead > 0) {
-            setStatus(PLAYER_PLAYING, 0);
+            sendStatusUpdate(PLAYER_PLAYING, 0);
             _kissProcessor.receive(Arrays.copyOf(_rxDataBuffer, bytesRead));
             return true;
         }
         return false;
     }
 
-    private void toggleRecording() {
-        _audioRecorder.startRecording();
-        _audioPlayer.stop();
-        notifyAudioLevel(null, false);
-    }
-
-    private void togglePlayback() throws IOException {
-        _audioRecorder.stop();
-        _audioPlayer.play();
-        _kissProcessor.flush();
-        notifyAudioLevel(null, true);
-    }
-
     private void processRecordPlaybackToggle() throws IOException {
         // playback -> recording
-        if (_isRecording && _audioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
-            toggleRecording();
+        if (_needsRecording && _audioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
+            _audioPlayer.stop();
+            _audioRecorder.startRecording();
+            sendAudioLevelUpdate(null, false);
         }
         // recording -> playback
-        if (!_isRecording && _audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
-            togglePlayback();
+        if (!_needsRecording && _audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+            _kissProcessor.flush();
+            _audioRecorder.stop();
+            _audioPlayer.play();
+            sendAudioLevelUpdate(null, true);
         }
     }
 
@@ -252,20 +249,11 @@ public class Codec2Player extends Thread {
         }
     }
 
-    private void setStatus(int status, int delayMs) {
-        if (status != _currentStatus) {
-            _currentStatus = status;
-            Message msg = Message.obtain();
-            msg.what = status;
-            _onPlayerStateChanged.sendMessageDelayed(msg, delayMs);
-        }
-    }
-
     @Override
     public void run() {
         setPriority(Thread.MAX_PRIORITY);
         try {
-            setStatus(PLAYER_LISTENING, 0);
+            sendStatusUpdate(PLAYER_LISTENING, 0);
             _kissProcessor.initialize();
 
             while (_isRunning) {
@@ -273,17 +261,17 @@ public class Codec2Player extends Thread {
 
                 // recording
                 if (_audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
-                    recordAudio();
+                    recordAndSendAudioFrame();
                 } else {
                     // playback
-                    if (!playAudio()) {
+                    if (!receiveAndPlayAudioFrame()) {
                         // idling
                         try {
                             if (_currentStatus != PLAYER_LISTENING) {
-                                notifyAudioLevel(null, false);
-                                notifyAudioLevel(null, true);
+                                sendAudioLevelUpdate(null, false);
+                                sendAudioLevelUpdate(null, true);
                             }
-                            setStatus(PLAYER_LISTENING, POST_PLAY_DELAY_MS);
+                            sendStatusUpdate(PLAYER_LISTENING, POST_PLAY_DELAY_MS);
                             Thread.sleep(SLEEP_IDLE_DELAY_MS);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -295,7 +283,7 @@ public class Codec2Player extends Thread {
             e.printStackTrace();
         }
 
-        setStatus(PLAYER_DISCONNECT, 0);
+        sendStatusUpdate(PLAYER_DISCONNECT, 0);
         cleanup();
     }
 }

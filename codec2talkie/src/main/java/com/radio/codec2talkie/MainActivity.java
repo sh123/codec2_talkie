@@ -40,6 +40,7 @@ import com.radio.codec2talkie.settings.SettingsActivity;
 import com.radio.codec2talkie.transport.Bluetooth;
 import com.radio.codec2talkie.transport.Loopback;
 import com.radio.codec2talkie.transport.Transport;
+import com.radio.codec2talkie.transport.TransportFactory;
 import com.radio.codec2talkie.transport.UsbSerial;
 import com.radio.codec2talkie.usb.UsbConnectActivity;
 import com.radio.codec2talkie.usb.UsbPortHandler;
@@ -52,27 +53,20 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private enum TransportType {
-        USB,
-        BLUETOOTH,
-        LOOPBACK
-    };
-
     private final static int REQUEST_CONNECT_BT = 1;
     private final static int REQUEST_CONNECT_USB = 2;
     private final static int REQUEST_PERMISSIONS = 3;
     private final static int REQUEST_SETTINGS = 4;
-
-    private final static String CODEC2_DEFAULT_MODE = "MODE_450=10";
 
     private final String[] _requiredPermissions = new String[] {
             Manifest.permission.BLUETOOTH,
             Manifest.permission.RECORD_AUDIO
     };
 
-    SharedPreferences _sharedPreferences;
+    private Codec2Player _codec2Player;
 
-    private boolean _isActive = false;
+    SharedPreferences _sharedPreferences;
+    boolean _isTestMode;
 
     private TextView _textConnInfo;
     private TextView _textStatus;
@@ -80,16 +74,10 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar _progressAudioLevel;
     private Button _btnPtt;
 
-    private Codec2Player _codec2Player;
-
-    boolean _isTestMode;
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        _isActive = true;
 
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -119,18 +107,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
-        _isActive = false;
         if (_codec2Player != null) {
             _codec2Player.stopRunning();
         }
+        super.onDestroy();
     }
 
     private void startTransportConnection() {
         if (_isTestMode) {
             _textConnInfo.setText(R.string.main_status_loopback_test);
             try {
-                startPlayer(TransportType.LOOPBACK);
+                startPlayer(TransportFactory.TransportType.LOOPBACK);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -283,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
     private final Handler onPlayerStateChanged = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            if (_isActive && msg.what == Codec2Player.PLAYER_DISCONNECT) {
+            if (msg.what == Codec2Player.PLAYER_DISCONNECT) {
                 _textStatus.setText("STOP");
                 Toast.makeText(getBaseContext(), "Disconnected from modem", Toast.LENGTH_SHORT).show();
                 startTransportConnection();
@@ -304,48 +291,35 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void startPlayer(TransportType transportType) throws IOException {
-        String statusMessage = "";
-
-        String codec2ModePref = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, CODEC2_DEFAULT_MODE);
+    private void startPlayer(TransportFactory.TransportType transportType) throws IOException {
+        String codec2ModePref = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
         String [] codecNameCodecId = codec2ModePref.split("=");
         int codec2Mode = Integer.parseInt(codecNameCodecId[1]);
-        statusMessage += codecNameCodecId[0];
 
-        Transport transport;
-        switch (transportType) {
-            case USB:
-                transport = new UsbSerial(UsbPortHandler.getPort());
-                break;
-            case BLUETOOTH:
-                transport = new Bluetooth(SocketHandler.getSocket());
-                break;
-            case LOOPBACK:
-            default:
-                transport = new Loopback();
-                break;
-        }
+        _textCodecMode.setText(codecNameCodecId[0]);
+
+        Transport transport = TransportFactory.create(transportType);
         _codec2Player = new Codec2Player(transport, onPlayerStateChanged, codec2Mode);
         _codec2Player.start();
-
-        _textCodecMode.setText(statusMessage);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         if (requestCode == REQUEST_CONNECT_BT) {
             if (resultCode == RESULT_CANCELED) {
+                // fall back to loopback if bluetooth failed
                 try {
                     _textConnInfo.setText(R.string.main_status_loopback_test);
-                    startPlayer(TransportType.LOOPBACK);
+                    startPlayer(TransportFactory.TransportType.LOOPBACK);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else if (resultCode == RESULT_OK) {
                 _textConnInfo.setText(data.getStringExtra("name"));
                 try {
-                    startPlayer(TransportType.BLUETOOTH);
+                    startPlayer(TransportFactory.TransportType.BLUETOOTH);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -353,11 +327,12 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (requestCode == REQUEST_CONNECT_USB) {
             if (resultCode == RESULT_CANCELED) {
+                // fall back to bluetooth if usb failed
                 startBluetoothConnectActivity();
             } else if (resultCode == RESULT_OK) {
                 _textConnInfo.setText(data.getStringExtra("name"));
                 try {
-                    startPlayer(TransportType.USB);
+                    startPlayer(TransportFactory.TransportType.USB);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
