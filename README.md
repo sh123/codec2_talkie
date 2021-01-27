@@ -75,3 +75,5 @@ It is mainly intended for low cost radio modems (such as LoRa), but could be als
 - Parrot mode, so speech coming from aether will be transmitted back (testing or digirepeating)
 - QSO log, voicemail style recording of incoming speech so that incoming transmissions are not missed
 - Investigate support for other non-KISS frame formats and protocols, switcheable from the UI
+  - Raw speech frames without KISS
+  - AX.25 packets over existing KISS
