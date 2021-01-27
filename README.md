@@ -13,7 +13,7 @@ It connects to your radio KISS Bluetooth/USB modem, sends and receives Codec2 au
 
 It does not deal with radio management, modulation, etc, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK, FreeDV or any other modulation scheme. Radio just needs to expose KISS Bluetooth interface for speech frames. 
 
-It is mainly intended for low cost radio modems (such as LoRa), but could be also used with custom modems and external transceivers.
+It is mainly intended for low cost radio modems (such as LoRa), but could be also used with custom modems + external transceivers.
 
 # Requirements
 - Android 6.0 (API 23) or higher
