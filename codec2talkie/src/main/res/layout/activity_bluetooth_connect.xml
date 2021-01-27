@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".bluetooth.BluetoothConnectActivity">
+    tools:context=".connect.BluetoothConnectActivity">
 
     <ListView
         android:id="@+id/btDevicesList"

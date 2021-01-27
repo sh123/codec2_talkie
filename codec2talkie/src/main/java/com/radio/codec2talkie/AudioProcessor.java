@@ -11,22 +11,23 @@ import android.os.Message;
 import java.io.IOException;
 import java.util.Arrays;
 
-import com.radio.codec2talkie.kiss.KissCallback;
-import com.radio.codec2talkie.kiss.KissProcessor;
+import com.radio.codec2talkie.protocol.Callback;
+import com.radio.codec2talkie.protocol.Kiss;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.transport.Transport;
+import com.radio.codec2talkie.transport.TransportFactory;
 import com.ustadmobile.codec2.Codec2;
 
-public class Codec2Player extends Thread {
+public class AudioProcessor extends Thread {
 
-    private static final String TAG = Codec2Player.class.getSimpleName();
+    private static final String TAG = AudioProcessor.class.getSimpleName();
 
-    public static int PLAYER_DISCONNECT = 1;
-    public static int PLAYER_LISTENING = 2;
-    public static int PLAYER_RECORDING = 3;
-    public static int PLAYER_PLAYING = 4;
-    public static int PLAYER_RX_LEVEL = 5;
-    public static int PLAYER_TX_LEVEL = 6;
+    public static final int PROCESSOR_DISCONNECTED = 1;
+    public static final int PROCESSOR_LISTENING = 2;
+    public static final int PROCESSOR_RECORDING = 3;
+    public static final int PROCESSOR_PLAYING = 4;
+    public static final int PROCESSOR_RX_LEVEL = 5;
+    public static final int PROCESSOR_TX_LEVEL = 6;
 
     private static int AUDIO_MIN_LEVEL = -60;
     private static int AUDIO_MAX_LEVEL = -5;
@@ -49,61 +50,35 @@ public class Codec2Player extends Thread {
 
     private boolean _isRunning = true;
     private boolean _needsRecording = false;
-    private int _currentStatus = PLAYER_DISCONNECT;
+    private int _currentStatus = PROCESSOR_DISCONNECTED;
 
-    private Transport _transport;
+    private final Kiss _protocol;
+    private final Transport _transport;
 
     // input data, bt -> audio
-    private final AudioTrack _audioPlayer;
+    private AudioTrack _systemAudioPlayer;
     private short[] _playbackAudioBuffer;
 
     // output data., mic -> bt
-    private final AudioRecord _audioRecorder;
+    private AudioRecord _systemAudioRecorder;
     private final byte[] _rxDataBuffer;
     private short[] _recordAudioBuffer;
     private char[] _recordAudioEncodedBuffer;
 
     // callbacks
-    private KissProcessor _kissProcessor;
     private final Handler _onPlayerStateChanged;
 
-    public Codec2Player(Transport transport, Handler onPlayerStateChanged, int codec2Mode) {
-        _transport = transport;
+    public AudioProcessor(TransportFactory.TransportType transportType, Handler onPlayerStateChanged, int codec2Mode) throws IOException {
         _onPlayerStateChanged = onPlayerStateChanged;
         _rxDataBuffer = new byte[RX_BUFFER_SIZE];
 
-        setCodecModeInternal(codec2Mode);
+        _transport  = TransportFactory.create(transportType);;
 
-        int _audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
-                AUDIO_SAMPLE_SIZE,
-                AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT);
-        _audioRecorder = new AudioRecord(
-                MediaRecorder.AudioSource.MIC,
-                AUDIO_SAMPLE_SIZE,
-                AudioFormat.CHANNEL_IN_MONO,
-                AudioFormat.ENCODING_PCM_16BIT,
-                10 * _audioRecorderMinBufferSize);
-        _audioRecorder.startRecording();
+        _protocol = new Kiss(CSMA_PERSISTENCE, CSMA_SLOT_TIME,
+                TX_DELAY_10MS_UNITS, TX_TAIL_10MS_UNITS, _protocolCallback);
 
-        int _audioPlayerMinBufferSize = AudioTrack.getMinBufferSize(
-                AUDIO_SAMPLE_SIZE,
-                AudioFormat.CHANNEL_OUT_MONO,
-                AudioFormat.ENCODING_PCM_16BIT);
-        _audioPlayer = new AudioTrack.Builder()
-                .setAudioAttributes(new AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-                        .build())
-                .setAudioFormat(new AudioFormat.Builder()
-                        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                        .setSampleRate(AUDIO_SAMPLE_SIZE)
-                        .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
-                        .build())
-                .setTransferMode(AudioTrack.MODE_STREAM)
-                .setBufferSizeInBytes(10 * _audioPlayerMinBufferSize)
-                .build();
-        _audioPlayer.play();
+        constructCodec2(codec2Mode);
+        constructSystemAudioDevices();
     }
 
     public static int getAudioMinLevel() {
@@ -126,7 +101,40 @@ public class Codec2Player extends Thread {
         _isRunning = false;
     }
 
-    private void setCodecModeInternal(int codecMode) {
+    private void constructSystemAudioDevices() {
+        int _audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
+                AUDIO_SAMPLE_SIZE,
+                AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT);
+        _systemAudioRecorder = new AudioRecord(
+                MediaRecorder.AudioSource.MIC,
+                AUDIO_SAMPLE_SIZE,
+                AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT,
+                10 * _audioRecorderMinBufferSize);
+        _systemAudioRecorder.startRecording();
+
+        int _audioPlayerMinBufferSize = AudioTrack.getMinBufferSize(
+                AUDIO_SAMPLE_SIZE,
+                AudioFormat.CHANNEL_OUT_MONO,
+                AudioFormat.ENCODING_PCM_16BIT);
+        _systemAudioPlayer = new AudioTrack.Builder()
+                .setAudioAttributes(new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build())
+                .setAudioFormat(new AudioFormat.Builder()
+                        .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                        .setSampleRate(AUDIO_SAMPLE_SIZE)
+                        .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
+                        .build())
+                .setTransferMode(AudioTrack.MODE_STREAM)
+                .setBufferSizeInBytes(10 * _audioPlayerMinBufferSize)
+                .build();
+        _systemAudioPlayer.play();
+    }
+
+    private void constructCodec2(int codecMode) {
         _codec2Con = Codec2.create(codecMode);
 
         _audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
@@ -136,12 +144,9 @@ public class Codec2Player extends Thread {
         _recordAudioEncodedBuffer = new char[_audioEncodedBufferSize];
 
         _playbackAudioBuffer = new short[_audioBufferSize];
-
-        _kissProcessor = new KissProcessor(CSMA_PERSISTENCE, CSMA_SLOT_TIME,
-                TX_DELAY_10MS_UNITS, TX_TAIL_10MS_UNITS, _kissCallback);
     }
 
-    private final KissCallback _kissCallback = new KissCallback() {
+    private final Callback _protocolCallback = new Callback() {
         @Override
         protected void onSend(byte[] data) throws IOException {
             _transport.write(data);
@@ -169,12 +174,16 @@ public class Codec2Player extends Thread {
         _onPlayerStateChanged.sendMessageDelayed(msg, delayMs);
     }
 
-    private void sendAudioLevelUpdate(short [] pcmAudioSamples, boolean isTx) {
+    private void sendRxAudioLevelUpdate(short [] pcmAudioSamples) {
         Message msg = Message.obtain();
-        if (isTx)
-            msg.what = PLAYER_TX_LEVEL;
-        else
-            msg.what = PLAYER_RX_LEVEL;
+        msg.what = PROCESSOR_RX_LEVEL;
+        msg.arg1 = AudioTools.getSampleLevelDb(pcmAudioSamples);
+        _onPlayerStateChanged.sendMessage(msg);
+    }
+
+    private void sendTxAudioLevelUpdate(short [] pcmAudioSamples) {
+        Message msg = Message.obtain();
+        msg.what = PROCESSOR_TX_LEVEL;
         msg.arg1 = AudioTools.getSampleLevelDb(pcmAudioSamples);
         _onPlayerStateChanged.sendMessage(msg);
     }
@@ -182,15 +191,15 @@ public class Codec2Player extends Thread {
     private void decodeAndPlayAudioFrame(byte[] data) {
         Codec2.decode(_codec2Con, _playbackAudioBuffer, data);
 
-        _audioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
-        sendAudioLevelUpdate(_playbackAudioBuffer, false);
+        _systemAudioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
+        sendRxAudioLevelUpdate(_playbackAudioBuffer);
     }
 
     private void recordAndSendAudioFrame() throws IOException {
-        sendStatusUpdate(PLAYER_RECORDING, 0);
+        sendStatusUpdate(PROCESSOR_RECORDING, 0);
 
-        _audioRecorder.read(_recordAudioBuffer, 0, _audioBufferSize);
-        sendAudioLevelUpdate(_recordAudioBuffer, true);
+        _systemAudioRecorder.read(_recordAudioBuffer, 0, _audioBufferSize);
+        sendTxAudioLevelUpdate(_recordAudioBuffer);
 
         Codec2.encode(_codec2Con, _recordAudioBuffer, _recordAudioEncodedBuffer);
 
@@ -199,14 +208,14 @@ public class Codec2Player extends Thread {
         for (int i = 0; i < _recordAudioEncodedBuffer.length; i++) {
             frame[i] = (byte)_recordAudioEncodedBuffer[i];
         }
-        _kissProcessor.send(frame);
+        _protocol.send(frame);
     }
 
     private boolean receiveAndPlayAudioFrame() throws IOException {
         int bytesRead = _transport.read(_rxDataBuffer);
         if (bytesRead > 0) {
-            sendStatusUpdate(PLAYER_PLAYING, 0);
-            _kissProcessor.receive(Arrays.copyOf(_rxDataBuffer, bytesRead));
+            sendStatusUpdate(PROCESSOR_PLAYING, 0);
+            _protocol.receive(Arrays.copyOf(_rxDataBuffer, bytesRead));
             return true;
         }
         return false;
@@ -214,31 +223,31 @@ public class Codec2Player extends Thread {
 
     private void processRecordPlaybackToggle() throws IOException {
         // playback -> recording
-        if (_needsRecording && _audioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
-            _audioPlayer.stop();
-            _audioRecorder.startRecording();
-            sendAudioLevelUpdate(null, false);
+        if (_needsRecording && _systemAudioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
+            _systemAudioPlayer.stop();
+            _systemAudioRecorder.startRecording();
+            sendRxAudioLevelUpdate(null);
         }
         // recording -> playback
-        if (!_needsRecording && _audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
-            _kissProcessor.flush();
-            _audioRecorder.stop();
-            _audioPlayer.play();
-            sendAudioLevelUpdate(null, true);
+        if (!_needsRecording && _systemAudioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+            _protocol.flush();
+            _systemAudioRecorder.stop();
+            _systemAudioPlayer.play();
+            sendTxAudioLevelUpdate(null);
         }
     }
 
     private void cleanup() {
-        _audioRecorder.stop();
-        _audioRecorder.release();
+        _systemAudioRecorder.stop();
+        _systemAudioRecorder.release();
 
-        _audioPlayer.stop();
-        _audioPlayer.release();
+        _systemAudioPlayer.stop();
+        _systemAudioPlayer.release();
 
         Codec2.destroy(_codec2Con);
 
         try {
-            _kissProcessor.flush();
+            _protocol.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -249,41 +258,43 @@ public class Codec2Player extends Thread {
         }
     }
 
+    private boolean process() throws IOException {
+        processRecordPlaybackToggle();
+
+        // recording
+        if (_systemAudioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+            recordAndSendAudioFrame();
+        } else {
+            // playback
+            if (!receiveAndPlayAudioFrame()) {
+                // idling
+                if (_currentStatus != PROCESSOR_LISTENING) {
+                    sendRxAudioLevelUpdate(null);
+                    sendTxAudioLevelUpdate(null);
+                }
+                sendStatusUpdate(PROCESSOR_LISTENING, POST_PLAY_DELAY_MS);
+                return false;
+            }
+        }
+        return true;
+    }
+
     @Override
     public void run() {
         setPriority(Thread.MAX_PRIORITY);
         try {
-            sendStatusUpdate(PLAYER_LISTENING, 0);
-            _kissProcessor.initialize();
+            sendStatusUpdate(PROCESSOR_LISTENING, 0);
+            _protocol.initialize();
 
-            while (_isRunning) {
-                processRecordPlaybackToggle();
+            while (_isRunning)
+                if (!process())
+                    Thread.sleep(SLEEP_IDLE_DELAY_MS);
 
-                // recording
-                if (_audioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
-                    recordAndSendAudioFrame();
-                } else {
-                    // playback
-                    if (!receiveAndPlayAudioFrame()) {
-                        // idling
-                        try {
-                            if (_currentStatus != PLAYER_LISTENING) {
-                                sendAudioLevelUpdate(null, false);
-                                sendAudioLevelUpdate(null, true);
-                            }
-                            sendStatusUpdate(PLAYER_LISTENING, POST_PLAY_DELAY_MS);
-                            Thread.sleep(SLEEP_IDLE_DELAY_MS);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
 
-        sendStatusUpdate(PLAYER_DISCONNECT, 0);
+        sendStatusUpdate(PROCESSOR_DISCONNECTED, 0);
         cleanup();
     }
 }

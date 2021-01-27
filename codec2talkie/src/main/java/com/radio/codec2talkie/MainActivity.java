@@ -33,17 +33,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.radio.codec2talkie.bluetooth.BluetoothConnectActivity;
-import com.radio.codec2talkie.bluetooth.SocketHandler;
+import com.radio.codec2talkie.connect.BluetoothConnectActivity;
+import com.radio.codec2talkie.connect.SocketHandler;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
-import com.radio.codec2talkie.transport.Bluetooth;
-import com.radio.codec2talkie.transport.Loopback;
-import com.radio.codec2talkie.transport.Transport;
 import com.radio.codec2talkie.transport.TransportFactory;
-import com.radio.codec2talkie.transport.UsbSerial;
-import com.radio.codec2talkie.usb.UsbConnectActivity;
-import com.radio.codec2talkie.usb.UsbPortHandler;
+import com.radio.codec2talkie.connect.UsbConnectActivity;
+import com.radio.codec2talkie.connect.UsbPortHandler;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -63,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.RECORD_AUDIO
     };
 
-    private Codec2Player _codec2Player;
+    private AudioProcessor _audioProcessor;
 
     SharedPreferences _sharedPreferences;
     boolean _isTestMode;
@@ -86,11 +82,11 @@ public class MainActivity extends AppCompatActivity {
         _textConnInfo = findViewById(R.id.textBtName);
         _textStatus = findViewById(R.id.textStatus);
 
-        int barMaxValue = Codec2Player.getAudioMaxLevel() - Codec2Player.getAudioMinLevel();
+        int barMaxValue = AudioProcessor.getAudioMaxLevel() - AudioProcessor.getAudioMinLevel();
         _progressAudioLevel = findViewById(R.id.progressAudioLevel);
         _progressAudioLevel.setMax(barMaxValue);
         _progressAudioLevel.getProgressDrawable().setColorFilter(
-                new PorterDuffColorFilter(colorFromAudioLevel(Codec2Player.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
+                new PorterDuffColorFilter(colorFromAudioLevel(AudioProcessor.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
 
         _btnPtt = findViewById(R.id.btnPtt);
         _btnPtt.setOnTouchListener(onBtnPttTouchListener);
@@ -107,8 +103,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        if (_codec2Player != null) {
-            _codec2Player.stopRunning();
+        if (_audioProcessor != null) {
+            _audioProcessor.stopRunning();
         }
         super.onDestroy();
     }
@@ -117,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
         if (_isTestMode) {
             _textConnInfo.setText(R.string.main_status_loopback_test);
             try {
-                startPlayer(TransportFactory.TransportType.LOOPBACK);
+                startAudioProcessing(TransportFactory.TransportType.LOOPBACK);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -156,9 +152,9 @@ public class MainActivity extends AppCompatActivity {
 
     private int colorFromAudioLevel(int audioLevel) {
         int color = Color.GREEN;
-        if (audioLevel > Codec2Player.getAudioMaxLevel() - 10)
+        if (audioLevel > AudioProcessor.getAudioMaxLevel() - 10)
             color = Color.RED;
-        else if (audioLevel < Codec2Player.getAudioMinLevel() + 25)
+        else if (audioLevel < AudioProcessor.getAudioMinLevel() + 25)
             color = Color.LTGRAY;
         return color;
     }
@@ -166,9 +162,9 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_codec2Player != null && SocketHandler.getSocket() != null && !_isTestMode) {
+        if (_audioProcessor != null && SocketHandler.getSocket() != null && !_isTestMode) {
             Toast.makeText(MainActivity.this, "Bluetooth disconnected", Toast.LENGTH_SHORT).show();
-            _codec2Player.stopRunning();
+            _audioProcessor.stopRunning();
         }
         }
     };
@@ -176,9 +172,9 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onUsbDetached = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_codec2Player != null && UsbPortHandler.getPort() != null && !_isTestMode) {
+        if (_audioProcessor != null && UsbPortHandler.getPort() != null && !_isTestMode) {
             Toast.makeText(MainActivity.this, "USB detached", Toast.LENGTH_SHORT).show();
-            _codec2Player.stopRunning();
+            _audioProcessor.stopRunning();
         }
         }
     };
@@ -233,13 +229,13 @@ public class MainActivity extends AppCompatActivity {
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    if (_codec2Player != null)
-                        _codec2Player.startRecording();
+                    if (_audioProcessor != null)
+                        _audioProcessor.startRecording();
                     break;
                 case MotionEvent.ACTION_UP:
                     v.performClick();
-                    if (_codec2Player != null)
-                        _codec2Player.startPlayback();
+                    if (_audioProcessor != null)
+                        _audioProcessor.startPlayback();
                     break;
             }
             return false;
@@ -267,40 +263,44 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private final Handler onPlayerStateChanged = new Handler(Looper.getMainLooper()) {
+    private final Handler onAudioProcessorStateChanged = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            if (msg.what == Codec2Player.PLAYER_DISCONNECT) {
-                _textStatus.setText("STOP");
-                Toast.makeText(getBaseContext(), "Disconnected from modem", Toast.LENGTH_SHORT).show();
-                startTransportConnection();
-            }
-            else if (msg.what == Codec2Player.PLAYER_LISTENING) {
-                _textStatus.setText("IDLE");
-            }
-            else if (msg.what == Codec2Player.PLAYER_RECORDING) {
-                _textStatus.setText("TX");
-            }
-            else if (msg.what == Codec2Player.PLAYER_PLAYING) {
-                _textStatus.setText("RX");
-            }
-            else if (msg.what == Codec2Player.PLAYER_RX_LEVEL || msg.what == Codec2Player.PLAYER_TX_LEVEL) {
-                _progressAudioLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
-                _progressAudioLevel.setProgress(msg.arg1 - Codec2Player.getAudioMinLevel());
+            switch (msg.what) {
+                case AudioProcessor.PROCESSOR_DISCONNECTED:
+                    _textStatus.setText(R.string.main_status_stop);
+                    Toast.makeText(getBaseContext(), "Disconnected from modem", Toast.LENGTH_SHORT).show();
+                    startTransportConnection();
+                    break;
+                case AudioProcessor.PROCESSOR_LISTENING:
+                    _textStatus.setText(R.string.main_status_idle);
+                    break;
+                case AudioProcessor.PROCESSOR_RECORDING:
+                    _textStatus.setText(R.string.main_status_tx);
+                    break;
+                case AudioProcessor.PROCESSOR_PLAYING:
+                    _textStatus.setText(R.string.main_status_rx);
+                    break;
+                // same progress bar is reused for rx and tx levels
+                case AudioProcessor.PROCESSOR_RX_LEVEL:
+                case AudioProcessor.PROCESSOR_TX_LEVEL:
+                    _progressAudioLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
+                    _progressAudioLevel.setProgress(msg.arg1 - AudioProcessor.getAudioMinLevel());
+                    break;
             }
         }
     };
 
-    private void startPlayer(TransportFactory.TransportType transportType) throws IOException {
-        String codec2ModePref = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
-        String [] codecNameCodecId = codec2ModePref.split("=");
-        int codec2Mode = Integer.parseInt(codecNameCodecId[1]);
+    private void startAudioProcessing(TransportFactory.TransportType transportType) throws IOException {
+        String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
 
+        String [] codecNameCodecId = codec2ModeName.split("=");
         _textCodecMode.setText(codecNameCodecId[0]);
 
-        Transport transport = TransportFactory.create(transportType);
-        _codec2Player = new Codec2Player(transport, onPlayerStateChanged, codec2Mode);
-        _codec2Player.start();
+        int codec2ModeId = Integer.parseInt(codecNameCodecId[1]);
+
+        _audioProcessor = new AudioProcessor(transportType, onAudioProcessorStateChanged, codec2ModeId);
+        _audioProcessor.start();
     }
 
     @Override
@@ -312,14 +312,14 @@ public class MainActivity extends AppCompatActivity {
                 // fall back to loopback if bluetooth failed
                 try {
                     _textConnInfo.setText(R.string.main_status_loopback_test);
-                    startPlayer(TransportFactory.TransportType.LOOPBACK);
+                    startAudioProcessing(TransportFactory.TransportType.LOOPBACK);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else if (resultCode == RESULT_OK) {
                 _textConnInfo.setText(data.getStringExtra("name"));
                 try {
-                    startPlayer(TransportFactory.TransportType.BLUETOOTH);
+                    startAudioProcessing(TransportFactory.TransportType.BLUETOOTH);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -332,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (resultCode == RESULT_OK) {
                 _textConnInfo.setText(data.getStringExtra("name"));
                 try {
-                    startPlayer(TransportFactory.TransportType.USB);
+                    startAudioProcessing(TransportFactory.TransportType.USB);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

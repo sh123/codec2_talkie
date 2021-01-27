@@ -1,4 +1,4 @@
-package com.radio.codec2talkie.bluetooth;
+package com.radio.codec2talkie.connect;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;

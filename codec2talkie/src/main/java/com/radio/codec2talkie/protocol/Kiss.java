@@ -1,4 +1,4 @@
-package com.radio.codec2talkie.kiss;
+package com.radio.codec2talkie.protocol;
 
 import android.util.Log;
 
@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class KissProcessor {
+public class Kiss {
 
-    private static final String TAG = KissProcessor.class.getSimpleName();
+    private static final String TAG = Kiss.class.getSimpleName();
 
     private final int KISS_TX_FRAME_MAX_SIZE = 48;
 
@@ -42,12 +42,12 @@ public class KissProcessor {
     private final byte[] _outputKissBuffer;
     private final byte[] _inputKissBuffer;
 
-    private final KissCallback _callback;
+    private final Callback _callback;
 
     private int _outputKissBufferPos;
     private int _inputKissBufferPos;
 
-    public KissProcessor(byte csmaPersistence, byte csmaSlotTime, byte txDelay, byte txTail, KissCallback callback) {
+    public Kiss(byte csmaPersistence, byte csmaSlotTime, byte txDelay, byte txTail, Callback callback) {
         _callback = callback;
         _outputKissBuffer = new byte[KISS_TX_FRAME_MAX_SIZE];
         _inputKissBuffer = new byte[100 * KISS_TX_FRAME_MAX_SIZE];

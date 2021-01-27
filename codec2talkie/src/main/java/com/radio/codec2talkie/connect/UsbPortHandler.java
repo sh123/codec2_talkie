@@ -1,4 +1,4 @@
-package com.radio.codec2talkie.usb;
+package com.radio.codec2talkie.connect;
 
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 

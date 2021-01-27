@@ -13,10 +13,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Codec2Talkie">
         <activity
-            android:name=".usb.UsbConnectActivity"
+            android:name=".connect.UsbConnectActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name=".bluetooth.BluetoothConnectActivity"
+            android:name=".connect.BluetoothConnectActivity"
             android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".settings.BluetoothSettingsActivity"

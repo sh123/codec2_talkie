@@ -1,7 +1,7 @@
 package com.radio.codec2talkie.transport;
 
-import com.radio.codec2talkie.bluetooth.SocketHandler;
-import com.radio.codec2talkie.usb.UsbPortHandler;
+import com.radio.codec2talkie.connect.SocketHandler;
+import com.radio.codec2talkie.connect.UsbPortHandler;
 
 import java.io.IOException;
 

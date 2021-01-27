@@ -37,4 +37,8 @@
     </string-array>
 
     <string name="main_status_loopback_test">LOOPBACK TEST</string>
+    <string name="main_status_stop">STOP</string>
+    <string name="main_status_idle">IDLE</string>
+    <string name="main_status_tx">TX</string>
+    <string name="main_status_rx">RX</string>
 </resources>
