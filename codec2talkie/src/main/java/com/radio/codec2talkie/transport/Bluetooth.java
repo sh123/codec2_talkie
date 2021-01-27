@@ -28,8 +28,9 @@ public class Bluetooth implements Transport {
     }
 
     @Override
-    public void write(byte[] data) throws IOException {
+    public int write(byte[] data) throws IOException {
         _btOutputStream.write(data);
+        return data.length;
     }
 
     @Override

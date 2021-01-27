@@ -38,6 +38,7 @@ import com.radio.codec2talkie.bluetooth.SocketHandler;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
 import com.radio.codec2talkie.transport.Bluetooth;
+import com.radio.codec2talkie.transport.Loopback;
 import com.radio.codec2talkie.transport.Transport;
 import com.radio.codec2talkie.transport.UsbSerial;
 import com.radio.codec2talkie.usb.UsbConnectActivity;
@@ -50,6 +51,12 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+
+    private enum TransportType {
+        USB,
+        BLUETOOTH,
+        LOOPBACK
+    };
 
     private final static int REQUEST_CONNECT_BT = 1;
     private final static int REQUEST_CONNECT_USB = 2;
@@ -74,6 +81,8 @@ public class MainActivity extends AppCompatActivity {
     private Button _btnPtt;
 
     private Codec2Player _codec2Player;
+
+    boolean _isTestMode;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -103,9 +112,9 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(onBluetoothDisconnected, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
         registerReceiver(onUsbDetached, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
 
-        if (requestPermissions()) {
-            startUsbConnectActivity();
-        }
+        _isTestMode = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_TEST_MODE, false);
+
+        startTransportConnection();
     }
 
     @Override
@@ -114,6 +123,19 @@ public class MainActivity extends AppCompatActivity {
         _isActive = false;
         if (_codec2Player != null) {
             _codec2Player.stopRunning();
+        }
+    }
+
+    private void startTransportConnection() {
+        if (_isTestMode) {
+            _textConnInfo.setText(R.string.main_status_loopback_test);
+            try {
+                startPlayer(TransportType.LOOPBACK);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (requestPermissions()) {
+            startUsbConnectActivity();
         }
     }
 
@@ -157,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_codec2Player != null && SocketHandler.getSocket() != null) {
+        if (_codec2Player != null && SocketHandler.getSocket() != null && !_isTestMode) {
             Toast.makeText(MainActivity.this, "Bluetooth disconnected", Toast.LENGTH_SHORT).show();
             _codec2Player.stopRunning();
         }
@@ -167,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onUsbDetached = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_codec2Player != null && UsbPortHandler.getPort() != null) {
+        if (_codec2Player != null && UsbPortHandler.getPort() != null && !_isTestMode) {
             Toast.makeText(MainActivity.this, "USB detached", Toast.LENGTH_SHORT).show();
             _codec2Player.stopRunning();
         }
@@ -264,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
             if (_isActive && msg.what == Codec2Player.PLAYER_DISCONNECT) {
                 _textStatus.setText("STOP");
                 Toast.makeText(getBaseContext(), "Disconnected from modem", Toast.LENGTH_SHORT).show();
-                startUsbConnectActivity();
+                startTransportConnection();
             }
             else if (msg.what == Codec2Player.PLAYER_LISTENING) {
                 _textStatus.setText("IDLE");
@@ -282,27 +304,28 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void startPlayer(boolean isUsb) throws IOException {
+    private void startPlayer(TransportType transportType) throws IOException {
         String statusMessage = "";
 
         String codec2ModePref = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, CODEC2_DEFAULT_MODE);
         String [] codecNameCodecId = codec2ModePref.split("=");
-        statusMessage += codecNameCodecId[0];
         int codec2Mode = Integer.parseInt(codecNameCodecId[1]);
-
-        boolean isTestMode = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_TEST_MODE, false);
-        if (isTestMode) {
-            statusMessage += ", TEST";
-        }
+        statusMessage += codecNameCodecId[0];
 
         Transport transport;
-        if (isUsb) {
-            transport = new UsbSerial(UsbPortHandler.getPort());
-        } else {
-            transport = new Bluetooth(SocketHandler.getSocket());
+        switch (transportType) {
+            case USB:
+                transport = new UsbSerial(UsbPortHandler.getPort());
+                break;
+            case BLUETOOTH:
+                transport = new Bluetooth(SocketHandler.getSocket());
+                break;
+            case LOOPBACK:
+            default:
+                transport = new Loopback();
+                break;
         }
         _codec2Player = new Codec2Player(transport, onPlayerStateChanged, codec2Mode);
-        _codec2Player.setCodecTestMode(isTestMode);
         _codec2Player.start();
 
         _textCodecMode.setText(statusMessage);
@@ -313,11 +336,16 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CONNECT_BT) {
             if (resultCode == RESULT_CANCELED) {
-                finish();
+                try {
+                    _textConnInfo.setText(R.string.main_status_loopback_test);
+                    startPlayer(TransportType.LOOPBACK);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             } else if (resultCode == RESULT_OK) {
                 _textConnInfo.setText(data.getStringExtra("name"));
                 try {
-                    startPlayer(false);
+                    startPlayer(TransportType.BLUETOOTH);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -329,7 +357,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (resultCode == RESULT_OK) {
                 _textConnInfo.setText(data.getStringExtra("name"));
                 try {
-                    startPlayer(true);
+                    startPlayer(TransportType.USB);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
