@@ -15,7 +15,9 @@
 
 This minimalistic Android application is a Walkie-Talkie style digital voice frontend for your radio by using open source [Codec2](https://github.com/drowe67/codec2). 
 
-It connects to your radio KISS Bluetooth/USB modem, records speech from the phone microphone on transmit, encodes audio into codec2 format, encapsulates into KISS frames and sends to your modem. Modem sends KISS packets to the phone with codec2 speech, application decodes codec2 frames and plays them through phone speaker.
+It connects to your radio KISS Bluetooth/USB modem, records speech from the phone microphone on transmit, encodes audio into codec2 format, encapsulates into KISS frames and sends to your modem. 
+
+On receive, modem sends KISS packets to the phone with codec2 speech, application decodes codec2 frames and plays them through phone speaker.
 
 It does not deal with radio management, modulation, etc, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK, FreeDV or any other modulation scheme. Radio just needs to expose KISS Bluetooth interface for speech frames. 
 
