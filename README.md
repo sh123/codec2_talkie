@@ -10,6 +10,8 @@
 - [Planned features](#todo)
 
 # Introduction
+![alt text](images/diagram.png)
+
 ![alt text](images/screenshot.png)
 ![alt text](images/screenshot_settings.png)
 
