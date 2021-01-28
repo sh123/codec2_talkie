@@ -69,7 +69,7 @@ public class AudioProcessor extends Thread {
         _rxDataBuffer = new byte[RX_BUFFER_SIZE];
 
         _transport  = TransportFactory.create(transportType);
-        _protocol = new Kiss(_protocolCallback);
+        _protocol = new Kiss();
 
         constructCodec2(codec2Mode);
         constructSystemAudioDevices();
@@ -281,7 +281,7 @@ public class AudioProcessor extends Thread {
 
         try {
             sendStatusUpdate(PROCESSOR_LISTENING, 0);
-            _protocol.initialize();
+            _protocol.initialize(_protocolCallback);
 
             while (_isRunning)
                 if (!process())

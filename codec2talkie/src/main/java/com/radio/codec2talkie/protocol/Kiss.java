@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class Kiss {
+public class Kiss implements Protocol {
 
     private static final String TAG = Kiss.class.getSimpleName();
 
@@ -47,24 +47,27 @@ public class Kiss {
     private final byte[] _outputKissBuffer;
     private final byte[] _inputKissBuffer;
 
-    private final Callback _callback;
+    private Callback _callback;
 
     private int _outputKissBufferPos;
     private int _inputKissBufferPos;
 
-    public Kiss(Callback callback) {
-        _callback = callback;
+    public Kiss() {
         _outputKissBuffer = new byte[KISS_TX_FRAME_MAX_SIZE];
         _inputKissBuffer = new byte[100 * KISS_TX_FRAME_MAX_SIZE];
+
         _tncCsmaPersistence = CSMA_PERSISTENCE;
         _tncCsmaSlotTime = CSMA_SLOT_TIME;
         _tncTxDelay = TX_DELAY_10MS_UNITS;
         _tncTxTail = TX_TAIL_10MS_UNITS;
+
         _outputKissBufferPos = 0;
         _inputKissBufferPos = 0;
     }
 
-    public void initialize() throws IOException {
+    public void initialize(Callback callback) throws IOException {
+        _callback = callback;
+
         startKissPacket(KISS_CMD_P);
         sendKissByte(_tncCsmaPersistence);
         completeKissPacket();
