@@ -13,6 +13,7 @@ import java.io.IOException;
 import com.radio.codec2talkie.protocol.Callback;
 import com.radio.codec2talkie.protocol.Kiss;
 import com.radio.codec2talkie.protocol.Protocol;
+import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.radio.codec2talkie.transport.TransportFactory;
@@ -61,11 +62,12 @@ public class AudioProcessor extends Thread {
     // callbacks
     private final Handler _onPlayerStateChanged;
 
-    public AudioProcessor(TransportFactory.TransportType transportType, Handler onPlayerStateChanged, int codec2Mode) throws IOException {
+    public AudioProcessor(TransportFactory.TransportType transportType, ProtocolFactory.ProtocolType protocolType,
+                          int codec2Mode, Handler onPlayerStateChanged) throws IOException {
         _onPlayerStateChanged = onPlayerStateChanged;
 
         _transport  = TransportFactory.create(transportType);
-        _protocol = new Kiss();
+        _protocol = ProtocolFactory.create(protocolType);
 
         constructCodec2(codec2Mode);
         constructSystemAudioDevices();

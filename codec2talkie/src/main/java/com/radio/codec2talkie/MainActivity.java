@@ -35,6 +35,7 @@ import android.widget.Toast;
 
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.SocketHandler;
+import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
 import com.radio.codec2talkie.transport.TransportFactory;
@@ -299,7 +300,9 @@ public class MainActivity extends AppCompatActivity {
 
             int codec2ModeId = Integer.parseInt(codecNameCodecId[1]);
 
-            _audioProcessor = new AudioProcessor(transportType, onAudioProcessorStateChanged, codec2ModeId);
+            ProtocolFactory.ProtocolType protocolType = ProtocolFactory.ProtocolType.KISS;
+
+            _audioProcessor = new AudioProcessor(transportType, protocolType, codec2ModeId, onAudioProcessorStateChanged);
             _audioProcessor.start();
         } catch (IOException e) {
             e.printStackTrace();

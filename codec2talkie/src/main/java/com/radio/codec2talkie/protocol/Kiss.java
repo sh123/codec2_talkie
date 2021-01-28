@@ -52,7 +52,7 @@ public class Kiss implements Protocol {
     private final byte[] _outputKissBuffer;
     private final byte[] _inputKissBuffer;
 
-    private Transport _transport;
+    protected Transport _transport;
 
     private int _outputKissBufferPos;
     private int _inputKissBufferPos;
@@ -114,7 +114,7 @@ public class Kiss implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         int bytesRead = _transport.read(_rxDataBuffer);
         if (bytesRead > 0) {
-            receiveData(Arrays.copyOf(_rxDataBuffer, bytesRead), callback);
+            receiveKissData(Arrays.copyOf(_rxDataBuffer, bytesRead), callback);
             return true;
         }
         return false;
@@ -124,7 +124,7 @@ public class Kiss implements Protocol {
         completeKissPacket();
     }
 
-    protected void receiveData(byte[] data, Callback callback) {
+    protected void receiveKissData(byte[] data, Callback callback) {
         for (byte b : data) {
             switch (_kissState) {
                 case VOID:
