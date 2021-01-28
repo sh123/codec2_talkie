@@ -6,6 +6,7 @@
     <string name="menu_exit">Exit</string>
 
     <string name="ports_category_title">TNC Settings</string>
+    <string name="kiss_category_title">KISS Settings</string>
 
     <string name="usb_serial_speed_title">USB Serial Speed</string>
     <string name="usb_bt_client_name_title">Bluetooth Device</string>
@@ -41,4 +42,11 @@
     <string name="main_status_idle">IDLE</string>
     <string name="main_status_tx">TX</string>
     <string name="main_status_rx">RX</string>
+    <string name="main_status_codec_error">ERR</string>
+
+    <string name="kiss_enable_title">Enable KISS</string>
+    <string name="kiss_enable_summary">Enables KISS protocol, otherwise RAW frames will be sent</string>
+
+    <string name="kiss_parrot_enable_title">Enable Parrot</string>
+    <string name="kiss_parrot_enable_summary">Received packets will be transmitted back, digirepeated</string>
 </resources>

@@ -138,6 +138,7 @@ public class Kiss implements Protocol {
                         _kissCmd = b;
                         _kissState = KissState.GET_DATA;
                     } else if (b != KISS_FEND) {
+                        Log.w(TAG, "Unsupported KISS command code: " + b);
                         resetState();
                     }
                     break;
@@ -161,6 +162,7 @@ public class Kiss implements Protocol {
                         receiveFrameByte(KISS_FESC);
                         _kissState = KissState.GET_DATA;
                     } else {
+                        Log.w(TAG, "Unknown KISS escape code: " + b);
                         resetState();
                     }
                     break;

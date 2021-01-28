@@ -21,18 +21,31 @@
             app:defaultValue="false">
         </SwitchPreference>
     </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="kiss_category"
+        app:title="@string/kiss_category_title">
+
+        <SwitchPreference
+            app:key="kiss_enable"
+            app:title="@string/kiss_enable_title"
+            app:summary="@string/kiss_enable_summary"
+            app:defaultValue="true">
+        </SwitchPreference>
+
+        <SwitchPreference
+            app:key="kiss_parrot_enable"
+            app:title="@string/kiss_parrot_enable_title"
+            app:summary="@string/kiss_parrot_enable_summary"
+            app:dependency="kiss_enable"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+    </PreferenceCategory>
+
     <PreferenceCategory
         app:key="ports_category"
         app:title="@string/ports_category_title">
-
-        <ListPreference
-            app:key="ports_usb_serial_speed"
-            app:title="@string/usb_serial_speed_title"
-            app:entries="@array/usb_serial_speed"
-            app:entryValues="@array/usb_serial_speed"
-            app:defaultValue="115200"
-            app:summary="%s">
-        </ListPreference>
 
         <Preference
             app:key="ports_bt_client_name"
@@ -43,5 +56,14 @@
                 android:targetClass="com.radio.codec2talkie.settings.BluetoothSettingsActivity">
             </intent>
         </Preference>
+
+        <ListPreference
+            app:key="ports_usb_serial_speed"
+            app:title="@string/usb_serial_speed_title"
+            app:entries="@array/usb_serial_speed"
+            app:entryValues="@array/usb_serial_speed"
+            app:defaultValue="115200"
+            app:summary="%s">
+        </ListPreference>
     </PreferenceCategory>
 </PreferenceScreen>

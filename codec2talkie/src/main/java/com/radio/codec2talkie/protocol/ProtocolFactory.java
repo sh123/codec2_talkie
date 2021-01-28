@@ -16,7 +16,7 @@ public class ProtocolFactory {
                 return new KissParrot();
             case RAW:
             default:
-                return null;
+                return new Raw();
         }
     }
 }

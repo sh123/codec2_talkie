@@ -14,14 +14,15 @@ public class Loopback implements Transport {
 
     public Loopback() {
         _buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
+        _buffer.flip();
         _isReading = true;
     }
 
     @Override
     public int read(byte[] data) {
         if (!_isReading) {
-            _buffer.flip();
             _isReading = true;
+            _buffer.flip();
         }
         int countRead = 0;
         try {
@@ -30,7 +31,6 @@ public class Loopback implements Transport {
                 data[i] = b;
                 countRead++;
             }
-            return 1;
         } catch (BufferUnderflowException ignored) {
         }
         return countRead;

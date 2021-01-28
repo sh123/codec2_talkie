@@ -7,11 +7,11 @@ import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import java.io.IOException;
 
 import com.radio.codec2talkie.protocol.Callback;
-import com.radio.codec2talkie.protocol.Kiss;
 import com.radio.codec2talkie.protocol.Protocol;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.tools.AudioTools;
@@ -30,6 +30,7 @@ public class AudioProcessor extends Thread {
     public static final int PROCESSOR_PLAYING = 5;
     public static final int PROCESSOR_RX_LEVEL = 6;
     public static final int PROCESSOR_TX_LEVEL = 7;
+    public static final int PROCESSOR_CODEC_ERROR = 8;
 
     private static int AUDIO_MIN_LEVEL = -60;
     private static int AUDIO_MAX_LEVEL = 0;
@@ -41,7 +42,7 @@ public class AudioProcessor extends Thread {
     private long _codec2Con;
 
     private int _audioBufferSize;
-    private int _audioEncodedBufferSize;
+    private int _codec2FrameSize;
 
     private boolean _isRunning = true;
     private boolean _needsRecording = false;
@@ -130,10 +131,10 @@ public class AudioProcessor extends Thread {
         _codec2Con = Codec2.create(codecMode);
 
         _audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
-        _audioEncodedBufferSize = Codec2.getBitsSize(_codec2Con); // returns number of bytes
+        _codec2FrameSize = Codec2.getBitsSize(_codec2Con); // returns number of bytes
 
         _recordAudioBuffer = new short[_audioBufferSize];
-        _recordAudioEncodedBuffer = new char[_audioEncodedBufferSize];
+        _recordAudioEncodedBuffer = new char[_codec2FrameSize];
 
         _playbackAudioBuffer = new short[_audioBufferSize];
     }
@@ -187,10 +188,16 @@ public class AudioProcessor extends Thread {
     private final Callback _protocolReceiveCallback = new Callback() {
         @Override
         protected void onReceive(byte[] data) {
+            // frame size must match codec mode size
+            if (data.length % _codec2FrameSize != 0) {
+                Log.w(TAG, "Ignoring audio frame of wrong size: " + data.length);
+                sendStatusUpdate(PROCESSOR_CODEC_ERROR, 0);
+                return;
+            }
             // split by audio frame and play
-            byte [] audioFrame = new byte[_audioEncodedBufferSize];
-            for (int i = 0; i < data.length; i += _audioEncodedBufferSize) {
-                for (int j = 0; j < _audioEncodedBufferSize && (j + i) < data.length; j++)
+            byte [] audioFrame = new byte[_codec2FrameSize];
+            for (int i = 0; i < data.length; i += _codec2FrameSize) {
+                for (int j = 0; j < _codec2FrameSize && (j + i) < data.length; j++)
                     audioFrame[j] = data[i + j];
                 decodeAndPlayAudioFrame(audioFrame);
             }

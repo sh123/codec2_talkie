@@ -287,20 +287,40 @@ public class MainActivity extends AppCompatActivity {
                     _progressAudioLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
                     _progressAudioLevel.setProgress(msg.arg1 - AudioProcessor.getAudioMinLevel());
                     break;
+                case AudioProcessor.PROCESSOR_CODEC_ERROR:
+                    _textStatus.setText(R.string.main_status_codec_error);
+                    break;
             }
         }
     };
 
     private void startAudioProcessing(TransportFactory.TransportType transportType) {
         try {
+            // code mode
             String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
-
             String[] codecNameCodecId = codec2ModeName.split("=");
-            _textCodecMode.setText(codecNameCodecId[0]);
-
+            String codecMode = codecNameCodecId[0];
             int codec2ModeId = Integer.parseInt(codecNameCodecId[1]);
 
-            ProtocolFactory.ProtocolType protocolType = ProtocolFactory.ProtocolType.KISS;
+            // protocol type
+            ProtocolFactory.ProtocolType protocolType;
+            if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_ENABLED, true)) {
+                if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_PARROT, false)) {
+                    protocolType = ProtocolFactory.ProtocolType.KISS_PARROT;
+                    _btnPtt.setEnabled(false);
+                    codecMode += ", PARROT";
+                } else {
+                    protocolType = ProtocolFactory.ProtocolType.KISS;
+                    _btnPtt.setEnabled(true);
+                    codecMode += ", KISS";
+                }
+            } else {
+                protocolType = ProtocolFactory.ProtocolType.RAW;
+                _btnPtt.setEnabled(true);
+                codecMode += ", RAW";
+            }
+
+            _textCodecMode.setText(codecMode);
 
             _audioProcessor = new AudioProcessor(transportType, protocolType, codec2ModeId, onAudioProcessorStateChanged);
             _audioProcessor.start();
