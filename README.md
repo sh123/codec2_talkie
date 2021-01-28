@@ -28,8 +28,7 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
 # Requirements
 - Android 6.0 (API 23) or higher
   - Application could also be used with your Android network radio, such as Inrico TM-7, apk just needs to be installed over USB, see [Discussion](https://github.com/sh123/codec2_talkie/issues/4)
-- Modem, radio module or transceiver which supports [KISS protocol](https://en.wikipedia.org/wiki/KISS_(TNC)) over Bluetooth or USB 
-  - KISS support is not 100% necesssary for experiments, usually radio module needs to decide on protocol, but KISS frames could be sent over aether, there are plans to add support for other selectable frame structures, protocols or raw audio frames
+- Modem, radio module or transceiver which supports [KISS protocol](https://en.wikipedia.org/wiki/KISS_(TNC)) or can process raw Codec2 audio frames over Bluetooth or USB 
 
 # Features
 - **PTT UI button**, push and talk, Codec2 speech frames will be transmitted to the modem
@@ -39,10 +38,14 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
 - **Voice codec2 mode selection**, which allows you to select various codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends as codec2 mode negotiation between clients is not implemented at the moment
 - **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality, could be enabled or disabled from Preferences, this mode is activated if no USB or Bluetooth connection were made
 - **Voice level indicators**, which display levels of transmitted and received audio
+- **Parrot mode**, received voice will be digirepated in addition to playback through the speaker
 - **Preferences**, allow to modify default parameters
   - **Codec2**
     - Set Codec2 mode/speed from 450 up to 3200 bps
     - Enable/disable loopback test mode
+  - **KISS**
+     - Enable/disable KISS, when disabled raw codec2 audio frames will be transmitted
+     - Enable/Disable parrot (digirepeater) mode
   - **TNC parameters**
     - Change default baud rate for USB port
     - Set default Bluetooth device for automatic connectivity on startup
@@ -79,11 +82,9 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
   - For KISS encapsulated audio frames command above could be used, but instead of `cat` use https://pypi.org/project/kiss/
   
 # TODO
-- Parrot mode, so speech coming from aether will be transmitted back as is (testing or digirepeating)
 - Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency/channel, modulation scheme, modem speed or other modem parameters on the fly from the application Preferences
   - Rig/radio module control and signal level reports by using KISS command extensions
   - HC-12 module control by using AT commands
 - Investigate support for other non-KISS frame formats and protocols, switcheable from the UI
-  - Raw speech frames without KISS
   - AX.25 packets over existing KISS
 - QSO log, voicemail style recording of incoming speech so that incoming transmissions are not missed
