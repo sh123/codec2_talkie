@@ -39,10 +39,14 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
 - **Voice codec2 mode selection**, which allows you to select various codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends as codec2 mode negotiation between clients is not implemented at the moment
 - **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality, could be enabled or disabled from Preferences, this mode is activated if no USB or Bluetooth connection were made
 - **Voice level indicators**, which display levels of transmitted and received audio
+- **Parrot mode**, received voice will be digirepated in addition to playback through the speaker
 - **Preferences**, allow to modify default parameters
   - **Codec2**
     - Set Codec2 mode/speed from 450 up to 3200 bps
     - Enable/disable loopback test mode
+  - **KISS**
+     - Enable/disable KISS, when disabled raw codec2 audio frames will be transmitted
+     - Enable/Disable parrot (digirepeater) mode
   - **TNC parameters**
     - Change default baud rate for USB port
     - Set default Bluetooth device for automatic connectivity on startup
