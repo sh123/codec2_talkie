@@ -24,6 +24,11 @@ public class Kiss {
     private final byte KISS_CMD_TX_TAIL = (byte)0x04;
     private final byte KISS_CMD_NOCMD = (byte)0x80;
 
+    private final byte CSMA_PERSISTENCE = (byte)0xff;
+    private final byte CSMA_SLOT_TIME = (byte)0x00;
+    private final byte TX_DELAY_10MS_UNITS = (byte)(250 / 10);
+    private final byte TX_TAIL_10MS_UNITS = (byte)(500 / 10);
+
     private enum KissState {
         VOID,
         GET_CMD,
@@ -47,14 +52,14 @@ public class Kiss {
     private int _outputKissBufferPos;
     private int _inputKissBufferPos;
 
-    public Kiss(byte csmaPersistence, byte csmaSlotTime, byte txDelay, byte txTail, Callback callback) {
+    public Kiss(Callback callback) {
         _callback = callback;
         _outputKissBuffer = new byte[KISS_TX_FRAME_MAX_SIZE];
         _inputKissBuffer = new byte[100 * KISS_TX_FRAME_MAX_SIZE];
-        _tncCsmaPersistence = csmaPersistence;
-        _tncCsmaSlotTime = csmaSlotTime;
-        _tncTxDelay = txDelay;
-        _tncTxTail = txTail;
+        _tncCsmaPersistence = CSMA_PERSISTENCE;
+        _tncCsmaSlotTime = CSMA_SLOT_TIME;
+        _tncTxDelay = TX_DELAY_10MS_UNITS;
+        _tncTxTail = TX_TAIL_10MS_UNITS;
         _outputKissBufferPos = 0;
         _inputKissBufferPos = 0;
     }

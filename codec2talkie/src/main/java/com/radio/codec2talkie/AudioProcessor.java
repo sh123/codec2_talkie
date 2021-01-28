@@ -37,11 +37,6 @@ public class AudioProcessor extends Thread {
     private final int SLEEP_IDLE_DELAY_MS = 20;
     private final int POST_PLAY_DELAY_MS = 1000;
 
-    private final byte CSMA_PERSISTENCE = (byte)0xff;
-    private final byte CSMA_SLOT_TIME = (byte)0x00;
-    private final byte TX_DELAY_10MS_UNITS = (byte)(250 / 10);
-    private final byte TX_TAIL_10MS_UNITS = (byte)(500 / 10);
-
     private final int RX_BUFFER_SIZE = 8192;
 
     private long _codec2Con;
@@ -74,9 +69,7 @@ public class AudioProcessor extends Thread {
         _rxDataBuffer = new byte[RX_BUFFER_SIZE];
 
         _transport  = TransportFactory.create(transportType);
-
-        _protocol = new Kiss(CSMA_PERSISTENCE, CSMA_SLOT_TIME,
-                TX_DELAY_10MS_UNITS, TX_TAIL_10MS_UNITS, _protocolCallback);
+        _protocol = new Kiss(_protocolCallback);
 
         constructCodec2(codec2Mode);
         constructSystemAudioDevices();
