@@ -263,9 +263,12 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
+                case AudioProcessor.PROCESSOR_CONNECTED:
+                    Toast.makeText(getBaseContext(), "Connected", Toast.LENGTH_SHORT).show();
+                    break;
                 case AudioProcessor.PROCESSOR_DISCONNECTED:
                     _textStatus.setText(R.string.main_status_stop);
-                    Toast.makeText(getBaseContext(), "Disconnected from modem", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), "Disconnected", Toast.LENGTH_SHORT).show();
                     startTransportConnection();
                     break;
                 case AudioProcessor.PROCESSOR_LISTENING:

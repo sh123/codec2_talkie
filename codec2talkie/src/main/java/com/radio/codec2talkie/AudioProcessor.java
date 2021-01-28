@@ -23,11 +23,12 @@ public class AudioProcessor extends Thread {
     private static final String TAG = AudioProcessor.class.getSimpleName();
 
     public static final int PROCESSOR_DISCONNECTED = 1;
-    public static final int PROCESSOR_LISTENING = 2;
-    public static final int PROCESSOR_RECORDING = 3;
-    public static final int PROCESSOR_PLAYING = 4;
-    public static final int PROCESSOR_RX_LEVEL = 5;
-    public static final int PROCESSOR_TX_LEVEL = 6;
+    public static final int PROCESSOR_CONNECTED = 2;
+    public static final int PROCESSOR_LISTENING = 3;
+    public static final int PROCESSOR_RECORDING = 4;
+    public static final int PROCESSOR_PLAYING = 5;
+    public static final int PROCESSOR_RX_LEVEL = 6;
+    public static final int PROCESSOR_TX_LEVEL = 7;
 
     private static int AUDIO_MIN_LEVEL = -60;
     private static int AUDIO_MAX_LEVEL = 0;
@@ -282,6 +283,9 @@ public class AudioProcessor extends Thread {
     @Override
     public void run() {
         setPriority(Thread.MAX_PRIORITY);
+
+        sendStatusUpdate(PROCESSOR_CONNECTED, 0);
+
         try {
             sendStatusUpdate(PROCESSOR_LISTENING, 0);
             _protocol.initialize();
