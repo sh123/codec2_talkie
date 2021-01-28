@@ -9,10 +9,10 @@ import android.os.Handler;
 import android.os.Message;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import com.radio.codec2talkie.protocol.Callback;
 import com.radio.codec2talkie.protocol.Kiss;
+import com.radio.codec2talkie.protocol.Protocol;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.radio.codec2talkie.transport.TransportFactory;
@@ -37,8 +37,6 @@ public class AudioProcessor extends Thread {
     private final int SLEEP_IDLE_DELAY_MS = 20;
     private final int POST_PLAY_DELAY_MS = 1000;
 
-    private final int RX_BUFFER_SIZE = 8192;
-
     private long _codec2Con;
 
     private int _audioBufferSize;
@@ -48,7 +46,7 @@ public class AudioProcessor extends Thread {
     private boolean _needsRecording = false;
     private int _currentStatus = PROCESSOR_DISCONNECTED;
 
-    private final Kiss _protocol;
+    private final Protocol _protocol;
     private final Transport _transport;
 
     // input data, bt -> audio
@@ -57,7 +55,6 @@ public class AudioProcessor extends Thread {
 
     // output data., mic -> bt
     private AudioRecord _systemAudioRecorder;
-    private final byte[] _rxDataBuffer;
     private short[] _recordAudioBuffer;
     private char[] _recordAudioEncodedBuffer;
 
@@ -66,7 +63,6 @@ public class AudioProcessor extends Thread {
 
     public AudioProcessor(TransportFactory.TransportType transportType, Handler onPlayerStateChanged, int codec2Mode) throws IOException {
         _onPlayerStateChanged = onPlayerStateChanged;
-        _rxDataBuffer = new byte[RX_BUFFER_SIZE];
 
         _transport  = TransportFactory.create(transportType);
         _protocol = new Kiss();
@@ -140,24 +136,6 @@ public class AudioProcessor extends Thread {
         _playbackAudioBuffer = new short[_audioBufferSize];
     }
 
-    private final Callback _protocolCallback = new Callback() {
-        @Override
-        protected void onSend(byte[] data) throws IOException {
-            _transport.write(data);
-        }
-
-        @Override
-        protected void onReceive(byte[] data) {
-            // split by audio frame and play
-            byte [] audioFrame = new byte[_audioEncodedBufferSize];
-            for (int i = 0; i < data.length; i += _audioEncodedBufferSize) {
-                for (int j = 0; j < _audioEncodedBufferSize && (j + i) < data.length; j++)
-                    audioFrame[j] = data[i + j];
-                decodeAndPlayAudioFrame(audioFrame);
-            }
-        }
-    };
-
     private void sendStatusUpdate(int status, int delayMs) {
         if (status == _currentStatus) return;
 
@@ -182,13 +160,6 @@ public class AudioProcessor extends Thread {
         _onPlayerStateChanged.sendMessage(msg);
     }
 
-    private void decodeAndPlayAudioFrame(byte[] data) {
-        Codec2.decode(_codec2Con, _playbackAudioBuffer, data);
-
-        _systemAudioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
-        sendRxAudioLevelUpdate(_playbackAudioBuffer);
-    }
-
     private void recordAndSendAudioFrame() throws IOException {
         sendStatusUpdate(PROCESSOR_RECORDING, 0);
 
@@ -205,15 +176,24 @@ public class AudioProcessor extends Thread {
         _protocol.send(frame);
     }
 
-    private boolean receiveAndPlayAudioFrame() throws IOException {
-        int bytesRead = _transport.read(_rxDataBuffer);
-        if (bytesRead > 0) {
-            sendStatusUpdate(PROCESSOR_PLAYING, 0);
-            _protocol.receive(Arrays.copyOf(_rxDataBuffer, bytesRead));
-            return true;
-        }
-        return false;
+    private void decodeAndPlayAudioFrame(byte[] data) {
+        Codec2.decode(_codec2Con, _playbackAudioBuffer, data);
+        _systemAudioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
+        sendRxAudioLevelUpdate(_playbackAudioBuffer);
     }
+
+    private final Callback _protocolReceiveCallback = new Callback() {
+        @Override
+        protected void onReceive(byte[] data) {
+            // split by audio frame and play
+            byte [] audioFrame = new byte[_audioEncodedBufferSize];
+            for (int i = 0; i < data.length; i += _audioEncodedBufferSize) {
+                for (int j = 0; j < _audioEncodedBufferSize && (j + i) < data.length; j++)
+                    audioFrame[j] = data[i + j];
+                decodeAndPlayAudioFrame(audioFrame);
+            }
+        }
+    };
 
     private void processRecordPlaybackToggle() throws IOException {
         // playback -> recording
@@ -260,7 +240,9 @@ public class AudioProcessor extends Thread {
             recordAndSendAudioFrame();
         } else {
             // playback
-            if (!receiveAndPlayAudioFrame()) {
+            if (_protocol.receive(_protocolReceiveCallback)) {
+                sendStatusUpdate(PROCESSOR_PLAYING, 0);
+            } else {
                 // idling
                 if (_currentStatus != PROCESSOR_LISTENING) {
                     sendRxAudioLevelUpdate(null);
@@ -281,7 +263,7 @@ public class AudioProcessor extends Thread {
 
         try {
             sendStatusUpdate(PROCESSOR_LISTENING, 0);
-            _protocol.initialize(_protocolCallback);
+            _protocol.initialize(_transport);
 
             while (_isRunning)
                 if (!process())

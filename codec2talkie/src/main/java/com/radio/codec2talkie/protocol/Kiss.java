@@ -2,6 +2,8 @@ package com.radio.codec2talkie.protocol;
 
 import android.util.Log;
 
+import com.radio.codec2talkie.transport.Transport;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -9,6 +11,8 @@ import java.util.Arrays;
 public class Kiss implements Protocol {
 
     private static final String TAG = Kiss.class.getSimpleName();
+
+    private final int RX_BUFFER_SIZE = 8192;
 
     private final int KISS_TX_FRAME_MAX_SIZE = 48;
 
@@ -44,15 +48,18 @@ public class Kiss implements Protocol {
     private final byte _tncTxDelay;
     private final byte _tncTxTail;
 
+    private final byte[] _rxDataBuffer;
     private final byte[] _outputKissBuffer;
     private final byte[] _inputKissBuffer;
 
-    private Callback _callback;
+    private Transport _transport;
 
     private int _outputKissBufferPos;
     private int _inputKissBufferPos;
 
     public Kiss() {
+        _rxDataBuffer = new byte[RX_BUFFER_SIZE];
+
         _outputKissBuffer = new byte[KISS_TX_FRAME_MAX_SIZE];
         _inputKissBuffer = new byte[100 * KISS_TX_FRAME_MAX_SIZE];
 
@@ -65,8 +72,8 @@ public class Kiss implements Protocol {
         _inputKissBufferPos = 0;
     }
 
-    public void initialize(Callback callback) throws IOException {
-        _callback = callback;
+    public void initialize(Transport transport) throws IOException {
+        _transport = transport;
 
         startKissPacket(KISS_CMD_P);
         sendKissByte(_tncCsmaPersistence);
@@ -104,7 +111,20 @@ public class Kiss implements Protocol {
         }
     }
 
-    public void receive(byte[] data) {
+    public boolean receive(Callback callback) throws IOException {
+        int bytesRead = _transport.read(_rxDataBuffer);
+        if (bytesRead > 0) {
+            receiveData(Arrays.copyOf(_rxDataBuffer, bytesRead), callback);
+            return true;
+        }
+        return false;
+    }
+
+    public void flush() throws IOException{
+        completeKissPacket();
+    }
+
+    protected void receiveData(byte[] data, Callback callback) {
         for (byte b : data) {
             switch (_kissState) {
                 case VOID:
@@ -126,7 +146,7 @@ public class Kiss implements Protocol {
                         _kissState = KissState.ESCAPE;
                     } else if (b == KISS_FEND) {
                         if (_kissCmd == KISS_CMD_DATA) {
-                            _callback.onReceive(Arrays.copyOf(_inputKissBuffer, _inputKissBufferPos));
+                            callback.onReceive(Arrays.copyOf(_inputKissBuffer, _inputKissBufferPos));
                         }
                         resetState();
                     } else {
@@ -148,10 +168,6 @@ public class Kiss implements Protocol {
                     break;
             }
         }
-    }
-
-    public void flush() throws IOException{
-        completeKissPacket();
     }
 
     private void sendKissByte(byte b) {
@@ -180,7 +196,7 @@ public class Kiss implements Protocol {
     private void completeKissPacket() throws IOException {
         if (_outputKissBufferPos > 0) {
             sendKissByte(KISS_FEND);
-            _callback.onSend(Arrays.copyOf(_outputKissBuffer, _outputKissBufferPos));
+            _transport.write(Arrays.copyOf(_outputKissBuffer, _outputKissBufferPos));
             _outputKissBufferPos = 0;
         }
     }
