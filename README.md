@@ -23,7 +23,7 @@ On receive, modem sends KISS packets to the phone with codec2 speech, applicatio
 
 It does not deal with radio management, modulation, etc, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK, FreeDV or any other modulation scheme. Radio just needs to expose KISS Bluetooth interface for speech frames. 
 
-It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa), but could also be used with custom modems + external transceivers.
+It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa), but could also be used with custom modems + external transceivers or as experimental source of codec2 frames and their playback.
 
 # Requirements
 - Android 6.0 (API 23) or higher
