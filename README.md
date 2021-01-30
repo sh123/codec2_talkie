@@ -39,6 +39,7 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
 - **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality, could be enabled or disabled from Preferences, this mode is activated if no USB or Bluetooth connection were made
 - **Voice level indicators**, which display levels of transmitted and received audio
 - **Parrot mode**, received voice will be digirepated in addition to playback through the speaker
+- **KISS Buffered mode**, non-real time, playback will start only after all speech is received, use when modem bit rate is lower than codec2 bit rate to avoid gaps during playback
 - **Preferences**, allow to modify default parameters
   - **Codec2**
     - Set Codec2 mode/speed from 450 up to 3200 bps
@@ -46,6 +47,7 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
   - **KISS**
      - Enable/disable KISS, when disabled raw codec2 audio frames will be transmitted
      - Enable/Disable parrot (digirepeater) mode
+     - Enable/Disable KISS non-real time buffered playback mode
   - **TNC parameters**
     - Change default baud rate for USB port
     - Set default Bluetooth device for automatic connectivity on startup
@@ -82,7 +84,6 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
   - For KISS encapsulated audio frames command above could be used, but instead of `cat` use https://pypi.org/project/kiss/
   
 # TODO
-- Configurable RX buffering (non-real time) if transmission speed is lower than codec2 bitrate to avoid RX speech gaps, playback will start after data RX is completed
 - Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency/channel, modulation scheme, modem speed or other modem parameters on the fly from the application Preferences
   - Rig/radio module control and signal level reports by using KISS command extensions
   - HC-12 module control by using AT commands
