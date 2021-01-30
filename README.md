@@ -82,7 +82,7 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
   - For KISS encapsulated audio frames command above could be used, but instead of `cat` use https://pypi.org/project/kiss/
   
 # TODO
-- Configurable RX buffering if transmission speed is lower than codec2 bitrate to avoid RX speech gaps
+- Configurable RX buffering if transmission speed is lower than codec2 bitrate to avoid RX speech gaps, playback will start after data RX is completed
 - Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency/channel, modulation scheme, modem speed or other modem parameters on the fly from the application Preferences
   - Rig/radio module control and signal level reports by using KISS command extensions
   - HC-12 module control by using AT commands
