@@ -278,8 +278,11 @@ public class MainActivity extends AppCompatActivity {
                 case AudioProcessor.PROCESSOR_RECORDING:
                     _textStatus.setText(R.string.main_status_tx);
                     break;
-                case AudioProcessor.PROCESSOR_PLAYING:
+                case AudioProcessor.PROCESSOR_RECEIVING:
                     _textStatus.setText(R.string.main_status_rx);
+                    break;
+                case AudioProcessor.PROCESSOR_PLAYING:
+                    _textStatus.setText(R.string.main_status_play);
                     break;
                 // same progress bar is reused for rx and tx levels
                 case AudioProcessor.PROCESSOR_RX_LEVEL:
@@ -302,6 +305,8 @@ public class MainActivity extends AppCompatActivity {
             String codecMode = codecNameCodecId[0];
             int codec2ModeId = Integer.parseInt(codecNameCodecId[1]);
 
+            _btnPtt.setEnabled(true);
+
             // protocol type
             ProtocolFactory.ProtocolType protocolType;
             if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_ENABLED, true)) {
@@ -309,14 +314,17 @@ public class MainActivity extends AppCompatActivity {
                     protocolType = ProtocolFactory.ProtocolType.KISS_PARROT;
                     _btnPtt.setEnabled(false);
                     codecMode += ", PARROT";
-                } else {
+                }
+                else if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_BUFFERED_ENABLED, false)) {
+                    protocolType = ProtocolFactory.ProtocolType.KISS_BUFFERED;
+                    codecMode += ", KISS BUFFERED";
+                }
+                else {
                     protocolType = ProtocolFactory.ProtocolType.KISS;
-                    _btnPtt.setEnabled(true);
                     codecMode += ", KISS";
                 }
             } else {
                 protocolType = ProtocolFactory.ProtocolType.RAW;
-                _btnPtt.setEnabled(true);
                 codecMode += ", RAW";
             }
 

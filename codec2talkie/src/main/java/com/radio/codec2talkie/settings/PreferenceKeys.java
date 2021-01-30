@@ -6,5 +6,6 @@ public final class PreferenceKeys {
     public static String CODEC2_MODE = "codec2_mode";
     public static String CODEC2_TEST_MODE = "codec2_test_mode";
     public static String KISS_ENABLED = "kiss_enable";
+    public static String KISS_BUFFERED_ENABLED = "kiss_buffered_enable";
     public static String KISS_PARROT = "kiss_parrot_enable";
 }

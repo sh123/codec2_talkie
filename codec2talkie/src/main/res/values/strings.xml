@@ -42,11 +42,15 @@
     <string name="main_status_idle">IDLE</string>
     <string name="main_status_tx">TX</string>
     <string name="main_status_rx">RX</string>
-    <string name="main_status_codec_error">ERR</string>
+    <string name="main_status_play">.RX</string>
+    <string name="main_status_codec_error">ERROR</string>
 
     <string name="kiss_enable_title">Enable KISS</string>
     <string name="kiss_enable_summary">Enables KISS protocol, otherwise RAW frames will be sent</string>
 
     <string name="kiss_parrot_enable_title">Enable Parrot</string>
     <string name="kiss_parrot_enable_summary">Received packets will be transmitted back, digirepeated</string>
+
+    <string name="kiss_buffered_enable_title">Enable Playback Buffering</string>
+    <string name="kiss_buffered_enable_summary">Use when your modem data rate is less than codec2 bitrate</string>
 </resources>

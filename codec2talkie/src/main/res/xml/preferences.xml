@@ -34,6 +34,14 @@
         </SwitchPreference>
 
         <SwitchPreference
+            app:key="kiss_buffered_enable"
+            app:title="@string/kiss_buffered_enable_title"
+            app:summary="@string/kiss_buffered_enable_summary"
+            app:dependency="kiss_enable"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <SwitchPreference
             app:key="kiss_parrot_enable"
             app:title="@string/kiss_parrot_enable_title"
             app:summary="@string/kiss_parrot_enable_summary"

@@ -48,7 +48,7 @@ public class Kiss implements Protocol {
     private final byte _tncTxDelay;
     private final byte _tncTxTail;
 
-    private final byte[] _rxDataBuffer;
+    protected final byte[] _rxDataBuffer;
     private final byte[] _outputKissBuffer;
     private final byte[] _inputKissBuffer;
 
