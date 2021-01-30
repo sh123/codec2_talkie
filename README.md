@@ -88,4 +88,4 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
 - Investigate support for other non-KISS frame formats and protocols, switcheable from the UI
   - AX.25 packets over existing KISS
   - [M17 Project](https://m17project.org) protocol support
-- QSO log, voicemail style recording of incoming speech so that incoming transmissions are not missed
+- QSO log and non real time voicemail style communcation, where incoming transmissions are recorded, stored and could be played back later
