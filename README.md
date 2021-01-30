@@ -39,7 +39,7 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
 - **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality, could be enabled or disabled from Preferences, this mode is activated if no USB or Bluetooth connection were made
 - **Voice level indicators**, which display levels of transmitted and received audio
 - **Parrot mode**, received voice will be digirepated in addition to playback through the speaker
-- **KISS Buffered mode**, non-real time, playback will start only after all speech is received, use when modem bit rate is lower than codec2 bit rate to avoid gaps during playback
+- **KISS buffered mode**, non-real time, playback will start only after all speech is received, use when modem bit rate is lower than codec2 bit rate to avoid gaps during playback at the cost of longer receiving delay before playback
 - **Preferences**, allow to modify default parameters
   - **Codec2**
     - Set Codec2 mode/speed from 450 up to 3200 bps
