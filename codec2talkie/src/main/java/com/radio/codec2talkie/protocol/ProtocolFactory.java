@@ -3,10 +3,21 @@ package com.radio.codec2talkie.protocol;
 public class ProtocolFactory {
 
     public enum ProtocolType {
-        RAW,
-        KISS,
-        KISS_BUFFERED,
-        KISS_PARROT
+        RAW("RAW"),
+        KISS("KISS"),
+        KISS_BUFFERED("KISS BUFFERED"),
+        KISS_PARROT("KISS PARROT");
+
+        private String _name;
+
+        private ProtocolType(String name) {
+            _name = name;
+        }
+
+        @Override
+        public String toString() {
+            return _name;
+        }
     };
 
     public static Protocol create(ProtocolType protocolType) {

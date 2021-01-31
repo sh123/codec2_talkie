@@ -300,6 +300,25 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private ProtocolFactory.ProtocolType getRequiredProtocolType() {
+        ProtocolFactory.ProtocolType protocolType;
+
+        if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_ENABLED, true)) {
+            if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_PARROT, false)) {
+                protocolType = ProtocolFactory.ProtocolType.KISS_PARROT;
+            }
+            else if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_BUFFERED_ENABLED, false)) {
+                protocolType = ProtocolFactory.ProtocolType.KISS_BUFFERED;
+            }
+            else {
+                protocolType = ProtocolFactory.ProtocolType.KISS;
+            }
+        } else {
+            protocolType = ProtocolFactory.ProtocolType.RAW;
+        }
+        return protocolType;
+    }
+
     private void startAudioProcessing(TransportFactory.TransportType transportType) {
         try {
             // code mode
@@ -308,29 +327,10 @@ public class MainActivity extends AppCompatActivity {
             String codecMode = codecNameCodecId[0];
             int codec2ModeId = Integer.parseInt(codecNameCodecId[1]);
 
-            _btnPtt.setEnabled(true);
+            ProtocolFactory.ProtocolType protocolType = getRequiredProtocolType();
+            _btnPtt.setEnabled(protocolType != ProtocolFactory.ProtocolType.KISS_PARROT);
 
-            // protocol type
-            ProtocolFactory.ProtocolType protocolType;
-            if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_ENABLED, true)) {
-                if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_PARROT, false)) {
-                    protocolType = ProtocolFactory.ProtocolType.KISS_PARROT;
-                    _btnPtt.setEnabled(false);
-                    codecMode += ", PARROT";
-                }
-                else if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_BUFFERED_ENABLED, false)) {
-                    protocolType = ProtocolFactory.ProtocolType.KISS_BUFFERED;
-                    codecMode += ", KISS BUFFERED";
-                }
-                else {
-                    protocolType = ProtocolFactory.ProtocolType.KISS;
-                    codecMode += ", KISS";
-                }
-            } else {
-                protocolType = ProtocolFactory.ProtocolType.RAW;
-                codecMode += ", RAW";
-            }
-
+            codecMode += ", " + protocolType.toString();
             _textCodecMode.setText(codecMode);
 
             _audioProcessor = new AudioProcessor(transportType, protocolType, codec2ModeId, onAudioProcessorStateChanged);
