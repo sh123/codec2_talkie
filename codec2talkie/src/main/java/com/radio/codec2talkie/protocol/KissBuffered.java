@@ -25,16 +25,18 @@ public class KissBuffered extends Kiss {
     }
 
     private void playBuffer(Callback callback) {
-        if (_buffer.position() > 0) {
-            _buffer.flip();
-            try {
-                byte[] b = new byte[_buffer.remaining()];
-                _buffer.get(b);
-                super.receiveKissData(b, callback);
-            } catch (BufferUnderflowException e) {
-                e.printStackTrace();
+        synchronized (_buffer) {
+            if (_buffer.position() > 0) {
+                _buffer.flip();
+                try {
+                    byte[] b = new byte[_buffer.remaining()];
+                    _buffer.get(b);
+                    super.receiveKissData(b, callback);
+                } catch (BufferUnderflowException e) {
+                    e.printStackTrace();
+                }
+                _buffer.clear();
             }
-            _buffer.clear();
         }
     }
 
@@ -48,7 +50,9 @@ public class KissBuffered extends Kiss {
         } catch (IllegalStateException ignored) {}
 
         try {
-            _buffer.put(data);
+            synchronized (_buffer) {
+                _buffer.put(data);
+            }
         } catch (BufferOverflowException e) {
             e.printStackTrace();
         }
