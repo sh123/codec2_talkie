@@ -35,12 +35,12 @@ public class AudioProcessor extends Thread {
     public static final int PROCESSOR_RX_LEVEL = 7;
     public static final int PROCESSOR_TX_LEVEL = 8;
     public static final int PROCESSOR_CODEC_ERROR = 9;
+
     public static final int PROCESSOR_PROCESS = 10;
     public static final int PROCESSOR_QUIT = 11;
 
     private static int AUDIO_MIN_LEVEL = -60;
     private static int AUDIO_MAX_LEVEL = 0;
-
     private final int AUDIO_SAMPLE_SIZE = 8000;
 
     private final int PROCESS_INTERVAL_MS = 20;
@@ -152,18 +152,17 @@ public class AudioProcessor extends Thread {
         _onMessageReceived.sendMessage(msg);
     }
 
-    private void sendStatusUpdate(int status) {
-        if (status != PROCESSOR_LISTENING) {
+    private void sendStatusUpdate(int newStatus) {
+        if (newStatus != PROCESSOR_LISTENING) {
             restartListening();
         }
-        if (status == _currentStatus) {
-            return;
-        }
-        _currentStatus = status;
-        Message msg = Message.obtain();
-        msg.what = status;
+        if (newStatus != _currentStatus) {
+            _currentStatus = newStatus;
+            Message msg = Message.obtain();
+            msg.what = newStatus;
 
-        _onPlayerStateChanged.sendMessage(msg);
+            _onPlayerStateChanged.sendMessage(msg);
+        }
     }
 
     private void sendRxAudioLevelUpdate(short [] pcmAudioSamples) {
@@ -205,21 +204,20 @@ public class AudioProcessor extends Thread {
     private final Callback _protocolReceiveCallback = new Callback() {
         @Override
         protected void onReceiveAudioFrames(byte[] audioFrames) {
-            // frame size must match codec mode size
             if (audioFrames.length % _codec2FrameSize != 0) {
                 Log.w(TAG, "Ignoring audio frame of wrong size: " + audioFrames.length);
                 sendStatusUpdate(PROCESSOR_CODEC_ERROR);
-                return;
-            }
-            sendStatusUpdate(PROCESSOR_PLAYING);
+            } else {
+                sendStatusUpdate(PROCESSOR_PLAYING);
 
-            // split by audio frame and play
-            byte [] audioFrame = new byte[_codec2FrameSize];
-            for (int i = 0; i < audioFrames.length; i += _codec2FrameSize) {
-                for (int j = 0; j < _codec2FrameSize && (j + i) < audioFrames.length; j++) {
-                    audioFrame[j] = audioFrames[i + j];
+                // split by audio frame and play
+                byte[] audioFrame = new byte[_codec2FrameSize];
+                for (int i = 0; i < audioFrames.length; i += _codec2FrameSize) {
+                    for (int j = 0; j < _codec2FrameSize && (j + i) < audioFrames.length; j++) {
+                        audioFrame[j] = audioFrames[i + j];
+                    }
+                    decodeAndPlayAudioFrame(audioFrame);
                 }
-                decodeAndPlayAudioFrame(audioFrame);
             }
         }
     };
