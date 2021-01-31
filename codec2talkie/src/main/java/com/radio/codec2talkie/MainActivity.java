@@ -76,6 +76,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        String appName = getResources().getString(R.string.app_name);
+        setTitle(appName + " " + BuildConfig.VERSION_NAME);
+
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         setContentView(R.layout.activity_main);
