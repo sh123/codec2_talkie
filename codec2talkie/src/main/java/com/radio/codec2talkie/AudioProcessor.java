@@ -42,15 +42,15 @@ public class AudioProcessor extends Thread {
     private static int AUDIO_MAX_LEVEL = 0;
 
     private final int AUDIO_SAMPLE_SIZE = 8000;
-    private final int SLEEP_IDLE_DELAY_MS = 20;
-    private final int LISTEN_DELAY_MS = 1500;
+
+    private final int PROCESS_INTERVAL_MS = 20;
+    private final int LISTEN_AFTER_MS = 1500;
 
     private long _codec2Con;
 
     private int _audioBufferSize;
     private int _codec2FrameSize;
 
-    private boolean _isRunning = true;
     private boolean _needsRecording = false;
     private int _currentStatus = PROCESSOR_DISCONNECTED;
 
@@ -239,7 +239,7 @@ public class AudioProcessor extends Thread {
             public void run() {
                 onListening();
             }
-        }, LISTEN_DELAY_MS);
+        }, LISTEN_AFTER_MS);
     }
 
     private void cancelListening() {
@@ -350,7 +350,7 @@ public class AudioProcessor extends Thread {
                 msg.what = PROCESSOR_PROCESS;
                 _onMessageReceived.sendMessage(msg);
             }
-        }, 0, SLEEP_IDLE_DELAY_MS);
+        }, 0, PROCESS_INTERVAL_MS);
     }
 
     @Override
