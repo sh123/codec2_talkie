@@ -35,6 +35,8 @@ public class AudioProcessor extends Thread {
     public static final int PROCESSOR_RX_LEVEL = 7;
     public static final int PROCESSOR_TX_LEVEL = 8;
     public static final int PROCESSOR_CODEC_ERROR = 9;
+    public static final int PROCESSOR_PROCESS = 10;
+    public static final int PROCESSOR_QUIT = 11;
 
     private static int AUDIO_MIN_LEVEL = -60;
     private static int AUDIO_MAX_LEVEL = 0;
@@ -66,6 +68,8 @@ public class AudioProcessor extends Thread {
 
     // callbacks
     private final Handler _onPlayerStateChanged;
+    private Handler _onMessageReceived;
+    private final Timer _processPeriodicTimer;
 
     // listen timer
     private Timer _listenTimer;
@@ -77,28 +81,10 @@ public class AudioProcessor extends Thread {
         _transport  = TransportFactory.create(transportType);
         _protocol = ProtocolFactory.create(protocolType);
 
+        _processPeriodicTimer = new Timer();
+
         constructCodec2(codec2Mode);
         constructSystemAudioDevices();
-    }
-
-    public static int getAudioMinLevel() {
-        return AUDIO_MIN_LEVEL;
-    }
-
-    public static int getAudioMaxLevel() {
-        return AUDIO_MAX_LEVEL;
-    }
-
-    public void startPlayback() {
-        _needsRecording = false;
-    }
-
-    public void startRecording() {
-        _needsRecording = true;
-    }
-
-    public void stopRunning() {
-        _isRunning = false;
     }
 
     private void constructSystemAudioDevices() {
@@ -142,6 +128,28 @@ public class AudioProcessor extends Thread {
         _recordAudioEncodedBuffer = new char[_codec2FrameSize];
 
         _playbackAudioBuffer = new short[_audioBufferSize];
+    }
+
+    public static int getAudioMinLevel() {
+        return AUDIO_MIN_LEVEL;
+    }
+
+    public static int getAudioMaxLevel() {
+        return AUDIO_MAX_LEVEL;
+    }
+
+    public void startPlayback() {
+        _needsRecording = false;
+    }
+
+    public void startRecording() {
+        _needsRecording = true;
+    }
+
+    public void stopRunning() {
+        Message msg = new Message();
+        msg.what = PROCESSOR_QUIT;
+        _onMessageReceived.sendMessage(msg);
     }
 
     private void sendStatusUpdate(int status) {
@@ -190,16 +198,16 @@ public class AudioProcessor extends Thread {
 
     private void decodeAndPlayAudioFrame(byte[] data) {
         Codec2.decode(_codec2Con, _playbackAudioBuffer, data);
-        _systemAudioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
         sendRxAudioLevelUpdate(_playbackAudioBuffer);
+        _systemAudioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
     }
 
     private final Callback _protocolReceiveCallback = new Callback() {
         @Override
-        protected void onReceive(byte[] data) {
+        protected void onReceiveAudioFrames(byte[] audioFrames) {
             // frame size must match codec mode size
-            if (data.length % _codec2FrameSize != 0) {
-                Log.w(TAG, "Ignoring audio frame of wrong size: " + data.length);
+            if (audioFrames.length % _codec2FrameSize != 0) {
+                Log.w(TAG, "Ignoring audio frame of wrong size: " + audioFrames.length);
                 sendStatusUpdate(PROCESSOR_CODEC_ERROR);
                 return;
             }
@@ -207,9 +215,9 @@ public class AudioProcessor extends Thread {
 
             // split by audio frame and play
             byte [] audioFrame = new byte[_codec2FrameSize];
-            for (int i = 0; i < data.length; i += _codec2FrameSize) {
-                for (int j = 0; j < _codec2FrameSize && (j + i) < data.length; j++) {
-                    audioFrame[j] = data[i + j];
+            for (int i = 0; i < audioFrames.length; i += _codec2FrameSize) {
+                for (int j = 0; j < _codec2FrameSize && (j + i) < audioFrames.length; j++) {
+                    audioFrame[j] = audioFrames[i + j];
                 }
                 decodeAndPlayAudioFrame(audioFrame);
             }
@@ -288,7 +296,7 @@ public class AudioProcessor extends Thread {
         }
     }
 
-    private boolean process() throws IOException {
+    private void processRxTx() throws IOException {
         processRecordPlaybackToggle();
 
         // recording
@@ -300,29 +308,64 @@ public class AudioProcessor extends Thread {
                 sendStatusUpdate(PROCESSOR_RECEIVING);
             } else {
                 // idling
-                return false;
             }
         }
-        return true;
+    }
+
+    private void quitProcessing() {
+        _processPeriodicTimer.cancel();
+        _processPeriodicTimer.purge();
+        Looper.myLooper().quitSafely();
+    }
+
+    private void onProcessorIncomingMessage(Message msg) {
+        switch (msg.what) {
+            case PROCESSOR_PROCESS:
+                try {
+                    processRxTx();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    quitProcessing();
+                }
+                break;
+            case PROCESSOR_QUIT:
+                quitProcessing();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void startProcessorMessageHandler() {
+        _onMessageReceived = new Handler(Looper.myLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                onProcessorIncomingMessage(msg);
+            }
+        };
+        _processPeriodicTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Message msg = new Message();
+                msg.what = PROCESSOR_PROCESS;
+                _onMessageReceived.sendMessage(msg);
+            }
+        }, 0, SLEEP_IDLE_DELAY_MS);
     }
 
     @Override
     public void run() {
         setPriority(Thread.MAX_PRIORITY);
+        Looper.prepare();
 
         sendStatusUpdate(PROCESSOR_CONNECTED);
         _systemAudioPlayer.play();
 
-        // TODO, refactor to use Looper
         try {
-            sendStatusUpdate(PROCESSOR_LISTENING);
             _protocol.initialize(_transport);
-
-            while (_isRunning)
-                if (!process())
-                    Thread.sleep(SLEEP_IDLE_DELAY_MS);
-
-        } catch (IOException | InterruptedException e) {
+            startProcessorMessageHandler();
+            Looper.loop();
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

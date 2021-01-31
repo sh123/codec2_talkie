@@ -147,7 +147,7 @@ public class Kiss implements Protocol {
                         _kissState = KissState.ESCAPE;
                     } else if (b == KISS_FEND) {
                         if (_kissCmd == KISS_CMD_DATA) {
-                            callback.onReceive(Arrays.copyOf(_inputKissBuffer, _inputKissBufferPos));
+                            callback.onReceiveAudioFrames(Arrays.copyOf(_inputKissBuffer, _inputKissBufferPos));
                         }
                         resetState();
                     } else {
