@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         String appName = getResources().getString(R.string.app_name);
-        setTitle(appName + " " + BuildConfig.VERSION_NAME);
+        setTitle(appName + " v" + BuildConfig.VERSION_NAME);
 
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
