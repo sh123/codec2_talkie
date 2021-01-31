@@ -15,7 +15,7 @@
 ![alt text](images/screenshot.png)
 ![alt text](images/screenshot_settings.png)
 
-This minimalistic Android application is a Walkie-Talkie style digital voice frontend for your radio by using open source [Codec2](https://github.com/drowe67/codec2). 
+This minimalistic Android application is a Walkie-Talkie style digital voice frontend for your radio, which uses open source [Codec2](https://github.com/drowe67/codec2) for speech audio frame encoding/decoding. 
 
 It connects to your radio KISS Bluetooth/USB modem, records speech from the phone microphone on transmit, encodes audio into codec2 format, encapsulates into KISS frames and sends to your modem. 
 
