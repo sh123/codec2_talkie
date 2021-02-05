@@ -220,6 +220,10 @@ public class AudioProcessor extends Thread {
                 }
             }
         }
+
+        @Override
+        protected void onReceiveSignalLevel(byte [] rawData) {
+        }
     };
 
     private void restartListening() {

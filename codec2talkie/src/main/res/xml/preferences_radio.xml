@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        app:key="kiss_extensions_radio_category"
+        app:title="@string/kiss_extensions_radio_control_title">
+
+    <EditTextPreference
+        app:key="kiss_extension_radio_frequency"
+        app:title="@string/kiss_extensions_radio_frequency_title"
+        app:summary="@string/kiss_extensions_radio_frequency_summary"
+        app:defaultValue="433.575">
+    </EditTextPreference>
+
+    <EditTextPreference
+        app:key="kiss_extension_radio_bandwidth"
+        app:title="@string/kiss_extensions_radio_bandwidth_title"
+        app:summary="@string/kiss_extensions_radio_bandwidth_summary"
+        app:defaultValue="125">
+    </EditTextPreference>
+    </PreferenceCategory>
+</PreferenceScreen>

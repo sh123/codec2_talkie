@@ -53,4 +53,17 @@
 
     <string name="kiss_buffered_enable_title">Enable Playback Buffering</string>
     <string name="kiss_buffered_enable_summary">Use when your modem data rate is less than codec2 bitrate</string>
+
+    <string name="kiss_extensions_enable_title">Enable Extensions</string>
+    <string name="kiss_extensions_enable_summary">Enable radio control and signal level reports</string>
+
+    <string name="kiss_extensions_radio_control_title">Set Radio Parameters</string>
+    <string name="kiss_extensions_radio_control_summary">Set frequency, bandwidth and other radio parameters</string>
+
+    <string name="kiss_extensions_radio_frequency_title">Frequency (MHz)</string>
+    <string name="kiss_extensions_radio_frequency_summary">Set radio frequency</string>
+
+    <string name="kiss_extensions_radio_bandwidth_title">Bandwidth (kHz)</string>
+    <string name="kiss_extensions_radio_bandwidth_summary">Set radio bandwidth</string>
+
 </resources>

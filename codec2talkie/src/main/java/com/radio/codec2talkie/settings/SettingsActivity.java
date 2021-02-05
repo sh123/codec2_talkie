@@ -22,4 +22,12 @@ public class SettingsActivity extends AppCompatActivity
             setPreferencesFromResource(R.xml.preferences, rootKey);
         }
     }
+
+    public static class SettingsRadioFragment extends PreferenceFragmentCompat
+    {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences_radio, null);
+        }
+    }
 }

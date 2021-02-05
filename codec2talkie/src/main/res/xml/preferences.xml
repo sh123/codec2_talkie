@@ -49,6 +49,22 @@
             app:defaultValue="false">
         </SwitchPreference>
 
+        <SwitchPreference
+            app:key="kiss_extensions_enable"
+            app:title="@string/kiss_extensions_enable_title"
+            app:summary="@string/kiss_extensions_enable_summary"
+            app:dependency="kiss_enable"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <Preference
+            android:key="pref_radio_control"
+            android:title="@string/kiss_extensions_radio_control_title"
+            android:summary="@string/kiss_extensions_radio_control_summary"
+            app:fragment="com.radio.codec2talkie.settings.SettingsActivity$SettingsRadioFragment"
+            app:dependency="kiss_extensions_enable">
+        </Preference>
+
     </PreferenceCategory>
 
     <PreferenceCategory

@@ -26,6 +26,8 @@ public class Kiss implements Protocol {
     private final byte KISS_CMD_P = (byte)0x02;
     private final byte KISS_CMD_SLOT_TIME = (byte)0x03;
     private final byte KISS_CMD_TX_TAIL = (byte)0x04;
+    private final byte KISS_CMD_RADIO_CONTROL = (byte)0x10;
+    private final byte KISS_CMD_SIGNAL_LEVEL = (byte)0x30;
     private final byte KISS_CMD_NOCMD = (byte)0x80;
 
     private final byte CSMA_PERSISTENCE = (byte)0xff;
