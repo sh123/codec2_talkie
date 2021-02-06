@@ -45,6 +45,7 @@ import com.radio.codec2talkie.connect.UsbPortHandler;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -293,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
                     if (msg.arg1 == 0) {
                         _textRssi.setText("");
                     } else {
-                        _textRssi.setText(msg.arg1 + "dBm, " + (double)msg.arg2 / 100.0);
+                        _textRssi.setText(String.format(Locale.getDefault(), "%3d dBm, %2.2f", msg.arg1, (double)msg.arg2 / 100.0));
                     }
                     break;
                 // same progress bar is reused for rx and tx levels
