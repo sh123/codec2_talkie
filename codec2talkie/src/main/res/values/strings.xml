@@ -66,4 +66,18 @@
     <string name="kiss_extensions_radio_bandwidth_title">Bandwidth (kHz)</string>
     <string name="kiss_extensions_radio_bandwidth_summary">Set radio bandwidth</string>
 
+    <string name="kiss_extensions_radio_power_title">Power (dBm)</string>
+    <string name="kiss_extensions_radio_power_summary">Set radio output power in dBm</string>
+
+    <string name="kiss_extensions_radio_sf_title">Spreading Factor (6–12)</string>
+    <string name="kiss_extensions_radio_sf_summary">Set spreading factor, 6–12 for LoRa</string>
+
+    <string name="kiss_extensions_radio_cr_title">Coding Rate (5–9)</string>
+    <string name="kiss_extensions_radio_cr_summary">Set spreading factor, 5–9 for LoRa</string>
+
+    <string name="kiss_extensions_radio_sync_title">Sync Word</string>
+    <string name="kiss_extensions_radio_sync_summary">Set packet sync word as hex value</string>
+
+    <string name="kiss_extensions_radio_crc_title">Enable CRC check</string>
+    <string name="kiss_extensions_radio_crc_summary">Enable packet CRC check</string>
 </resources>

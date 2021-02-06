@@ -5,18 +5,54 @@
         app:key="kiss_extensions_radio_category"
         app:title="@string/kiss_extensions_radio_control_title">
 
-    <EditTextPreference
-        app:key="kiss_extension_radio_frequency"
-        app:title="@string/kiss_extensions_radio_frequency_title"
-        app:summary="@string/kiss_extensions_radio_frequency_summary"
-        app:defaultValue="433.575">
-    </EditTextPreference>
+        <EditTextPreference
+            app:key="kiss_extension_radio_frequency"
+            app:title="@string/kiss_extensions_radio_frequency_title"
+            app:summary="@string/kiss_extensions_radio_frequency_summary"
+            app:defaultValue="433.575">
+        </EditTextPreference>
 
-    <EditTextPreference
-        app:key="kiss_extension_radio_bandwidth"
-        app:title="@string/kiss_extensions_radio_bandwidth_title"
-        app:summary="@string/kiss_extensions_radio_bandwidth_summary"
-        app:defaultValue="125">
-    </EditTextPreference>
+        <EditTextPreference
+            app:key="kiss_extension_radio_bandwidth"
+            app:title="@string/kiss_extensions_radio_bandwidth_title"
+            app:summary="@string/kiss_extensions_radio_bandwidth_summary"
+            app:defaultValue="125">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="kiss_extension_radio_power"
+            app:title="@string/kiss_extensions_radio_power_title"
+            app:summary="@string/kiss_extensions_radio_power_summary"
+            app:defaultValue="20">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="kiss_extension_radio_sf"
+            app:title="@string/kiss_extensions_radio_sf_title"
+            app:summary="@string/kiss_extensions_radio_sf_summary"
+            app:defaultValue="7">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="kiss_extension_radio_cr"
+            app:title="@string/kiss_extensions_radio_cr_title"
+            app:summary="@string/kiss_extensions_radio_cr_summary"
+            app:defaultValue="6">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="kiss_extension_radio_sync"
+            app:title="@string/kiss_extensions_radio_sync_title"
+            app:summary="@string/kiss_extensions_radio_sync_summary"
+            app:defaultValue="34">
+        </EditTextPreference>
+
+        <CheckBoxPreference
+            app:key="kiss_extension_radio_crc"
+            app:title="@string/kiss_extensions_radio_crc_title"
+            app:summary="@string/kiss_extensions_radio_crc_summary"
+            app:defaultValue="true">
+        </CheckBoxPreference>
+
     </PreferenceCategory>
 </PreferenceScreen>
