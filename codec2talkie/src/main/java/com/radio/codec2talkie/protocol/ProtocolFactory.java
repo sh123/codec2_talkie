@@ -10,7 +10,7 @@ public class ProtocolFactory {
 
         private String _name;
 
-        private ProtocolType(String name) {
+        ProtocolType(String name) {
             _name = name;
         }
 

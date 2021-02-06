@@ -63,8 +63,9 @@ public class MainActivity extends AppCompatActivity {
 
     private AudioProcessor _audioProcessor;
 
-    SharedPreferences _sharedPreferences;
-    boolean _isTestMode;
+    private SharedPreferences _sharedPreferences;
+
+    private boolean _isTestMode;
 
     private TextView _textConnInfo;
     private TextView _textStatus;
