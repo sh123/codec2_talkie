@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView _textConnInfo;
     private TextView _textStatus;
     private TextView _textCodecMode;
+    private TextView _textRssi;
     private ProgressBar _progressAudioLevel;
     private Button _btnPtt;
 
@@ -85,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
         _textConnInfo = findViewById(R.id.textBtName);
         _textStatus = findViewById(R.id.textStatus);
+        _textRssi = findViewById(R.id.textRssi);
 
         int barMaxValue = AudioProcessor.getAudioMaxLevel() - AudioProcessor.getAudioMinLevel();
         _progressAudioLevel = findViewById(R.id.progressAudioLevel);
@@ -286,6 +288,13 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case AudioProcessor.PROCESSOR_PLAYING:
                     _textStatus.setText(R.string.main_status_play);
+                    break;
+                case AudioProcessor.PROCESSOR_RX_RADIO_LEVEL:
+                    if (msg.arg1 == 0) {
+                        _textRssi.setText("");
+                    } else {
+                        _textRssi.setText(msg.arg1 + " dBm");
+                    }
                     break;
                 // same progress bar is reused for rx and tx levels
                 case AudioProcessor.PROCESSOR_RX_LEVEL:

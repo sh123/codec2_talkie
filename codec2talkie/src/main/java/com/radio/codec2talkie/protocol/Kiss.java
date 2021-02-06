@@ -12,7 +12,8 @@ public class Kiss implements Protocol {
 
     private static final String TAG = Kiss.class.getSimpleName();
 
-    private final int RX_BUFFER_SIZE = 8192;
+    private final int INPUT_RAW_BUFFER_SIZE = 8192;
+    private final int KISS_CMD_BUFFER_SIZE = 128;
 
     private final int KISS_TX_FRAME_MAX_SIZE = 48;
 
@@ -35,35 +36,44 @@ public class Kiss implements Protocol {
     private final byte TX_DELAY_10MS_UNITS = (byte)(250 / 10);
     private final byte TX_TAIL_10MS_UNITS = (byte)(500 / 10);
 
-    private enum KissState {
-        VOID,
+    private enum State {
+        GET_START,
+        GET_END,
         GET_CMD,
         GET_DATA,
         ESCAPE
     };
 
-    private KissState _kissState = KissState.VOID;
-    private byte _kissCmd = KISS_CMD_NOCMD;
+    private enum DataType {
+        RAW,
+        SIGNAL_LEVEL
+    };
+
+    private DataType _kissDataType = DataType.RAW;
+    private State _kissState = State.GET_START;
 
     private final byte _tncCsmaPersistence;
     private final byte _tncCsmaSlotTime;
     private final byte _tncTxDelay;
     private final byte _tncTxTail;
 
-    protected final byte[] _rxDataBuffer;
+    protected final byte[] _inputRawDataBuffer;
     private final byte[] _outputKissBuffer;
     private final byte[] _inputKissBuffer;
+    private final byte[] _kissCmdBuffer;
 
     protected Transport _transport;
 
     private int _outputKissBufferPos;
     private int _inputKissBufferPos;
+    private int _kissCmdBufferPos;
 
     public Kiss() {
-        _rxDataBuffer = new byte[RX_BUFFER_SIZE];
+        _inputRawDataBuffer = new byte[INPUT_RAW_BUFFER_SIZE];
+        _kissCmdBuffer = new byte [KISS_CMD_BUFFER_SIZE];
 
         _outputKissBuffer = new byte[KISS_TX_FRAME_MAX_SIZE];
-        _inputKissBuffer = new byte[100 * KISS_TX_FRAME_MAX_SIZE];
+        _inputKissBuffer = new byte[64 * KISS_TX_FRAME_MAX_SIZE];
 
         _tncCsmaPersistence = CSMA_PERSISTENCE;
         _tncCsmaSlotTime = CSMA_SLOT_TIME;
@@ -72,6 +82,7 @@ public class Kiss implements Protocol {
 
         _outputKissBufferPos = 0;
         _inputKissBufferPos = 0;
+        _kissCmdBufferPos = 0;
     }
 
     public void initialize(Transport transport) throws IOException {
@@ -114,9 +125,9 @@ public class Kiss implements Protocol {
     }
 
     public boolean receive(Callback callback) throws IOException {
-        int bytesRead = _transport.read(_rxDataBuffer);
+        int bytesRead = _transport.read(_inputRawDataBuffer);
         if (bytesRead > 0) {
-            receiveKissData(Arrays.copyOf(_rxDataBuffer, bytesRead), callback);
+            receiveKissData(Arrays.copyOf(_inputRawDataBuffer, bytesRead), callback);
             return true;
         }
         return false;
@@ -126,49 +137,85 @@ public class Kiss implements Protocol {
         completeKissPacket();
     }
 
+    private void processCommand(byte b) {
+        switch (b) {
+            case KISS_CMD_DATA:
+                _kissState = State.GET_DATA;
+                _kissDataType = DataType.RAW;
+                break;
+            case KISS_CMD_SIGNAL_LEVEL:
+                _kissState = State.GET_DATA;
+                _kissDataType = DataType.SIGNAL_LEVEL;
+                _kissCmdBufferPos = 0;
+                break;
+            case KISS_FEND:
+                break;
+            default:
+                Log.w(TAG, "Unsupported KISS command code: " + b);
+                _kissState = State.GET_END;
+                break;
+        }
+    }
+
+    private void processData(byte b, Callback callback) {
+        switch (b) {
+            case KISS_FESC:
+                _kissState = State.ESCAPE;
+                break;
+            case KISS_FEND:
+                if (_kissDataType == DataType.RAW) {
+                    callback.onReceiveAudioFrames(Arrays.copyOf(_inputKissBuffer, _inputKissBufferPos));
+                } else if (_kissDataType == DataType.SIGNAL_LEVEL) {
+                    callback.onReceiveSignalLevel(Arrays.copyOf(_kissCmdBuffer, _kissCmdBufferPos));
+                    _kissCmdBufferPos = 0;
+                }
+                resetState();
+                break;
+            default:
+                if (_kissDataType == DataType.RAW) {
+                    receiveFrameByte(b);
+                } else if (_kissDataType == DataType.SIGNAL_LEVEL) {
+                    _kissCmdBuffer[_kissCmdBufferPos++] = b;
+                }
+                break;
+        }
+    }
+
     protected void receiveKissData(byte[] data, Callback callback) {
         for (byte b : data) {
             switch (_kissState) {
-                case VOID:
+                case GET_START:
                     if (b == KISS_FEND) {
-                        _kissCmd = KISS_CMD_NOCMD;
-                        _kissState = KissState.GET_CMD;
+                        _kissState = State.GET_CMD;
+                    }
+                    break;
+                case GET_END:
+                    if (b == KISS_FEND) {
+                        resetState();
                     }
                     break;
                 case GET_CMD:
-                    if (b == KISS_CMD_DATA) {
-                        _kissCmd = b;
-                        _kissState = KissState.GET_DATA;
-                    } else if (b != KISS_FEND) {
-                        Log.w(TAG, "Unsupported KISS command code: " + b);
-                        resetState();
-                    }
+                    processCommand(b);
                     break;
                 case GET_DATA:
-                    if (b == KISS_FESC) {
-                        _kissState = KissState.ESCAPE;
-                    } else if (b == KISS_FEND) {
-                        if (_kissCmd == KISS_CMD_DATA) {
-                            callback.onReceiveAudioFrames(Arrays.copyOf(_inputKissBuffer, _inputKissBufferPos));
-                        }
-                        resetState();
-                    } else {
-                        receiveFrameByte(b);
-                    }
+                    processData(b, callback);
                     break;
                 case ESCAPE:
                     if (b == KISS_TFEND) {
                         receiveFrameByte(KISS_FEND);
-                        _kissState = KissState.GET_DATA;
+                        _kissState = State.GET_DATA;
                     } else if (b == KISS_TFESC) {
                         receiveFrameByte(KISS_FESC);
-                        _kissState = KissState.GET_DATA;
-                    } else {
+                        _kissState = State.GET_DATA;
+                    }
+                    else if (b != KISS_FEND) {
                         Log.w(TAG, "Unknown KISS escape code: " + b);
-                        resetState();
+                        _kissState = State.GET_END;
                     }
                     break;
                 default:
+                    Log.w(TAG, "Unknown state: " + _kissState);
+                    resetState();
                     break;
             }
         }
@@ -187,8 +234,7 @@ public class Kiss implements Protocol {
     }
 
     private void resetState() {
-        _kissCmd = KISS_CMD_NOCMD;
-        _kissState = KissState.VOID;
+        _kissState = State.GET_START;
         _inputKissBufferPos = 0;
     }
 

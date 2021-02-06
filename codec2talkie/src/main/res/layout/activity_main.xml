@@ -48,6 +48,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textBtName" />
 
+
+    <TextView
+        android:id="@+id/textRssi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="12dp"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/textStatus"
+        app:layout_constraintTop_toBottomOf="@+id/progressAudioLevel" />
+
     <TextView
         android:id="@+id/textStatus"
         android:layout_width="wrap_content"

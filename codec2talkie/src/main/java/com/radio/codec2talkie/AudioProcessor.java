@@ -10,7 +10,10 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -24,6 +27,21 @@ import com.ustadmobile.codec2.Codec2;
 
 public class AudioProcessor extends Thread {
 
+    public class SignalEvent implements Serializable {
+        public int rssi;
+        public int snr;
+    };
+
+    public class RadioControl implements Serializable {
+        public int freq;
+        public int bw;
+        public short sf;
+        public short cr;
+        public short pwr;
+        public short sync;
+        public byte crc;
+    };
+
     private static final String TAG = AudioProcessor.class.getSimpleName();
 
     public static final int PROCESSOR_DISCONNECTED = 1;
@@ -35,9 +53,10 @@ public class AudioProcessor extends Thread {
     public static final int PROCESSOR_RX_LEVEL = 7;
     public static final int PROCESSOR_TX_LEVEL = 8;
     public static final int PROCESSOR_CODEC_ERROR = 9;
+    public static final int PROCESSOR_RX_RADIO_LEVEL = 10;
 
-    public static final int PROCESSOR_PROCESS = 10;
-    public static final int PROCESSOR_QUIT = 11;
+    public static final int PROCESSOR_PROCESS = 11;
+    public static final int PROCESSOR_QUIT = 12;
 
     private static int AUDIO_MIN_LEVEL = -60;
     private static int AUDIO_MAX_LEVEL = 0;
@@ -165,6 +184,14 @@ public class AudioProcessor extends Thread {
         }
     }
 
+    private void sendRxRadioLevelUpdate(int rssi, int snr) {
+        Message msg = Message.obtain();
+        msg.what = PROCESSOR_RX_RADIO_LEVEL;
+        msg.arg1 = rssi;
+        msg.arg2 = snr;
+        _onPlayerStateChanged.sendMessage(msg);
+    }
+
     private void sendRxAudioLevelUpdate(short [] pcmAudioSamples) {
         Message msg = Message.obtain();
         msg.what = PROCESSOR_RX_LEVEL;
@@ -223,6 +250,18 @@ public class AudioProcessor extends Thread {
 
         @Override
         protected void onReceiveSignalLevel(byte [] rawData) {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(rawData);
+            ObjectInputStream objectInputStream = null;
+            SignalEvent signalEvent = null;
+            try {
+                objectInputStream = new ObjectInputStream(byteArrayInputStream);
+                signalEvent = (SignalEvent)objectInputStream.readObject();
+            } catch (ClassNotFoundException | IOException e) {
+                e.printStackTrace();
+            }
+            if (signalEvent != null) {
+                sendRxRadioLevelUpdate(signalEvent.rssi, signalEvent.snr);
+            }
         }
     };
 
@@ -258,6 +297,7 @@ public class AudioProcessor extends Thread {
     private void onListening() {
         sendRxAudioLevelUpdate(null);
         sendTxAudioLevelUpdate(null);
+        sendRxRadioLevelUpdate(0, 0);
         sendStatusUpdate(PROCESSOR_LISTENING);
     }
 
