@@ -87,10 +87,9 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
   - For KISS encapsulated audio frames command above could be used, but instead of `cat` use https://pypi.org/project/kiss/
   
 # TODO
-- Modem profiles, so different modems could be controlled from the UI with KISS command extensions, so that user can change frequency/channel, modulation scheme, modem speed or other modem parameters on the fly from the application Preferences
-  - Rig/radio module control and signal level reports by using KISS command extensions
-  - HC-12 module control by using AT commands
+- QSO log and non real time voicemail style communcation, where incoming transmissions are recorded, stored and could be played back later if recipient cannot reply immediately in real time
 - Investigate support for other non-KISS frame formats and protocols, switcheable from the UI
   - AX.25 packets over existing KISS, voice over AX.25 (VoAX.25).
   - [M17 Project](https://m17project.org) protocol support
-- QSO log and non real time voicemail style communcation, where incoming transmissions are recorded, stored and could be played back later if recipient cannot reply immediately in real time
+- Support for non-KISS modems control if needed
+  - HC-12 module control by using AT commands
