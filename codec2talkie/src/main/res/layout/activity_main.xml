@@ -11,6 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="4dp"
         android:text="Device"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="14sp"
@@ -24,7 +25,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"
         android:background="@drawable/btn_ptt"
         android:hapticFeedbackEnabled="false"
         android:text="@string/push_to_talk"
@@ -34,37 +34,37 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.598"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/codecMode" />
+        app:layout_constraintTop_toBottomOf="@+id/textRssi" />
+
 
     <TextView
         android:id="@+id/codecMode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="2dp"
         android:text="Mode"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textBtName" />
 
-
     <TextView
         android:id="@+id/textRssi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="12dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="16dp"
         android:textSize="14sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/textStatus"
-        app:layout_constraintTop_toBottomOf="@+id/progressAudioLevel" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textStatus" />
 
     <TextView
         android:id="@+id/textStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:layout_marginEnd="16dp"
         android:text="STOP"
         android:textSize="24sp"

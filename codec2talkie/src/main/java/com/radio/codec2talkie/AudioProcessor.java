@@ -14,6 +14,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -26,21 +27,6 @@ import com.radio.codec2talkie.transport.TransportFactory;
 import com.ustadmobile.codec2.Codec2;
 
 public class AudioProcessor extends Thread {
-
-    public class SignalEvent implements Serializable {
-        public int rssi;
-        public int snr;
-    };
-
-    public class RadioControl implements Serializable {
-        public int freq;
-        public int bw;
-        public short sf;
-        public short cr;
-        public short pwr;
-        public short sync;
-        public byte crc;
-    };
 
     private static final String TAG = AudioProcessor.class.getSimpleName();
 
@@ -64,6 +50,8 @@ public class AudioProcessor extends Thread {
 
     private final int PROCESS_INTERVAL_MS = 20;
     private final int LISTEN_AFTER_MS = 1500;
+
+    private final int SIGNAL_LEVEL_EVENT_SIZE = 4;
 
     private long _codec2Con;
 
@@ -250,17 +238,11 @@ public class AudioProcessor extends Thread {
 
         @Override
         protected void onReceiveSignalLevel(byte [] rawData) {
-            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(rawData);
-            ObjectInputStream objectInputStream = null;
-            SignalEvent signalEvent = null;
-            try {
-                objectInputStream = new ObjectInputStream(byteArrayInputStream);
-                signalEvent = (SignalEvent)objectInputStream.readObject();
-            } catch (ClassNotFoundException | IOException e) {
-                e.printStackTrace();
-            }
-            if (signalEvent != null) {
-                sendRxRadioLevelUpdate(signalEvent.rssi, signalEvent.snr);
+            ByteBuffer data = ByteBuffer.wrap(rawData);
+            if (rawData.length == SIGNAL_LEVEL_EVENT_SIZE) {
+                short rssi = data.getShort();
+                short snr = data.getShort();
+                sendRxRadioLevelUpdate(rssi, snr);
             }
         }
     };

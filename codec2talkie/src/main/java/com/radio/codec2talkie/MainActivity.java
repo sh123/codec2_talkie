@@ -293,7 +293,7 @@ public class MainActivity extends AppCompatActivity {
                     if (msg.arg1 == 0) {
                         _textRssi.setText("");
                     } else {
-                        _textRssi.setText(msg.arg1 + " dBm");
+                        _textRssi.setText(msg.arg1 + "dBm, " + (double)msg.arg2 / 100.0);
                     }
                     break;
                 // same progress bar is reused for rx and tx levels
