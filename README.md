@@ -48,7 +48,7 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
      - Enable/Disable KISS, when disabled raw codec2 audio frames will be transmitted
      - Enable/Disable parrot (digirepeater) mode
      - Enable/Disable KISS non-real time buffered playback mode
-     - Enable/Disable KISS extensions for radio module control and signal levels
+     - Enable/Disable KISS extensions for radio module control and signal levels (modem must support them to work correctly!)
      - Set radio parameters (frequency, bandwidth, spreading factor, coding rate, power, sync word, crc checksum enable/disable)
   - **TNC parameters**
     - Change default baud rate for USB port
