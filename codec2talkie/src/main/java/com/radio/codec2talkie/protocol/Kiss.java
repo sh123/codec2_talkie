@@ -1,7 +1,12 @@
 package com.radio.codec2talkie.protocol;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.preference.PreferenceManager;
+
+import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -16,6 +21,8 @@ public class Kiss implements Protocol {
     private final int KISS_CMD_BUFFER_SIZE = 128;
 
     private final int KISS_TX_FRAME_MAX_SIZE = 48;
+
+    private final int KISS_RADIO_CONTROL_COMMAND_SIZE = 17;
 
     private final byte KISS_FEND = (byte)0xc0;
     private final byte KISS_FESC = (byte)0xdb;
@@ -68,6 +75,10 @@ public class Kiss implements Protocol {
     private int _inputKissBufferPos;
     private int _kissCmdBufferPos;
 
+    private Context _context;
+    private SharedPreferences _sharedPreferences;
+    private boolean _isExtendedMode;
+
     public Kiss() {
         _inputRawDataBuffer = new byte[INPUT_RAW_BUFFER_SIZE];
         _kissCmdBuffer = new byte [KISS_CMD_BUFFER_SIZE];
@@ -83,10 +94,16 @@ public class Kiss implements Protocol {
         _outputKissBufferPos = 0;
         _inputKissBufferPos = 0;
         _kissCmdBufferPos = 0;
+
+        _isExtendedMode = false;
     }
 
-    public void initialize(Transport transport) throws IOException {
+    public void initialize(Transport transport, Context context) throws IOException {
         _transport = transport;
+
+        _context = context;
+        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
+        _isExtendedMode = _sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false);
 
         startKissPacket(KISS_CMD_P);
         sendKissByte(_tncCsmaPersistence);
@@ -102,6 +119,48 @@ public class Kiss implements Protocol {
 
         startKissPacket(KISS_CMD_TX_TAIL);
         sendKissByte(_tncTxTail);
+        completeKissPacket();
+
+        if (_isExtendedMode) {
+            initializeExtended();
+        }
+    }
+
+    private void initializeExtended() throws IOException {
+        /*
+          struct LoraControlCommand {
+            uint32_t freq;
+            uint32_t bw;
+            uint16_t sf;
+            uint16_t cr;
+            uint16_t pwr;
+            uint16_t sync;
+            uint8_t crc;
+          } __attribute__((packed));
+        */
+        String freq = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FREQUENCY, "433775000");
+        String bw = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_BANDWIDTH, "125000");
+        String sf = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SF, "7");
+        String cr = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_CR, "6");
+        String pwr = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_POWER, "20");
+        String sync = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SYNC, "34");
+        byte crc = (byte)(_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_RADIO_CRC, true) ? 1 : 0);
+
+        ByteBuffer rawBuffer  = ByteBuffer.allocate(KISS_RADIO_CONTROL_COMMAND_SIZE);
+
+        rawBuffer.putInt(Integer.parseInt(freq))
+                .putInt(Integer.parseInt(bw))
+                .putShort(Short.parseShort(sf))
+                .putShort(Short.parseShort(cr))
+                .putShort(Short.parseShort(pwr))
+                .putShort(Short.parseShort(sync, 16))
+                .put(crc)
+                .rewind();
+
+        startKissPacket(KISS_CMD_RADIO_CONTROL);
+        for (byte b: rawBuffer.array()) {
+            sendKissByte(b);
+        }
         completeKissPacket();
     }
 
@@ -165,7 +224,7 @@ public class Kiss implements Protocol {
             case KISS_FEND:
                 if (_kissDataType == DataType.RAW) {
                     callback.onReceiveAudioFrames(Arrays.copyOf(_inputKissBuffer, _inputKissBufferPos));
-                } else if (_kissDataType == DataType.SIGNAL_LEVEL) {
+                } else if (_kissDataType == DataType.SIGNAL_LEVEL && _isExtendedMode) {
                     callback.onReceiveSignalLevel(Arrays.copyOf(_kissCmdBuffer, _kissCmdBufferPos));
                     _kissCmdBufferPos = 0;
                 }
@@ -238,7 +297,7 @@ public class Kiss implements Protocol {
         _inputKissBufferPos = 0;
     }
 
-    private void startKissPacket(byte commandCode) throws IOException {
+    private void startKissPacket(byte commandCode) {
         sendKissByte(KISS_FEND);
         sendKissByte(commandCode);
     }

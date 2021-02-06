@@ -1,5 +1,6 @@
 package com.radio.codec2talkie;
 
+import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -15,6 +16,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -81,9 +83,13 @@ public class AudioProcessor extends Thread {
     // listen timer
     private Timer _listenTimer;
 
+    private Context _context;
+
     public AudioProcessor(TransportFactory.TransportType transportType, ProtocolFactory.ProtocolType protocolType,
-                          int codec2Mode, Handler onPlayerStateChanged) throws IOException {
+                          int codec2Mode, Handler onPlayerStateChanged, Context context) throws IOException {
         _onPlayerStateChanged = onPlayerStateChanged;
+
+        _context = context;
 
         _transport  = TransportFactory.create(transportType);
         _protocol = ProtocolFactory.create(protocolType);
@@ -386,7 +392,7 @@ public class AudioProcessor extends Thread {
         _systemAudioPlayer.play();
 
         try {
-            _protocol.initialize(_transport);
+            _protocol.initialize(_transport, _context);
             startProcessorMessageHandler();
             Looper.loop();
         } catch (IOException e) {

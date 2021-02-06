@@ -344,7 +344,7 @@ public class MainActivity extends AppCompatActivity {
             codecMode += ", " + protocolType.toString();
             _textCodecMode.setText(codecMode);
 
-            _audioProcessor = new AudioProcessor(transportType, protocolType, codec2ModeId, onAudioProcessorStateChanged);
+            _audioProcessor = new AudioProcessor(transportType, protocolType, codec2ModeId, onAudioProcessorStateChanged, getApplicationContext());
             _audioProcessor.start();
         } catch (IOException e) {
             e.printStackTrace();

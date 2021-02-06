@@ -9,14 +9,14 @@
             app:key="kiss_extension_radio_frequency"
             app:title="@string/kiss_extensions_radio_frequency_title"
             app:summary="@string/kiss_extensions_radio_frequency_summary"
-            app:defaultValue="433.575">
+            app:defaultValue="433775000">
         </EditTextPreference>
 
         <EditTextPreference
             app:key="kiss_extension_radio_bandwidth"
             app:title="@string/kiss_extensions_radio_bandwidth_title"
             app:summary="@string/kiss_extensions_radio_bandwidth_summary"
-            app:defaultValue="125">
+            app:defaultValue="125000">
         </EditTextPreference>
 
         <EditTextPreference

@@ -15,7 +15,7 @@ public final class PreferenceKeys {
     public static String KISS_EXTENSIONS_RADIO_FREQUENCY = "kiss_extension_radio_frequency";
     public static String KISS_EXTENSIONS_RADIO_BANDWIDTH = "kiss_extension_radio_bandwidth";
     public static String KISS_EXTENSIONS_RADIO_POWER = "kiss_extension_radio_power";
-    public static String KISS_EXTENSIONS_RADIO_CF = "kiss_extension_radio_cf";
+    public static String KISS_EXTENSIONS_RADIO_SF = "kiss_extension_radio_sf";
     public static String KISS_EXTENSIONS_RADIO_CR = "kiss_extension_radio_cr";
     public static String KISS_EXTENSIONS_RADIO_SYNC = "kiss_extension_radio_sync";
     public static String KISS_EXTENSIONS_RADIO_CRC = "kiss_extension_radio_crc";
