@@ -45,9 +45,11 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
     - Set Codec2 mode/speed from 450 up to 3200 bps
     - Enable/disable loopback test mode
   - **KISS**
-     - Enable/disable KISS, when disabled raw codec2 audio frames will be transmitted
+     - Enable/Disable KISS, when disabled raw codec2 audio frames will be transmitted
      - Enable/Disable parrot (digirepeater) mode
      - Enable/Disable KISS non-real time buffered playback mode
+     - Enable/Disable KISS extensions for radio module control and signal levels
+     - Set radio parameters (frequency, bandwidth, spreading factor, coding rate, power, sync word, crc checksum enable/disable)
   - **TNC parameters**
     - Change default baud rate for USB port
     - Set default Bluetooth device for automatic connectivity on startup
