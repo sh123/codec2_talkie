@@ -7,6 +7,7 @@
 - [Suitable radios and modems](#suitable-radios-and-modems)
 - [Related projects](#related-projects)
 - [FAQ](#faq)
+- [KISS command extensions](#kiss-command-extensions)
 - [Planned features](#todo)
 
 # Introduction
@@ -85,7 +86,28 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
 - **Receiving audio on PC/Raspberry**
   - For raw audio frames `sudo cat /dev/ttyUSB0 | c2dec 700 - - | play -t raw -r 8000 -e signed-integer -b 16 -c 1 -`
   - For KISS encapsulated audio frames command above could be used, but instead of `cat` use https://pypi.org/project/kiss/
+
+# KISS command extensions
+KISS command extensions are used for radio module control and signal report events, command for radio control is defined as `0x10` and signal report command as `0x30`
+
+Payloads for commands are sent and expected as big endian and defined as:
+```
+  struct LoraSignalLevelEvent {
+    int16_t rssi;
+    int16_t snr;
+  } __attribute__((packed));
   
+  struct LoraControlCommand {
+    uint32_t freq;
+    uint32_t bw;
+    uint16_t sf;
+    uint16_t cr;
+    uint16_t pwr;
+    uint16_t sync;
+    uint8_t crc;
+  } __attribute__((packed));
+```
+
 # TODO
 - QSO log and non real time voicemail style communcation, where incoming transmissions are recorded, stored and could be played back later if recipient cannot reply immediately in real time
 - Investigate support for other non-KISS frame formats and protocols, switcheable from the UI
