@@ -88,7 +88,7 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
   - For KISS encapsulated audio frames command above could be used, but instead of `cat` use https://pypi.org/project/kiss/
 
 # KISS command extensions
-KISS command extensions are used for radio module control and signal report events, command for radio control is defined as `0x10` and signal report command as `0x30`
+KISS command extensions are used for radio module control and signal report events, command for radio control is defined as `0x10` and signal report command as `0x30`. Radio modules/modems can implement these commands, so they will be controllable from the application and application will be able to show signal levels on S-meter.
 
 Payloads for commands are sent and expected as big endian and defined as:
 ```
