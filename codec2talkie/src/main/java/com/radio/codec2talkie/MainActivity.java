@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_PERMISSIONS = 3;
     private final static int REQUEST_SETTINGS = 4;
 
+    private final static int S_METER_S0_VALUE_DB = -153;
+    private final static int S_METER_RANGE_DB = 100;
+
+    private final static int UV_METER_MIN_DELTA = 30;
+    private final static int UV_METER_MAX_DELTA = -10;
+
     private final String[] _requiredPermissions = new String[] {
             Manifest.permission.BLUETOOTH,
             Manifest.permission.RECORD_AUDIO
@@ -72,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView _textCodecMode;
     private TextView _textRssi;
     private ProgressBar _progressAudioLevel;
+    private ProgressBar _progressRssi;
     private Button _btnPtt;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -96,6 +104,11 @@ public class MainActivity extends AppCompatActivity {
         _progressAudioLevel.getProgressDrawable().setColorFilter(
                 new PorterDuffColorFilter(colorFromAudioLevel(AudioProcessor.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
 
+        _progressRssi = findViewById(R.id.progressRssi);
+        _progressRssi.setMax(S_METER_RANGE_DB);
+        _progressRssi.getProgressDrawable().setColorFilter(
+                new PorterDuffColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN));
+
         _btnPtt = findViewById(R.id.btnPtt);
         _btnPtt.setOnTouchListener(onBtnPttTouchListener);
 
@@ -106,6 +119,10 @@ public class MainActivity extends AppCompatActivity {
 
         _isTestMode = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_TEST_MODE, false);
 
+        FrameLayout frameRssi = findViewById(R.id.frameRssi);
+        if (!_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false)) {
+            frameRssi.setVisibility(View.GONE);
+        }
         startTransportConnection();
     }
 
@@ -156,9 +173,9 @@ public class MainActivity extends AppCompatActivity {
 
     private int colorFromAudioLevel(int audioLevel) {
         int color = Color.GREEN;
-        if (audioLevel > AudioProcessor.getAudioMaxLevel() - 10)
+        if (audioLevel > AudioProcessor.getAudioMaxLevel() + UV_METER_MAX_DELTA)
             color = Color.RED;
-        else if (audioLevel < AudioProcessor.getAudioMinLevel() + 40)
+        else if (audioLevel < AudioProcessor.getAudioMinLevel() + UV_METER_MIN_DELTA)
             color = Color.LTGRAY;
         return color;
     }
@@ -294,8 +311,12 @@ public class MainActivity extends AppCompatActivity {
                 case AudioProcessor.PROCESSOR_RX_RADIO_LEVEL:
                     if (msg.arg1 == 0) {
                         _textRssi.setText("");
+                        _progressRssi.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN));
+                        _progressRssi.setProgress(0);
                     } else {
                         _textRssi.setText(String.format(Locale.getDefault(), "%3d dBm, %2.2f", msg.arg1, (double)msg.arg2 / 100.0));
+                        _progressRssi.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN));
+                        _progressRssi.setProgress(msg.arg1 - S_METER_S0_VALUE_DB);
                     }
                     break;
                 // same progress bar is reused for rx and tx levels

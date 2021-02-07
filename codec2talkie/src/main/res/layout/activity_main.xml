@@ -79,6 +79,147 @@
         android:layout_height="11dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/frameRssi" />
+
+    <FrameLayout
+        android:id="@+id/frameRssi"
+        android:layout_width="0dp"
+        android:layout_height="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textViewRssi0"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight=".1"
+                android:textSize="12dp"
+                android:text="S0" />
+            <TextView
+                android:id="@+id/textViewRssi1"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight=".1"
+                android:textSize="12dp"
+                android:text="S1" />
+            <TextView
+                android:id="@+id/textViewRssi2"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight=".1"
+                android:textSize="12dp"
+                android:text="S2" />
+            <TextView
+                android:id="@+id/textViewRssi3"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight=".1"
+                android:textSize="12dp"
+                android:text="S3" />
+            <TextView
+                android:id="@+id/textViewRssi4"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight=".1"
+                android:textSize="12dp"
+                android:text="S4" />
+            <TextView
+                android:id="@+id/textViewRssi5"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight=".1"
+                android:textSize="12dp"
+                android:text="S5" />
+            <TextView
+                android:id="@+id/textViewRssi6"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight=".1"
+                android:textSize="12dp"
+                android:text="S6" />
+            <TextView
+                android:id="@+id/textViewRssi7"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight=".1"
+                android:textSize="12dp"
+                android:text="S7" />
+            <TextView
+                android:id="@+id/textViewRssi8"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight=".1"
+                android:textSize="12dp"
+                android:text="S8" />
+            <TextView
+                android:id="@+id/textViewRssi9"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight=".2"
+                android:textSize="12dp"
+                android:text="S9" />
+
+            <TextView
+                android:id="@+id/textViewRssi10"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight=".2"
+                android:textSize="12dp"
+                android:text="+10" />
+
+            <TextView
+                android:id="@+id/textViewRssi20"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight=".2"
+                android:textSize="12dp"
+                android:text="+20" />
+            <TextView
+                android:id="@+id/textViewRssi30"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight=".2"
+                android:textSize="12dp"
+                android:text="+30" />
+
+            <TextView
+                android:id="@+id/textViewRssi40"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight=".2"
+                android:textSize="12dp"
+                android:text="+40"/>
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressRssi"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
