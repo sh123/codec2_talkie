@@ -57,7 +57,9 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_PERMISSIONS = 3;
     private final static int REQUEST_SETTINGS = 4;
 
+    // S9 level at -93 dBm as per VHF Managers Handbook
     private final static int S_METER_S0_VALUE_DB = -153;
+    // from S0 up to S9+40
     private final static int S_METER_RANGE_DB = 100;
 
     private final static int UV_METER_MIN_DELTA = 30;
