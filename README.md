@@ -95,7 +95,7 @@ KISS command extensions are used for radio module control and signal report even
 Payloads for commands are sent and expected as big endian and defined as:
 ```
   // KISS SetHardware 6
-  struct ControlCommand {
+  struct SetHardware {
     uint32_t freq;
     uint32_t bw;
     uint16_t sf;
@@ -106,7 +106,7 @@ Payloads for commands are sent and expected as big endian and defined as:
   } __attribute__((packed));
   
   // KISS command 7
-  struct SignalLevelEvent {
+  struct SignalReport {
     int16_t rssi;
     int16_t snr;  // snr * 100
   } __attribute__((packed));
