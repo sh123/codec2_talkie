@@ -94,12 +94,12 @@ KISS command extensions are used for radio module control and signal report even
 
 Payloads for commands are sent and expected as big endian and defined as:
 ```
-  struct LoraSignalLevelEvent {
+  struct SignalLevelEvent {
     int16_t rssi;
-    int16_t snr;
+    int16_t snr;  // snr * 100
   } __attribute__((packed));
   
-  struct LoraControlCommand {
+  struct ControlCommand {
     uint32_t freq;
     uint32_t bw;
     uint16_t sf;
