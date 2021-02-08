@@ -76,6 +76,7 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
 - Fetched with gradle as dependency:
   - Android USB serial: https://github.com/mik3y/usb-serial-for-android
 - Other interesting projects:
+  - ESP32 LoRa APRS modem (used with this application for testing): https://github.com/sh123/esp32_loraprs
   - iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
 
 # FAQ
