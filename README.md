@@ -18,13 +18,13 @@
 
 This minimalistic Android application is a Walkie-Talkie style digital voice frontend for your radio, which uses open source [Codec2](https://github.com/drowe67/codec2) for speech audio frame encoding/decoding. 
 
+It is mainly intended for DV experimentation with ultra low cost (under 10$) radio modems (such as LoRa), but could also be used with custom modems + external transceivers or as a test harness for Codec2 frames generation and their playback.
+
 It connects to your radio KISS Bluetooth/USB modem, records speech from the phone microphone on transmit, encodes audio into codec2 format, encapsulates into KISS frames and sends to your modem. 
 
 On receive, modem sends KISS packets to the phone with codec2 speech, application decodes codec2 frames and plays them through phone speaker.
 
 It does not deal with radio management, modulation, etc, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK, FreeDV or any other modulation scheme. Radio just needs to expose KISS Bluetooth interface for speech frames. 
-
-It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa), but could also be used with custom modems + external transceivers or as experimental source of codec2 frames and their playback.
 
 # Requirements
 - Android 6.0 (API 23) or higher
@@ -38,7 +38,8 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
 - **Bluetooth connectivity** on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from Android Bluetooth Settings, default Bluetooth device could be set from Preferences
 - **Voice codec2 mode selection**, which allows you to select various codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends as codec2 mode negotiation between clients is not implemented at the moment
 - **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality, could be enabled or disabled from Preferences, this mode is activated if no USB or Bluetooth connection were made
-- **Voice level indicators**, which display levels of transmitted and received audio
+- **Voice level VU indicator**, display auido level on transmit or receive
+- **S-meter**, displayed only when KISS extensions are enabled and modem is able to send signal level information
 - **Parrot mode**, received voice will be digirepated in addition to playback through the speaker
 - **KISS buffered mode**, non-real time, playback will start only after all speech is received, use when modem bit rate is lower than codec2 bit rate to avoid gaps during playback at the cost of longer receiving delay before playback
 - **Preferences**, allow to modify default parameters
@@ -75,6 +76,7 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
 - Fetched with gradle as dependency:
   - Android USB serial: https://github.com/mik3y/usb-serial-for-android
 - Other interesting projects:
+  - ESP32 LoRa APRS modem (used with this application for testing): https://github.com/sh123/esp32_loraprs
   - iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
 
 # FAQ
@@ -88,16 +90,12 @@ It is mainly intended for ultra low cost (under 10$) radio modems (such as LoRa)
   - For KISS encapsulated audio frames command above could be used, but instead of `cat` use https://pypi.org/project/kiss/
 
 # KISS command extensions
-KISS command extensions are used for radio module control and signal report events, command for radio control is defined as `0x10` and signal report command as `0x30`. Radio modules/modems can implement these commands, so they will be controllable from the application and application will be able to show signal levels on S-meter.
+KISS command extensions are used for radio module control and signal report events on port 0, command for radio control is defined as 6 (KISS SetHardware) and signal report command as 7. Radio modules/modems can implement these commands, so they will be controllable from the application and application will be able to show signal levels on S-meter.
 
 Payloads for commands are sent and expected as big endian and defined as:
 ```
-  struct LoraSignalLevelEvent {
-    int16_t rssi;
-    int16_t snr;
-  } __attribute__((packed));
-  
-  struct LoraControlCommand {
+  // KISS SetHardware 6
+  struct SetHardware {
     uint32_t freq;
     uint32_t bw;
     uint16_t sf;
@@ -105,6 +103,12 @@ Payloads for commands are sent and expected as big endian and defined as:
     uint16_t pwr;
     uint16_t sync;
     uint8_t crc;
+  } __attribute__((packed));
+  
+  // KISS command 7
+  struct SignalReport {
+    int16_t rssi;
+    int16_t snr;  // snr * 100
   } __attribute__((packed));
 ```
 
