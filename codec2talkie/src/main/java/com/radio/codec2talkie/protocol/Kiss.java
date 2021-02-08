@@ -29,13 +29,14 @@ public class Kiss implements Protocol {
     private final byte KISS_TFEND = (byte)0xdc;
     private final byte KISS_TFESC = (byte)0xdd;
 
+    // only port 0 is supported
     private final byte KISS_CMD_DATA = (byte)0x00;
     private final byte KISS_CMD_TX_DELAY = (byte)0x01;
     private final byte KISS_CMD_P = (byte)0x02;
     private final byte KISS_CMD_SLOT_TIME = (byte)0x03;
     private final byte KISS_CMD_TX_TAIL = (byte)0x04;
-    private final byte KISS_CMD_RADIO_CONTROL = (byte)0x10;
-    private final byte KISS_CMD_SIGNAL_LEVEL = (byte)0x30;
+    private final byte KISS_CMD_SET_HARDWARE = (byte)0x06;
+    private final byte KISS_CMD_SIGNAL_REPORT = (byte)0x07;
     private final byte KISS_CMD_NOCMD = (byte)0x80;
 
     private final byte CSMA_PERSISTENCE = (byte)0xff;
@@ -53,7 +54,7 @@ public class Kiss implements Protocol {
 
     private enum DataType {
         RAW,
-        SIGNAL_LEVEL
+        SIGNAL_REPORT
     };
 
     private DataType _kissDataType = DataType.RAW;
@@ -157,7 +158,7 @@ public class Kiss implements Protocol {
                 .put(crc)
                 .rewind();
 
-        startKissPacket(KISS_CMD_RADIO_CONTROL);
+        startKissPacket(KISS_CMD_SET_HARDWARE);
         for (byte b: rawBuffer.array()) {
             sendKissByte(b);
         }
@@ -202,9 +203,9 @@ public class Kiss implements Protocol {
                 _kissState = State.GET_DATA;
                 _kissDataType = DataType.RAW;
                 break;
-            case KISS_CMD_SIGNAL_LEVEL:
+            case KISS_CMD_SIGNAL_REPORT:
                 _kissState = State.GET_DATA;
-                _kissDataType = DataType.SIGNAL_LEVEL;
+                _kissDataType = DataType.SIGNAL_REPORT;
                 _kissCmdBufferPos = 0;
                 break;
             case KISS_FEND:
@@ -224,7 +225,7 @@ public class Kiss implements Protocol {
             case KISS_FEND:
                 if (_kissDataType == DataType.RAW) {
                     callback.onReceiveAudioFrames(Arrays.copyOf(_inputKissBuffer, _inputKissBufferPos));
-                } else if (_kissDataType == DataType.SIGNAL_LEVEL && _isExtendedMode) {
+                } else if (_kissDataType == DataType.SIGNAL_REPORT && _isExtendedMode) {
                     callback.onReceiveSignalLevel(Arrays.copyOf(_kissCmdBuffer, _kissCmdBufferPos));
                     _kissCmdBufferPos = 0;
                 }
@@ -233,7 +234,7 @@ public class Kiss implements Protocol {
             default:
                 if (_kissDataType == DataType.RAW) {
                     receiveFrameByte(b);
-                } else if (_kissDataType == DataType.SIGNAL_LEVEL) {
+                } else if (_kissDataType == DataType.SIGNAL_REPORT) {
                     _kissCmdBuffer[_kissCmdBufferPos++] = b;
                 }
                 break;
