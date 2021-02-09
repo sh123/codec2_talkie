@@ -75,8 +75,9 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
   - Android Codec2 wrapper code: https://github.com/UstadMobile/Codec2-Android
 - Fetched with gradle as dependency:
   - Android USB serial: https://github.com/mik3y/usb-serial-for-android
-- Other interesting projects:
+- Other interesting/related projects:
   - ESP32 LoRa APRS modem (used with this application for testing): https://github.com/sh123/esp32_loraprs
+  - Version adopted for M17 protocol usage: https://github.com/mobilinkd/m17-kiss-ht
   - iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
 
 # FAQ
