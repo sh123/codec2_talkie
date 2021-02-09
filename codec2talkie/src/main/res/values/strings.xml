@@ -73,7 +73,7 @@
     <string name="kiss_extensions_radio_sf_summary">Set spreading factor, 6–12 for LoRa</string>
 
     <string name="kiss_extensions_radio_cr_title">Coding Rate (5–9)</string>
-    <string name="kiss_extensions_radio_cr_summary">Set spreading factor, 5–9 for LoRa</string>
+    <string name="kiss_extensions_radio_cr_summary">Set coding rate, 5–9 for LoRa</string>
 
     <string name="kiss_extensions_radio_sync_title">Sync Word (HEX)</string>
     <string name="kiss_extensions_radio_sync_summary">Set packet sync word as hex value</string>
