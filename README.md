@@ -18,7 +18,8 @@
 
 This minimalistic Android application is a Walkie-Talkie style digital voice frontend for your radio, which uses open source [Codec2](https://github.com/drowe67/codec2) for speech audio frame encoding/decoding. 
 
-It is mainly intended for DV experimentation with ultra low cost (under 10$) radio modems (such as LoRa), but could also be used with custom modems + external transceivers or as a test harness for Codec2 frames generation and their playback.
+It is mainly intended for DV experimentation with ultra low cost (under 10$) radio modems, such as LoRa and board varialts with built-in LoRa T-Beam,
+LoPy, TTGO and so on, but could also be used with custom modems + external transceivers or as a test harness for Codec2 frames generation and their playback.
 
 It connects to your radio KISS Bluetooth/USB modem, records speech from the phone microphone on transmit, encodes audio into codec2 format, encapsulates into KISS frames and sends to your modem. 
 
