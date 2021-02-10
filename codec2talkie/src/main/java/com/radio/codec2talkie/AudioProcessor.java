@@ -46,7 +46,7 @@ public class AudioProcessor extends Thread {
     public static final int PROCESSOR_PROCESS = 11;
     public static final int PROCESSOR_QUIT = 12;
 
-    private static int AUDIO_MIN_LEVEL = -60;
+    private static int AUDIO_MIN_LEVEL = -70;
     private static int AUDIO_MAX_LEVEL = 0;
     private final int AUDIO_SAMPLE_SIZE = 8000;
 
@@ -106,7 +106,7 @@ public class AudioProcessor extends Thread {
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
         _systemAudioRecorder = new AudioRecord(
-                MediaRecorder.AudioSource.MIC,
+                MediaRecorder.AudioSource.VOICE_COMMUNICATION,
                 AUDIO_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,

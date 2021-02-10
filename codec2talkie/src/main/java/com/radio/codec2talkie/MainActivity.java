@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int S_METER_RANGE_DB = 100;
 
     private final static int UV_METER_MIN_DELTA = 30;
-    private final static int UV_METER_MAX_DELTA = -10;
+    private final static int UV_METER_MAX_DELTA = -20;
 
     private final String[] _requiredPermissions = new String[] {
             Manifest.permission.BLUETOOTH,
@@ -228,28 +228,48 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (!_btnPtt.isPressed()) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_HEADSETHOOK:
-                case KeyEvent.KEYCODE_TV_DATA_SERVICE:
+        switch (keyCode) {
+            // headset hardware ptt cannot be used for long press
+            case KeyEvent.KEYCODE_HEADSETHOOK:
+                if (_btnPtt.isPressed()) {
+                    _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                            SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
+                } else {
+                    _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                            SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
+                }
+                return true;
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                if (_sharedPreferences.getBoolean(PreferenceKeys.CODEC2_VOLUME_PTT, false)) {
                     _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
                             SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
                     return true;
-            }
+                }
+                break;
+            case KeyEvent.KEYCODE_TV_DATA_SERVICE:
+                _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                        SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
+                return true;
         }
         return super.onKeyDown(keyCode, event);
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if (_btnPtt.isPressed()) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_HEADSETHOOK:
-                case KeyEvent.KEYCODE_TV_DATA_SERVICE:
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                if (_sharedPreferences.getBoolean(PreferenceKeys.CODEC2_VOLUME_PTT, false)) {
                     _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
                             SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
                     return true;
-            }
+                }
+                break;
+            case KeyEvent.KEYCODE_TV_DATA_SERVICE:
+                _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                        SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
+                return true;
         }
         return super.onKeyUp(keyCode, event);
     }

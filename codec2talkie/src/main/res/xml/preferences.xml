@@ -20,6 +20,13 @@
             app:summary="@string/codec2_test_mode_summary"
             app:defaultValue="false">
         </SwitchPreference>
+
+        <SwitchPreference
+            app:key="codec2_volume_ptt"
+            app:title="@string/codec2_volume_ptt_title"
+            app:summary="@string/codec2_volume_ptt_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
     </PreferenceCategory>
 
     <PreferenceCategory
