@@ -120,7 +120,7 @@ Payloads for commands are sent and expected as big endian and defined as:
 # TODO
 - QSO log and non real time voicemail style communcation, where incoming transmissions are recorded, stored and could be played back later if recipient cannot reply immediately in real time
 - Investigate support for other non-KISS frame formats and protocols, switcheable from the UI
-  - [M17 Project](https://m17project.org) protocol support, including possible gating to reflectors on modem side
+  - [M17 Project](https://m17project.org) protocol support, including possible gating to [M17 reflectors](https://m17project.org/reflector/) on modem side
   - AX.25 packets over existing KISS, voice over AX.25 (VoAX.25).
 - Support for non-KISS modems control if needed
   - HC-12 module control by using AT commands
