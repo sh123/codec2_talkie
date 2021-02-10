@@ -6,7 +6,6 @@ public final class PreferenceKeys {
 
     public static String CODEC2_MODE = "codec2_mode";
     public static String CODEC2_TEST_MODE = "codec2_test_mode";
-    public static String CODEC2_VOLUME_PTT = "codec2_volume_ptt";
 
     public static String KISS_ENABLED = "kiss_enable";
     public static String KISS_BUFFERED_ENABLED = "kiss_buffered_enable";
@@ -20,4 +19,7 @@ public final class PreferenceKeys {
     public static String KISS_EXTENSIONS_RADIO_CR = "kiss_extension_radio_cr";
     public static String KISS_EXTENSIONS_RADIO_SYNC = "kiss_extension_radio_sync";
     public static String KISS_EXTENSIONS_RADIO_CRC = "kiss_extension_radio_crc";
+
+    public static String APP_VOLUME_PTT = "app_volume_ptt";
+    public static String APP_KEEP_SCREEN_ON = "app_keep_screen_on";
 }

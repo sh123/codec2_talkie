@@ -23,12 +23,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
@@ -125,6 +125,10 @@ public class MainActivity extends AppCompatActivity {
         FrameLayout frameRssi = findViewById(R.id.frameRssi);
         if (!_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false)) {
             frameRssi.setVisibility(View.GONE);
+        }
+
+        if (_sharedPreferences.getBoolean(PreferenceKeys.APP_KEEP_SCREEN_ON, false)) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
         startTransportConnection();
     }
@@ -241,7 +245,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case KeyEvent.KEYCODE_VOLUME_DOWN:
             case KeyEvent.KEYCODE_VOLUME_UP:
-                if (_sharedPreferences.getBoolean(PreferenceKeys.CODEC2_VOLUME_PTT, false)) {
+                if (_sharedPreferences.getBoolean(PreferenceKeys.APP_VOLUME_PTT, false)) {
                     _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
                             SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
                     return true;
@@ -260,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
             case KeyEvent.KEYCODE_VOLUME_UP:
-                if (_sharedPreferences.getBoolean(PreferenceKeys.CODEC2_VOLUME_PTT, false)) {
+                if (_sharedPreferences.getBoolean(PreferenceKeys.APP_VOLUME_PTT, false)) {
                     _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
                             SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
                     return true;

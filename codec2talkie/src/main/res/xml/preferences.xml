@@ -2,6 +2,25 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
+        app:key="app_category"
+        app:title="@string/app_category_title">
+
+        <SwitchPreference
+            app:key="app_volume_ptt"
+            app:title="@string/app_volume_ptt_title"
+            app:summary="@string/app_volume_ptt_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <SwitchPreference
+            app:key="app_keep_screen_on"
+            app:title="@string/app_keep_screen_on_title"
+            app:summary="@string/app_keep_screen_on_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+    </PreferenceCategory>
+
+    <PreferenceCategory
         app:key="codec2_category"
         app:title="@string/codec2_category_title">
 
@@ -21,12 +40,30 @@
             app:defaultValue="false">
         </SwitchPreference>
 
-        <SwitchPreference
-            app:key="codec2_volume_ptt"
-            app:title="@string/codec2_volume_ptt_title"
-            app:summary="@string/codec2_volume_ptt_summary"
-            app:defaultValue="false">
-        </SwitchPreference>
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="ports_category"
+        app:title="@string/ports_category_title">
+
+        <Preference
+            app:key="ports_bt_client_name"
+            app:title="@string/usb_bt_client_name_title"
+            app:summary="@string/usb_bt_client_name_summary">
+            <intent
+                android:targetPackage="com.radio.codec2talkie"
+                android:targetClass="com.radio.codec2talkie.settings.BluetoothSettingsActivity">
+            </intent>
+        </Preference>
+
+        <ListPreference
+            app:key="ports_usb_serial_speed"
+            app:title="@string/usb_serial_speed_title"
+            app:entries="@array/usb_serial_speed"
+            app:entryValues="@array/usb_serial_speed"
+            app:defaultValue="115200"
+            app:summary="%s">
+        </ListPreference>
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -74,27 +111,4 @@
 
     </PreferenceCategory>
 
-    <PreferenceCategory
-        app:key="ports_category"
-        app:title="@string/ports_category_title">
-
-        <Preference
-            app:key="ports_bt_client_name"
-            app:title="@string/usb_bt_client_name_title"
-            app:summary="@string/usb_bt_client_name_summary">
-            <intent
-                android:targetPackage="com.radio.codec2talkie"
-                android:targetClass="com.radio.codec2talkie.settings.BluetoothSettingsActivity">
-            </intent>
-        </Preference>
-
-        <ListPreference
-            app:key="ports_usb_serial_speed"
-            app:title="@string/usb_serial_speed_title"
-            app:entries="@array/usb_serial_speed"
-            app:entryValues="@array/usb_serial_speed"
-            app:defaultValue="115200"
-            app:summary="%s">
-        </ListPreference>
-    </PreferenceCategory>
 </PreferenceScreen>

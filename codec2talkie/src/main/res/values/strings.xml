@@ -36,8 +36,6 @@
         <item>MODE_2400=1</item>
         <item>MODE_3200=0</item>
     </string-array>
-    <string name="codec2_volume_ptt_title">Use Volume keys for PTT</string>
-    <string name="codec2_volume_ptt_summary">Volume up/down keys will be used for PTT</string>
 
     <string name="main_status_loopback_test">LOOPBACK TEST</string>
     <string name="main_status_stop">STOP</string>
@@ -82,4 +80,13 @@
 
     <string name="kiss_extensions_radio_crc_title">Enable CRC check</string>
     <string name="kiss_extensions_radio_crc_summary">Enable packet CRC check</string>
+
+    <string name="app_volume_ptt_title">Use Volume keys for PTT</string>
+    <string name="app_volume_ptt_summary">Volume up/down keys will be used for PTT</string>
+
+    <string name="app_category_title">Application Settings</string>
+
+    <string name="app_keep_screen_on_title">Keep screen ON</string>
+    <string name="app_keep_screen_on_summary">Prevent screen switching off when app is active</string>
+
 </resources>
