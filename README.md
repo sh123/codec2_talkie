@@ -18,7 +18,7 @@
 
 This minimalistic Android application is a Walkie-Talkie style digital voice frontend for your radio, which uses open source [Codec2](https://github.com/drowe67/codec2) for speech audio frame encoding/decoding. 
 
-It is mainly intended for DV experimentation with ultra low cost (under 10$) radio modems, such as LoRa and board varialts with built-in LoRa module: T-Beam,
+It is mainly intended for DV experimentation with ultra low cost 3-8$ radio modems, such as LoRa and 15-25$ esp32 board flavours with built-in LoRa module: T-Beam,
 LoPy, TTGO, Heltec and others, but could also be used with custom modems + external transceivers or as a test harness for Codec2 frames generation and their playback.
 
 ![alt text](images/tracker.jpg)
@@ -120,7 +120,7 @@ Payloads for commands are sent and expected as big endian and defined as:
 # TODO
 - QSO log and non real time voicemail style communcation, where incoming transmissions are recorded, stored and could be played back later if recipient cannot reply immediately in real time
 - Investigate support for other non-KISS frame formats and protocols, switcheable from the UI
+  - [M17 Project](https://m17project.org) protocol support, including possible gating to [M17 reflectors](https://m17project.org/reflector/) on modem side
   - AX.25 packets over existing KISS, voice over AX.25 (VoAX.25).
-  - [M17 Project](https://m17project.org) protocol support
 - Support for non-KISS modems control if needed
   - HC-12 module control by using AT commands
