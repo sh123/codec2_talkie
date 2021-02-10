@@ -35,7 +35,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 
 # Features
 - **PTT UI button**, push and talk, Codec2 speech frames will be transmitted to the modem
-- **PTT hardware button**, `KEYCODE_HEADSETHOOK` and `KEYCODE_TV_DATA SERVICE` (230 key code) hardware buttons are used for PTT (latter is used on some Android network radios)
+- **PTT hardware button**, `KEYCODE_TV_DATA SERVICE` (230 key code) hardware buttons are used for PTT (latter is used on some Android network radios), `KEYCODE_HEADSETHOOK` tx on/off on click, volume up/down buttons could be used for ptt if enabled in Preferences
 - **USB serial connectivity** (default 115200 bps, 8 data bits, 1 stop bit, no parity), just select this app after connecting to USB and it will use given connection, baud rate could be changed from Preferences
 - **Bluetooth connectivity** on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from Android Bluetooth Settings, default Bluetooth device could be set from Preferences
 - **Voice codec2 mode selection**, which allows you to select various codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends as codec2 mode negotiation between clients is not implemented at the moment
@@ -45,18 +45,21 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 - **Parrot mode**, received voice will be digirepated in addition to playback through the speaker
 - **KISS buffered mode**, non-real time, playback will start only after all speech is received, use when modem bit rate is lower than codec2 bit rate to avoid gaps during playback at the cost of longer receiving delay before playback
 - **Preferences**, allow to modify default parameters
+  - **Application Settings**
+    - Enable PTT with volume up/down buttons
+    - Keep screen ON
   - **Codec2**
     - Set Codec2 mode/speed from 450 up to 3200 bps
     - Enable/disable loopback test mode
-  - **KISS**
-     - Enable/Disable KISS, when disabled raw codec2 audio frames will be transmitted
-     - Enable/Disable parrot (digirepeater) mode
-     - Enable/Disable KISS non-real time buffered playback mode
-     - Enable/Disable KISS extensions for radio module control and signal levels (modem must support them to work correctly!)
-       - Set radio parameters (frequency, bandwidth, spreading factor, coding rate, power, sync word, crc checksum enable/disable)
   - **TNC parameters**
     - Change default baud rate for USB port
     - Set default Bluetooth device for automatic connectivity on startup
+  - **KISS**
+    - Enable/Disable KISS, when disabled raw codec2 audio frames will be transmitted
+    - Enable/Disable parrot (digirepeater) mode
+    - Enable/Disable KISS non-real time buffered playback mode
+    - Enable/Disable KISS extensions for radio module control and signal levels (modem must support them to work correctly!)
+      - Set radio parameters (frequency, bandwidth, spreading factor, coding rate, power, sync word, crc checksum enable/disable)
 
 # Suitable radios and modems
 - Tested, works:
