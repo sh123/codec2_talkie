@@ -18,7 +18,7 @@
 
 This minimalistic Android application is a Walkie-Talkie style digital voice frontend for your radio, which uses open source [Codec2](https://github.com/drowe67/codec2) for speech audio frame encoding/decoding. 
 
-It is mainly intended for DV experimentation with ultra low cost (under 10$) radio modems, such as LoRa and board varialts with built-in LoRa module: T-Beam,
+It is mainly intended for DV experimentation with ultra low cost 3-8$ radio modems, such as LoRa and 15-25$ board varialts with built-in LoRa module: T-Beam,
 LoPy, TTGO, Heltec and others, but could also be used with custom modems + external transceivers or as a test harness for Codec2 frames generation and their playback.
 
 ![alt text](images/tracker.jpg)
