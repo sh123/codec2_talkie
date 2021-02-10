@@ -83,7 +83,7 @@ public class AudioProcessor extends Thread {
     // listen timer
     private Timer _listenTimer;
 
-    private Context _context;
+    private final Context _context;
 
     public AudioProcessor(TransportFactory.TransportType transportType, ProtocolFactory.ProtocolType protocolType,
                           int codec2Mode, Handler onPlayerStateChanged, Context context) throws IOException {

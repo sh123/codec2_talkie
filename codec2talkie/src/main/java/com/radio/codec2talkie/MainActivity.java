@@ -23,6 +23,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -227,22 +228,28 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_TV_DATA_SERVICE:
-                _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                        SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
-                return true;
+        if (!_btnPtt.isPressed()) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_HEADSETHOOK:
+                case KeyEvent.KEYCODE_TV_DATA_SERVICE:
+                    _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                            SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
+                    return true;
+            }
         }
         return super.onKeyDown(keyCode, event);
     }
 
     @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_TV_DATA_SERVICE:
-                _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                        SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
-                return true;
+        if (_btnPtt.isPressed()) {
+            switch (keyCode) {
+                case KeyEvent.KEYCODE_HEADSETHOOK:
+                case KeyEvent.KEYCODE_TV_DATA_SERVICE:
+                    _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
+                            SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
+                    return true;
+            }
         }
         return super.onKeyUp(keyCode, event);
     }
