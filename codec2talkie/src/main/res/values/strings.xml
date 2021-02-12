@@ -52,7 +52,7 @@
     <string name="kiss_basic_summary">Set CSMA and TX delay/tail parameters</string>
 
     <string name="kiss_basic_p_title">CSMA persistence P</string>
-    <string name="kiss_basic_p_summary">Set CSMA persistence P (1-255)</string>
+    <string name="kiss_basic_p_summary">Set CSMA persistence P (1-254)</string>
 
     <string name="kiss_basic_slot_time_title">CSMA slot time</string>
     <string name="kiss_basic_slot_time_summary">Set CSMA slot time in tens of milliseconds (ms / 10)</string>

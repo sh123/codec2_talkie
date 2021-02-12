@@ -9,7 +9,7 @@
             app:key="kiss_basic_persistence"
             app:title="@string/kiss_basic_p_title"
             app:summary="@string/kiss_basic_p_summary"
-            app:defaultValue="255">
+            app:defaultValue="254">
         </EditTextPreference>
 s
         <EditTextPreference

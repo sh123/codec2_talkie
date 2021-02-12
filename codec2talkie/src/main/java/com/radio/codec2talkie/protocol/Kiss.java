@@ -60,10 +60,10 @@ public class Kiss implements Protocol {
     private DataType _kissDataType = DataType.RAW;
     private State _kissState = State.GET_START;
 
-    private final byte _tncCsmaPersistence;
-    private final byte _tncCsmaSlotTime;
-    private final byte _tncTxDelay;
-    private final byte _tncTxTail;
+    private byte _tncCsmaPersistence;
+    private byte _tncCsmaSlotTime;
+    private byte _tncTxDelay;
+    private byte _tncTxTail;
 
     protected final byte[] _inputRawDataBuffer;
     private final byte[] _outputKissBuffer;
@@ -87,11 +87,6 @@ public class Kiss implements Protocol {
         _outputKissBuffer = new byte[KISS_TX_FRAME_MAX_SIZE];
         _inputKissBuffer = new byte[64 * KISS_TX_FRAME_MAX_SIZE];
 
-        _tncCsmaPersistence = CSMA_PERSISTENCE;
-        _tncCsmaSlotTime = CSMA_SLOT_TIME;
-        _tncTxDelay = TX_DELAY_10MS_UNITS;
-        _tncTxTail = TX_TAIL_10MS_UNITS;
-
         _outputKissBufferPos = 0;
         _inputKissBufferPos = 0;
         _kissCmdBufferPos = 0;
@@ -105,6 +100,11 @@ public class Kiss implements Protocol {
         _context = context;
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
         _isExtendedMode = _sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false);
+
+        _tncCsmaPersistence = Byte.parseByte(_sharedPreferences.getString(PreferenceKeys.KISS_BASIC_P, String.valueOf(CSMA_PERSISTENCE)));
+        _tncCsmaSlotTime = Byte.parseByte(_sharedPreferences.getString(PreferenceKeys.KISS_BASIC_SLOT_TIME, String.valueOf(CSMA_SLOT_TIME)));
+        _tncTxDelay = Byte.parseByte(_sharedPreferences.getString(PreferenceKeys.KISS_BASIC_TX_DELAY, String.valueOf(TX_DELAY_10MS_UNITS)));
+        _tncTxTail = Byte.parseByte(_sharedPreferences.getString(PreferenceKeys.KISS_BASIC_TX_TAIL, String.valueOf(TX_TAIL_10MS_UNITS)));
 
         startKissPacket(KISS_CMD_P);
         sendKissByte(_tncCsmaPersistence);
