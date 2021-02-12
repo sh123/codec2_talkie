@@ -30,4 +30,12 @@ public class SettingsActivity extends AppCompatActivity
             setPreferencesFromResource(R.xml.preferences_radio, null);
         }
     }
+
+    public static class SettingsKissBasicFragment extends PreferenceFragmentCompat
+    {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences_kiss, null);
+        }
+    }
 }

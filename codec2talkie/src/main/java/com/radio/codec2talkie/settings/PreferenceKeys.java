@@ -11,6 +11,11 @@ public final class PreferenceKeys {
     public static String KISS_BUFFERED_ENABLED = "kiss_buffered_enable";
     public static String KISS_PARROT = "kiss_parrot_enable";
 
+    public static String KISS_BASIC_P = "kiss_basic_persistence";
+    public static String KISS_BASIC_SLOT_TIME = "kiss_basic_slot_time";
+    public static String KISS_BASIC_TX_DELAY = "kiss_basic_tx_delay";
+    public static String KISS_BASIC_TX_TAIL = "kiss_basic_tx_tail";
+
     public static String KISS_EXTENSIONS_ENABLED = "kiss_extensions_enable";
     public static String KISS_EXTENSIONS_RADIO_FREQUENCY = "kiss_extension_radio_frequency";
     public static String KISS_EXTENSIONS_RADIO_BANDWIDTH = "kiss_extension_radio_bandwidth";

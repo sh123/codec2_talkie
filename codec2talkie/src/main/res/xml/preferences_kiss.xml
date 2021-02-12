@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        app:key="kiss_basic_category"
+        app:title="@string/kiss_basic_title">
+
+        <EditTextPreference
+            app:key="kiss_basic_persistence"
+            app:title="@string/kiss_basic_p_title"
+            app:summary="@string/kiss_basic_p_summary"
+            app:defaultValue="255">
+        </EditTextPreference>
+s
+        <EditTextPreference
+            app:key="kiss_basic_slot_time"
+            app:title="@string/kiss_basic_slot_time_title"
+            app:summary="@string/kiss_basic_slot_time_summary"
+            app:defaultValue="0">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="kiss_basic_tx_delay"
+            app:title="@string/kiss_basic_tx_delay_title"
+            app:summary="@string/kiss_basic_tx_delay_summary"
+            app:defaultValue="25">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="kiss_basic_tx_tail"
+            app:title="@string/kiss_basic_tx_tail_title"
+            app:summary="@string/kiss_basic_tx_tail_summary"
+            app:defaultValue="50">
+        </EditTextPreference>
+
+    </PreferenceCategory>
+</PreferenceScreen>

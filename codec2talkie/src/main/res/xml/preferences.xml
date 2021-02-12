@@ -77,6 +77,14 @@
             app:defaultValue="true">
         </SwitchPreference>
 
+        <Preference
+            android:key="pref_kiss_basic"
+            android:title="@string/kiss_basic_title"
+            android:summary="@string/kiss_basic_summary"
+            app:fragment="com.radio.codec2talkie.settings.SettingsActivity$SettingsKissBasicFragment"
+            app:dependency="kiss_enable">
+        </Preference>
+
         <SwitchPreference
             app:key="kiss_buffered_enable"
             app:title="@string/kiss_buffered_enable_title"
