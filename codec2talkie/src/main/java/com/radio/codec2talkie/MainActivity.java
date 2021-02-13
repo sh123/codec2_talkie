@@ -135,10 +135,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    private void stopRunning() {
         if (_audioProcessor != null) {
             _audioProcessor.stopRunning();
         }
-        super.onDestroy();
+        finish();
     }
 
     private void startTransportConnection() {
@@ -224,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         else if (itemId == R.id.exit) {
-            finish();
+            stopRunning();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -312,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
                 startUsbConnectActivity();
             } else {
                 Toast.makeText(MainActivity.this, "Permissions Denied", Toast.LENGTH_SHORT).show();
-                finish();
+                stopRunning();
             }
         }
     }
@@ -430,7 +434,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         else if (requestCode == REQUEST_SETTINGS) {
-            finish();
+            stopRunning();
             startActivity(getIntent());
         }
     }
