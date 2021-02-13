@@ -56,6 +56,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
     - Set default Bluetooth device for automatic connectivity on startup
   - **KISS**
     - Enable/Disable KISS, when disabled raw codec2 audio frames will be transmitted
+    - Set basic KISS parmaters (P persistence, Slot Time, TX delay, TX tail)
     - Enable/Disable parrot (digirepeater) mode
     - Enable/Disable KISS non-real time buffered playback mode
     - Enable/Disable KISS extensions for radio module control and signal levels (modem must support them to work correctly!)
