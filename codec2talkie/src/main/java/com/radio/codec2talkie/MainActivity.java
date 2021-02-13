@@ -23,6 +23,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,6 +41,7 @@ import com.radio.codec2talkie.connect.SocketHandler;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
+import com.radio.codec2talkie.tools.RadioTools;
 import com.radio.codec2talkie.transport.TransportFactory;
 import com.radio.codec2talkie.connect.UsbConnectActivity;
 import com.radio.codec2talkie.connect.UsbPortHandler;
@@ -388,19 +390,42 @@ public class MainActivity extends AppCompatActivity {
         return protocolType;
     }
 
+    private int getRadioSpeed() {
+        int resultBps = 0;
+        try {
+            if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false)) {
+                int bw = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_BANDWIDTH, ""));
+                int sf = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SF, ""));
+                int cr = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_CR, ""));
+
+                resultBps = RadioTools.calculateLoraSpeedBps(bw, sf, cr);
+                Log.e(TAG, String.valueOf(resultBps));
+            }
+        } catch (NumberFormatException|ArithmeticException e) {
+            e.printStackTrace();
+        }
+        return resultBps;
+    }
+
     private void startAudioProcessing(TransportFactory.TransportType transportType) {
         try {
             // code mode
             String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
             String[] codecNameCodecId = codec2ModeName.split("=");
-            String codecMode = codecNameCodecId[0];
+            String[] modeSpeed = codecNameCodecId[0].split("_");
+            String speedModeInfo = "C2: " + modeSpeed[1];
             int codec2ModeId = Integer.parseInt(codecNameCodecId[1]);
 
             ProtocolFactory.ProtocolType protocolType = getRequiredProtocolType();
             _btnPtt.setEnabled(protocolType != ProtocolFactory.ProtocolType.KISS_PARROT);
 
-            codecMode += ", " + protocolType.toString();
-            _textCodecMode.setText(codecMode);
+            int radioSpeedBps = getRadioSpeed();
+            if (radioSpeedBps > 0 && radioSpeedBps < 128000) {
+                speedModeInfo = "RF: " + radioSpeedBps + ", " + speedModeInfo;
+            }
+
+            speedModeInfo += ", " + protocolType.toString();
+            _textCodecMode.setText(speedModeInfo);
 
             _audioProcessor = new AudioProcessor(transportType, protocolType, codec2ModeId, onAudioProcessorStateChanged, getApplicationContext());
             _audioProcessor.start();
