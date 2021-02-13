@@ -22,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.settings.PreferenceKeys;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -53,7 +54,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bluetooth_connect);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        _btDefaultName = sharedPreferences.getString("ports_bt_client_name", null);
+        _btDefaultName = sharedPreferences.getString(PreferenceKeys.PORTS_BT_CLIENT_NAME, null);
 
         _btAdapter = BluetoothAdapter.getDefaultAdapter();
         _btArrayAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item);

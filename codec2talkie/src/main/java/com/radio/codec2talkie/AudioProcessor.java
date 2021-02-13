@@ -160,9 +160,11 @@ public class AudioProcessor extends Thread {
     }
 
     public void stopRunning() {
-        Message msg = new Message();
-        msg.what = PROCESSOR_QUIT;
-        _onMessageReceived.sendMessage(msg);
+        if (_currentStatus != PROCESSOR_DISCONNECTED) {
+            Message msg = new Message();
+            msg.what = PROCESSOR_QUIT;
+            _onMessageReceived.sendMessage(msg);
+        }
     }
 
     private void sendStatusUpdate(int newStatus) {
@@ -399,7 +401,7 @@ public class AudioProcessor extends Thread {
             e.printStackTrace();
         }
 
-        sendStatusUpdate(PROCESSOR_DISCONNECTED);
         cleanup();
+        sendStatusUpdate(PROCESSOR_DISCONNECTED);
     }
 }
