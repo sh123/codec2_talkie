@@ -392,6 +392,7 @@ public class MainActivity extends AppCompatActivity {
 
     private int getRadioSpeed() {
         int resultBps = 0;
+        int maxSpeedBps = 128000;
         try {
             if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false)) {
                 int bw = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_BANDWIDTH, ""));
@@ -399,20 +400,21 @@ public class MainActivity extends AppCompatActivity {
                 int cr = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_CR, ""));
 
                 resultBps = RadioTools.calculateLoraSpeedBps(bw, sf, cr);
-                Log.e(TAG, String.valueOf(resultBps));
             }
         } catch (NumberFormatException|ArithmeticException e) {
             e.printStackTrace();
         }
-        return resultBps;
+        return (resultBps > 0 && resultBps <= maxSpeedBps) ? resultBps : 0;
     }
 
     private void startAudioProcessing(TransportFactory.TransportType transportType) {
         try {
             // code mode
             String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
+
             String[] codecNameCodecId = codec2ModeName.split("=");
             String[] modeSpeed = codecNameCodecId[0].split("_");
+
             String speedModeInfo = "C2: " + modeSpeed[1];
             int codec2ModeId = Integer.parseInt(codecNameCodecId[1]);
 
@@ -420,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
             _btnPtt.setEnabled(protocolType != ProtocolFactory.ProtocolType.KISS_PARROT);
 
             int radioSpeedBps = getRadioSpeed();
-            if (radioSpeedBps > 0 && radioSpeedBps < 128000) {
+            if (radioSpeedBps > 0) {
                 speedModeInfo = "RF: " + radioSpeedBps + ", " + speedModeInfo;
             }
 

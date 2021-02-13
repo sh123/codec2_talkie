@@ -67,7 +67,7 @@
     <string name="kiss_parrot_enable_summary">Received packets will be transmitted back, digirepeated</string>
 
     <string name="kiss_buffered_enable_title">Enable Playback Buffering</string>
-    <string name="kiss_buffered_enable_summary">Use when your modem data rate is less than codec2 bitrate</string>
+    <string name="kiss_buffered_enable_summary">Use when your modem data rate is less than Codec2 bitrate</string>
 
     <string name="kiss_extensions_enable_title">Enable Extensions</string>
     <string name="kiss_extensions_enable_summary">Enable radio control and signal level reports</string>
