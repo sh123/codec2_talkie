@@ -23,7 +23,7 @@ LoPy, TTGO, Heltec and others, but could also be used with custom modems + exter
 
 ![alt text](images/tracker.jpg)
 
-It connects to your radio KISS Bluetooth/USB modem, records speech from the phone microphone on transmit, encodes audio into codec2 format, encapsulates into KISS frames and sends to your modem. 
+Application connects to your radio KISS Bluetooth/USB modem, records speech from the phone microphone on transmit, encodes audio into codec2 format, encapsulates into KISS frames and sends to your modem. 
 On receive, modem sends KISS packets to the phone with codec2 speech, application decodes codec2 frames and plays them through phone speaker.
 
 It does not deal with radio management, modulation, etc, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK, FreeDV or any other modulation scheme. Radio just needs to expose KISS Bluetooth interface for speech frames. 
@@ -56,6 +56,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
     - Set default Bluetooth device for automatic connectivity on startup
   - **KISS**
     - Enable/Disable KISS, when disabled raw codec2 audio frames will be transmitted
+    - Set basic KISS parmaters (P persistence, Slot Time, TX delay, TX tail)
     - Enable/Disable parrot (digirepeater) mode
     - Enable/Disable KISS non-real time buffered playback mode
     - Enable/Disable KISS extensions for radio module control and signal levels (modem must support them to work correctly!)
@@ -80,12 +81,14 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
   - Android Codec2 wrapper code: https://github.com/UstadMobile/Codec2-Android
 - Fetched with gradle as dependency:
   - Android USB serial: https://github.com/mik3y/usb-serial-for-android
-- Other interesting/related projects:
+- Other related projects:
   - ESP32 LoRa APRS modem (used with this application for testing): https://github.com/sh123/esp32_loraprs
   - Version adopted for M17 protocol usage: https://github.com/mobilinkd/m17-kiss-ht
   - iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
   - Minimal Arduino LoRa KISS modem: https://github.com/sh123/lora_arduino_kiss_modem
   - Minimal Arduino NRF24 KISS modem: https://github.com/sh123/nrf24l01_arduino_kiss_modem
+- Other interesting projects:
+  - LoRa mesh GPS communicator: https://github.com/meshtastic/Meshtastic-device
 
 # FAQ
 - **Gaps in received audio**, indicator often changes between RX/IDLE on the receiver side when sender and recipient are close by then
