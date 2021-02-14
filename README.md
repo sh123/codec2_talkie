@@ -130,3 +130,4 @@ Payloads for commands are sent and expected as big endian and defined as:
   - AX.25 packets over existing KISS, voice over AX.25 (VoAX.25).
 - Support for non-KISS modems control if needed
   - HC-12 module control by using AT commands
+  - E32-433T30D, should be pre-configured, but can be controlled with AT commands or not?
