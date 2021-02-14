@@ -60,11 +60,6 @@ public class Kiss implements Protocol {
     private DataType _kissDataType = DataType.RAW;
     private State _kissState = State.GET_START;
 
-    private byte _tncCsmaPersistence;
-    private byte _tncCsmaSlotTime;
-    private byte _tncTxDelay;
-    private byte _tncTxTail;
-
     protected final byte[] _inputRawDataBuffer;
     private final byte[] _outputKissBuffer;
     private final byte[] _inputKissBuffer;
@@ -76,7 +71,6 @@ public class Kiss implements Protocol {
     private int _inputKissBufferPos;
     private int _kissCmdBufferPos;
 
-    private Context _context;
     private SharedPreferences _sharedPreferences;
     private boolean _isExtendedMode;
 
@@ -97,29 +91,28 @@ public class Kiss implements Protocol {
     public void initialize(Transport transport, Context context) throws IOException {
         _transport = transport;
 
-        _context = context;
-        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
+        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         _isExtendedMode = _sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false);
 
-        _tncCsmaPersistence = (byte)Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_BASIC_P, String.valueOf(CSMA_PERSISTENCE)));
-        _tncCsmaSlotTime = (byte)Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_BASIC_SLOT_TIME, String.valueOf(CSMA_SLOT_TIME)));
-        _tncTxDelay = (byte)Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_BASIC_TX_DELAY, String.valueOf(TX_DELAY_10MS_UNITS)));
-        _tncTxTail = (byte)Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_BASIC_TX_TAIL, String.valueOf(TX_TAIL_10MS_UNITS)));
+        byte tncCsmaPersistence = (byte) Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_BASIC_P, String.valueOf(CSMA_PERSISTENCE)));
+        byte tncCsmaSlotTime = (byte) Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_BASIC_SLOT_TIME, String.valueOf(CSMA_SLOT_TIME)));
+        byte tncTxDelay = (byte) Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_BASIC_TX_DELAY, String.valueOf(TX_DELAY_10MS_UNITS)));
+        byte tncTxTail = (byte) Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_BASIC_TX_TAIL, String.valueOf(TX_TAIL_10MS_UNITS)));
 
         startKissPacket(KISS_CMD_P);
-        sendKissByte(_tncCsmaPersistence);
+        sendKissByte(tncCsmaPersistence);
         completeKissPacket();
 
         startKissPacket(KISS_CMD_SLOT_TIME);
-        sendKissByte(_tncCsmaSlotTime);
+        sendKissByte(tncCsmaSlotTime);
         completeKissPacket();
 
         startKissPacket(KISS_CMD_TX_DELAY);
-        sendKissByte(_tncTxDelay);
+        sendKissByte(tncTxDelay);
         completeKissPacket();
 
         startKissPacket(KISS_CMD_TX_TAIL);
-        sendKissByte(_tncTxTail);
+        sendKissByte(tncTxTail);
         completeKissPacket();
 
         if (_isExtendedMode) {
