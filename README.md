@@ -40,7 +40,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 - **Bluetooth connectivity** on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from Android Bluetooth Settings, default Bluetooth device could be set from Preferences
 - **Voice codec2 mode selection**, which allows you to select various codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends as codec2 mode negotiation between clients is not implemented at the moment
 - **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality, could be enabled or disabled from Preferences, this mode is activated if no USB or Bluetooth connection were made
-- **Voice level VU indicator**, display auido level on transmit or receive
+- **Voice level VU indicator**, display audio level on transmit or receive
 - **S-meter**, displayed only when KISS extensions are enabled and modem is able to send signal level information
 - **Parrot mode**, received voice will be digirepated in addition to playback through the speaker
 - **KISS buffered mode**, non-real time, playback will start only after all speech is received, use when modem bit rate is lower than codec2 bit rate to avoid gaps during playback at the cost of longer receiving delay before playback
