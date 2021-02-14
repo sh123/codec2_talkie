@@ -251,6 +251,8 @@ public class AudioProcessor extends Thread {
                 short rssi = data.getShort();
                 short snr = data.getShort();
                 sendRxRadioLevelUpdate(rssi, snr);
+            } else {
+                Log.e(TAG, "Signal event of wrong size");
             }
         }
     };
