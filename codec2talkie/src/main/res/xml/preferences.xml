@@ -40,6 +40,13 @@
             app:defaultValue="false">
         </SwitchPreference>
 
+        <SwitchPreference
+            app:key="codec2_voicemail"
+            app:title="@string/codec2_voicemail_title"
+            app:summary="@string/codec2_voicemail_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
     </PreferenceCategory>
 
     <PreferenceCategory

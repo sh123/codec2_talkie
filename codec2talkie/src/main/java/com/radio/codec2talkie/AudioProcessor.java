@@ -86,13 +86,14 @@ public class AudioProcessor extends Thread {
     private final Context _context;
 
     public AudioProcessor(TransportFactory.TransportType transportType, ProtocolFactory.ProtocolType protocolType,
-                          int codec2Mode, Handler onPlayerStateChanged, Context context) throws IOException {
+                          boolean voicemailEnabled, int codec2Mode,
+                          Handler onPlayerStateChanged, Context context) throws IOException {
         _onPlayerStateChanged = onPlayerStateChanged;
 
         _context = context;
 
         _transport  = TransportFactory.create(transportType);
-        _protocol = ProtocolFactory.create(protocolType);
+        _protocol = ProtocolFactory.create(protocolType, voicemailEnabled);
 
         _processPeriodicTimer = new Timer();
 

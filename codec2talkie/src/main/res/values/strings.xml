@@ -26,6 +26,8 @@
     <string name="codec2_mode_title">Mode/Speed</string>
     <string name="codec2_test_mode_title">Record/Playback Test Mode</string>
     <string name="codec2_test_mode_summary">Enables own voice recording/playback without transmission</string>
+    <string name="codec2_voicemail_title">Enable Voicemail</string>
+    <string name="codec2_voicemail_summary">Voicemail style transmission and receive recording</string>
     <string-array name="codec2_modes">
         <item>MODE_450=10</item>
         <item>MODE_700C=8</item>

@@ -427,9 +427,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             speedModeInfo += ", " + protocolType.toString();
+
+            boolean voicemailEnabled = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_VOICEMAIL, false);
+
+            if (voicemailEnabled) {
+                speedModeInfo += ", VM";
+            }
             _textCodecMode.setText(speedModeInfo);
 
-            _audioProcessor = new AudioProcessor(transportType, protocolType, codec2ModeId, onAudioProcessorStateChanged, getApplicationContext());
+            _audioProcessor = new AudioProcessor(transportType, protocolType, voicemailEnabled, codec2ModeId, onAudioProcessorStateChanged, getApplicationContext());
             _audioProcessor.start();
         } catch (IOException e) {
             e.printStackTrace();
