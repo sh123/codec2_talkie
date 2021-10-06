@@ -9,6 +9,7 @@ import java.io.IOException;
 public class VoicemailProxy implements Protocol {
 
     Protocol _protocol;
+    Context _context;
 
     public VoicemailProxy(Protocol protocol) {
         _protocol = protocol;
@@ -16,6 +17,7 @@ public class VoicemailProxy implements Protocol {
 
     @Override
     public void initialize(Transport transport, Context context) throws IOException {
+        _context = context;
         _protocol.initialize(transport, context);
     }
 
