@@ -20,7 +20,7 @@ public class ProtocolFactory {
         }
     };
 
-    public static Protocol create(ProtocolType protocolType, boolean voicemailEnabled) {
+    public static Protocol create(ProtocolType protocolType, int codec2ModeId, boolean voicemailEnabled) {
         Protocol proto;
         switch (protocolType) {
             case KISS:
@@ -39,7 +39,7 @@ public class ProtocolFactory {
         }
 
         if (voicemailEnabled) {
-            proto = new VoicemailProxy(proto);
+            proto = new VoicemailProxy(proto, codec2ModeId);
         }
 
         return proto;

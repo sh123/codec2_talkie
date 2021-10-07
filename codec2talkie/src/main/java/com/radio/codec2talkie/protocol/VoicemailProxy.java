@@ -8,11 +8,14 @@ import java.io.IOException;
 
 public class VoicemailProxy implements Protocol {
 
-    Protocol _protocol;
     Context _context;
 
-    public VoicemailProxy(Protocol protocol) {
+    final Protocol _protocol;
+    final int _codec2ModeId;
+
+    public VoicemailProxy(Protocol protocol, int codec2ModeId) {
         _protocol = protocol;
+        _codec2ModeId = codec2ModeId;
     }
 
     @Override

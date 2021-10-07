@@ -93,7 +93,7 @@ public class AudioProcessor extends Thread {
         _context = context;
 
         _transport  = TransportFactory.create(transportType);
-        _protocol = ProtocolFactory.create(protocolType, voicemailEnabled);
+        _protocol = ProtocolFactory.create(protocolType, codec2Mode, voicemailEnabled);
 
         _processPeriodicTimer = new Timer();
 
