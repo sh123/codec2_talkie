@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_CONNECT_USB = 2;
     private final static int REQUEST_PERMISSIONS = 3;
     private final static int REQUEST_SETTINGS = 4;
+    private final static int REQUEST_VOICEMAIL = 5;
 
     // S9 level at -93 dBm as per VHF Managers Handbook
     private final static int S_METER_S0_VALUE_DB = -153;
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         String appName = getResources().getString(R.string.app_name);
@@ -166,6 +168,11 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_BT);
     }
 
+    protected void startVoicemailActivity() {
+        Intent voicemailIntent = new Intent(this, VoicemailActivity.class);
+        startActivityForResult(voicemailIntent, REQUEST_VOICEMAIL);
+    }
+
     protected boolean requestPermissions() {
         List<String> permissionsToRequest = new LinkedList<String>();
 
@@ -227,6 +234,10 @@ public class MainActivity extends AppCompatActivity {
         if (itemId == R.id.preferences) {
             Intent settingsIntent = new Intent(this, SettingsActivity.class);
             startActivityForResult(settingsIntent, REQUEST_SETTINGS);
+            return true;
+        }
+        if (itemId == R.id.voicemail) {
+            startVoicemailActivity();
             return true;
         }
         else if (itemId == R.id.exit) {

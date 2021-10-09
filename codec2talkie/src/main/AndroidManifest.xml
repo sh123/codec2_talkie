@@ -22,6 +22,9 @@
             android:name=".settings.BluetoothSettingsActivity"
             android:configChanges="orientation|screenSize" />
         <activity
+            android:name=".VoicemailActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize">
             <intent-filter>
