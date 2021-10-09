@@ -5,10 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".VoicemailActivity">
+    tools:context=".RecorderActivity">
 
     <ListView
-        android:id="@+id/listVoicemail"
+        android:id="@+id/listRecorder"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

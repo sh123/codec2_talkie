@@ -23,7 +23,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -169,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void startVoicemailActivity() {
-        Intent voicemailIntent = new Intent(this, VoicemailActivity.class);
+        Intent voicemailIntent = new Intent(this, RecorderActivity.class);
         startActivityForResult(voicemailIntent, REQUEST_VOICEMAIL);
     }
 

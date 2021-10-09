@@ -24,10 +24,10 @@
 
     <string name="codec2_category_title">Codec2 Settings</string>
     <string name="codec2_mode_title">Mode/Speed</string>
-    <string name="codec2_test_mode_title">Record/Playback Test Mode</string>
-    <string name="codec2_test_mode_summary">Enables own voice recording/playback without transmission</string>
-    <string name="codec2_voicemail_title">Enable Voicemail</string>
-    <string name="codec2_voicemail_summary">Record incoming and outgoing transmissions</string>
+    <string name="codec2_test_mode_title">Echo Test Mode</string>
+    <string name="codec2_test_mode_summary">Records and plays recording without transmission</string>
+    <string name="codec2_voicemail_title">Enable Recorder</string>
+    <string name="codec2_voicemail_summary">Record incoming and outgoing transmissions for future playback</string>
     <string-array name="codec2_modes">
         <item>MODE_450=10</item>
         <item>MODE_700C=8</item>
@@ -105,12 +105,13 @@
 
     <string name="app_keep_screen_on_title">Keep screen ON</string>
     <string name="app_keep_screen_on_summary">Prevent screen switching off when app is active</string>
-    <string name="menu_voicemail">Voicemail</string>
+    <string name="menu_voicemail">Recorder</string>
     <string name="menu_voicemail_play_all">Play All</string>
     <string name="menu_voicemail_delete_all">Delete All</string>
-    <string name="voicemail_remove_all_confirmation_message">Remove Voicemails from the list?</string>
-    <string name="voicemail_remove_all_confirmation_title">Remove confirmation</string>
+    <string name="recorder_remove_all_confirmation_message">Remove recordings from the list?</string>
+    <string name="recorder_remove_all_confirmation_title">Remove confirmation</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="recorder_name">Recorder</string>
 
 </resources>

@@ -1,6 +1,5 @@
 package com.radio.codec2talkie;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,28 +17,27 @@ import com.radio.codec2talkie.tools.StorageTools;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class VoicemailActivity extends AppCompatActivity {
+public class RecorderActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private File _root;
     private File _currentDirectory;
     private ArrayAdapter<Object> _dirAdapter;
-    private ListView _listVoicemail;
+    private ListView _recordingList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_voicemail);
+        setContentView(R.layout.activity_recorder);
 
         _dirAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item);
-        _listVoicemail = findViewById(R.id.listVoicemail);
-        _listVoicemail.setOnItemClickListener(onFileClickListener);
-        _listVoicemail.setAdapter(_dirAdapter);
+        _recordingList = findViewById(R.id.listRecorder);
+        _recordingList.setOnItemClickListener(onFileClickListener);
+        _recordingList.setAdapter(_dirAdapter);
 
         _root = StorageTools.getStorage(getApplicationContext());
         loadFiles(_root);
@@ -61,21 +59,23 @@ public class VoicemailActivity extends AppCompatActivity {
 
         String title = directory.getName();
         if (_root.getAbsolutePath().equals(directory.getAbsolutePath())) {
-            title = "Voicemails";
+            title = getString(R.string.recorder_name);
         }
         setTitle(title);
 
         List<String> dirList = new ArrayList<String>();
-        String[] fileList = directory.list();
+        File[] fileList = directory.listFiles();
         if (fileList != null) {
-            dirList.addAll(Arrays.asList(fileList));
+            for (File file : fileList) {
+                dirList.add(file.getName());
+            }
         }
         Collections.sort(dirList);
 
         for (Object dirElement: dirList) {
             _dirAdapter.add(dirElement);
         }
-        _listVoicemail.setVisibility(View.VISIBLE);
+        _recordingList.setVisibility(View.VISIBLE);
     }
 
     private void deleteAll() {
@@ -109,10 +109,10 @@ public class VoicemailActivity extends AppCompatActivity {
 
     private void runConfirmation() {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-        alertBuilder.setMessage(R.string.voicemail_remove_all_confirmation_message)
-                .setTitle(R.string.voicemail_remove_all_confirmation_title)
+        alertBuilder.setMessage(R.string.recorder_remove_all_confirmation_message)
+                .setTitle(R.string.recorder_remove_all_confirmation_title)
                 .setPositiveButton(R.string.ok, (dialog, id) -> {
-                    deleteAll();;
+                    deleteAll();
                 })
                 .setNegativeButton(R.string.cancel, (dialog, id) -> {
                 })
@@ -121,7 +121,7 @@ public class VoicemailActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.voicemail_menu, menu);
+        getMenuInflater().inflate(R.menu.recorder_menu, menu);
         return true;
     }
 
@@ -130,11 +130,11 @@ public class VoicemailActivity extends AppCompatActivity {
     {
         int itemId = item.getItemId();
 
-        if (itemId == R.id.voicemail_play_all) {
+        if (itemId == R.id.recorder_play_all) {
             playAll();
             return true;
         }
-        if (itemId == R.id.voicemail_delete_all) {
+        if (itemId == R.id.recorder_delete_all) {
             runConfirmation();
             return true;
         }

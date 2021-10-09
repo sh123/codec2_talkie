@@ -22,7 +22,7 @@
             android:name=".settings.BluetoothSettingsActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name=".VoicemailActivity"
+            android:name=".RecorderActivity"
             android:configChanges="orientation|screenSize" />
         <activity
             android:name=".MainActivity"
