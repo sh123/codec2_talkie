@@ -92,12 +92,11 @@ public class VoicemailProxy implements Protocol {
             try {
                 Date date = new Date();
                 File newDirectory = new File(_storage, getNewDirectoryName(date));
-                if (newDirectory.mkdirs()) {
-                    File newAudioFile = new File(newDirectory, getNewFileName(date));
-                    _activeStream = new FileOutputStream(newAudioFile);
-                } else {
+                if (!newDirectory.exists() && !newDirectory.mkdirs()) {
                     Log.e(TAG, "Failed to create directory for voicemails");
                 }
+                File newAudioFile = new File(newDirectory, getNewFileName(date));
+                _activeStream = new FileOutputStream(newAudioFile);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
