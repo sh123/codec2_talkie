@@ -12,8 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.radio.codec2talkie.settings.SettingsActivity;
 import com.radio.codec2talkie.tools.StorageTools;
 
 import java.io.File;
@@ -46,7 +44,7 @@ public class VoicemailActivity extends AppCompatActivity {
     }
 
     private final AdapterView.OnItemClickListener onFileClickListener  = (parent, view, position, id) -> {
-        Object selectedItem = (String)parent.getAdapter().getItem(position);
+        Object selectedItem = parent.getAdapter().getItem(position);
         File selectedFile = new File(_root, selectedItem.toString());
         if (selectedFile.isDirectory()) {
             loadFiles(selectedFile);
