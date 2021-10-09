@@ -2,7 +2,7 @@
     <string name="app_name">Codec2 Talkie</string>
     <string name="push_to_talk">PUSH TO TALK</string>
 
-    <string name="menu_preferences">Preferences</string>
+    <string name="menu_settings">Settings</string>
     <string name="menu_exit">Exit</string>
 
     <string name="ports_category_title">TNC Settings</string>
