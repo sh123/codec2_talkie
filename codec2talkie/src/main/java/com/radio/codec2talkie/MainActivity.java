@@ -3,6 +3,7 @@ package com.radio.codec2talkie;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.MenuCompat;
 import androidx.preference.PreferenceManager;
 
 import android.Manifest;
@@ -222,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        MenuCompat.setGroupDividerEnabled(menu, true);
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }

@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/voicemail"
-        android:title="@string/menu_voicemail"></item>
-    <item
-        android:id="@+id/preferences"
-        android:title="@string/menu_settings"></item>
-    <item
-        android:id="@+id/exit"
-        android:title="@string/menu_exit"></item>
+    <group android:id="@+id/group_main">
+        <item
+            android:id="@+id/voicemail"
+            android:title="@string/menu_voicemail"></item>
+    </group>
+    <group android:id="@+id/group_settings">
+        <item
+            android:id="@+id/preferences"
+            android:title="@string/menu_settings"></item>
+    </group>
+    <group android:id="@+id/group_exit">
+        <item
+            android:id="@+id/exit"
+            android:title="@string/menu_exit"></item>
+    </group>
 </menu>
