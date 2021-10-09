@@ -2,7 +2,10 @@ package com.radio.codec2talkie;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -10,6 +13,7 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.radio.codec2talkie.settings.SettingsActivity;
 import com.radio.codec2talkie.tools.StorageTools;
 
 import java.io.File;
@@ -74,6 +78,21 @@ public class VoicemailActivity extends AppCompatActivity {
         _listVoicemail.setVisibility(View.VISIBLE);
     }
 
+    private void deleteAll() {
+        File[] fileList = _currentDirectory.listFiles();
+        if (fileList != null) {
+            for (File file : fileList) {
+                if (!file.delete()) {
+                    Log.e(TAG, file.getName() + " cannot be deleted");
+                }
+            }
+        }
+        loadFiles(_currentDirectory);
+    }
+
+    private void playAll() {
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK  && event.getRepeatCount() == 0) {
@@ -86,6 +105,28 @@ public class VoicemailActivity extends AppCompatActivity {
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.voicemail_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.voicemail_play_all) {
+            playAll();
+            return true;
+        }
+        if (itemId == R.id.voicemail_delete_all) {
+            deleteAll();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent Data) {
