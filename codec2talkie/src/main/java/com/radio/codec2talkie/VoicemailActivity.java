@@ -1,5 +1,6 @@
 package com.radio.codec2talkie;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import com.radio.codec2talkie.tools.StorageTools;
 
@@ -105,6 +107,18 @@ public class VoicemailActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
+    private void runConfirmation() {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setMessage(R.string.voicemail_remove_all_confirmation_message)
+                .setTitle(R.string.voicemail_remove_all_confirmation_title)
+                .setPositiveButton(R.string.ok, (dialog, id) -> {
+                    deleteAll();;
+                })
+                .setNegativeButton(R.string.cancel, (dialog, id) -> {
+                })
+                .show();
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.voicemail_menu, menu);
@@ -121,7 +135,7 @@ public class VoicemailActivity extends AppCompatActivity {
             return true;
         }
         if (itemId == R.id.voicemail_delete_all) {
-            deleteAll();
+            runConfirmation();
             return true;
         }
         return super.onOptionsItemSelected(item);

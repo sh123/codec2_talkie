@@ -108,5 +108,9 @@
     <string name="menu_voicemail">Voicemail</string>
     <string name="menu_voicemail_play_all">Play All</string>
     <string name="menu_voicemail_delete_all">Delete All</string>
+    <string name="voicemail_remove_all_confirmation_message">Remove Voicemails from the list?</string>
+    <string name="voicemail_remove_all_confirmation_title">Remove confirmation</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 
 </resources>
