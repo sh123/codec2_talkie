@@ -1,4 +1,4 @@
-package com.radio.codec2talkie;
+package com.radio.codec2talkie.audio;
 
 import android.content.Context;
 import android.media.AudioAttributes;

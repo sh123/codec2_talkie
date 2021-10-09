@@ -1,5 +1,6 @@
 package com.radio.codec2talkie;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -36,6 +37,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.radio.codec2talkie.audio.AudioProcessor;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.SocketHandler;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
@@ -175,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected boolean requestPermissions() {
-        List<String> permissionsToRequest = new LinkedList<String>();
+        List<String> permissionsToRequest = new LinkedList<>();
 
         for (String permission : _requiredPermissions) {
             if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
@@ -316,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_PERMISSIONS) {
             boolean allGranted = true;
