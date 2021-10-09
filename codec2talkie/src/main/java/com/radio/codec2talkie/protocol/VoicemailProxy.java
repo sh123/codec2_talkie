@@ -1,7 +1,9 @@
 package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
+import android.util.Log;
 
+import com.radio.codec2talkie.MainActivity;
 import com.radio.codec2talkie.tools.StorageTools;
 import com.radio.codec2talkie.transport.Transport;
 
@@ -16,6 +18,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class VoicemailProxy implements Protocol {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private final int ROTATION_DELAY_MS = 10000;
 
@@ -68,24 +72,46 @@ public class VoicemailProxy implements Protocol {
 
     private void writeToFile(byte[] rawData)  {
         stopRotationTimer();
+        createStreamIfNotExists();
+        writeToStream(rawData);
+        startRotationTimer();
+    }
+
+    private void writeToStream(byte[] rawData) {
+        try {
+            if (_activeStream != null) {
+                _activeStream.write(rawData);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createStreamIfNotExists() {
         if (_activeStream == null) {
             try {
-                _activeStream = new FileOutputStream(new File(_storage, getNewFileName()));
+                Date date = new Date();
+                File newDirectory = new File(_storage, getNewDirectoryName(date));
+                if (newDirectory.mkdirs()) {
+                    File newAudioFile = new File(newDirectory, getNewFileName(date));
+                    _activeStream = new FileOutputStream(newAudioFile);
+                } else {
+                    Log.e(TAG, "Failed to create directory for voicemails");
+                }
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
-        try {
-            _activeStream.write(rawData);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        startRotationTimer();
     }
 
-    private String getNewFileName() {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss", Locale.US);
-        return formatter.format(new Date()) + "_" + _codec2ModeId + ".c2";
+    private String getNewDirectoryName(Date date) {
+        SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd", Locale.US);
+        return df.format(date);
+    }
+
+    private String getNewFileName(Date date) {
+        SimpleDateFormat tf = new SimpleDateFormat("HH_mm_ss", Locale.US);
+        return tf.format(date) + "_M" + _codec2ModeId + ".c2";
     }
 
     private void startRotationTimer() {
@@ -100,11 +126,7 @@ public class VoicemailProxy implements Protocol {
                         e.printStackTrace();
                     }
                 }
-                try {
-                    _activeStream = new FileOutputStream(new File(_storage, getNewFileName()));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+                _activeStream = null;
             }
         }, ROTATION_DELAY_MS);
     }
