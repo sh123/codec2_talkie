@@ -1,4 +1,4 @@
-package com.radio.codec2talkie;
+package com.radio.codec2talkie.recorder;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +13,9 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.radio.codec2talkie.MainActivity;
+import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.tools.StorageTools;
 
 import java.io.File;
@@ -63,7 +66,7 @@ public class RecorderActivity extends AppCompatActivity {
         }
         setTitle(title);
 
-        List<String> dirList = new ArrayList<String>();
+        List<String> dirList = new ArrayList<>();
         File[] fileList = directory.listFiles();
         if (fileList != null) {
             for (File file : fileList) {
@@ -111,11 +114,8 @@ public class RecorderActivity extends AppCompatActivity {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
         alertBuilder.setMessage(R.string.recorder_remove_all_confirmation_message)
                 .setTitle(R.string.recorder_remove_all_confirmation_title)
-                .setPositiveButton(R.string.ok, (dialog, id) -> {
-                    deleteAll();
-                })
-                .setNegativeButton(R.string.cancel, (dialog, id) -> {
-                })
+                .setPositiveButton(R.string.ok, (dialog, id) -> deleteAll())
+                .setNegativeButton(R.string.cancel, (dialog, id) -> {})
                 .show();
     }
 

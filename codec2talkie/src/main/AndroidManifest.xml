@@ -22,7 +22,7 @@
             android:name=".settings.BluetoothSettingsActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name=".RecorderActivity"
+            android:name=".recorder.RecorderActivity"
             android:configChanges="orientation|screenSize" />
         <activity
             android:name=".MainActivity"

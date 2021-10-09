@@ -38,6 +38,7 @@ import android.widget.Toast;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.SocketHandler;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
+import com.radio.codec2talkie.recorder.RecorderActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
 import com.radio.codec2talkie.tools.RadioTools;
@@ -441,7 +442,7 @@ public class MainActivity extends AppCompatActivity {
             boolean voicemailEnabled = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_VOICEMAIL, false);
 
             if (voicemailEnabled) {
-                speedModeInfo += ", VM";
+                speedModeInfo += ", " + getString(R.string.recorder_status_label);
             }
             _textCodecMode.setText(speedModeInfo);
 

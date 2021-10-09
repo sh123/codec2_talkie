@@ -11,12 +11,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -46,8 +42,8 @@ public class AudioProcessor extends Thread {
     public static final int PROCESSOR_PROCESS = 11;
     public static final int PROCESSOR_QUIT = 12;
 
-    private static int AUDIO_MIN_LEVEL = -70;
-    private static int AUDIO_MAX_LEVEL = 0;
+    private static final int AUDIO_MIN_LEVEL = -70;
+    private static final int AUDIO_MAX_LEVEL = 0;
     private final int AUDIO_SAMPLE_SIZE = 8000;
 
     private final int PROCESS_INTERVAL_MS = 20;
@@ -341,8 +337,6 @@ public class AudioProcessor extends Thread {
             // playback
             if (_protocol.receive(_protocolReceiveCallback)) {
                 sendStatusUpdate(PROCESSOR_RECEIVING);
-            } else {
-                // idling
             }
         }
     }

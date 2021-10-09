@@ -113,5 +113,6 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="recorder_name">Recorder</string>
+    <string name="recorder_status_label">REC</string>
 
 </resources>
