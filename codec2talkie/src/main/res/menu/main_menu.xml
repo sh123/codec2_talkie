@@ -4,6 +4,9 @@
         android:id="@+id/preferences"
         android:title="@string/menu_preferences"></item>
     <item
+        android:id="@+id/voicemail"
+        android:title="@string/menu_voicemail"></item>
+    <item
         android:id="@+id/exit"
         android:title="@string/menu_exit"></item>
 </menu>

@@ -105,5 +105,6 @@
 
     <string name="app_keep_screen_on_title">Keep screen ON</string>
     <string name="app_keep_screen_on_summary">Prevent screen switching off when app is active</string>
+    <string name="menu_voicemail">Voicemail</string>
 
 </resources>
