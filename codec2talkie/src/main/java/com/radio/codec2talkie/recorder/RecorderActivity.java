@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,6 +37,8 @@ public class RecorderActivity extends AppCompatActivity {
     private File _currentDirectory;
     private ArrayAdapter<Object> _dirAdapter;
     private ListView _recordingList;
+    private TextView _textPlaybackStatus;
+    private AudioPlayer _audioPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +50,9 @@ public class RecorderActivity extends AppCompatActivity {
         _recordingList.setOnItemClickListener(onFileClickListener);
         _recordingList.setAdapter(_dirAdapter);
 
+        _textPlaybackStatus = findViewById(R.id.textPlaybackStatus);
+        _textPlaybackStatus.setText(R.string.player_status_stopped);
+
         _root = StorageTools.getStorage(getApplicationContext());
         loadFiles(_root);
     }
@@ -55,6 +61,22 @@ public class RecorderActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
+                case AudioPlayer.PLAYER_STARTED:
+                    _textPlaybackStatus.setText(R.string.player_status_started);
+                    break;
+                case AudioPlayer.PLAYER_STOPPED:
+                    _textPlaybackStatus.setText(getString(R.string.player_status_stopped));
+                    _audioPlayer = null;
+                    break;
+                case AudioPlayer.PLAYER_ERROR:
+                    _textPlaybackStatus.setText(getString(R.string.player_status_error, msg.obj));
+                    break;
+                case AudioPlayer.PLAYER_PLAYING_FILE:
+                    _textPlaybackStatus.setText(getString(R.string.player_status_playing_file, msg.obj));
+                    break;
+                case AudioPlayer.PLAYER_PLAYED_FILE:
+                    _textPlaybackStatus.setText(getString(R.string.player_status_played_file, msg.obj));
+                    break;
             }
         }
     };
@@ -64,9 +86,10 @@ public class RecorderActivity extends AppCompatActivity {
         File selectedFile = new File(_currentDirectory, selectedItem.toString());
         if (selectedFile.isDirectory()) {
             loadFiles(selectedFile);
-        } else {
+        } else if (_audioPlayer == null) {
             File[] files = {selectedFile};
-            new AudioPlayer(files, onPlayerStateChanged, this).start();
+            _audioPlayer = new AudioPlayer(files, onPlayerStateChanged, this);
+            _audioPlayer.start();
         }
     };
 
@@ -108,8 +131,11 @@ public class RecorderActivity extends AppCompatActivity {
     }
 
     private void playAll() {
-        File[] files = _currentDirectory.listFiles();
-        new AudioPlayer(files, onPlayerStateChanged, this).start();
+        if (_audioPlayer == null) {
+            File[] files = _currentDirectory.listFiles();
+            _audioPlayer = new AudioPlayer(files, onPlayerStateChanged, this);
+            _audioPlayer.start();
+        }
     }
 
     @Override
@@ -153,6 +179,11 @@ public class RecorderActivity extends AppCompatActivity {
         else if (itemId == R.id.recorder_delete_all) {
             runConfirmation();
             return true;
+        }
+        else if (itemId == R.id.recorder_stop) {
+            if (_audioPlayer != null) {
+                _audioPlayer.stopPlayback();
+            }
         }
         return super.onOptionsItemSelected(item);
     }

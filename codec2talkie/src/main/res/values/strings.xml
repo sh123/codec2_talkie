@@ -106,13 +106,19 @@
     <string name="app_keep_screen_on_title">Keep screen ON</string>
     <string name="app_keep_screen_on_summary">Prevent screen switching off when app is active</string>
     <string name="menu_voicemail">Recorder</string>
-    <string name="menu_voicemail_play_all">Play All</string>
-    <string name="menu_voicemail_delete_all">Delete All</string>
+    <string name="recorder_menu_play_all">Play All</string>
+    <string name="recorder_menu_delete_all">Delete All</string>
     <string name="recorder_remove_all_confirmation_message">Remove recordings from the list?</string>
     <string name="recorder_remove_all_confirmation_title">Remove confirmation</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="recorder_name">Recorder</string>
     <string name="recorder_status_label">REC</string>
+    <string name="player_status_stopped">Playback stopped</string>
+    <string name="player_status_started">Playback started</string>
+    <string name="player_status_error">Playback error, %1$s</string>
+    <string name="player_status_playing_file">Playing file: %1$s</string>
+    <string name="player_status_played_file">Played file: %1$s</string>
+    <string name="recorder_menu_stop">Stop</string>
 
 </resources>

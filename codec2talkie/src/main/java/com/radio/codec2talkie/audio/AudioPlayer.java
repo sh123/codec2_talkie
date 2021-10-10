@@ -23,7 +23,7 @@ public class AudioPlayer extends Thread {
     public static final int PLAYER_PLAYING_FILE = 2;
     public static final int PLAYER_PLAYED_FILE= 3;
     public static final int PLAYER_ERROR = 4;
-    public static final int PLAYER_STOPPED = 4;
+    public static final int PLAYER_STOPPED = 5;
 
     private final Handler _onPlayerStateChanged;
     private final Context _context;
@@ -41,6 +41,8 @@ public class AudioPlayer extends Thread {
     private int _codec2FrameSize;
 
     private int _currentStatus = PLAYER_STOPPED;
+
+    private boolean _stopPlayback = false;
 
     public AudioPlayer(File[] files, Handler onPlayerStateChanged, Context context) {
 
@@ -86,17 +88,18 @@ public class AudioPlayer extends Thread {
         _playbackAudioBuffer = new short[_audioBufferSize];
     }
 
-    private void sendStatusUpdate(int newStatus) {
+    private void sendStatusUpdate(int newStatus, String fileName) {
         if (newStatus != _currentStatus) {
             _currentStatus = newStatus;
             Message msg = Message.obtain();
             msg.what = newStatus;
+            msg.obj = fileName;
 
             _onPlayerStateChanged.sendMessage(msg);
         }
     }
 
-    private void playFile(File file) {
+    private boolean playFile(File file) {
         String codec2ModeStr = file.getName().substring(0, 2);
         int codec2Mode = Integer.parseInt(codec2ModeStr);
 
@@ -110,22 +113,25 @@ public class AudioPlayer extends Thread {
         try {
             inputStream = new FileInputStream(file);
         } catch (FileNotFoundException e) {
-            sendStatusUpdate(PLAYER_ERROR);
+            sendStatusUpdate(PLAYER_ERROR, file.getName());
             e.printStackTrace();
-            return;
+            return false;
         }
 
         byte[] codec2Buffer = new byte[_codec2FrameSize];
 
         try {
             while (inputStream.read(codec2Buffer) == _codec2FrameSize) {
+                if (_stopPlayback) {
+                    return false;
+                }
                 Codec2.decode(_codec2Con, _playbackAudioBuffer, codec2Buffer);
                 _systemAudioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
             }
         } catch (IOException e) {
-            sendStatusUpdate(PLAYER_ERROR);
+            sendStatusUpdate(PLAYER_ERROR, file.getName());
             e.printStackTrace();
-            return;
+            return false;
         }
 
         try {
@@ -133,15 +139,18 @@ public class AudioPlayer extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return true;
     }
 
     private void play() {
         _systemAudioPlayer.play();
         for (File file : _files) {
             if (file.isDirectory() || !file.getName().endsWith(".c2")) continue;
-            sendStatusUpdate(PLAYER_PLAYING_FILE);
-            playFile(file);
-            sendStatusUpdate(PLAYER_PLAYED_FILE);
+            sendStatusUpdate(PLAYER_PLAYING_FILE, file.getName());
+            if (!playFile(file)) {
+                break;
+            }
+            sendStatusUpdate(PLAYER_PLAYED_FILE, file.getName());
         }
         _systemAudioPlayer.stop();
         _systemAudioPlayer.release();
@@ -152,8 +161,12 @@ public class AudioPlayer extends Thread {
 
     @Override
     public void run() {
-        sendStatusUpdate(PLAYER_STARTED);
+        sendStatusUpdate(PLAYER_STARTED, null);
         play();
-        sendStatusUpdate(PLAYER_STOPPED);
+        sendStatusUpdate(PLAYER_STOPPED, null);
+    }
+
+    public void stopPlayback() {
+        _stopPlayback = true;
     }
 }

@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/recorder_stop"
+        android:title="@string/recorder_menu_stop"></item>
+    <item
         android:id="@+id/recorder_play_all"
-        android:title="@string/menu_voicemail_play_all"></item>
+        android:title="@string/recorder_menu_play_all"></item>
     <item
         android:id="@+id/recorder_delete_all"
-        android:title="@string/menu_voicemail_delete_all"></item>
+        android:title="@string/recorder_menu_delete_all"></item>
 </menu>
