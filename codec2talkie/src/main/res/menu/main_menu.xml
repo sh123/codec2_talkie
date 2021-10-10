@@ -3,7 +3,7 @@
     <group android:id="@+id/group_main">
         <item
             android:id="@+id/voicemail"
-            android:title="@string/menu_voicemail"></item>
+            android:title="@string/menu_recorder"></item>
     </group>
     <group android:id="@+id/group_settings">
         <item

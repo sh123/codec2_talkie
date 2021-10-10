@@ -109,7 +109,7 @@ public class VoicemailProxy implements Protocol {
     }
 
     private String getNewFileName(Date date) {
-        SimpleDateFormat tf = new SimpleDateFormat("HH_mm_ss", Locale.ENGLISH);
+        SimpleDateFormat tf = new SimpleDateFormat("HHmmss", Locale.ENGLISH);
         String codec2mode = String.format(Locale.ENGLISH, "%02d", _codec2ModeId);
         return codec2mode + "_" + tf.format(date)  + ".c2";
     }

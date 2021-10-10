@@ -26,8 +26,8 @@
     <string name="codec2_mode_title">Mode/Speed</string>
     <string name="codec2_test_mode_title">Echo Test Mode</string>
     <string name="codec2_test_mode_summary">Records and plays recording without transmission</string>
-    <string name="codec2_voicemail_title">Enable Recorder</string>
-    <string name="codec2_voicemail_summary">Record incoming and outgoing transmissions for future playback</string>
+    <string name="codec2_recorder_title">Enable Recorder</string>
+    <string name="codec2_recorder_summary">Record incoming and outgoing transmissions for future playback</string>
     <string-array name="codec2_modes">
         <item>MODE_450=10</item>
         <item>MODE_700C=8</item>
@@ -54,7 +54,7 @@
     <string name="kiss_basic_summary">Set CSMA and TX delay/tail parameters</string>
 
     <string name="kiss_basic_p_title">CSMA persistence P</string>
-    <string name="kiss_basic_p_summary">Set CSMA persistence P (1-255)</string>
+    <string name="kiss_basic_p_summary">Set CSMA persistence P (1–255)</string>
 
     <string name="kiss_basic_slot_time_title">CSMA slot time</string>
     <string name="kiss_basic_slot_time_summary">Set CSMA slot time (milliseconds / 10)</string>
@@ -105,10 +105,10 @@
 
     <string name="app_keep_screen_on_title">Keep screen ON</string>
     <string name="app_keep_screen_on_summary">Prevent screen switching off when app is active</string>
-    <string name="menu_voicemail">Recorder</string>
+    <string name="menu_recorder">Play Recordings</string>
     <string name="recorder_menu_play_all">Play All</string>
     <string name="recorder_menu_delete_all">Delete All</string>
-    <string name="recorder_remove_all_confirmation_message">Remove recordings from the list?</string>
+    <string name="recorder_remove_all_confirmation_message">Remove all recordings from %1$s?</string>
     <string name="recorder_remove_all_confirmation_title">Remove confirmation</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
@@ -120,5 +120,6 @@
     <string name="player_status_playing_file">Playing file: %1$s</string>
     <string name="player_status_played_file">Played file: %1$s</string>
     <string name="recorder_menu_stop">Stop</string>
+    <string name="recorder_remove_file_confirmation_message">Remove recording %1$s?</string>
 
 </resources>

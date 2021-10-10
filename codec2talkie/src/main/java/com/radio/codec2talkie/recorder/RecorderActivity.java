@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -48,6 +47,7 @@ public class RecorderActivity extends AppCompatActivity {
         _dirAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item);
         _recordingList = findViewById(R.id.listRecorder);
         _recordingList.setOnItemClickListener(onFileClickListener);
+        _recordingList.setOnItemLongClickListener(onFileLongClickListener);
         _recordingList.setAdapter(_dirAdapter);
 
         _textPlaybackStatus = findViewById(R.id.textPlaybackStatus);
@@ -93,6 +93,20 @@ public class RecorderActivity extends AppCompatActivity {
         }
     };
 
+    private final AdapterView.OnItemLongClickListener onFileLongClickListener  = (parent, view, position, id) -> {
+        Object selectedItem = parent.getAdapter().getItem(position);
+        File selectedFile = new File(_currentDirectory, selectedItem.toString());
+        if (selectedFile.isDirectory()) {
+            runDeleteFromDirectoryConfirmation(selectedFile);
+            if (selectedFile.delete()) {
+                loadFiles(_currentDirectory);
+            }
+        } else {
+            runDeleteFileConfirmation(selectedFile);
+        }
+        return true;
+    };
+
     private void loadFiles(File directory) {
         _dirAdapter.clear();
         _currentDirectory = directory;
@@ -118,8 +132,8 @@ public class RecorderActivity extends AppCompatActivity {
         _recordingList.setVisibility(View.VISIBLE);
     }
 
-    private void deleteAll() {
-        File[] fileList = _currentDirectory.listFiles();
+    private void deleteAll(File directory) {
+        File[] fileList = directory.listFiles();
         if (fileList != null) {
             for (File file : fileList) {
                 if (!file.delete()) {
@@ -152,11 +166,24 @@ public class RecorderActivity extends AppCompatActivity {
         return super.onKeyDown(keyCode, event);
     }
 
-    private void runConfirmation() {
+    private void runDeleteFromDirectoryConfirmation(File directory) {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-        alertBuilder.setMessage(R.string.recorder_remove_all_confirmation_message)
+        alertBuilder.setMessage(getString(R.string.recorder_remove_all_confirmation_message, directory.getName()))
                 .setTitle(R.string.recorder_remove_all_confirmation_title)
-                .setPositiveButton(R.string.ok, (dialog, id) -> deleteAll())
+                .setPositiveButton(R.string.ok, (dialog, id) -> deleteAll(directory))
+                .setNegativeButton(R.string.cancel, (dialog, id) -> {})
+                .show();
+    }
+
+    private void runDeleteFileConfirmation(File file) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
+        alertBuilder.setMessage(getString(R.string.recorder_remove_file_confirmation_message, file.getName()))
+                .setTitle(R.string.recorder_remove_all_confirmation_title)
+                .setPositiveButton(R.string.ok, (dialog, id) ->  {
+                    if (file.delete()) {
+                        loadFiles(_currentDirectory);
+                    }
+                })
                 .setNegativeButton(R.string.cancel, (dialog, id) -> {})
                 .show();
     }
@@ -177,7 +204,7 @@ public class RecorderActivity extends AppCompatActivity {
             return true;
         }
         else if (itemId == R.id.recorder_delete_all) {
-            runConfirmation();
+            runDeleteFromDirectoryConfirmation(_currentDirectory);
             return true;
         }
         else if (itemId == R.id.recorder_stop) {

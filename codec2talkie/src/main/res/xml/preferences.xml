@@ -42,8 +42,8 @@
 
         <SwitchPreference
             app:key="codec2_voicemail"
-            app:title="@string/codec2_voicemail_title"
-            app:summary="@string/codec2_voicemail_summary"
+            app:title="@string/codec2_recorder_title"
+            app:summary="@string/codec2_recorder_summary"
             app:defaultValue="false">
         </SwitchPreference>
 
