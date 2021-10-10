@@ -70,7 +70,6 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
     - Stop current playback
     - Play all recordings sequentially
 
-
 # Suitable radios and modems
 - Tested, works:
   - (BT) LoRa modem 450/700 bps codec2 modes tested at 1300 bps and 900 bps LoRa speeds: https://github.com/sh123/esp32_loraprs
@@ -110,7 +109,9 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
   - For KISS encapsulated audio frames command above could be used, but instead of `cat` use https://pypi.org/project/kiss/
 - **App is not installed** error when installing new application
   - Uninstall previous version and try to install again
-
+- Cannot install application from unknown source
+  - You need to allow installation of apps from unknown sources from Android settings, or just install Android Studio and build-install application yourself
+  
 # KISS command extensions
 KISS command extensions are used for radio module control and signal report events on port 0, command for radio control is defined as 6 (KISS SetHardware) and signal report command as 7. Radio modules/modems can implement these commands, so they will be controllable from the application and application will be able to show signal levels on S-meter.
 
