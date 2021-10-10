@@ -38,4 +38,12 @@ public class SettingsActivity extends AppCompatActivity
             setPreferencesFromResource(R.xml.preferences_kiss, null);
         }
     }
+
+    public static class SettingsTcpIpFragment extends PreferenceFragmentCompat
+    {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences_tcpip, null);
+        }
+    }
 }

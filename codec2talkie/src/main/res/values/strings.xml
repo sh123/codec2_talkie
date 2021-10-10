@@ -121,5 +121,13 @@
     <string name="player_status_played_file">Played file: %1$s</string>
     <string name="recorder_menu_stop">Stop</string>
     <string name="recorder_remove_file_confirmation_message">Remove recording %1$s?</string>
+    <string name="ports_tcp_ip_enable_title">Enable TCP/IP</string>
+    <string name="ports_tcp_ip_enable_summary">Data will be sent and received through TCP/IP as a client</string>
+    <string name="port_tcp_ip_prefs_title">TCP/IP parameters</string>
+    <string name="port_tcp_ip_prefs_summary">Set TCP/iP parameters, such as IP address and port</string>
+    <string name="tcp_ip_basic_address_title">IP address</string>
+    <string name="tcp_ip_basic_port_title">IP port number</string>
+    <string name="tcp_ip_basic_address_summary">Set server IP address to connect</string>
+    <string name="tcp_ip_basic_port_summary">Set server port number</string>
 
 </resources>

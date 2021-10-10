@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:key="tcp_ip_basic_category"
+        app:title="@string/kiss_basic_title">
+
+    <EditTextPreference
+        app:key="tcp_ip_basic_address"
+        app:title="@string/tcp_ip_basic_address_title"
+        app:summary="@string/tcp_ip_basic_address_summary"
+        app:defaultValue="127.0.0.1">
+    </EditTextPreference>
+
+    <EditTextPreference
+        app:key="tcp_ip_basic_port"
+        app:title="@string/tcp_ip_basic_port_title"
+        app:summary="@string/tcp_ip_basic_port_summary"
+        app:defaultValue="8001">
+    </EditTextPreference>
+
+    </PreferenceCategory>
+</PreferenceScreen>

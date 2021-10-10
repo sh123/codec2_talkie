@@ -71,6 +71,22 @@
             app:defaultValue="115200"
             app:summary="%s">
         </ListPreference>
+
+        <SwitchPreference
+            app:key="ports_tcp_ip_enable"
+            app:title="@string/ports_tcp_ip_enable_title"
+            app:summary="@string/ports_tcp_ip_enable_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <Preference
+            android:key="pref_tcp_ip_control"
+            android:title="@string/port_tcp_ip_prefs_title"
+            android:summary="@string/port_tcp_ip_prefs_summary"
+            app:fragment="com.radio.codec2talkie.settings.SettingsActivity$SettingsTcpIpFragment"
+            app:dependency="ports_tcp_ip_enable">
+        </Preference>
+
     </PreferenceCategory>
 
     <PreferenceCategory
