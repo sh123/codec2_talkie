@@ -6,7 +6,6 @@ import android.media.AudioFormat;
 import android.media.AudioTrack;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import com.radio.codec2talkie.MainActivity;
 import com.ustadmobile.codec2.Codec2;
@@ -15,6 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class AudioPlayer extends Thread {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -35,6 +35,7 @@ public class AudioPlayer extends Thread {
     private short[] _playbackAudioBuffer;
 
     private long _codec2Con;
+    private int _codec2Mode;
 
     private int _audioBufferSize;
     private int _codec2FrameSize;
@@ -46,6 +47,9 @@ public class AudioPlayer extends Thread {
         _onPlayerStateChanged = onPlayerStateChanged;
         _context = context;
         _files = files;
+        _codec2Con = 0;
+
+        Arrays.sort(_files);
 
         constructSystemAudioDevices();
     }
@@ -71,6 +75,9 @@ public class AudioPlayer extends Thread {
     }
 
     private void constructCodec2(int codecMode) {
+        if (_codec2Con != 0) {
+            Codec2.destroy(_codec2Con);
+        }
         _codec2Con = Codec2.create(codecMode);
 
         _audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
@@ -92,7 +99,12 @@ public class AudioPlayer extends Thread {
     private void playFile(File file) {
         String codec2ModeStr = file.getName().substring(0, 2);
         int codec2Mode = Integer.parseInt(codec2ModeStr);
-        constructCodec2(codec2Mode);
+
+        // reconstruct codec2 on mode change
+        if (_codec2Con == 0 || _codec2Mode != codec2Mode) {
+            _codec2Mode = codec2Mode;
+            constructCodec2(codec2Mode);
+        }
 
         FileInputStream inputStream;
         try {
@@ -126,12 +138,16 @@ public class AudioPlayer extends Thread {
     private void play() {
         _systemAudioPlayer.play();
         for (File file : _files) {
+            if (file.isDirectory() || !file.getName().endsWith(".c2")) continue;
             sendStatusUpdate(PLAYER_PLAYING_FILE);
             playFile(file);
             sendStatusUpdate(PLAYER_PLAYED_FILE);
         }
         _systemAudioPlayer.stop();
         _systemAudioPlayer.release();
+        if (_codec2Con != 0) {
+            Codec2.destroy(_codec2Con);
+        }
     }
 
     @Override

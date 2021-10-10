@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -107,6 +108,8 @@ public class RecorderActivity extends AppCompatActivity {
     }
 
     private void playAll() {
+        File[] files = _currentDirectory.listFiles();
+        new AudioPlayer(files, onPlayerStateChanged, this).start();
     }
 
     @Override
@@ -142,8 +145,12 @@ public class RecorderActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item)
     {
         int itemId = item.getItemId();
-        
-        if (itemId == R.id.recorder_delete_all) {
+
+        if (itemId == R.id.recorder_play_all) {
+            playAll();
+            return true;
+        }
+        else if (itemId == R.id.recorder_delete_all) {
             runConfirmation();
             return true;
         }
