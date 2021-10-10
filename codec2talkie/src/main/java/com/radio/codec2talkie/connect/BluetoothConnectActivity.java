@@ -84,7 +84,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         else {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, BT_ENABLE);
-            Toast.makeText(getApplicationContext(), R.string.bt_turned_on, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.bt_turned_on), Toast.LENGTH_SHORT).show();
         }
     }
 
