@@ -163,7 +163,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                 toastMsg = "Bluetooth adapter is not found";
             } else {
                 toastMsg = "Connected";
-                SocketHandler.setSocket(_btSocket);
+                BluetoothSocketHandler.setSocket(_btSocket);
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("name", _btSelectedName);
                 setResult(Activity.RESULT_OK, resultIntent);

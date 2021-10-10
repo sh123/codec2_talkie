@@ -39,7 +39,7 @@ import android.widget.Toast;
 
 import com.radio.codec2talkie.audio.AudioProcessor;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
-import com.radio.codec2talkie.connect.SocketHandler;
+import com.radio.codec2talkie.connect.BluetoothSocketHandler;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.recorder.RecorderActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_audioProcessor != null && SocketHandler.getSocket() != null && !_isTestMode) {
+        if (_audioProcessor != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
             Toast.makeText(MainActivity.this, "Bluetooth disconnected", Toast.LENGTH_LONG).show();
             _audioProcessor.stopRunning();
         }
