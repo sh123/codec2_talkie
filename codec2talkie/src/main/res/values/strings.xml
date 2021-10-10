@@ -124,12 +124,12 @@
     <string name="ports_tcp_ip_enable_title">Enable TCP/IP</string>
     <string name="ports_tcp_ip_enable_summary">Data will be sent and received through TCP/IP as a client</string>
     <string name="port_tcp_ip_prefs_title">TCP/IP parameters</string>
-    <string name="port_tcp_ip_prefs_summary">Set TCP/iP parameters, such as IP address and port</string>
+    <string name="port_tcp_ip_prefs_summary">Set TCP/IP parameters, such as IP address and port</string>
     <string name="tcp_ip_basic_address_title">IP address</string>
     <string name="tcp_ip_basic_port_title">IP port number</string>
     <string name="tcp_ip_basic_address_summary">Set server IP address to connect</string>
     <string name="tcp_ip_basic_port_summary">Set server port number</string>
-    <string name="tcp_ip_connection_failed">TCP/IP connection failed</string>
+    <string name="tcp_ip_connection_failed">TCP/IP connection failed %1$s:%2$s</string>
     <string name="tcp_ip_connected">TCP/IP connected %1$s:%2$s</string>
 
 </resources>

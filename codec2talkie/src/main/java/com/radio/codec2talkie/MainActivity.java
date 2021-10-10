@@ -40,6 +40,7 @@ import android.widget.Toast;
 import com.radio.codec2talkie.audio.AudioProcessor;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothSocketHandler;
+import com.radio.codec2talkie.connect.TcpIpConnectActivity;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.recorder.RecorderActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_PERMISSIONS = 3;
     private final static int REQUEST_SETTINGS = 4;
     private final static int REQUEST_VOICEMAIL = 5;
+    private final static int REQUEST_CONNECT_TCP_IP = 6;
 
     // S9 level at -93 dBm as per VHF Managers Handbook
     private final static int S_METER_S0_VALUE_DB = -153;
@@ -167,6 +169,11 @@ public class MainActivity extends AppCompatActivity {
     protected void startBluetoothConnectActivity() {
         Intent bluetoothConnectIntent = new Intent(this, BluetoothConnectActivity.class);
         startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_BT);
+    }
+
+    protected void startTcpIpConnectActivity() {
+        Intent bluetoothConnectIntent = new Intent(this, TcpIpConnectActivity.class);
+        startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_TCP_IP);
     }
 
     protected void startVoicemailActivity() {
@@ -470,10 +477,24 @@ public class MainActivity extends AppCompatActivity {
                 startAudioProcessing(TransportFactory.TransportType.BLUETOOTH);
             }
         }
+        else if (requestCode == REQUEST_CONNECT_TCP_IP) {
+            if (resultCode == RESULT_CANCELED) {
+                // fall back to loopback if tcp/ip failed
+                _textConnInfo.setText(R.string.main_status_loopback_test);
+                startAudioProcessing(TransportFactory.TransportType.LOOPBACK);
+            } else if (resultCode == RESULT_OK) {
+                _textConnInfo.setText(data.getStringExtra("name"));
+                startAudioProcessing(TransportFactory.TransportType.TCP_IP);
+            }
+        }
         else if (requestCode == REQUEST_CONNECT_USB) {
             if (resultCode == RESULT_CANCELED) {
-                // fall back to bluetooth if usb failed
-                startBluetoothConnectActivity();
+                // fall back to tcp/ip (if enabled) or bluetooth if usb failed
+                if (_sharedPreferences.getBoolean(PreferenceKeys.PORTS_TCP_IP_ENABLED, false)) {
+                    startTcpIpConnectActivity();
+                } else {
+                    startBluetoothConnectActivity();
+                }
             } else if (resultCode == RESULT_OK) {
                 _textConnInfo.setText(data.getStringExtra("name"));
                 startAudioProcessing(TransportFactory.TransportType.USB);

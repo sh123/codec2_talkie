@@ -19,6 +19,7 @@ import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -38,7 +39,7 @@ public class TcpIpConnectActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_usb_connect);
+        setContentView(R.layout.activity_tcp_ip_connect);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         _address = sharedPreferences.getString(PreferenceKeys.PORTS_TCP_IP_ADDRESS, DEFAULT_ADDRESS);
@@ -63,11 +64,13 @@ public class TcpIpConnectActivity extends AppCompatActivity {
                     _socket.connect(new InetSocketAddress(_address, Integer.parseInt(_port)));
                 } catch (IOException e) {
                     e.printStackTrace();
-                    resultMsg.what = TCP_IP_FAILED;
-                    onTcpIpStateChanged.sendMessage(resultMsg);
                 }
-                TcpIpSocketHandler.setSocket(_socket);
-                resultMsg.what = TCP_IP_CONNECTED;
+                if (_socket.isConnected()) {
+                    TcpIpSocketHandler.setSocket(_socket);
+                    resultMsg.what = TCP_IP_CONNECTED;
+                } else {
+                    resultMsg.what = TCP_IP_FAILED;
+                }
                 onTcpIpStateChanged.sendMessage(resultMsg);
             }
         }.start();
@@ -78,7 +81,7 @@ public class TcpIpConnectActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             String toastMsg;
             if (msg.what == TCP_IP_FAILED) {
-                toastMsg = getString(R.string.tcp_ip_connection_failed);
+                toastMsg = getString(R.string.tcp_ip_connection_failed, _address, _port);
             } else  {
                 toastMsg = getString(R.string.tcp_ip_connected, _address, _port);
 
