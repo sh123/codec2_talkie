@@ -131,5 +131,11 @@
     <string name="tcp_ip_basic_port_summary">Set server port number</string>
     <string name="tcp_ip_connection_failed">TCP/IP connection failed %1$s:%2$s</string>
     <string name="tcp_ip_connected">TCP/IP connected %1$s:%2$s</string>
+    <string name="bt_connect_failed">Bluetooth connect failed</string>
+    <string name="bt_socket_failed">Bluetooth socket failed</string>
+    <string name="bt_adapter_not_found">Bluetooth adapter is not found</string>
+    <string name="bt_connected">Connected</string>
+    <string name="bt_connecting_to">Connecting to %1$s</string>
+    <string name="bt_turned_on">Bluetooth turned on</string>
 
 </resources>

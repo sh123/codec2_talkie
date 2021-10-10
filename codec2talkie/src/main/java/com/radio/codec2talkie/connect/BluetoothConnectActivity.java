@@ -84,7 +84,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         else {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, BT_ENABLE);
-            Toast.makeText(getApplicationContext(),"Bluetooth turned on", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.bt_turned_on, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -150,7 +150,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             String toastMsg;
             if (msg.what == BT_CONNECT_FAILURE) {
-                toastMsg = "Bluetooth connect failed";
+                toastMsg = getString(R.string.bt_connect_failed);
                 // connection to default device failed, fall back
                 if (_btDefaultName != null && !_btDefaultName.trim().isEmpty()) {
                     _btDefaultName = null;
@@ -158,11 +158,11 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                     return;
                 }
             } else if (msg.what == BT_SOCKET_FAILURE) {
-                toastMsg = "Bluetooth socket failed";
+                toastMsg = getString(R.string.bt_socket_failed);
             } else if (msg.what == BT_ADAPTER_FAILURE) {
-                toastMsg = "Bluetooth adapter is not found";
+                toastMsg = getString(R.string.bt_adapter_not_found);
             } else {
-                toastMsg = "Connected";
+                toastMsg = getString(R.string.bt_connected);
                 BluetoothSocketHandler.setSocket(_btSocket);
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("name", _btSelectedName);
@@ -184,7 +184,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             _btSelectedName = (String)parent.getAdapter().getItem(position);
-            Toast.makeText(getApplicationContext(),"Connecting to " + _btSelectedName, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.bt_connecting_to, _btSelectedName), Toast.LENGTH_LONG).show();
             connectToBluetoothClient(addressFromDisplayName(_btSelectedName));
         }
     };
