@@ -8,7 +8,7 @@ public class ProtocolFactory {
         KISS_BUFFERED("KISS BUFFERED"),
         KISS_PARROT("KISS PARROT");
 
-        private String _name;
+        private final String _name;
 
         ProtocolType(String name) {
             _name = name;
@@ -20,17 +20,28 @@ public class ProtocolFactory {
         }
     };
 
-    public static Protocol create(ProtocolType protocolType) {
+    public static Protocol create(ProtocolType protocolType, int codec2ModeId, boolean voicemailEnabled) {
+        Protocol proto;
         switch (protocolType) {
             case KISS:
-                return new Kiss();
+                proto = new Kiss();
+                break;
             case KISS_BUFFERED:
-                return new KissBuffered();
+                proto = new KissBuffered();
+                break;
             case KISS_PARROT:
-                return new KissParrot();
+                proto = new KissParrot();
+                break;
             case RAW:
             default:
-                return new Raw();
+                proto = new Raw();
+                break;
         }
+
+        if (voicemailEnabled) {
+            proto = new VoicemailProxy(proto, codec2ModeId);
+        }
+
+        return proto;
     }
 }

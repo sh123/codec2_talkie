@@ -1,8 +1,10 @@
 package com.radio.codec2talkie;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.MenuCompat;
 import androidx.preference.PreferenceManager;
 
 import android.Manifest;
@@ -23,7 +25,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,9 +37,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.radio.codec2talkie.audio.AudioProcessor;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.SocketHandler;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
+import com.radio.codec2talkie.recorder.RecorderActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
 import com.radio.codec2talkie.tools.RadioTools;
@@ -53,12 +56,11 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
-
     private final static int REQUEST_CONNECT_BT = 1;
     private final static int REQUEST_CONNECT_USB = 2;
     private final static int REQUEST_PERMISSIONS = 3;
     private final static int REQUEST_SETTINGS = 4;
+    private final static int REQUEST_VOICEMAIL = 5;
 
     // S9 level at -93 dBm as per VHF Managers Handbook
     private final static int S_METER_S0_VALUE_DB = -153;
@@ -90,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         String appName = getResources().getString(R.string.app_name);
@@ -166,8 +169,13 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_BT);
     }
 
+    protected void startVoicemailActivity() {
+        Intent voicemailIntent = new Intent(this, RecorderActivity.class);
+        startActivityForResult(voicemailIntent, REQUEST_VOICEMAIL);
+    }
+
     protected boolean requestPermissions() {
-        List<String> permissionsToRequest = new LinkedList<String>();
+        List<String> permissionsToRequest = new LinkedList<>();
 
         for (String permission : _requiredPermissions) {
             if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
@@ -215,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        MenuCompat.setGroupDividerEnabled(menu, true);
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
@@ -227,6 +236,10 @@ public class MainActivity extends AppCompatActivity {
         if (itemId == R.id.preferences) {
             Intent settingsIntent = new Intent(this, SettingsActivity.class);
             startActivityForResult(settingsIntent, REQUEST_SETTINGS);
+            return true;
+        }
+        if (itemId == R.id.voicemail) {
+            startVoicemailActivity();
             return true;
         }
         else if (itemId == R.id.exit) {
@@ -303,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_PERMISSIONS) {
             boolean allGranted = true;
@@ -427,9 +440,15 @@ public class MainActivity extends AppCompatActivity {
             }
 
             speedModeInfo += ", " + protocolType.toString();
+
+            boolean voicemailEnabled = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_VOICEMAIL, false);
+
+            if (voicemailEnabled) {
+                speedModeInfo += ", " + getString(R.string.recorder_status_label);
+            }
             _textCodecMode.setText(speedModeInfo);
 
-            _audioProcessor = new AudioProcessor(transportType, protocolType, codec2ModeId, onAudioProcessorStateChanged, getApplicationContext());
+            _audioProcessor = new AudioProcessor(transportType, protocolType, voicemailEnabled, codec2ModeId, onAudioProcessorStateChanged, getApplicationContext());
             _audioProcessor.start();
         } catch (IOException e) {
             e.printStackTrace();

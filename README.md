@@ -50,7 +50,8 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
     - Keep screen ON
   - **Codec2**
     - Set Codec2 mode/speed from 450 up to 3200 bps
-    - Enable/disable loopback test mode
+    - Enable/disable echo/loopback test mode
+    - Enable/disable RX/TX recorder
   - **TNC parameters**
     - Change default baud rate for USB port
     - Set default Bluetooth device for automatic connectivity on startup
@@ -61,6 +62,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
     - Enable/Disable KISS non-real time buffered playback mode
     - Enable/Disable KISS extensions for radio module control and signal levels (modem must support them to work correctly!)
       - Set radio parameters (frequency, bandwidth, spreading factor, coding rate, power, sync word, crc checksum enable/disable)
+- **Recording player**, simple player, which allows TX/RX recording playback and removal
 
 # Suitable radios and modems
 - Tested, works:
