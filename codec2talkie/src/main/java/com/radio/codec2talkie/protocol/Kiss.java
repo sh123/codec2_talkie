@@ -276,6 +276,10 @@ public class Kiss implements Protocol {
 
     private void sendKissByte(byte b) {
         _outputKissBuffer[_outputKissBufferPos++] = b;
+        if (_outputKissBufferPos >= _outputKissBuffer.length) {
+            Log.e(TAG, "Output KISS buffer overflow, discarding frame");
+            _outputKissBufferPos = 0;
+        }
     }
 
     private void receiveFrameByte(byte b) {
