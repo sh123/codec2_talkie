@@ -101,6 +101,8 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 - **Receiving audio on PC/Raspberry**
   - For raw audio frames `sudo cat /dev/ttyUSB0 | c2dec 700 - - | play -t raw -r 8000 -e signed-integer -b 16 -c 1 -`
   - For KISS encapsulated audio frames command above could be used, but instead of `cat` use https://pypi.org/project/kiss/
+- **App is not installed** error when installing new application
+  - Uninstall previous version and try to install again
 
 # KISS command extensions
 KISS command extensions are used for radio module control and signal report events on port 0, command for radio control is defined as 6 (KISS SetHardware) and signal report command as 7. Radio modules/modems can implement these commands, so they will be controllable from the application and application will be able to show signal levels on S-meter.
