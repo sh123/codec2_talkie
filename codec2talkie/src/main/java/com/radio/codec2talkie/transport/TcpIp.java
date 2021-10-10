@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 public class TcpIp implements Transport {
+
+    private final int RX_TIMEOUT = 50;
 
     private final Socket _socket;
 
@@ -14,13 +17,18 @@ public class TcpIp implements Transport {
 
     public TcpIp(Socket socket) throws IOException {
         _socket = socket;
+        _socket.setSoTimeout(RX_TIMEOUT);
         _inputStream = _socket.getInputStream();
         _outputStream = _socket.getOutputStream();
     }
 
     @Override
     public int read(byte[] data) throws IOException {
-        return _inputStream.read(data);
+        try {
+            return _inputStream.read(data);
+        } catch (SocketTimeoutException e) {
+            return 0;
+        }
     }
 
     @Override
