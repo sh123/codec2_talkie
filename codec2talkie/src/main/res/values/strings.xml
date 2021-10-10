@@ -129,5 +129,7 @@
     <string name="tcp_ip_basic_port_title">IP port number</string>
     <string name="tcp_ip_basic_address_summary">Set server IP address to connect</string>
     <string name="tcp_ip_basic_port_summary">Set server port number</string>
+    <string name="tcp_ip_connection_failed">TCP/IP connection failed</string>
+    <string name="tcp_ip_connected">TCP/IP connected %1$s:%2$s</string>
 
 </resources>

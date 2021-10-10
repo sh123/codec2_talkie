@@ -17,6 +17,9 @@
             android:name=".connect.UsbConnectActivity"
             android:configChanges="orientation|screenSize" />
         <activity
+            android:name=".connect.TcpIpConnectActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
             android:name=".connect.BluetoothConnectActivity"
             android:configChanges="orientation|screenSize"/>
         <activity
