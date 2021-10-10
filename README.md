@@ -63,6 +63,12 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
     - Enable/Disable KISS extensions for radio module control and signal levels (modem must support them to work correctly!)
       - Set radio parameters (frequency, bandwidth, spreading factor, coding rate, power, sync word, crc checksum enable/disable)
 - **Recording player**, simple player, which allows TX/RX recording playback and removal
+  - Click on recording starts playback
+  - Long click on recording removes it
+  - Recording menu allows
+    - Remove all items
+    - Stop current playback
+    - Play all recordings sequentially
 
 # Suitable radios and modems
 - Tested, works:
@@ -103,7 +109,9 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
   - For KISS encapsulated audio frames command above could be used, but instead of `cat` use https://pypi.org/project/kiss/
 - **App is not installed** error when installing new application
   - Uninstall previous version and try to install again
-
+- Cannot install application from unknown source
+  - You need to allow installation of apps from unknown sources from Android settings, or just install Android Studio and build-install application yourself
+  
 # KISS command extensions
 KISS command extensions are used for radio module control and signal report events on port 0, command for radio control is defined as 6 (KISS SetHardware) and signal report command as 7. Radio modules/modems can implement these commands, so they will be controllable from the application and application will be able to show signal levels on S-meter.
 
@@ -128,7 +136,6 @@ Payloads for commands are sent and expected as big endian and defined as:
 ```
 
 # TODO
-- QSO log and non real time voicemail style communcation, where incoming transmissions are recorded, stored and could be played back later if recipient cannot reply immediately in real time
 - Investigate support for other protocols over KISS
   - [M17 Project](https://m17project.org) protocol support, including possible gating to [M17 reflectors](https://m17project.org/reflector/) on modem side
   - AX.25 packets over existing KISS, voice over AX.25 (VoAX.25).
