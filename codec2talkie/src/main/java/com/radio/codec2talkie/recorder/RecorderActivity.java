@@ -2,6 +2,9 @@ package com.radio.codec2talkie.recorder;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -16,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.radio.codec2talkie.MainActivity;
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.audio.AudioPlayer;
 import com.radio.codec2talkie.tools.StorageTools;
 
 import java.io.File;
@@ -46,13 +50,22 @@ public class RecorderActivity extends AppCompatActivity {
         loadFiles(_root);
     }
 
+    private final Handler onPlayerStateChanged = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+            }
+        }
+    };
+
     private final AdapterView.OnItemClickListener onFileClickListener  = (parent, view, position, id) -> {
         Object selectedItem = parent.getAdapter().getItem(position);
-        File selectedFile = new File(_root, selectedItem.toString());
+        File selectedFile = new File(_currentDirectory, selectedItem.toString());
         if (selectedFile.isDirectory()) {
             loadFiles(selectedFile);
         } else {
-            // play file
+            File[] files = {selectedFile};
+            new AudioPlayer(files, onPlayerStateChanged, this).start();
         }
     };
 
@@ -129,11 +142,7 @@ public class RecorderActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item)
     {
         int itemId = item.getItemId();
-
-        if (itemId == R.id.recorder_play_all) {
-            playAll();
-            return true;
-        }
+        
         if (itemId == R.id.recorder_delete_all) {
             runConfirmation();
             return true;
