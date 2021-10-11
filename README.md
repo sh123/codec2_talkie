@@ -31,7 +31,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 # Requirements
 - Android 7.0 (API 24) or higher
   - Application could also be used with your Android network radio, such as Inrico TM-7, apk just needs to be installed over USB, see [Discussion](https://github.com/sh123/codec2_talkie/issues/4)
-- Modem, radio module or transceiver which supports [KISS protocol](https://en.wikipedia.org/wiki/KISS_(TNC)) or can process raw Codec2 audio frames over serial Bluetooth or USB
+- Modem, radio module or transceiver which supports [KISS protocol](https://en.wikipedia.org/wiki/KISS_(TNC)) or can process KISS or raw Codec2 audio frames over serial Bluetooth, USB or TCP/IP
 
 # Features
 - **PTT UI button**, push and talk, Codec2 speech frames will be transmitted to the modem
