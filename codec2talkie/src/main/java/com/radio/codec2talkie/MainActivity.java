@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_CONNECT_USB = 2;
     private final static int REQUEST_PERMISSIONS = 3;
     private final static int REQUEST_SETTINGS = 4;
-    private final static int REQUEST_VOICEMAIL = 5;
+    private final static int REQUEST_RECORDER = 5;
     private final static int REQUEST_CONNECT_TCP_IP = 6;
 
     // S9 level at -93 dBm as per VHF Managers Handbook
@@ -176,9 +176,9 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_TCP_IP);
     }
 
-    protected void startVoicemailActivity() {
-        Intent voicemailIntent = new Intent(this, RecorderActivity.class);
-        startActivityForResult(voicemailIntent, REQUEST_VOICEMAIL);
+    protected void startRecorderActivity() {
+        Intent recorderIntent = new Intent(this, RecorderActivity.class);
+        startActivityForResult(recorderIntent, REQUEST_RECORDER);
     }
 
     protected boolean requestPermissions() {
@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         if (itemId == R.id.voicemail) {
-            startVoicemailActivity();
+            startRecorderActivity();
             return true;
         }
         else if (itemId == R.id.exit) {
