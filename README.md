@@ -55,6 +55,8 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
   - **TNC parameters**
     - Change default baud rate for USB port
     - Set default Bluetooth device for automatic connectivity on startup
+    - Enable KISS over TCP/IP, when enabled USB and Bluetooth connectivity is disabled
+      - Set TCP/IP parameters: IP address, port number, number of re-reconnect retries and delay between connect re-tries
   - **KISS**
     - Enable/Disable KISS, when disabled raw codec2 audio frames will be transmitted
     - Set basic KISS parmaters (P persistence, Slot Time, TX delay, TX tail)
