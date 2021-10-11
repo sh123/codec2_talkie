@@ -245,8 +245,14 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(settingsIntent, REQUEST_SETTINGS);
             return true;
         }
-        if (itemId == R.id.voicemail) {
+        if (itemId == R.id.recorder) {
             startRecorderActivity();
+            return true;
+        }
+        if (itemId == R.id.reconnect) {
+            if (_audioProcessor != null) {
+                _audioProcessor.stopRunning();
+            }
             return true;
         }
         else if (itemId == R.id.exit) {

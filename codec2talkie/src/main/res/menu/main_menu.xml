@@ -2,8 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:id="@+id/group_main">
         <item
-            android:id="@+id/voicemail"
+            android:id="@+id/recorder"
             android:title="@string/menu_recorder"></item>
+        <item
+            android:id="@+id/reconnect"
+            android:title="@string/menu_reconnect"></item>
     </group>
     <group android:id="@+id/group_settings">
         <item

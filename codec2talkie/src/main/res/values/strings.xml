@@ -137,5 +137,6 @@
     <string name="bt_connected">Connected</string>
     <string name="bt_connecting_to">Connecting to %1$s</string>
     <string name="bt_turned_on">Bluetooth turned on</string>
+    <string name="menu_reconnect">Reconnect</string>
 
 </resources>
