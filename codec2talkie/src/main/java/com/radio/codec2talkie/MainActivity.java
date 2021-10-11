@@ -157,7 +157,11 @@ public class MainActivity extends AppCompatActivity {
             _textConnInfo.setText(R.string.main_status_loopback_test);
             startAudioProcessing(TransportFactory.TransportType.LOOPBACK);
         } else if (requestPermissions()) {
-            startUsbConnectActivity();
+            if (_sharedPreferences.getBoolean(PreferenceKeys.PORTS_TCP_IP_ENABLED, false)) {
+                startTcpIpConnectActivity();
+            } else {
+                startUsbConnectActivity();
+            }
         }
     }
 
@@ -495,12 +499,8 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (requestCode == REQUEST_CONNECT_USB) {
             if (resultCode == RESULT_CANCELED) {
-                // fall back to tcp/ip (if enabled) or bluetooth if usb failed
-                if (_sharedPreferences.getBoolean(PreferenceKeys.PORTS_TCP_IP_ENABLED, false)) {
-                    startTcpIpConnectActivity();
-                } else {
-                    startBluetoothConnectActivity();
-                }
+                // fall back to bluetooth if usb failed
+                startBluetoothConnectActivity();
             } else if (resultCode == RESULT_OK) {
                 _textConnInfo.setText(data.getStringExtra("name"));
                 startAudioProcessing(TransportFactory.TransportType.USB);

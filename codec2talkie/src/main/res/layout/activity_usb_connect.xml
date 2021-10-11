@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".connect.UsbConnectActivity">
 
+    <TextView
+        android:id="@+id/textViewConnectingUsb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/usb_connecting"
+        app:layout_constraintBottom_toTopOf="@+id/progressBarUsb"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <ProgressBar
         android:id="@+id/progressBarUsb"
         style="@style/Widget.AppCompat.ProgressBar"

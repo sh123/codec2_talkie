@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.radio.codec2talkie.R;
@@ -41,6 +42,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
     private ProgressBar _progressBarBt;
     private ListView _btDevicesList;
+    private TextView _textViewConnectingBt;
 
     private BluetoothAdapter _btAdapter;
     private BluetoothSocket _btSocket;
@@ -63,6 +65,9 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         _btDevicesList.setAdapter(_btArrayAdapter);
         _btDevicesList.setOnItemClickListener(onBtDeviceClickListener);
         _btDevicesList.setVisibility(View.INVISIBLE);
+
+        _textViewConnectingBt = findViewById(R.id.textViewConnectingBt);
+        _textViewConnectingBt.setVisibility(View.VISIBLE);
 
         _progressBarBt = findViewById(R.id.progressBarBt);
         _progressBarBt.setVisibility(View.VISIBLE);
@@ -91,6 +96,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     private void showDeviceList() {
         if (_btDevicesList.getVisibility() == View.INVISIBLE) {
             _progressBarBt.setVisibility(View.INVISIBLE);
+            _textViewConnectingBt.setVisibility(View.INVISIBLE);
             _btDevicesList.setVisibility(View.VISIBLE);
         }
     }
@@ -98,6 +104,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     private void showProgressBar() {
         if (_progressBarBt.getVisibility() == View.INVISIBLE) {
             _progressBarBt.setVisibility(View.VISIBLE);
+            _textViewConnectingBt.setVisibility(View.VISIBLE);
             _btDevicesList.setVisibility(View.INVISIBLE);
         }
     }

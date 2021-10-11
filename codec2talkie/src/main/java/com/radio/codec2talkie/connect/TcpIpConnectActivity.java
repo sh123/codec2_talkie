@@ -28,6 +28,9 @@ public class TcpIpConnectActivity extends AppCompatActivity {
     private final int TCP_IP_CONNECTED = 1;
     private final int TCP_IP_FAILED = 2;
 
+    private final int MAX_RETRIES = 5;
+    private final int RETRY_DELAY_MS = 5000;
+
     private final String DEFAULT_ADDRESS = "127.0.0.1";
     private final String DEFAULT_PORT = "8081";
 
@@ -44,7 +47,6 @@ public class TcpIpConnectActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         _address = sharedPreferences.getString(PreferenceKeys.PORTS_TCP_IP_ADDRESS, DEFAULT_ADDRESS);
         _port = sharedPreferences.getString(PreferenceKeys.PORTS_TCP_IP_PORT, DEFAULT_PORT);
-        _socket = new Socket();
 
         ProgressBar progressBarTcpIp = findViewById(R.id.progressBarTcpIp);
         progressBarTcpIp.setVisibility(View.VISIBLE);
@@ -60,10 +62,25 @@ public class TcpIpConnectActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Message resultMsg = new Message();
-                try {
-                    _socket.connect(new InetSocketAddress(_address, Integer.parseInt(_port)));
-                } catch (IOException e) {
-                    e.printStackTrace();
+                int count = 0;
+                int maxRetries = MAX_RETRIES;
+                boolean connected = false;
+
+                while (true) {
+                    try {
+                        _socket = new Socket();
+                        _socket.connect(new InetSocketAddress(_address, Integer.parseInt(_port)));
+                        connected = true;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        if (++count >= maxRetries) break;
+                        try {
+                            Thread.sleep(RETRY_DELAY_MS);
+                        } catch (InterruptedException interruptedException) {
+                            interruptedException.printStackTrace();
+                        }
+                    }
+                    if (connected) break;
                 }
                 if (_socket.isConnected()) {
                     TcpIpSocketHandler.setSocket(_socket);
