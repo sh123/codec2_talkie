@@ -23,8 +23,8 @@ LoPy, TTGO, Heltec and others, but could also be used with custom modems + exter
 
 ![alt text](images/tracker.jpg)
 
-Application connects to your radio KISS Bluetooth/USB modem, records speech from the phone microphone on transmit, encodes audio into codec2 format, encapsulates into KISS frames and sends to your modem. 
-On receive, modem sends KISS packets to the phone with codec2 speech, application decodes codec2 frames and plays them through phone speaker.
+Application connects to your radio KISS Bluetooth/USB modem, records speech from the phone microphone on transmit, encodes audio into Codec2 format, encapsulates into KISS frames and sends to your modem. 
+On receive, modem sends KISS packets to the phone with Codec2 speech, application decodes Codec2 frames and plays them through phone speaker.
 
 It does not deal with radio management, modulation, etc, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK, FreeDV or any other modulation scheme. Radio just needs to expose KISS Bluetooth interface for speech frames. 
 
@@ -39,12 +39,12 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 - **USB serial connectivity** (default 115200 bps, 8 data bits, 1 stop bit, no parity), just select this app after connecting to USB and it will use given connection, baud rate could be changed from Preferences
 - **Bluetooth connectivity** on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from Android Bluetooth Settings, default Bluetooth device could be set from Preferences
 - **TCP/IP connectivity** on startup, application can connect to TCP/IP based modem and operate through the network, for example, with Direwolf application
-- **Voice codec2 mode selection**, which allows you to select various codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends as codec2 mode negotiation between clients is not implemented at the moment
+- **Voice Codec2 mode selection**, which allows you to select various Codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends as Codec2 mode negotiation between clients is not implemented at the moment
 - **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality, could be enabled or disabled from Preferences, this mode is activated if no USB or Bluetooth connection were made
 - **Voice level VU indicator**, display audio level on transmit or receive
 - **S-meter**, displayed only when KISS extensions are enabled and modem is able to send signal level information
 - **Parrot mode**, received voice will be digirepated in addition to playback through the speaker
-- **KISS buffered mode**, non-real time, playback will start only after all speech is received, use when modem bit rate is lower than codec2 bit rate to avoid gaps during playback at the cost of longer receiving delay before playback
+- **KISS buffered mode**, non-real time, playback will start only after all speech is received, use when modem bit rate is lower than Codec2 bit rate to avoid gaps during playback at the cost of longer receiving delay before playback
 - **Preferences**, allow to modify default parameters
   - **Application Settings**
     - Enable PTT with volume up/down buttons
@@ -59,7 +59,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
     - Enable KISS over TCP/IP, when enabled USB and Bluetooth connectivity is disabled
       - Set TCP/IP parameters: IP address, port number, number of re-reconnect retries and delay between connect re-tries
   - **KISS**
-    - Enable/Disable KISS, when disabled raw codec2 audio frames will be transmitted
+    - Enable/Disable KISS, when disabled raw Codec2 audio frames will be transmitted
     - Set basic KISS parmaters (P persistence, Slot Time, TX delay, TX tail)
     - Enable/Disable parrot (digirepeater) mode
     - Enable/Disable KISS non-real time buffered playback mode
