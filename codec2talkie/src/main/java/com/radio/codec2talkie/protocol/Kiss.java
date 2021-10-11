@@ -166,7 +166,7 @@ public class Kiss implements Protocol {
         if (_outputKissBufferPos == 0) {
             startKissPacket(KISS_CMD_DATA);
         }
-        // new frame does not fit, complete and create new frame
+        // new frame does not fit, complete, send and create new frame
         if ( _outputKissBufferPos + escapedFrameSize >= KISS_TX_FRAME_MAX_SIZE) {
             completeKissPacket();
             startKissPacket(KISS_CMD_DATA);
@@ -275,11 +275,11 @@ public class Kiss implements Protocol {
     }
 
     private void sendKissByte(byte b) {
-        _outputKissBuffer[_outputKissBufferPos++] = b;
-        if (_outputKissBufferPos > _outputKissBuffer.length) {
+        if (_outputKissBufferPos >= _outputKissBuffer.length) {
             Log.e(TAG, "Output KISS buffer overflow, discarding frame");
             _outputKissBufferPos = 0;
         }
+        _outputKissBuffer[_outputKissBufferPos++] = b;
     }
 
     private void receiveFrameByte(byte b) {

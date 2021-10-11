@@ -25,7 +25,12 @@ public class TcpIp implements Transport {
     @Override
     public int read(byte[] data) throws IOException {
         try {
-            return _inputStream.read(data);
+            int bytesRead = _inputStream.read(data);
+            // connection closed
+            if (bytesRead == -1) {
+                throw new IOException();
+            }
+            return bytesRead;
         } catch (SocketTimeoutException e) {
             return 0;
         }
