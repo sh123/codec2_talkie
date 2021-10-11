@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -14,6 +15,9 @@
         android:theme="@style/Theme.Codec2Talkie">
         <activity
             android:name=".connect.UsbConnectActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
+            android:name=".connect.TcpIpConnectActivity"
             android:configChanges="orientation|screenSize" />
         <activity
             android:name=".connect.BluetoothConnectActivity"

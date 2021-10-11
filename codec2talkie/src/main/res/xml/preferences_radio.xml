@@ -6,6 +6,8 @@
         app:title="@string/kiss_extensions_radio_control_title">
 
         <EditTextPreference
+            android:inputType="numberDecimal"
+            android:digits="0123456789"
             app:key="kiss_extension_radio_frequency"
             app:title="@string/kiss_extensions_radio_frequency_title"
             app:summary="@string/kiss_extensions_radio_frequency_summary"
@@ -13,6 +15,8 @@
         </EditTextPreference>
 
         <EditTextPreference
+            android:inputType="numberDecimal"
+            android:digits="0123456789"
             app:key="kiss_extension_radio_bandwidth"
             app:title="@string/kiss_extensions_radio_bandwidth_title"
             app:summary="@string/kiss_extensions_radio_bandwidth_summary"
@@ -20,6 +24,8 @@
         </EditTextPreference>
 
         <EditTextPreference
+            android:inputType="numberDecimal"
+            android:digits="0123456789"
             app:key="kiss_extension_radio_power"
             app:title="@string/kiss_extensions_radio_power_title"
             app:summary="@string/kiss_extensions_radio_power_summary"
@@ -27,6 +33,8 @@
         </EditTextPreference>
 
         <EditTextPreference
+            android:inputType="numberDecimal"
+            android:digits="0123456789"
             app:key="kiss_extension_radio_sf"
             app:title="@string/kiss_extensions_radio_sf_title"
             app:summary="@string/kiss_extensions_radio_sf_summary"
@@ -34,6 +42,8 @@
         </EditTextPreference>
 
         <EditTextPreference
+            android:inputType="numberDecimal"
+            android:digits="0123456789"
             app:key="kiss_extension_radio_cr"
             app:title="@string/kiss_extensions_radio_cr_title"
             app:summary="@string/kiss_extensions_radio_cr_summary"

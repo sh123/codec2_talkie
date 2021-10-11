@@ -39,7 +39,8 @@ import android.widget.Toast;
 
 import com.radio.codec2talkie.audio.AudioProcessor;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
-import com.radio.codec2talkie.connect.SocketHandler;
+import com.radio.codec2talkie.connect.BluetoothSocketHandler;
+import com.radio.codec2talkie.connect.TcpIpConnectActivity;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.recorder.RecorderActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
@@ -60,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_CONNECT_USB = 2;
     private final static int REQUEST_PERMISSIONS = 3;
     private final static int REQUEST_SETTINGS = 4;
-    private final static int REQUEST_VOICEMAIL = 5;
+    private final static int REQUEST_RECORDER = 5;
+    private final static int REQUEST_CONNECT_TCP_IP = 6;
 
     // S9 level at -93 dBm as per VHF Managers Handbook
     private final static int S_METER_S0_VALUE_DB = -153;
@@ -155,7 +157,11 @@ public class MainActivity extends AppCompatActivity {
             _textConnInfo.setText(R.string.main_status_loopback_test);
             startAudioProcessing(TransportFactory.TransportType.LOOPBACK);
         } else if (requestPermissions()) {
-            startUsbConnectActivity();
+            if (_sharedPreferences.getBoolean(PreferenceKeys.PORTS_TCP_IP_ENABLED, false)) {
+                startTcpIpConnectActivity();
+            } else {
+                startUsbConnectActivity();
+            }
         }
     }
 
@@ -169,9 +175,14 @@ public class MainActivity extends AppCompatActivity {
         startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_BT);
     }
 
-    protected void startVoicemailActivity() {
-        Intent voicemailIntent = new Intent(this, RecorderActivity.class);
-        startActivityForResult(voicemailIntent, REQUEST_VOICEMAIL);
+    protected void startTcpIpConnectActivity() {
+        Intent bluetoothConnectIntent = new Intent(this, TcpIpConnectActivity.class);
+        startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_TCP_IP);
+    }
+
+    protected void startRecorderActivity() {
+        Intent recorderIntent = new Intent(this, RecorderActivity.class);
+        startActivityForResult(recorderIntent, REQUEST_RECORDER);
     }
 
     protected boolean requestPermissions() {
@@ -204,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_audioProcessor != null && SocketHandler.getSocket() != null && !_isTestMode) {
+        if (_audioProcessor != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
             Toast.makeText(MainActivity.this, "Bluetooth disconnected", Toast.LENGTH_LONG).show();
             _audioProcessor.stopRunning();
         }
@@ -238,8 +249,14 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(settingsIntent, REQUEST_SETTINGS);
             return true;
         }
-        if (itemId == R.id.voicemail) {
-            startVoicemailActivity();
+        if (itemId == R.id.recorder) {
+            startRecorderActivity();
+            return true;
+        }
+        if (itemId == R.id.reconnect) {
+            if (_audioProcessor != null) {
+                _audioProcessor.stopRunning();
+            }
             return true;
         }
         else if (itemId == R.id.exit) {
@@ -468,6 +485,16 @@ public class MainActivity extends AppCompatActivity {
             } else if (resultCode == RESULT_OK) {
                 _textConnInfo.setText(data.getStringExtra("name"));
                 startAudioProcessing(TransportFactory.TransportType.BLUETOOTH);
+            }
+        }
+        else if (requestCode == REQUEST_CONNECT_TCP_IP) {
+            if (resultCode == RESULT_CANCELED) {
+                // fall back to loopback if tcp/ip failed
+                _textConnInfo.setText(R.string.main_status_loopback_test);
+                startAudioProcessing(TransportFactory.TransportType.LOOPBACK);
+            } else if (resultCode == RESULT_OK) {
+                _textConnInfo.setText(data.getStringExtra("name"));
+                startAudioProcessing(TransportFactory.TransportType.TCP_IP);
             }
         }
         else if (requestCode == REQUEST_CONNECT_USB) {

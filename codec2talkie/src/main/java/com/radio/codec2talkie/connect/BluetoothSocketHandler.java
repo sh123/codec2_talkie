@@ -2,7 +2,7 @@ package com.radio.codec2talkie.connect;
 
 import android.bluetooth.BluetoothSocket;
 
-public class SocketHandler {
+public class BluetoothSocketHandler {
     private static BluetoothSocket socket;
 
     public static synchronized BluetoothSocket getSocket(){
@@ -10,6 +10,6 @@ public class SocketHandler {
     }
 
     public static synchronized void setSocket(BluetoothSocket socket){
-        SocketHandler.socket = socket;
+        BluetoothSocketHandler.socket = socket;
     }
 }

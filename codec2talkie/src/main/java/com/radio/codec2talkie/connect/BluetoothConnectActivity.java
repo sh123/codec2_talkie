@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.radio.codec2talkie.R;
@@ -41,6 +42,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
     private ProgressBar _progressBarBt;
     private ListView _btDevicesList;
+    private TextView _textViewConnectingBt;
 
     private BluetoothAdapter _btAdapter;
     private BluetoothSocket _btSocket;
@@ -64,6 +66,9 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         _btDevicesList.setOnItemClickListener(onBtDeviceClickListener);
         _btDevicesList.setVisibility(View.INVISIBLE);
 
+        _textViewConnectingBt = findViewById(R.id.textViewConnectingBt);
+        _textViewConnectingBt.setVisibility(View.VISIBLE);
+
         _progressBarBt = findViewById(R.id.progressBarBt);
         _progressBarBt.setVisibility(View.VISIBLE);
         ObjectAnimator.ofInt(_progressBarBt, "progress", 10)
@@ -84,13 +89,14 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         else {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, BT_ENABLE);
-            Toast.makeText(getApplicationContext(),"Bluetooth turned on", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.bt_turned_on), Toast.LENGTH_SHORT).show();
         }
     }
 
     private void showDeviceList() {
         if (_btDevicesList.getVisibility() == View.INVISIBLE) {
             _progressBarBt.setVisibility(View.INVISIBLE);
+            _textViewConnectingBt.setVisibility(View.INVISIBLE);
             _btDevicesList.setVisibility(View.VISIBLE);
         }
     }
@@ -98,6 +104,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     private void showProgressBar() {
         if (_progressBarBt.getVisibility() == View.INVISIBLE) {
             _progressBarBt.setVisibility(View.VISIBLE);
+            _textViewConnectingBt.setVisibility(View.VISIBLE);
             _btDevicesList.setVisibility(View.INVISIBLE);
         }
     }
@@ -150,7 +157,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             String toastMsg;
             if (msg.what == BT_CONNECT_FAILURE) {
-                toastMsg = "Bluetooth connect failed";
+                toastMsg = getString(R.string.bt_connect_failed);
                 // connection to default device failed, fall back
                 if (_btDefaultName != null && !_btDefaultName.trim().isEmpty()) {
                     _btDefaultName = null;
@@ -158,12 +165,12 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                     return;
                 }
             } else if (msg.what == BT_SOCKET_FAILURE) {
-                toastMsg = "Bluetooth socket failed";
+                toastMsg = getString(R.string.bt_socket_failed);
             } else if (msg.what == BT_ADAPTER_FAILURE) {
-                toastMsg = "Bluetooth adapter is not found";
+                toastMsg = getString(R.string.bt_adapter_not_found);
             } else {
-                toastMsg = "Connected";
-                SocketHandler.setSocket(_btSocket);
+                toastMsg = getString(R.string.bt_connected);
+                BluetoothSocketHandler.setSocket(_btSocket);
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("name", _btSelectedName);
                 setResult(Activity.RESULT_OK, resultIntent);
@@ -184,7 +191,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             _btSelectedName = (String)parent.getAdapter().getItem(position);
-            Toast.makeText(getApplicationContext(),"Connecting to " + _btSelectedName, Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.bt_connecting_to, _btSelectedName), Toast.LENGTH_LONG).show();
             connectToBluetoothClient(addressFromDisplayName(_btSelectedName));
         }
     };
