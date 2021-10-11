@@ -8,7 +8,7 @@ import java.net.SocketTimeoutException;
 
 public class TcpIp implements Transport {
 
-    private final int RX_TIMEOUT = 50;
+    private final int RX_TIMEOUT = 10;
 
     private final Socket _socket;
 
