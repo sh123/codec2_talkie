@@ -17,7 +17,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class VoicemailProxy implements Protocol {
+public class RecorderProxy implements Protocol {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -31,7 +31,7 @@ public class VoicemailProxy implements Protocol {
     final Protocol _protocol;
     final int _codec2ModeId;
 
-    public VoicemailProxy(Protocol protocol, int codec2ModeId) {
+    public RecorderProxy(Protocol protocol, int codec2ModeId) {
         _protocol = protocol;
         _codec2ModeId = codec2ModeId;
     }

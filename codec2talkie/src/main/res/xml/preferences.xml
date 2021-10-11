@@ -41,7 +41,7 @@
         </SwitchPreference>
 
         <SwitchPreference
-            app:key="codec2_voicemail"
+            app:key="codec2_recording_enabled"
             app:title="@string/codec2_recorder_title"
             app:summary="@string/codec2_recorder_summary"
             app:defaultValue="false">
