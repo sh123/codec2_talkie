@@ -124,7 +124,7 @@
     <string name="ports_tcp_ip_enable_title">Enable TCP/IP</string>
     <string name="ports_tcp_ip_enable_summary">Data will be sent and received through TCP/IP as a client</string>
     <string name="port_tcp_ip_prefs_title">TCP/IP parameters</string>
-    <string name="port_tcp_ip_prefs_summary">Set TCP/IP parameters, such as IP address and port</string>
+    <string name="port_tcp_ip_prefs_summary">Set TCP/IP parameters, such as IP address, port or number of reconnects</string>
     <string name="tcp_ip_basic_address_title">IP address</string>
     <string name="tcp_ip_basic_port_title">IP port number</string>
     <string name="tcp_ip_basic_address_summary">Set server IP address to connect</string>
@@ -141,4 +141,8 @@
     <string name="tcp_ip_connecting">Connecting to remote KISS server…</string>
     <string name="bt_connecting">Connecting bluetooth…</string>
     <string name="usb_connecting">Connecting USB…</string>
+    <string name="tcp_ip_basic_retry_count_title">Connect retry count</string>
+    <string name="tcp_ip_basic_retry_count_summary">Try to connect number of times when connecting for the first time or when connection is lost</string>
+    <string name="tcp_ip_basic_retry_delay_title">Connect retry delay</string>
+    <string name="tcp_ip_basic_retry_delay_summary">How many milliseonds to wait before trying to connect again</string>
 </resources>
