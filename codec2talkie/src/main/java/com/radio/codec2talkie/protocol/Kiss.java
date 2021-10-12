@@ -1,11 +1,17 @@
 package com.radio.codec2talkie.protocol;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.MainActivity;
+import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.transport.Transport;
 
@@ -37,6 +43,7 @@ public class Kiss implements Protocol {
     private final byte KISS_CMD_TX_TAIL = (byte)0x04;
     private final byte KISS_CMD_SET_HARDWARE = (byte)0x06;
     private final byte KISS_CMD_SIGNAL_REPORT = (byte)0x07;
+    private final byte KISS_CMD_REBOOT = (byte)0x08;
     private final byte KISS_CMD_NOCMD = (byte)0x80;
 
     private final byte CSMA_PERSISTENCE = (byte)0xff;
@@ -74,6 +81,8 @@ public class Kiss implements Protocol {
     private SharedPreferences _sharedPreferences;
     private boolean _isExtendedMode;
 
+    private Context _context;
+
     public Kiss() {
         _inputRawDataBuffer = new byte[INPUT_RAW_BUFFER_SIZE];
         _kissCmdBuffer = new byte [KISS_CMD_BUFFER_SIZE];
@@ -90,6 +99,7 @@ public class Kiss implements Protocol {
 
     public void initialize(Transport transport, Context context) throws IOException {
         _transport = transport;
+        _context = context;
 
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         _isExtendedMode = _sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false);
@@ -156,7 +166,23 @@ public class Kiss implements Protocol {
             sendKissByte(b);
         }
         completeKissPacket();
+
+        _context.registerReceiver(onModemRebootRequested, new IntentFilter(PreferenceKeys.KISS_EXTENSIONS_ACTION_REBOOT_REQUESTED));
     }
+
+    private final BroadcastReceiver onModemRebootRequested = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Toast.makeText(_context, R.string.kiss_toast_modem_reboot, Toast.LENGTH_LONG).show();
+            startKissPacket(KISS_CMD_REBOOT);
+            try {
+                completeKissPacket();
+            } catch (IOException e) {
+                e.printStackTrace();
+                resetState();
+            }
+        }
+    };
 
     public void send(byte [] frame) throws IOException {
         ByteBuffer escapedFrame = escape(frame);

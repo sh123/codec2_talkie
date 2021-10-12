@@ -1,11 +1,18 @@
 package com.radio.codec2talkie.settings;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
 
+import com.radio.codec2talkie.MainActivity;
 import com.radio.codec2talkie.R;
+
+import java.util.Objects;
 
 public class SettingsActivity extends AppCompatActivity
 {
@@ -15,8 +22,7 @@ public class SettingsActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction().replace(android.R.id.content, new SettingsFragment()).commit();
     }
 
-    public static class SettingsFragment extends PreferenceFragmentCompat
-    {
+    public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferences, rootKey);
@@ -28,6 +34,14 @@ public class SettingsActivity extends AppCompatActivity
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferences_radio, null);
+
+            Preference rebootPreference = findPreference("kiss_extension_reboot");
+            assert rebootPreference != null;
+            rebootPreference.setOnPreferenceClickListener(preference -> {
+                Intent intent = new Intent(PreferenceKeys.KISS_EXTENSIONS_ACTION_REBOOT_REQUESTED);
+                requireContext().sendBroadcast(intent);
+                return true;
+            });
         }
     }
 

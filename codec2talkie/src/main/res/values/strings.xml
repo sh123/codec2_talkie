@@ -157,4 +157,7 @@
     <string name="processor_disconnected">Disconnected</string>
     <string name="audio_failed_to_start_processing">Failed to start audio processing</string>
     <string name="kiss_scrambler_label">SEC</string>
+    <string name="kiss_extension_reboot_title">Reboot modem</string>
+    <string name="kiss_extension_reboot_summary">Click to send reboot command to the modem</string>
+    <string name="kiss_toast_modem_reboot">Modem reboot requested</string>
 </resources>
