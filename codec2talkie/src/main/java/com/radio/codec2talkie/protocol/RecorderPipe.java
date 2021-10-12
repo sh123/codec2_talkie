@@ -17,7 +17,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class RecorderProxy implements Protocol {
+public class RecorderPipe implements Protocol {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -28,11 +28,11 @@ public class RecorderProxy implements Protocol {
     FileOutputStream _activeStream;
     Timer _fileRotationTimer;
 
-    final Protocol _protocol;
+    final Protocol _childProtocol;
     final int _codec2ModeId;
 
-    public RecorderProxy(Protocol protocol, int codec2ModeId) {
-        _protocol = protocol;
+    public RecorderPipe(Protocol childProtocol, int codec2ModeId) {
+        _childProtocol = childProtocol;
         _codec2ModeId = codec2ModeId;
     }
 
@@ -40,18 +40,18 @@ public class RecorderProxy implements Protocol {
     public void initialize(Transport transport, Context context) throws IOException {
         _context = context;
         _storage = StorageTools.getStorage(context);
-        _protocol.initialize(transport, context);
+        _childProtocol.initialize(transport, context);
     }
 
     @Override
     public void send(byte[] frame) throws IOException {
-        _protocol.send(frame);
+        _childProtocol.send(frame);
         writeToFile(frame);
     }
 
     @Override
     public boolean receive(Callback callback) throws IOException {
-        return _protocol.receive(new Callback() {
+        return _childProtocol.receive(new Callback() {
             @Override
             protected void onReceiveAudioFrames(byte[] audioFrames) {
                 callback.onReceiveAudioFrames(audioFrames);
@@ -67,7 +67,7 @@ public class RecorderProxy implements Protocol {
 
     @Override
     public void flush() throws IOException {
-        _protocol.flush();
+        _childProtocol.flush();
     }
 
     private void writeToFile(byte[] rawData)  {

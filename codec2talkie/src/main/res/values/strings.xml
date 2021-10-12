@@ -144,5 +144,17 @@
     <string name="tcp_ip_basic_retry_count_title">Connect retry count</string>
     <string name="tcp_ip_basic_retry_count_summary">Try to connect number of times when connecting for the first time or when connection is lost</string>
     <string name="tcp_ip_basic_retry_delay_title">Connect retry delay</string>
-    <string name="tcp_ip_basic_retry_delay_summary">How many milliseonds to wait before trying to connect again</string>
+    <string name="tcp_ip_basic_retry_delay_summary">How many milliseconds to wait before trying to connect again</string>
+    <string name="kiss_enable_scrambler_title">(Experimental) Enable speech scrambling</string>
+    <string name="kiss_enable_scrambler_summary">Enable speech scrambling, you MUST understand what you are doing, might be illegal in your country</string>
+    <string name="kiss_scrambler_key_title">(Experimental) Set key for speech scrambling</string>
+    <string name="kiss_scrambler_key_summary">Set key for speech scrambling, should be the same on all devices</string>
+    <string name="permissions_granted">Permissions Granted</string>
+    <string name="permissions_denied">Permissions Denied</string>
+    <string name="usb_detached">USB detached</string>
+    <string name="bt_disconnected">Bluetooth disconnected</string>
+    <string name="processor_connected">Connected</string>
+    <string name="processor_disconnected">Disconnected</string>
+    <string name="audio_failed_to_start_processing">Failed to start audio processing</string>
+    <string name="kiss_scrambler_label">SEC</string>
 </resources>

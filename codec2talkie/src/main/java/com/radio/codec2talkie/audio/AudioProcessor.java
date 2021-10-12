@@ -82,15 +82,14 @@ public class AudioProcessor extends Thread {
 
     private final Context _context;
 
-    public AudioProcessor(TransportFactory.TransportType transportType, ProtocolFactory.ProtocolType protocolType,
-                          boolean recordingEnabled, int codec2Mode,
+    public AudioProcessor(TransportFactory.TransportType transportType, ProtocolFactory.ProtocolType protocolType, int codec2Mode,
                           Handler onPlayerStateChanged, Context context) throws IOException {
         _onPlayerStateChanged = onPlayerStateChanged;
 
         _context = context;
 
         _transport  = TransportFactory.create(transportType);
-        _protocol = ProtocolFactory.create(protocolType, codec2Mode, recordingEnabled);
+        _protocol = ProtocolFactory.create(protocolType, codec2Mode, context);
 
         _processPeriodicTimer = new Timer();
 

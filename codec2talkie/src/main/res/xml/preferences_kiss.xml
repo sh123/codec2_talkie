@@ -41,5 +41,20 @@ s
             app:defaultValue="50">
         </EditTextPreference>
 
+        <SwitchPreference
+            app:key="kiss_enable_scrambler"
+            app:title="@string/kiss_enable_scrambler_title"
+            app:summary="@string/kiss_enable_scrambler_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <EditTextPreference
+            android:key="kiss_scrambler_key"
+            android:title="@string/kiss_scrambler_key_title"
+            android:summary="@string/kiss_scrambler_key_summary"
+            app:dependency="kiss_enable_scrambler"
+            app:defaultValue="0">
+        </EditTextPreference>
+
     </PreferenceCategory>
 </PreferenceScreen>

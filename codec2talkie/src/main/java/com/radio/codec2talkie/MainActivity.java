@@ -45,7 +45,7 @@ import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.recorder.RecorderActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
-import com.radio.codec2talkie.tools.RadioTools;
+import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.transport.TransportFactory;
 import com.radio.codec2talkie.connect.UsbConnectActivity;
 import com.radio.codec2talkie.connect.UsbPortHandler;
@@ -68,9 +68,6 @@ public class MainActivity extends AppCompatActivity {
     private final static int S_METER_S0_VALUE_DB = -153;
     // from S0 up to S9+40
     private final static int S_METER_RANGE_DB = 100;
-
-    private final static int UV_METER_MIN_DELTA = 30;
-    private final static int UV_METER_MAX_DELTA = -20;
 
     private final String[] _requiredPermissions = new String[] {
             Manifest.permission.BLUETOOTH,
@@ -112,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         _progressAudioLevel = findViewById(R.id.progressAudioLevel);
         _progressAudioLevel.setMax(barMaxValue);
         _progressAudioLevel.getProgressDrawable().setColorFilter(
-                new PorterDuffColorFilter(colorFromAudioLevel(AudioProcessor.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
+                new PorterDuffColorFilter(AudioTools.colorFromAudioLevel(AudioProcessor.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
 
         _progressRssi = findViewById(R.id.progressRssi);
         _progressRssi.setMax(S_METER_RANGE_DB);
@@ -203,20 +200,11 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private int colorFromAudioLevel(int audioLevel) {
-        int color = Color.GREEN;
-        if (audioLevel > AudioProcessor.getAudioMaxLevel() + UV_METER_MAX_DELTA)
-            color = Color.RED;
-        else if (audioLevel < AudioProcessor.getAudioMinLevel() + UV_METER_MIN_DELTA)
-            color = Color.LTGRAY;
-        return color;
-    }
-
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
         if (_audioProcessor != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
-            Toast.makeText(MainActivity.this, "Bluetooth disconnected", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, R.string.bt_disconnected, Toast.LENGTH_LONG).show();
             _audioProcessor.stopRunning();
         }
         }
@@ -226,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
         if (_audioProcessor != null && UsbPortHandler.getPort() != null && !_isTestMode) {
-            Toast.makeText(MainActivity.this, "USB detached", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, R.string.usb_detached, Toast.LENGTH_LONG).show();
             _audioProcessor.stopRunning();
         }
         }
@@ -344,10 +332,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             if (allGranted) {
-                Toast.makeText(MainActivity.this, "Permissions Granted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.permissions_granted, Toast.LENGTH_SHORT).show();
                 startUsbConnectActivity();
             } else {
-                Toast.makeText(MainActivity.this, "Permissions Denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, R.string.permissions_denied, Toast.LENGTH_SHORT).show();
                 stopRunning();
             }
         }
@@ -358,11 +346,11 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case AudioProcessor.PROCESSOR_CONNECTED:
-                    Toast.makeText(getBaseContext(), "Connected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), R.string.processor_connected, Toast.LENGTH_SHORT).show();
                     break;
                 case AudioProcessor.PROCESSOR_DISCONNECTED:
                     _textStatus.setText(R.string.main_status_stop);
-                    Toast.makeText(getBaseContext(), "Disconnected", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getBaseContext(), R.string.processor_disconnected, Toast.LENGTH_SHORT).show();
                     startTransportConnection();
                     break;
                 case AudioProcessor.PROCESSOR_LISTENING:
@@ -391,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
                 // same progress bar is reused for rx and tx levels
                 case AudioProcessor.PROCESSOR_RX_LEVEL:
                 case AudioProcessor.PROCESSOR_TX_LEVEL:
-                    _progressAudioLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
+                    _progressAudioLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(AudioTools.colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
                     _progressAudioLevel.setProgress(msg.arg1 - AudioProcessor.getAudioMinLevel());
                     break;
                 case AudioProcessor.PROCESSOR_CODEC_ERROR:
@@ -420,57 +408,48 @@ public class MainActivity extends AppCompatActivity {
         return protocolType;
     }
 
-    private int getRadioSpeed() {
-        int resultBps = 0;
-        int maxSpeedBps = 128000;
-        try {
-            if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false)) {
-                int bw = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_BANDWIDTH, ""));
-                int sf = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SF, ""));
-                int cr = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_CR, ""));
-
-                resultBps = RadioTools.calculateLoraSpeedBps(bw, sf, cr);
-            }
-        } catch (NumberFormatException|ArithmeticException e) {
-            e.printStackTrace();
-        }
-        return (resultBps > 0 && resultBps <= maxSpeedBps) ? resultBps : 0;
-    }
-
     private void startAudioProcessing(TransportFactory.TransportType transportType) {
         try {
-            // code mode
+            // codec2 mode
             String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
 
             String[] codecNameCodecId = codec2ModeName.split("=");
             String[] modeSpeed = codecNameCodecId[0].split("_");
 
-            String speedModeInfo = "C2: " + modeSpeed[1];
-            int codec2ModeId = Integer.parseInt(codecNameCodecId[1]);
-
             ProtocolFactory.ProtocolType protocolType = getRequiredProtocolType();
             _btnPtt.setEnabled(protocolType != ProtocolFactory.ProtocolType.KISS_PARROT);
 
-            int radioSpeedBps = getRadioSpeed();
+            // codec2 speed
+            String speedModeInfo = "C2: " + modeSpeed[1];
+            int codec2ModeId = Integer.parseInt(codecNameCodecId[1]);
+
+            // radio speed
+            int radioSpeedBps = AudioTools.getRadioSpeed(_sharedPreferences);
             if (radioSpeedBps > 0) {
                 speedModeInfo = "RF: " + radioSpeedBps + ", " + speedModeInfo;
             }
 
+            // protocol
             speedModeInfo += ", " + protocolType.toString();
 
+            // recording
             boolean recordingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_RECORDING_ENABLED, false);
-
             if (recordingEnabled) {
                 speedModeInfo += ", " + getString(R.string.recorder_status_label);
             }
+
+            // scrambling
+            boolean scramblingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.KISS_SCRAMBLING_ENABLED, false);
+            if (scramblingEnabled) {
+                speedModeInfo += ", " + getString(R.string.kiss_scrambler_label);
+            }
             _textCodecMode.setText(speedModeInfo);
 
-            _audioProcessor = new AudioProcessor(transportType, protocolType, recordingEnabled,
-                    codec2ModeId, onAudioProcessorStateChanged, getApplicationContext());
+            _audioProcessor = new AudioProcessor(transportType, protocolType, codec2ModeId, onAudioProcessorStateChanged, getApplicationContext());
             _audioProcessor.start();
         } catch (IOException e) {
             e.printStackTrace();
-            Toast.makeText(MainActivity.this, "Failed to start audio processing", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, R.string.audio_failed_to_start_processing, Toast.LENGTH_LONG).show();
         }
     }
 

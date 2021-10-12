@@ -1,5 +1,12 @@
 package com.radio.codec2talkie.protocol;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import androidx.preference.PreferenceManager;
+
+import com.radio.codec2talkie.settings.PreferenceKeys;
+
 public class ProtocolFactory {
 
     public enum ProtocolType {
@@ -20,7 +27,14 @@ public class ProtocolFactory {
         }
     };
 
-    public static Protocol create(ProtocolType protocolType, int codec2ModeId, boolean recorderEnabled) {
+    public static Protocol create(ProtocolType protocolType, int codec2ModeId, Context context) {
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        boolean recordingEnabled = sharedPreferences.getBoolean(PreferenceKeys.CODEC2_RECORDING_ENABLED, false);
+        boolean scramblingEnabled = sharedPreferences.getBoolean(PreferenceKeys.KISS_SCRAMBLING_ENABLED, false);
+        String scramblingKey = sharedPreferences.getString(PreferenceKeys.KISS_SCRAMBLER_KEY, "");
+
         Protocol proto;
         switch (protocolType) {
             case KISS:
@@ -38,8 +52,11 @@ public class ProtocolFactory {
                 break;
         }
 
-        if (recorderEnabled) {
-            proto = new RecorderProxy(proto, codec2ModeId);
+        if (scramblingEnabled) {
+            proto = new ScramblerPipe(proto, scramblingKey);
+        }
+        if (recordingEnabled) {
+            proto = new RecorderPipe(proto, codec2ModeId);
         }
 
         return proto;
