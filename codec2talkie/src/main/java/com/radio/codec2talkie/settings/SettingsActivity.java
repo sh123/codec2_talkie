@@ -40,7 +40,7 @@ public class SettingsActivity extends AppCompatActivity
             rebootPreference.setOnPreferenceClickListener(preference -> {
                 Intent intent = new Intent(PreferenceKeys.KISS_EXTENSIONS_ACTION_REBOOT_REQUESTED);
                 requireContext().sendBroadcast(intent);
-                return true;
+                return false;
             });
         }
     }

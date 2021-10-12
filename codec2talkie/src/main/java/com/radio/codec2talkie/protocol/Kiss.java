@@ -173,7 +173,7 @@ public class Kiss implements Protocol {
     private final BroadcastReceiver onModemRebootRequested = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Toast.makeText(_context, R.string.kiss_toast_modem_reboot, Toast.LENGTH_LONG).show();
+            Toast.makeText(_context, R.string.kiss_toast_modem_reboot, Toast.LENGTH_SHORT).show();
             startKissPacket(KISS_CMD_REBOOT);
             try {
                 completeKissPacket();
