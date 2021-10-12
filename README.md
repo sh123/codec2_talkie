@@ -67,6 +67,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
     - Enable/Disable KISS non-real time buffered playback mode
     - Enable/Disable KISS extensions for radio module control and signal levels (modem must support them to work correctly!)
       - Set radio parameters (frequency, bandwidth, spreading factor, coding rate, power, sync word, crc checksum enable/disable)
+      - Send reboot command to the modem
 - **Recording player**, simple Voicemail style player, which allows TX/RX recording playback and removal
   - Click on recording starts playback
   - Long click on recording removes it
