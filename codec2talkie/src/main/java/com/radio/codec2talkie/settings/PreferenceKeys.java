@@ -33,6 +33,9 @@ public final class PreferenceKeys {
     public static String KISS_EXTENSIONS_RADIO_SYNC = "kiss_extension_radio_sync";
     public static String KISS_EXTENSIONS_RADIO_CRC = "kiss_extension_radio_crc";
 
+    public static String KISS_EXTENSIONS_ACTION_REBOOT_REQUESTED = "com.radio.codec2talkie.MODEM_REBOOT";
+
     public static String APP_VOLUME_PTT = "app_volume_ptt";
     public static String APP_KEEP_SCREEN_ON = "app_keep_screen_on";
+
 }

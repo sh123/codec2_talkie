@@ -138,6 +138,11 @@ Payloads for commands are sent and expected as big endian and defined as:
     int16_t rssi;
     int16_t snr;  // snr * 100
   } __attribute__((packed));
+
+  // KISS command 8
+  struct RebootModem {
+  } __attribute__((packed));
+`
 ```
 
 # TODO

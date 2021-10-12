@@ -64,5 +64,11 @@
             app:defaultValue="true">
         </CheckBoxPreference>
 
+        <Preference
+            app:key="kiss_extension_reboot"
+            app:title="@string/kiss_extension_reboot_title"
+            app:summary="@string/kiss_extension_reboot_summary">
+        </Preference>
+
     </PreferenceCategory>
 </PreferenceScreen>

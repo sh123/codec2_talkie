@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
 
+        // title
         String appName = getResources().getString(R.string.app_name);
         setTitle(appName + " v" + BuildConfig.VERSION_NAME);
 
@@ -105,35 +106,42 @@ public class MainActivity extends AppCompatActivity {
         _textStatus = findViewById(R.id.textStatus);
         _textRssi = findViewById(R.id.textRssi);
 
+        // UV bar
         int barMaxValue = AudioProcessor.getAudioMaxLevel() - AudioProcessor.getAudioMinLevel();
         _progressAudioLevel = findViewById(R.id.progressAudioLevel);
         _progressAudioLevel.setMax(barMaxValue);
         _progressAudioLevel.getProgressDrawable().setColorFilter(
                 new PorterDuffColorFilter(AudioTools.colorFromAudioLevel(AudioProcessor.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
 
+        // S-meter
         _progressRssi = findViewById(R.id.progressRssi);
         _progressRssi.setMax(S_METER_RANGE_DB);
         _progressRssi.getProgressDrawable().setColorFilter(
                 new PorterDuffColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN));
 
+        // PTT button
         _btnPtt = findViewById(R.id.btnPtt);
         _btnPtt.setOnTouchListener(onBtnPttTouchListener);
 
         _textCodecMode = findViewById(R.id.codecMode);
 
+        // BT/USB disconnects
         registerReceiver(onBluetoothDisconnected, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
         registerReceiver(onUsbDetached, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
 
         _isTestMode = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_TEST_MODE, false);
 
+        // show/hide S-meter
         FrameLayout frameRssi = findViewById(R.id.frameRssi);
         if (!_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false)) {
             frameRssi.setVisibility(View.GONE);
         }
 
+        // screen always on
         if (_sharedPreferences.getBoolean(PreferenceKeys.APP_KEEP_SCREEN_ON, false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
+
         startTransportConnection();
     }
 
