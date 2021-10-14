@@ -25,6 +25,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,6 +42,7 @@ import com.radio.codec2talkie.audio.AudioProcessor;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothSocketHandler;
 import com.radio.codec2talkie.connect.TcpIpConnectActivity;
+import com.radio.codec2talkie.protocol.Kiss;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.recorder.RecorderActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
@@ -56,6 +58,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private final static int REQUEST_CONNECT_BT = 1;
     private final static int REQUEST_CONNECT_USB = 2;
@@ -87,6 +91,8 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar _progressAudioLevel;
     private ProgressBar _progressRssi;
     private Button _btnPtt;
+
+    private boolean _isRestarting = false;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -148,6 +154,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(onBluetoothDisconnected);
+        unregisterReceiver(onUsbDetached);
     }
 
     private void stopRunning() {
@@ -158,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startTransportConnection() {
+        if (_isRestarting) return;
         if (_isTestMode) {
             _textConnInfo.setText(R.string.main_status_loopback_test);
             startAudioProcessing(TransportFactory.TransportType.LOOPBACK);
@@ -418,6 +427,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void startAudioProcessing(TransportFactory.TransportType transportType) {
         try {
+            Log.i(TAG, "Started audio processing: " + transportType.toString());
+
             // codec2 mode
             String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
 
@@ -495,6 +506,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         else if (requestCode == REQUEST_SETTINGS) {
+            _isRestarting = true;
             stopRunning();
             startActivity(getIntent());
         }

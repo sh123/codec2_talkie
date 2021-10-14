@@ -83,6 +83,8 @@ public class Kiss implements Protocol {
 
     private Context _context;
 
+    private boolean _isRebootRegistered = false;
+
     public Kiss() {
         _inputRawDataBuffer = new byte[INPUT_RAW_BUFFER_SIZE];
         _kissCmdBuffer = new byte [KISS_CMD_BUFFER_SIZE];
@@ -167,10 +169,13 @@ public class Kiss implements Protocol {
         }
         completeKissPacket();
 
-        _context.registerReceiver(onModemRebootRequested, new IntentFilter(PreferenceKeys.KISS_EXTENSIONS_ACTION_REBOOT_REQUESTED));
+        if (!_isRebootRegistered) {
+            _context.registerReceiver(onModemRebootRequested, new IntentFilter(PreferenceKeys.KISS_EXTENSIONS_ACTION_REBOOT_REQUESTED));
+            _isRebootRegistered = true;
+        }
     }
 
-    private final BroadcastReceiver onModemRebootRequested = new BroadcastReceiver() {
+    public final BroadcastReceiver onModemRebootRequested = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Toast.makeText(_context, R.string.kiss_toast_modem_reboot, Toast.LENGTH_SHORT).show();
