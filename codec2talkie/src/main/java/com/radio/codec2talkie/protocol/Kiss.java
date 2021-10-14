@@ -100,6 +100,9 @@ public class Kiss implements Protocol {
     }
 
     public void initialize(Transport transport, Context context) throws IOException {
+
+        Log.i(TAG, "Initializing " + transport.toString());
+
         _transport = transport;
         _context = context;
 
