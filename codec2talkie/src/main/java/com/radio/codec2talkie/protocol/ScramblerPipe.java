@@ -24,8 +24,6 @@ public class ScramblerPipe implements Protocol {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private Context _context;
-
     private final Protocol _childProtocol;
     private final String _scramblingKey;
 
@@ -38,8 +36,7 @@ public class ScramblerPipe implements Protocol {
 
     @Override
     public void initialize(Transport transport, Context context) throws IOException {
-        _context = context;
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         _iterationsCount = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_SCRAMBLER_ITERATIONS, "1000"));
         _childProtocol.initialize(transport, context);
     }
