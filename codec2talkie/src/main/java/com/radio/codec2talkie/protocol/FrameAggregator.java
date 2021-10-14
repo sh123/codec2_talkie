@@ -7,6 +7,7 @@ import com.radio.codec2talkie.transport.Transport;
 import com.ustadmobile.codec2.Codec2;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public class FrameAggregator implements Protocol {
 
@@ -39,7 +40,7 @@ public class FrameAggregator implements Protocol {
     @Override
     public void send(byte[] frame) throws IOException {
         if ( _outputBufferPos + frame.length >= TX_FRAME_MAX_SIZE) {
-            _childProtocol.send(_outputBuffer);
+            _childProtocol.send(Arrays.copyOf(_outputBuffer, _outputBufferPos));
             _outputBufferPos = 0;
         }
         System.arraycopy(frame, 0, _outputBuffer, _outputBufferPos, frame.length);
@@ -80,7 +81,8 @@ public class FrameAggregator implements Protocol {
 
     @Override
     public void flush() throws IOException {
-        _childProtocol.send(_outputBuffer);
+        _childProtocol.send(Arrays.copyOf(_outputBuffer, _outputBufferPos));
+        _outputBufferPos = 0;
         _childProtocol.flush();
     }
 }
