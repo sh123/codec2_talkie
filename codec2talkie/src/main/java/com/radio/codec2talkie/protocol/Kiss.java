@@ -24,8 +24,7 @@ public class Kiss implements Protocol {
 
     private final int TRANSPORT_OUTPUT_BUFFER_SIZE = 1024;
     private final int TRANSPORT_INPUT_BUFFER_SIZE = 1024;
-    private final int OUTPUT_RAW_BUFFER_SIZE = 1024;
-
+    private final int FRAME_OUTPUT_BUFFER_SIZE = 1024;
     private final int KISS_CMD_BUFFER_SIZE = 128;
 
     private final int KISS_RADIO_CONTROL_COMMAND_SIZE = 17;
@@ -93,7 +92,7 @@ public class Kiss implements Protocol {
 
         _kissCmdBuffer = new byte [KISS_CMD_BUFFER_SIZE];
 
-        _frameOutputBuffer = new byte[TRANSPORT_INPUT_BUFFER_SIZE];
+        _frameOutputBuffer = new byte[FRAME_OUTPUT_BUFFER_SIZE];
 
         _transportOutputBufferPos = 0;
         _frameOutputBufferPos = 0;
