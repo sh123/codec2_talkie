@@ -24,7 +24,7 @@ public class ScramblingTools {
     private static final String SCRAMBLING_ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final String PBE_ALGORITHM = "PBEwithSHA256and128BITAES-CBC-BC";
 
-    public static ScrambledData scramble(String masterKey, byte[] rawData)
+    public static ScrambledData scramble(String masterKey, byte[] rawData, int iterations)
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException,
             InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
 
@@ -37,7 +37,7 @@ public class ScramblingTools {
         rnd.nextBytes(encData.salt);
         rnd.nextBytes(encData.iv);
 
-        PBEKeySpec keySpec = new PBEKeySpec(masterKey.toCharArray(), encData.salt, PBK_ITERATIONS);
+        PBEKeySpec keySpec = new PBEKeySpec(masterKey.toCharArray(), encData.salt, iterations);
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(PBE_ALGORITHM);
 
         Key key = secretKeyFactory.generateSecret(keySpec);
@@ -51,11 +51,11 @@ public class ScramblingTools {
         return encData;
     }
 
-    public static byte[] unscramble(String masterKey, ScrambledData scrambledData)
+    public static byte[] unscramble(String masterKey, ScrambledData scrambledData, int iterations)
             throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException,
             InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
 
-        PBEKeySpec keySpec = new PBEKeySpec(masterKey.toCharArray(), scrambledData.salt, PBK_ITERATIONS);
+        PBEKeySpec keySpec = new PBEKeySpec(masterKey.toCharArray(), scrambledData.salt, iterations);
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(PBE_ALGORITHM);
 
         Key key = secretKeyFactory.generateSecret(keySpec);

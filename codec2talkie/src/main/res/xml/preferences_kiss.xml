@@ -56,5 +56,13 @@ s
             app:defaultValue="0">
         </EditTextPreference>
 
+        <EditTextPreference
+            android:key="kiss_scrambler_iterations"
+            android:title="@string/kiss_scrambler_iterations_title"
+            android:summary="@string/kiss_scrambler_iterations_summary"
+            app:dependency="kiss_enable_scrambler"
+            app:defaultValue="1000">
+        </EditTextPreference>
+
     </PreferenceCategory>
 </PreferenceScreen>

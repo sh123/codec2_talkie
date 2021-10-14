@@ -1,8 +1,12 @@
 package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+
+import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.MainActivity;
+import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.ScramblingTools;
 import com.radio.codec2talkie.transport.Transport;
 
@@ -20,10 +24,12 @@ public class ScramblerPipe implements Protocol {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    Context _context;
+    private Context _context;
 
-    final Protocol _childProtocol;
-    final String _scramblingKey;
+    private final Protocol _childProtocol;
+    private final String _scramblingKey;
+
+    private int _iterationsCount;
 
     public ScramblerPipe(Protocol childProtocol, String scramblingKey) {
         _childProtocol = childProtocol;
@@ -33,6 +39,8 @@ public class ScramblerPipe implements Protocol {
     @Override
     public void initialize(Transport transport, Context context) throws IOException {
         _context = context;
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
+        _iterationsCount = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_SCRAMBLER_ITERATIONS, "1000"));
         _childProtocol.initialize(transport, context);
     }
 
@@ -40,7 +48,7 @@ public class ScramblerPipe implements Protocol {
     public void send(byte[] audioFrame) throws IOException {
         ScramblingTools.ScrambledData data = null;
         try {
-            data = ScramblingTools.scramble(_scramblingKey, audioFrame);
+            data = ScramblingTools.scramble(_scramblingKey, audioFrame, _iterationsCount);
         } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeySpecException |
                 InvalidKeyException | BadPaddingException | IllegalBlockSizeException |
                 InvalidAlgorithmParameterException e) {
@@ -76,7 +84,7 @@ public class ScramblerPipe implements Protocol {
 
                 byte[] audioFrame = null;
                 try {
-                    audioFrame = ScramblingTools.unscramble(_scramblingKey, data);
+                    audioFrame = ScramblingTools.unscramble(_scramblingKey, data, _iterationsCount);
                 } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
                         InvalidKeyException | BadPaddingException | IllegalBlockSizeException |
                         InvalidAlgorithmParameterException e) {
