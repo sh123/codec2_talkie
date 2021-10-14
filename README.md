@@ -25,10 +25,10 @@ LoPy, TTGO, Heltec and others, but could also be used with custom modems + exter
 
 ![alt text](images/tracker.jpg)
 
-Application connects to your radio KISS Bluetooth/USB modem, records speech from the phone microphone on transmit, encodes audio into Codec2 format, encapsulates into KISS frames and sends to your modem. 
+Application connects to your radio KISS Bluetooth/USB/TCPIP modem, records speech from the phone microphone on transmit, encodes audio into Codec2 format, encapsulates into KISS frames and sends to your modem. 
 On receive, modem sends KISS packets to the phone with Codec2 speech, application decodes Codec2 frames and plays them through phone speaker.
 
-It does not deal with radio management, modulation, etc, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK, FreeDV or any other modulation scheme. Radio just needs to expose KISS Bluetooth/USB/TCPIP interface for speech frames. 
+It does not deal with radio management, modulation, etc, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK, FreeDV or any other modulation scheme. Radio just needs to expose KISS Bluetooth/USB/TCPIP interface for speech frames.
 
 # Requirements
 - Android 7.0 (API 24) or higher
