@@ -10,7 +10,6 @@ import android.widget.Toast;
 
 import androidx.preference.PreferenceManager;
 
-import com.radio.codec2talkie.MainActivity;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.transport.Transport;
@@ -23,10 +22,11 @@ public class Kiss implements Protocol {
 
     private static final String TAG = Kiss.class.getSimpleName();
 
-    private final int INPUT_RAW_BUFFER_SIZE = 8192;
-    private final int KISS_CMD_BUFFER_SIZE = 128;
+    private final int TRANSPORT_OUTPUT_BUFFER_SIZE = 1024;
+    private final int TRANSPORT_INPUT_BUFFER_SIZE = 1024;
+    private final int OUTPUT_RAW_BUFFER_SIZE = 1024;
 
-    private final int KISS_TX_FRAME_MAX_SIZE = 48;
+    private final int KISS_CMD_BUFFER_SIZE = 128;
 
     private final int KISS_RADIO_CONTROL_COMMAND_SIZE = 17;
 
@@ -67,16 +67,18 @@ public class Kiss implements Protocol {
     private DataType _kissDataType = DataType.RAW;
     private State _kissState = State.GET_START;
 
-    protected final byte[] _inputRawDataBuffer;
-    private final byte[] _outputKissBuffer;
-    private final byte[] _inputKissBuffer;
+    protected final byte[] _transportInputBuffer;
+
+    private int _transportOutputBufferPos;
+    private final byte[] _transportOutputBuffer;
+
+    private int _frameOutputBufferPos;
+    private final byte[] _frameOutputBuffer;
+
+    private int _kissCmdBufferPos;
     private final byte[] _kissCmdBuffer;
 
     protected Transport _transport;
-
-    private int _outputKissBufferPos;
-    private int _inputKissBufferPos;
-    private int _kissCmdBufferPos;
 
     private SharedPreferences _sharedPreferences;
     private boolean _isExtendedMode;
@@ -86,14 +88,15 @@ public class Kiss implements Protocol {
     private boolean _isRebootRegistered = false;
 
     public Kiss() {
-        _inputRawDataBuffer = new byte[INPUT_RAW_BUFFER_SIZE];
+        _transportInputBuffer = new byte[TRANSPORT_INPUT_BUFFER_SIZE];
+        _transportOutputBuffer = new byte[TRANSPORT_OUTPUT_BUFFER_SIZE];
+
         _kissCmdBuffer = new byte [KISS_CMD_BUFFER_SIZE];
 
-        _outputKissBuffer = new byte[KISS_TX_FRAME_MAX_SIZE];
-        _inputKissBuffer = new byte[64 * KISS_TX_FRAME_MAX_SIZE];
+        _frameOutputBuffer = new byte[TRANSPORT_INPUT_BUFFER_SIZE];
 
-        _outputKissBufferPos = 0;
-        _inputKissBufferPos = 0;
+        _transportOutputBufferPos = 0;
+        _frameOutputBufferPos = 0;
         _kissCmdBufferPos = 0;
 
         _isExtendedMode = false;
@@ -193,28 +196,23 @@ public class Kiss implements Protocol {
     };
 
     public void send(byte [] frame) throws IOException {
+        // escape
         ByteBuffer escapedFrame = escape(frame);
         int escapedFrameSize = escapedFrame.position();
         escapedFrame.rewind();
 
-        if (_outputKissBufferPos == 0) {
-            startKissPacket(KISS_CMD_DATA);
-        }
-        // new frame does not fit, complete, send and create new frame
-        if ( _outputKissBufferPos + escapedFrameSize >= KISS_TX_FRAME_MAX_SIZE) {
-            completeKissPacket();
-            startKissPacket(KISS_CMD_DATA);
-        }
-        // write new data
+        // send
+        startKissPacket(KISS_CMD_DATA);
         while (escapedFrame.position() < escapedFrameSize) {
             sendKissByte(escapedFrame.get());
         }
+        completeKissPacket();
     }
 
     public boolean receive(Callback callback) throws IOException {
-        int bytesRead = _transport.read(_inputRawDataBuffer);
+        int bytesRead = _transport.read(_transportInputBuffer);
         if (bytesRead > 0) {
-            receiveKissData(Arrays.copyOf(_inputRawDataBuffer, bytesRead), callback);
+            receiveKissData(Arrays.copyOf(_transportInputBuffer, bytesRead), callback);
             return true;
         }
         return false;
@@ -251,7 +249,7 @@ public class Kiss implements Protocol {
                 break;
             case KISS_FEND:
                 if (_kissDataType == DataType.RAW) {
-                    callback.onReceiveAudioFrames(Arrays.copyOf(_inputKissBuffer, _inputKissBufferPos));
+                    callback.onReceiveAudioFrames(Arrays.copyOf(_frameOutputBuffer, _frameOutputBufferPos));
                 } else if (_kissDataType == DataType.SIGNAL_REPORT && _isExtendedMode) {
                     callback.onReceiveSignalLevel(Arrays.copyOf(_kissCmdBuffer, _kissCmdBufferPos));
                     _kissCmdBufferPos = 0;
@@ -309,24 +307,24 @@ public class Kiss implements Protocol {
     }
 
     private void sendKissByte(byte b) {
-        if (_outputKissBufferPos >= _outputKissBuffer.length) {
+        if (_transportOutputBufferPos >= _transportOutputBuffer.length) {
             Log.e(TAG, "Output KISS buffer overflow, discarding frame");
-            _outputKissBufferPos = 0;
+            _transportOutputBufferPos = 0;
         }
-        _outputKissBuffer[_outputKissBufferPos++] = b;
+        _transportOutputBuffer[_transportOutputBufferPos++] = b;
     }
 
     private void receiveFrameByte(byte b) {
-        if (_inputKissBufferPos >= _inputKissBuffer.length) {
+        if (_frameOutputBufferPos >= _frameOutputBuffer.length) {
             Log.e(TAG, "Input KISS buffer overflow, discarding frame");
             resetState();
         }
-        _inputKissBuffer[_inputKissBufferPos++] = b;
+        _frameOutputBuffer[_frameOutputBufferPos++] = b;
     }
 
     private void resetState() {
         _kissState = State.GET_START;
-        _inputKissBufferPos = 0;
+        _frameOutputBufferPos = 0;
     }
 
     private void startKissPacket(byte commandCode) {
@@ -335,10 +333,10 @@ public class Kiss implements Protocol {
     }
 
     private void completeKissPacket() throws IOException {
-        if (_outputKissBufferPos > 0) {
+        if (_transportOutputBufferPos > 0) {
             sendKissByte(KISS_FEND);
-            _transport.write(Arrays.copyOf(_outputKissBuffer, _outputKissBufferPos));
-            _outputKissBufferPos = 0;
+            _transport.write(Arrays.copyOf(_transportOutputBuffer, _transportOutputBufferPos));
+            _transportOutputBufferPos = 0;
         }
     }
 

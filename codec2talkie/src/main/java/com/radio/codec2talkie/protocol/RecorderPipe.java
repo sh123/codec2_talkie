@@ -62,6 +62,11 @@ public class RecorderPipe implements Protocol {
             protected void onReceiveSignalLevel(byte[] rawData) {
                 callback.onReceiveSignalLevel(rawData);
             }
+
+            @Override
+            protected void onProtocolError() {
+                callback.onProtocolError();
+            }
         });
     }
 

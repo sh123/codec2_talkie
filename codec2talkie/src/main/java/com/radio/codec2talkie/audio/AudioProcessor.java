@@ -235,22 +235,9 @@ public class AudioProcessor extends Thread {
 
     private final Callback _protocolReceiveCallback = new Callback() {
         @Override
-        protected void onReceiveAudioFrames(byte[] audioFrames) {
-            if (audioFrames.length % _codec2FrameSize != 0) {
-                Log.w(TAG, "Ignoring audio frame of wrong size: " + audioFrames.length);
-                sendStatusUpdate(PROCESSOR_CODEC_ERROR);
-            } else {
-                sendStatusUpdate(PROCESSOR_PLAYING);
-
-                // split by audio frame and play
-                byte[] audioFrame = new byte[_codec2FrameSize];
-                for (int i = 0; i < audioFrames.length; i += _codec2FrameSize) {
-                    for (int j = 0; j < _codec2FrameSize && (j + i) < audioFrames.length; j++) {
-                        audioFrame[j] = audioFrames[i + j];
-                    }
-                    decodeAndPlayAudioFrame(audioFrame);
-                }
-            }
+        protected void onReceiveAudioFrames(byte[] audioFrame) {
+            sendStatusUpdate(PROCESSOR_PLAYING);
+            decodeAndPlayAudioFrame(audioFrame);
         }
 
         @Override
@@ -263,6 +250,11 @@ public class AudioProcessor extends Thread {
             } else {
                 Log.e(TAG, "Signal event of wrong size");
             }
+        }
+
+        @Override
+        protected void onProtocolError() {
+            sendStatusUpdate(PROCESSOR_CODEC_ERROR);
         }
     };
 

@@ -59,6 +59,6 @@ public class ProtocolFactory {
             proto = new RecorderPipe(proto, codec2ModeId);
         }
 
-        return proto;
+        return new FrameAggregator(proto, codec2ModeId);
     }
 }

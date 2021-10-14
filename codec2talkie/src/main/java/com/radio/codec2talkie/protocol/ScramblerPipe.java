@@ -82,23 +82,29 @@ public class ScramblerPipe implements Protocol {
                 System.arraycopy(scrambledFrame, data.iv.length, data.salt, 0, data.salt.length);
                 System.arraycopy(scrambledFrame, data.iv.length + data.salt.length, data.scrambledData, 0, data.scrambledData.length);
 
-                byte[] audioFrame = null;
+                byte[] audioFrames = null;
                 try {
-                    audioFrame = ScramblingTools.unscramble(_scramblingKey, data, _iterationsCount);
+                    audioFrames = ScramblingTools.unscramble(_scramblingKey, data, _iterationsCount);
                 } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
                         InvalidKeyException | BadPaddingException | IllegalBlockSizeException |
                         InvalidAlgorithmParameterException e) {
 
                     e.printStackTrace();
+                    callback.onProtocolError();
                 }
-                if (audioFrame != null) {
-                    callback.onReceiveAudioFrames(audioFrame);
+                if (audioFrames != null) {
+                    callback.onReceiveAudioFrames(audioFrames);
                 }
             }
 
             @Override
             protected void onReceiveSignalLevel(byte[] rawData) {
                 callback.onReceiveSignalLevel(rawData);
+            }
+
+            @Override
+            protected void onProtocolError() {
+                callback.onProtocolError();
             }
         });
     }
