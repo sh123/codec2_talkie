@@ -162,6 +162,6 @@
     <string name="kiss_toast_modem_reboot">Modem reboot requested</string>
     <string name="app_audio_output_speaker_title">Play audio through the speaker</string>
     <string name="app_audio_output_speaker_summary">Output incoming audio through the speaker</string>
-    <string name="kiss_scrambler_iterations_title">(Experimental) Number of iterations preformed</string>
-    <string name="kiss_scrambler_iterations_summary">Change to lower value on slow devices, >1000 recommended, should match on all devices</string>
+    <string name="kiss_scrambler_iterations_title">(Experimental) Number of iterations performed</string>
+    <string name="kiss_scrambler_iterations_summary">(Experimental) Change to lower value on slow devices, >1000 recommended, should match on all devices</string>
 </resources>
