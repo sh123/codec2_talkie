@@ -9,9 +9,9 @@ import com.ustadmobile.codec2.Codec2;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class FrameAggregator implements Protocol {
+public class AudioFrameAggregator implements Protocol {
 
-    private static final String TAG = FrameAggregator.class.getSimpleName();
+    private static final String TAG = AudioFrameAggregator.class.getSimpleName();
 
     private final int TX_FRAME_MAX_SIZE = 48;
     private final Protocol _childProtocol;
@@ -21,7 +21,7 @@ public class FrameAggregator implements Protocol {
 
     private final int _codec2FrameSize;
 
-    public FrameAggregator(Protocol childProtocol, int codec2ModeId) {
+    public AudioFrameAggregator(Protocol childProtocol, int codec2ModeId) {
         _childProtocol = childProtocol;
         _outputBuffer = new byte[TX_FRAME_MAX_SIZE];
 
