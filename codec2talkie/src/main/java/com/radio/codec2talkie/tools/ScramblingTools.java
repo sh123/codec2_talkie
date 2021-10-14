@@ -60,7 +60,7 @@ public class ScramblingTools {
 
         Key key = secretKeyFactory.generateSecret(keySpec);
 
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        Cipher cipher = Cipher.getInstance(SCRAMBLING_ALGORITHM);
         IvParameterSpec ivSpec = new IvParameterSpec(scrambledData.iv);
 
         cipher.init(Cipher.DECRYPT_MODE, key, ivSpec);
