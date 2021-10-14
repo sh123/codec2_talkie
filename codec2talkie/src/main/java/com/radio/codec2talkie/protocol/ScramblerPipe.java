@@ -2,6 +2,7 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
@@ -22,7 +23,7 @@ import javax.crypto.NoSuchPaddingException;
 
 public class ScramblerPipe implements Protocol {
 
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = ScramblerPipe.class.getSimpleName();
 
     private final Protocol _childProtocol;
     private final String _scramblingKey;
@@ -73,7 +74,13 @@ public class ScramblerPipe implements Protocol {
 
                 data.iv = new byte[ScramblingTools.BLOCK_SIZE];
                 data.salt = new byte [ScramblingTools.SALT_BYTES];
-                data.scrambledData = new byte[scrambledFrame.length - ScramblingTools.BLOCK_SIZE - ScramblingTools.SALT_BYTES];
+                int dataSize = scrambledFrame.length - ScramblingTools.BLOCK_SIZE - ScramblingTools.SALT_BYTES;
+                if (dataSize <= 0) {
+                    Log.e(TAG, "Frame of wrong length " + dataSize);
+                    callback.onProtocolError();
+                    return;
+                }
+                data.scrambledData = new byte[dataSize];
 
                 System.arraycopy(scrambledFrame, 0, data.iv, 0, data.iv.length);
                 System.arraycopy(scrambledFrame, data.iv.length, data.salt, 0, data.salt.length);
