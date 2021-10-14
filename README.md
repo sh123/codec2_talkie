@@ -53,6 +53,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
   - **Application Settings**
     - Enable PTT with volume up/down buttons
     - Keep screen ON
+    - Use phone speaker instead of headset
   - **Codec2**
     - Set Codec2 mode/speed from 450 up to 3200 bps
     - Enable/disable echo/loopback test mode
