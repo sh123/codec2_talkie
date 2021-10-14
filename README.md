@@ -21,14 +21,14 @@
 This minimalistic Android application is a Walkie-Talkie style digital voice frontend for your radio, which uses open source [Codec2](https://github.com/drowe67/codec2) for speech audio frame encoding/decoding. 
 
 It is mainly intended for DV experimentation with ultra low cost 3-8$ radio modems, such as LoRa and 15-25$ esp32 board flavours with built-in LoRa module: T-Beam,
-LoPy, TTGO, Heltec and others, but could also be used with custom modems + external transceivers or as a test harness for Codec2 frames generation and their playback.
+LoPy, TTGO, Heltec and others, but could also be used with custom hardware of software (Direwolf) modems + external transceivers or as a test harness for Codec2 frames generation and their playback.
 
 ![alt text](images/tracker.jpg)
 
-Application connects to your radio KISS Bluetooth/USB modem, records speech from the phone microphone on transmit, encodes audio into Codec2 format, encapsulates into KISS frames and sends to your modem. 
+Application connects to your radio KISS Bluetooth/USB/TCPIP modem, records speech from the phone microphone on transmit, encodes audio into Codec2 format, encapsulates into KISS frames and sends to your modem. 
 On receive, modem sends KISS packets to the phone with Codec2 speech, application decodes Codec2 frames and plays them through phone speaker.
 
-It does not deal with radio management, modulation, etc, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK, FreeDV or any other modulation scheme. Radio just needs to expose KISS Bluetooth interface for speech frames. 
+It does not deal with radio management, modulation, etc, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK, FreeDV or any other modulation scheme. Radio just needs to expose KISS Bluetooth/USB/TCPIP interface for speech frames.
 
 # Requirements
 - Android 7.0 (API 24) or higher
@@ -42,9 +42,9 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 - **PTT hardware button**, `KEYCODE_TV_DATA SERVICE` (230 key code) hardware buttons are used for PTT (latter is used on some Android network radios), `KEYCODE_HEADSETHOOK` tx on/off on click, volume up/down buttons could be used for ptt if enabled in Preferences
 - **USB serial connectivity** (default 115200 bps, 8 data bits, 1 stop bit, no parity), just select this app after connecting to USB and it will use given connection, baud rate could be changed from Preferences
 - **Bluetooth connectivity** on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from Android Bluetooth Settings, default Bluetooth device could be set from Preferences
-- **TCP/IP connectivity** on startup, application can connect to TCP/IP based modem and operate through the network, for example, with Direwolf application
+- **TCP/IP connectivity** on startup, application can connect to TCP/IP based modem and operate through the network, for example, with [Direwolf](https://github.com/wb2osz/direwolf) application and your existing transceiver
 - **Voice Codec2 mode selection**, which allows you to select various Codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends as Codec2 mode negotiation between clients is not implemented at the moment
-- **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality, could be enabled or disabled from Preferences, this mode is activated if no USB or Bluetooth connection were made
+- **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality, could be enabled or disabled from Preferences, this mode is also activated if no USB/Bluetooth/TCPIP connection was made
 - **Voice level VU indicator**, display audio level on transmit or receive
 - **S-meter**, displayed only when KISS extensions are enabled and modem is able to send signal level information
 - **Parrot mode**, received voice will be digirepated in addition to playback through the speaker
@@ -53,6 +53,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
   - **Application Settings**
     - Enable PTT with volume up/down buttons
     - Keep screen ON
+    - Use phone speaker instead of headset
   - **Codec2**
     - Set Codec2 mode/speed from 450 up to 3200 bps
     - Enable/disable echo/loopback test mode
@@ -80,7 +81,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 
 # Suitable radios and modems
 - Tested, works:
-  - (BT) LoRa modem 450/700 bps codec2 modes tested at 1300 bps and 900 bps LoRa speeds: https://github.com/sh123/esp32_loraprs
+  - (BT) LoRa modem 450/700 bps Codec2 modes tested at 1300 bps and 900 bps LoRa speeds: https://github.com/sh123/esp32_loraprs
   - (BT) custom AFSK1200 LibAPRS based modem with increased TXTail parameter and Baofeng handheld transceiver: 450 works fine, 700 works with small gaps, probably LibAPRS needs some tweaks: https://github.com/markqvist/LibAPRS
   - (USB) HC-12 modules: works, but application needs to use lower USB serial bit rate (change from Preferences), because module RF bit rate is hardwired to its serial bit rate, also module needs to be preconfigured with AT commands first
 - Tested, works, but not too stable, probably needs TXTail tuning:
@@ -150,8 +151,8 @@ Payloads for commands are sent and expected as big endian and defined as:
 
 # TODO
 - Investigate support for other protocols over KISS
+  - AX.25 protocol support, voice over AX.25 (VoAX.25)
   - [M17 Project](https://m17project.org) protocol support, including possible gating to [M17 reflectors](https://m17project.org/reflector/) on modem side
-  - AX.25 packets over existing KISS, voice over AX.25 (VoAX.25).
 - Support for non-KISS modems control if needed
   - HC-12 module control by using AT commands
   - E32-433T30D, should be pre-configured, but can be controlled with AT commands or not?
