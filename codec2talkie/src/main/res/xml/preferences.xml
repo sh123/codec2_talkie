@@ -18,6 +18,13 @@
             app:summary="@string/app_keep_screen_on_summary"
             app:defaultValue="false">
         </SwitchPreference>
+
+        <SwitchPreference
+            app:key="app_audio_output_speaker"
+            app:title="@string/app_audio_output_speaker_title"
+            app:summary="@string/app_audio_output_speaker_summary"
+            app:defaultValue="true">
+        </SwitchPreference>
     </PreferenceCategory>
 
     <PreferenceCategory

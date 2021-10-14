@@ -1,6 +1,7 @@
 package com.radio.codec2talkie.audio;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -11,6 +12,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
+import androidx.preference.PreferenceManager;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Timer;
@@ -20,6 +23,7 @@ import com.radio.codec2talkie.connect.TcpIpSocketHandler;
 import com.radio.codec2talkie.protocol.Callback;
 import com.radio.codec2talkie.protocol.Protocol;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
+import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.radio.codec2talkie.transport.TransportFactory;
@@ -81,12 +85,14 @@ public class AudioProcessor extends Thread {
     private Timer _listenTimer;
 
     private final Context _context;
+    private final SharedPreferences _sharedPreferences;
 
     public AudioProcessor(TransportFactory.TransportType transportType, ProtocolFactory.ProtocolType protocolType, int codec2Mode,
                           Handler onPlayerStateChanged, Context context) throws IOException {
         _onPlayerStateChanged = onPlayerStateChanged;
 
         _context = context;
+        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
 
         _transport  = TransportFactory.create(transportType);
         _protocol = ProtocolFactory.create(protocolType, codec2Mode, context);
@@ -113,9 +119,15 @@ public class AudioProcessor extends Thread {
                 AUDIO_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
+
+        boolean isSpeakerOutput = _sharedPreferences.getBoolean(PreferenceKeys.APP_AUDIO_OUTPUT_SPEAKER, true);
+        int usage = AudioAttributes.USAGE_VOICE_COMMUNICATION;
+        if (isSpeakerOutput) {
+            usage = AudioAttributes.USAGE_MEDIA;
+        }
         _systemAudioPlayer = new AudioTrack.Builder()
                 .setAudioAttributes(new AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setUsage(usage)
                         .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                         .build())
                 .setAudioFormat(new AudioFormat.Builder()

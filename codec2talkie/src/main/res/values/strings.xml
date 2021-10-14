@@ -160,4 +160,6 @@
     <string name="kiss_extension_reboot_title">Reboot modem</string>
     <string name="kiss_extension_reboot_summary">Click to send reboot command to the modem</string>
     <string name="kiss_toast_modem_reboot">Modem reboot requested</string>
+    <string name="app_audio_output_speaker_title">Play audio through the speaker</string>
+    <string name="app_audio_output_speaker_summary">Output incoming audio through the speaker</string>
 </resources>
