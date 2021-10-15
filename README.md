@@ -11,7 +11,7 @@
 - [Planned features](#todo)
 
 # Introduction
-**Turn your Android phone into real VHF/UHF Walkie-Talkie.**
+**Turn your Android phone into real VHF/UHF Walkie-Talkie (requires additional digital modem).**
 
 ![alt text](images/diagram.png)
 
