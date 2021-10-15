@@ -150,6 +150,7 @@ Payloads for commands are sent and expected as big endian and defined as:
 ```
 
 # TODO
+- BLE modems support
 - Investigate support for other protocols over KISS
   - AX.25 protocol support, voice over AX.25 (VoAX.25)
   - [M17 Project](https://m17project.org) protocol support, including possible gating to [M17 reflectors](https://m17project.org/reflector/) on modem side
