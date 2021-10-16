@@ -36,6 +36,7 @@ public class BluetoothSettingsActivity extends AppCompatActivity {
         _btDevicesList.setOnItemClickListener(onBtDeviceClickListener);
 
         findViewById(R.id.progressBarBt).setVisibility(View.INVISIBLE);
+        findViewById(R.id.textViewConnectingBt).setVisibility(View.INVISIBLE);
 
         populateBondedDevices();
     }
