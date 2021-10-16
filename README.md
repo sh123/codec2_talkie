@@ -11,7 +11,7 @@
 - [Planned features](#todo)
 
 # Introduction
-**Turn your Android phone into real VHF/UHF Walkie-Talkie.**
+**Turn your Android phone into real VHF/UHF Walkie-Talkie (requires additional digital radio modem).**
 
 ![alt text](images/diagram.png)
 
@@ -42,7 +42,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 - **PTT hardware button**, `KEYCODE_TV_DATA SERVICE` (230 key code) hardware buttons are used for PTT (latter is used on some Android network radios), `KEYCODE_HEADSETHOOK` tx on/off on click, volume up/down buttons could be used for ptt if enabled in Preferences
 - **USB serial connectivity** (default 115200 bps, 8 data bits, 1 stop bit, no parity), just select this app after connecting to USB and it will use given connection, baud rate could be changed from Preferences
 - **Bluetooth connectivity** on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from Android Bluetooth Settings, default Bluetooth device could be set from Preferences
-- **TCP/IP connectivity** on startup, application can connect to TCP/IP based modem and operate through the network, for example, with [Direwolf](https://github.com/wb2osz/direwolf) application and your existing transceiver
+- **TCP/IP connectivity** on startup, application can connect to TCP/IP based modem and operate through the network, for example, with [Direwolf](https://github.com/wb2osz/direwolf) application and your existing analog transceiver
 - **Voice Codec2 mode selection**, which allows you to select various Codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends as Codec2 mode negotiation between clients is not implemented at the moment
 - **Codec2 loopback mode**, which records and plays your recorded voice back to test and evaluate different Codec2 modes and speech quality, could be enabled or disabled from Preferences, this mode is also activated if no USB/Bluetooth/TCPIP connection was made
 - **Voice level VU indicator**, display audio level on transmit or receive
@@ -150,6 +150,7 @@ Payloads for commands are sent and expected as big endian and defined as:
 ```
 
 # TODO
+- BLE modems support
 - Investigate support for other protocols over KISS
   - AX.25 protocol support, voice over AX.25 (VoAX.25)
   - [M17 Project](https://m17project.org) protocol support, including possible gating to [M17 reflectors](https://m17project.org/reflector/) on modem side
