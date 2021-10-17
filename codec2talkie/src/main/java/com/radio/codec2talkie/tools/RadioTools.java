@@ -2,6 +2,7 @@ package com.radio.codec2talkie.tools;
 
 import android.content.SharedPreferences;
 
+import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 
 public class RadioTools {
@@ -53,6 +54,33 @@ public class RadioTools {
                 break;
         }
         return (-174 + 10 * Math.log10(bw) + noiseFigure + snrLimit);
+    }
+
+    public static int getMinimumDecodeSLevelLabel(SharedPreferences sharePreferences, int s0Level) {
+        double sensitivityDbm = calculateLoraSensitivity(sharePreferences);
+        int[] sLabels = {
+                R.id.textViewRssi0,
+                R.id.textViewRssi1,
+                R.id.textViewRssi2,
+                R.id.textViewRssi3,
+                R.id.textViewRssi4,
+                R.id.textViewRssi5,
+                R.id.textViewRssi6,
+                R.id.textViewRssi7,
+                R.id.textViewRssi8,
+                R.id.textViewRssi9,
+                R.id.textViewRssi10,
+                R.id.textViewRssi20,
+                R.id.textViewRssi40
+        };
+        int index = (int) ((Math.abs(s0Level) - Math.abs(sensitivityDbm)) / 6.0);
+        if (index < 0) {
+            return sLabels[0];
+        } else if (index >= sLabels.length) {
+            return sLabels[sLabels.length-1];
+        } else {
+            return sLabels[index];
+        }
     }
 }
 

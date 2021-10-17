@@ -19,6 +19,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.Typeface;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -42,7 +43,6 @@ import com.radio.codec2talkie.audio.AudioProcessor;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothSocketHandler;
 import com.radio.codec2talkie.connect.TcpIpConnectActivity;
-import com.radio.codec2talkie.protocol.Kiss;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.recorder.RecorderActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
@@ -140,7 +140,13 @@ public class MainActivity extends AppCompatActivity {
 
         // show/hide S-meter
         FrameLayout frameRssi = findViewById(R.id.frameRssi);
-        if (!_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false)) {
+        if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false)) {
+            int sLevelId = RadioTools.getMinimumDecodeSLevelLabel(_sharedPreferences, S_METER_S0_VALUE_DB);
+            TextView sLevel = findViewById(sLevelId);
+            if (sLevel != null) {
+                sLevel.setTypeface(null, Typeface.BOLD_ITALIC);
+            }
+        } else {
             frameRssi.setVisibility(View.GONE);
         }
 
