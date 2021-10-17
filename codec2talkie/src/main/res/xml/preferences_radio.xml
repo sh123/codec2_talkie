@@ -14,14 +14,14 @@
             app:defaultValue="433775000">
         </EditTextPreference>
 
-        <EditTextPreference
-            android:inputType="numberDecimal"
-            android:digits="0123456789"
+        <ListPreference
             app:key="kiss_extension_radio_bandwidth"
             app:title="@string/kiss_extensions_radio_bandwidth_title"
-            app:summary="@string/kiss_extensions_radio_bandwidth_summary"
-            app:defaultValue="125000">
-        </EditTextPreference>
+            app:entries="@array/lora_bandwidths"
+            app:entryValues="@array/lora_bandwidths"
+            app:defaultValue="125000"
+            app:summary="%s">
+        </ListPreference>
 
         <EditTextPreference
             android:inputType="numberDecimal"
@@ -32,23 +32,23 @@
             app:defaultValue="20">
         </EditTextPreference>
 
-        <EditTextPreference
-            android:inputType="numberDecimal"
-            android:digits="0123456789"
+        <ListPreference
             app:key="kiss_extension_radio_sf"
             app:title="@string/kiss_extensions_radio_sf_title"
             app:summary="@string/kiss_extensions_radio_sf_summary"
+            app:entries="@array/lora_spreading_factors"
+            app:entryValues="@array/lora_spreading_factors"
             app:defaultValue="7">
-        </EditTextPreference>
+        </ListPreference>
 
-        <EditTextPreference
-            android:inputType="numberDecimal"
-            android:digits="0123456789"
+        <ListPreference
             app:key="kiss_extension_radio_cr"
             app:title="@string/kiss_extensions_radio_cr_title"
             app:summary="@string/kiss_extensions_radio_cr_summary"
+            app:entries="@array/lora_coding_rates"
+            app:entryValues="@array/lora_coding_rates"
             app:defaultValue="6">
-        </EditTextPreference>
+        </ListPreference>
 
         <EditTextPreference
             app:key="kiss_extension_radio_sync"

@@ -166,4 +166,34 @@
     <string name="kiss_scrambler_iterations_summary">(Experimental) Change to lower value on slow devices, >1000 recommended, should match on all devices</string>
     <string name="codec2_tx_frame_max_size_title">Maximum super frame size</string>
     <string name="codec2_tx_frame_max_size_summary">Maximum size of super frame, which holds multiple Codec2 samples</string>
+
+    <string-array name="lora_bandwidths">
+        <item>7800</item>
+        <item>10400</item>
+        <item>15600</item>
+        <item>20800</item>
+        <item>31250</item>
+        <item>41700</item>
+        <item>62500</item>
+        <item>125000</item>
+        <item>250000</item>
+        <item>500000</item>
+    </string-array>
+
+    <string-array name="lora_spreading_factors">
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+    </string-array>
+
+    <string-array name="lora_coding_rates">
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
 </resources>
