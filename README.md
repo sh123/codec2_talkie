@@ -56,6 +56,8 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
     - Use phone speaker instead of headset
   - **Codec2**
     - Set Codec2 mode/speed from 450 up to 3200 bps
+    - Set maximum super frame size in bytes
+      - Multiple Codec2 frames are aggregated into one super frame of size not larger than this value
     - Enable/disable echo/loopback test mode
     - Enable/disable RX/TX recorder
   - **TNC parameters**
