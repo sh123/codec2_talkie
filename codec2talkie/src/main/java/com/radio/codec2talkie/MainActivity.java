@@ -48,6 +48,7 @@ import com.radio.codec2talkie.recorder.RecorderActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
 import com.radio.codec2talkie.tools.AudioTools;
+import com.radio.codec2talkie.tools.RadioTools;
 import com.radio.codec2talkie.transport.TransportFactory;
 import com.radio.codec2talkie.connect.UsbConnectActivity;
 import com.radio.codec2talkie.connect.UsbPortHandler;
@@ -443,7 +444,7 @@ public class MainActivity extends AppCompatActivity {
             int codec2ModeId = Integer.parseInt(codecNameCodecId[1]);
 
             // radio speed
-            int radioSpeedBps = AudioTools.getRadioSpeed(_sharedPreferences);
+            int radioSpeedBps = RadioTools.getRadioSpeed(_sharedPreferences);
             if (radioSpeedBps > 0) {
                 speedModeInfo = "RF: " + radioSpeedBps + ", " + speedModeInfo;
             }

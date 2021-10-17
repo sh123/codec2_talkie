@@ -18,7 +18,6 @@ public class RadioTools {
                 int bw = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_BANDWIDTH, "125000"));
                 int sf = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SF, "7"));
                 int cr = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_CR, "5"));
-
                 resultBps = RadioTools.calculateLoraSpeedBps(bw, sf, cr);
             }
         } catch (NumberFormatException|ArithmeticException e) {

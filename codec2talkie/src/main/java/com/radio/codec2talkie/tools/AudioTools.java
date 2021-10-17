@@ -24,23 +24,6 @@ public class AudioTools {
         return (int)db;
     }
 
-    public static int getRadioSpeed(SharedPreferences sharedPreferences) {
-        int resultBps = 0;
-        int maxSpeedBps = 128000;
-        try {
-            if (sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false)) {
-                int bw = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_BANDWIDTH, ""));
-                int sf = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SF, ""));
-                int cr = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_CR, ""));
-
-                resultBps = RadioTools.calculateLoraSpeedBps(bw, sf, cr);
-            }
-        } catch (NumberFormatException|ArithmeticException e) {
-            e.printStackTrace();
-        }
-        return (resultBps > 0 && resultBps <= maxSpeedBps) ? resultBps : 0;
-    }
-
     public static int colorFromAudioLevel(int audioLevel) {
         int color = Color.GREEN;
         if (audioLevel > AudioProcessor.getAudioMaxLevel() + UV_METER_MAX_DELTA)
