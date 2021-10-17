@@ -10,6 +10,7 @@
             android:digits="0123456789"
             app:key="kiss_extension_radio_frequency"
             app:title="@string/kiss_extensions_radio_frequency_title"
+            app:useSimpleSummaryProvider="true"
             app:summary="@string/kiss_extensions_radio_frequency_summary"
             app:defaultValue="433775000">
         </EditTextPreference>
@@ -27,6 +28,7 @@
             android:inputType="numberDecimal"
             android:digits="0123456789"
             app:key="kiss_extension_radio_power"
+            app:useSimpleSummaryProvider="true"
             app:title="@string/kiss_extensions_radio_power_title"
             app:summary="@string/kiss_extensions_radio_power_summary"
             app:defaultValue="20">
@@ -35,7 +37,7 @@
         <ListPreference
             app:key="kiss_extension_radio_sf"
             app:title="@string/kiss_extensions_radio_sf_title"
-            app:summary="@string/kiss_extensions_radio_sf_summary"
+            app:summary="%s"
             app:entries="@array/lora_spreading_factors"
             app:entryValues="@array/lora_spreading_factors"
             app:defaultValue="7">
@@ -44,7 +46,7 @@
         <ListPreference
             app:key="kiss_extension_radio_cr"
             app:title="@string/kiss_extensions_radio_cr_title"
-            app:summary="@string/kiss_extensions_radio_cr_summary"
+            app:summary="%s"
             app:entries="@array/lora_coding_rates"
             app:entryValues="@array/lora_coding_rates"
             app:defaultValue="6">
@@ -54,6 +56,7 @@
             app:key="kiss_extension_radio_sync"
             app:title="@string/kiss_extensions_radio_sync_title"
             app:summary="@string/kiss_extensions_radio_sync_summary"
+            app:useSimpleSummaryProvider="true"
             app:defaultValue="34">
         </EditTextPreference>
 
