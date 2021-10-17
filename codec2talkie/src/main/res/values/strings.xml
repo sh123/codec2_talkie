@@ -164,8 +164,8 @@
     <string name="app_audio_output_speaker_summary">Output incoming audio through the speaker</string>
     <string name="kiss_scrambler_iterations_title">(Experimental) Number of iterations performed</string>
     <string name="kiss_scrambler_iterations_summary">(Experimental) Change to lower value on slow devices, >1000 recommended, should match on all devices</string>
-    <string name="codec2_tx_frame_max_size_title">Maximum super frame size</string>
-    <string name="codec2_tx_frame_max_size_summary">Maximum size of super frame, which holds multiple Codec2 samples</string>
+    <string name="codec2_tx_frame_max_size_title">Maximum super frame size (bytes)</string>
+    <string name="codec2_tx_frame_max_size_summary">Multiple Codec2 samples are aggregated into super frame not larger than this value</string>
 
     <string-array name="lora_bandwidths">
         <item>7800</item>
