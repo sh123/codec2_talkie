@@ -12,6 +12,7 @@ public final class PreferenceKeys {
     public static String CODEC2_MODE = "codec2_mode";
     public static String CODEC2_TEST_MODE = "codec2_test_mode";
     public static String CODEC2_RECORDING_ENABLED = "codec2_recording_enabled";
+    public static String CODEC2_TX_FRAME_MAX_SIZE = "codec2_tx_frame_max_size";
 
     public static String KISS_ENABLED = "kiss_enable";
     public static String KISS_BUFFERED_ENABLED = "kiss_buffered_enable";

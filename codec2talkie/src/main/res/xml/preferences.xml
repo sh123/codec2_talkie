@@ -40,6 +40,13 @@
             app:summary="%s">
         </ListPreference>
 
+        <EditTextPreference
+            app:key="codec2_tx_frame_max_size"
+            app:title="@string/codec2_tx_frame_max_size_title"
+            app:summary="@string/codec2_tx_frame_max_size_summary"
+            app:defaultValue="48">
+        </EditTextPreference>
+
         <SwitchPreference
             app:key="codec2_test_mode"
             app:title="@string/codec2_test_mode_title"
@@ -53,7 +60,6 @@
             app:summary="@string/codec2_recorder_summary"
             app:defaultValue="false">
         </SwitchPreference>
-
     </PreferenceCategory>
 
     <PreferenceCategory

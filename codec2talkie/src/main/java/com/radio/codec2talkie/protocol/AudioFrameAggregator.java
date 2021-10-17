@@ -1,8 +1,12 @@
 package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.preference.PreferenceManager;
+
+import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.transport.Transport;
 import com.ustadmobile.codec2.Codec2;
 
@@ -13,19 +17,17 @@ public class AudioFrameAggregator implements Protocol {
 
     private static final String TAG = AudioFrameAggregator.class.getSimpleName();
 
-    private final int TX_FRAME_MAX_SIZE = 48;
+    private final String DEFAULT_TX_FRAME_MAX_SIZE = "48";
     private final Protocol _childProtocol;
 
+    private int _outputBufferSize;
     private int _outputBufferPos;
-    private final byte[] _outputBuffer;
+    private byte[] _outputBuffer;
 
     private final int _codec2FrameSize;
 
     public AudioFrameAggregator(Protocol childProtocol, int codec2ModeId) {
         _childProtocol = childProtocol;
-        _outputBuffer = new byte[TX_FRAME_MAX_SIZE];
-
-        _outputBufferPos = 0;
 
         long codec2Con = Codec2.create(codec2ModeId);
         _codec2FrameSize = Codec2.getBitsSize(codec2Con); // returns number of bytes
@@ -34,12 +36,16 @@ public class AudioFrameAggregator implements Protocol {
 
     @Override
     public void initialize(Transport transport, Context context) throws IOException {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        _outputBufferSize = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.CODEC2_TX_FRAME_MAX_SIZE, DEFAULT_TX_FRAME_MAX_SIZE));
+        _outputBuffer = new byte[_outputBufferSize];
+        _outputBufferPos = 0;
         _childProtocol.initialize(transport, context);
     }
 
     @Override
     public void send(byte[] frame) throws IOException {
-        if ( _outputBufferPos + frame.length >= TX_FRAME_MAX_SIZE) {
+        if ( _outputBufferPos + frame.length >= _outputBufferSize) {
             _childProtocol.send(Arrays.copyOf(_outputBuffer, _outputBufferPos));
             _outputBufferPos = 0;
         }
