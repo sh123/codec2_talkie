@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_CONNECT_TCP_IP = 6;
 
     // S9 level at -93 dBm as per VHF Managers Handbook
-    private final static int S_METER_S0_VALUE_DB = -153;
+    private final static int S_METER_S0_VALUE_DB = -147;
     // from S0 up to S9+40
     private final static int S_METER_RANGE_DB = 100;
 
