@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     // S9 level at -93 dBm as per VHF Managers Handbook
     private final static int S_METER_S0_VALUE_DB = -147;
     // from S0 up to S9+40
-    private final static int S_METER_RANGE_DB = 94;
+    private final static int S_METER_RANGE_DB = 100;
 
     private final String[] _requiredPermissions = new String[] {
             Manifest.permission.BLUETOOTH,
