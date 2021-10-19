@@ -222,7 +222,6 @@ public class Kiss implements Protocol {
 
     @Override
     public void close() {
-        Log.e("KISS", "UNREGISTER");
         _context.unregisterReceiver(onModemRebootRequested);
     }
 
