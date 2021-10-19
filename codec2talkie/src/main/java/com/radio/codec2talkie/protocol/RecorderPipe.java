@@ -75,6 +75,11 @@ public class RecorderPipe implements Protocol {
         _childProtocol.flush();
     }
 
+    @Override
+    public void close() {
+        _childProtocol.close();
+    }
+
     private void writeToFile(byte[] rawData)  {
         stopRotationTimer();
         createStreamIfNotExists();

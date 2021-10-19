@@ -84,8 +84,6 @@ public class Kiss implements Protocol {
 
     private Context _context;
 
-    private boolean _isRebootRegistered = false;
-
     public Kiss() {
         _transportInputBuffer = new byte[TRANSPORT_INPUT_BUFFER_SIZE];
         _transportOutputBuffer = new byte[TRANSPORT_OUTPUT_BUFFER_SIZE];
@@ -101,6 +99,7 @@ public class Kiss implements Protocol {
         _isExtendedMode = false;
     }
 
+    @Override
     public void initialize(Transport transport, Context context) throws IOException {
 
         Log.i(TAG, "Initializing " + transport.toString());
@@ -174,10 +173,7 @@ public class Kiss implements Protocol {
         }
         completeKissPacket();
 
-        if (!_isRebootRegistered) {
-            _context.registerReceiver(onModemRebootRequested, new IntentFilter(PreferenceKeys.KISS_EXTENSIONS_ACTION_REBOOT_REQUESTED));
-            _isRebootRegistered = true;
-        }
+        _context.registerReceiver(onModemRebootRequested, new IntentFilter(PreferenceKeys.KISS_EXTENSIONS_ACTION_REBOOT_REQUESTED));
     }
 
     public final BroadcastReceiver onModemRebootRequested = new BroadcastReceiver() {
@@ -194,6 +190,7 @@ public class Kiss implements Protocol {
         }
     };
 
+    @Override
     public void send(byte [] frame) throws IOException {
         // escape
         ByteBuffer escapedFrame = escape(frame);
@@ -208,6 +205,7 @@ public class Kiss implements Protocol {
         completeKissPacket();
     }
 
+    @Override
     public boolean receive(Callback callback) throws IOException {
         int bytesRead = _transport.read(_transportInputBuffer);
         if (bytesRead > 0) {
@@ -217,8 +215,14 @@ public class Kiss implements Protocol {
         return false;
     }
 
+    @Override
     public void flush() throws IOException{
         completeKissPacket();
+    }
+
+    @Override
+    public void close() {
+        _context.unregisterReceiver(onModemRebootRequested);
     }
 
     private void processCommand(byte b) {

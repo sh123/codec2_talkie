@@ -91,4 +91,9 @@ public class AudioFrameAggregator implements Protocol {
         _outputBufferPos = 0;
         _childProtocol.flush();
     }
+
+    @Override
+    public void close() {
+        _childProtocol.close();
+    }
 }

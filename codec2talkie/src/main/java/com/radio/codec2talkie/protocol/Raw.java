@@ -18,14 +18,17 @@ public class Raw implements Protocol {
         _rxDataBuffer = new byte[RX_BUFFER_SIZE];
     }
 
+    @Override
     public void initialize(Transport transport, Context context) {
         _transport = transport;
     }
 
+    @Override
     public void send(byte [] frame) throws IOException {
         _transport.write(Arrays.copyOf(frame, frame.length));
     }
 
+    @Override
     public boolean receive(Callback callback) throws IOException {
         int bytesRead = _transport.read(_rxDataBuffer);
         if (bytesRead > 0) {
@@ -35,6 +38,11 @@ public class Raw implements Protocol {
         return false;
     }
 
+    @Override
     public void flush() {
+    }
+
+    @Override
+    public void close() {
     }
 }

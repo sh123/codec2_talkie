@@ -11,4 +11,5 @@ public interface Protocol {
     void send(byte [] frame) throws IOException;
     boolean receive(Callback callback) throws IOException;
     void flush() throws IOException;
+    void close();
 }

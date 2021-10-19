@@ -324,6 +324,7 @@ public class AudioProcessor extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        _protocol.close();
         try {
             _transport.close();
         } catch (IOException e) {

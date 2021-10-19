@@ -117,4 +117,9 @@ public class ScramblerPipe implements Protocol {
     public void flush() throws IOException {
         _childProtocol.flush();
     }
+
+    @Override
+    public void close() {
+        _childProtocol.close();
+    }
 }
