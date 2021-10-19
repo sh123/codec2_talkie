@@ -12,8 +12,8 @@ public class ProtocolFactory {
     public enum ProtocolType {
         RAW("RAW"),
         KISS("KISS"),
-        KISS_BUFFERED("KISS BUFFERED"),
-        KISS_PARROT("KISS PARROT");
+        KISS_BUFFERED("KISS BUF"),
+        KISS_PARROT("KISS RPT");
 
         private final String _name;
 
