@@ -6,7 +6,6 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
-import com.radio.codec2talkie.MainActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.ScramblingTools;
 import com.radio.codec2talkie.transport.Transport;
@@ -77,7 +76,7 @@ public class ScramblerPipe implements Protocol {
                 int dataSize = scrambledFrame.length - ScramblingTools.BLOCK_SIZE - ScramblingTools.SALT_BYTES;
                 if (dataSize <= 0) {
                     Log.e(TAG, "Frame of wrong length " + dataSize);
-                    callback.onProtocolError();
+                    callback.onProtocolRxError();
                     return;
                 }
                 data.scrambledData = new byte[dataSize];
@@ -94,7 +93,7 @@ public class ScramblerPipe implements Protocol {
                         InvalidAlgorithmParameterException e) {
 
                     e.printStackTrace();
-                    callback.onProtocolError();
+                    callback.onProtocolRxError();
                 }
                 if (audioFrames != null) {
                     callback.onReceiveAudioFrames(audioFrames);
@@ -107,8 +106,8 @@ public class ScramblerPipe implements Protocol {
             }
 
             @Override
-            protected void onProtocolError() {
-                callback.onProtocolError();
+            protected void onProtocolRxError() {
+                callback.onProtocolRxError();
             }
         });
     }

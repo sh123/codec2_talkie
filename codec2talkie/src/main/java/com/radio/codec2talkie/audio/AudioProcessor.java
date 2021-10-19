@@ -253,8 +253,9 @@ public class AudioProcessor extends Thread {
         }
 
         @Override
-        protected void onProtocolError() {
+        protected void onProtocolRxError() {
             sendStatusUpdate(PROCESSOR_CODEC_ERROR);
+            Log.e(TAG, "Protocol RX error");
         }
     };
 

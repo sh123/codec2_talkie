@@ -64,8 +64,8 @@ public class RecorderPipe implements Protocol {
             }
 
             @Override
-            protected void onProtocolError() {
-                callback.onProtocolError();
+            protected void onProtocolRxError() {
+                callback.onProtocolRxError();
             }
         });
     }
