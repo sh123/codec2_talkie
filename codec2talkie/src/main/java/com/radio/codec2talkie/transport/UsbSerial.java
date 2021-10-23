@@ -22,7 +22,8 @@ public class UsbSerial implements Transport {
 
     @Override
     public int write(byte[] data) throws IOException {
-        return _usbPort.write(data, TX_TIMEOUT);
+        _usbPort.write(data, TX_TIMEOUT);
+        return data.length;
     }
 
     @Override
