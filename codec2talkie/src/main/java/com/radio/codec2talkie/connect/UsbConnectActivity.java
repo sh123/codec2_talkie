@@ -18,6 +18,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
+import com.hoho.android.usbserial.driver.CdcAcmSerialDriver;
+import com.hoho.android.usbserial.driver.ProbeTable;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
@@ -58,6 +60,13 @@ public class UsbConnectActivity extends AppCompatActivity {
         connectUsb();
     }
 
+    UsbSerialProber getCustomProber() {
+        ProbeTable customTable = new ProbeTable();
+        // Spark Fun
+        customTable.addProduct(0x1b4f, 0x9204, CdcAcmSerialDriver.class);
+        return new UsbSerialProber(customTable);
+    }
+
     private void connectUsb() {
 
         new Thread() {
@@ -67,6 +76,9 @@ public class UsbConnectActivity extends AppCompatActivity {
 
                 UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
                 List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
+                if (availableDrivers.isEmpty()) {
+                    availableDrivers = getCustomProber().findAllDrivers(manager);
+                }
                 if (availableDrivers.isEmpty()) {
                     resultMsg.what = USB_NOT_FOUND;
                     onUsbStateChanged.sendMessage(resultMsg);
