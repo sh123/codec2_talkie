@@ -13,6 +13,8 @@
 # Introduction
 **Turn your Android phone into real VHF/UHF Walkie-Talkie (requires additional digital radio modem).**
 
+For more information visit project [Wiki](https://github.com/sh123/codec2_talkie/wiki)
+
 ![alt text](images/diagram.png)
 
 ![alt text](images/screenshot.png)
