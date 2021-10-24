@@ -70,10 +70,12 @@ public class UsbConnectActivity extends AppCompatActivity {
         connectUsb();
     }
 
-    UsbSerialProber getCustomProber() {
+    private UsbSerialProber getCustomProber() {
         ProbeTable customTable = new ProbeTable();
         // Spark Fun
         customTable.addProduct(0x1b4f, 0x9204, CdcAcmSerialDriver.class);
+        // Arduino Due
+        customTable.addProduct(0x2341, 0x003d, CdcAcmSerialDriver.class);
         return new UsbSerialProber(customTable);
     }
 
