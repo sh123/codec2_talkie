@@ -2,6 +2,7 @@ package com.radio.codec2talkie.transport;
 
 import android.util.Log;
 
+import com.hoho.android.usbserial.driver.SerialTimeoutException;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 
 import java.io.IOException;
@@ -24,8 +25,13 @@ public class UsbSerial implements Transport {
 
     @Override
     public int write(byte[] data) throws IOException {
-        _usbPort.write(data, TX_TIMEOUT);
-        return data.length;
+        try {
+            _usbPort.write(data, TX_TIMEOUT);
+            return data.length;
+        } catch (SerialTimeoutException e) {
+            e.printStackTrace();
+            return -1;
+        }
     }
 
     @Override
