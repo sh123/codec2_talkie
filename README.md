@@ -42,7 +42,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 # Features
 - **PTT UI button**, push and talk, Codec2 speech frames will be transmitted to the modem
 - **PTT hardware button**, `KEYCODE_TV_DATA SERVICE` (230 key code) hardware buttons are used for PTT (latter is used on some Android network radios), `KEYCODE_HEADSETHOOK` tx on/off on click, volume up/down buttons could be used for ptt if enabled in Preferences
-- **USB serial connectivity** (default 115200 bps, 8 data bits, 1 stop bit, no parity), just select this app after connecting to USB and it will use given connection, baud rate could be changed from Preferences
+- **USB Settings** (default 115200 bps, 8 data bits, 1 stop bit, no parity, no DTR, no RTS), configure USB serial port settings
 - **Bluetooth connectivity** on startup, lists paired devices, so you can choose your modem and connect, you need to pair with your Bluetooth device first from Android Bluetooth Settings, default Bluetooth device could be set from Preferences
 - **TCP/IP connectivity** on startup, application can connect to TCP/IP based modem and operate through the network, for example, with [Direwolf](https://github.com/wb2osz/direwolf) application and your existing analog transceiver
 - **Voice Codec2 mode selection**, which allows you to select various Codec2 modes from 450 up to 3200 bps on the fly, sender and receiver should agree on the codec mode and use the same codec mode on both ends as Codec2 mode negotiation between clients is not implemented at the moment
@@ -125,7 +125,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 - Cannot install application from unknown source
   - You need to allow installation of apps from unknown sources from Android settings, or just install Android Studio and build-install application yourself
 - My USB modem is not detected
-  - Run `lsusb` command and find your adapter vendor:product pair, run `dmsg` command and find lines modem detection log lines, crate issue report with this information
+  - Run `lsusb` command and find your adapter vendor:product pair, run `dmsg` command and find lines modem detection log lines, create issue report with this information
 
 # KISS command extensions
 KISS command extensions are used for radio module control and signal report events on port 0, command for radio control is defined as 6 (KISS SetHardware) and signal report command as 7. Radio modules/modems can implement these commands, so they will be controllable from the application and application will be able to show signal levels on S-meter.
