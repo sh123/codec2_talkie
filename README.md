@@ -125,7 +125,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 - Cannot install application from unknown source
   - You need to allow installation of apps from unknown sources from Android settings, or just install Android Studio and build-install application yourself
 - My USB modem is not detected
-  - Run `lsusb` command and find your adapter vendor:product pair, run `dmsg` command and find lines modem detection log lines, create issue report with this information
+  - Run `lsusb` command and find your adapter vendor:product pair, run `dmesg` command and find lines modem detection log lines, create issue report with this information
 - Application keeps reconnecting to USB modem
   - Make sure Serial debugging is disabled in modem and serial USB is used only for data transfer, make sure it works with empty sketch. Make sure modem serial boot log is disabled.
 
