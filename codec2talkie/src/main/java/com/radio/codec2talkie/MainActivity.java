@@ -74,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
     // from S0 up to S9+40
     private final static int S_METER_RANGE_DB = 100;
 
+    private final static long BACK_EXIT_MS_DELAY = 2000;
+
     private final String[] _requiredPermissions = new String[] {
             Manifest.permission.BLUETOOTH,
             Manifest.permission.RECORD_AUDIO
@@ -94,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     private Button _btnPtt;
 
     private boolean _isRestarting = false;
+    private long _pressedTime;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -305,6 +308,18 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (_pressedTime + BACK_EXIT_MS_DELAY > System.currentTimeMillis()) {
+            super.onBackPressed();
+            stopRunning();
+        } else {
+            Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_SHORT).show();
+        }
+        _pressedTime = System.currentTimeMillis();
     }
 
     @Override
