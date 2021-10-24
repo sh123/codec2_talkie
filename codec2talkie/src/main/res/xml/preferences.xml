@@ -76,14 +76,12 @@
             </intent>
         </Preference>
 
-        <ListPreference
-            app:key="ports_usb_serial_speed"
-            app:title="@string/usb_serial_speed_title"
-            app:entries="@array/usb_serial_speed"
-            app:entryValues="@array/usb_serial_speed"
-            app:defaultValue="115200"
-            app:summary="%s">
-        </ListPreference>
+        <Preference
+            app:key="ports_usb_serial"
+            app:title="@string/usb_serial_title"
+            app:summary="@string/usb_serial_summary"
+            app:fragment="com.radio.codec2talkie.settings.SettingsActivity$SettingsUsbFragment">
+        </Preference>
 
         <SwitchPreference
             app:key="ports_tcp_ip_enable"

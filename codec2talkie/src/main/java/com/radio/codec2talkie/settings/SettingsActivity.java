@@ -60,4 +60,12 @@ public class SettingsActivity extends AppCompatActivity
             setPreferencesFromResource(R.xml.preferences_tcpip, null);
         }
     }
+
+    public static class SettingsUsbFragment extends PreferenceFragmentCompat
+    {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences_usb, null);
+        }
+    }
 }

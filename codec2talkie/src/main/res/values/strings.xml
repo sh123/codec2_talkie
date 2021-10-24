@@ -166,6 +166,16 @@
     <string name="kiss_scrambler_iterations_summary">(Experimental) Change to lower value on slow devices, >1000 recommended, should match on all devices</string>
     <string name="codec2_tx_frame_max_size_title">Maximum super frame size (bytes)</string>
     <string name="codec2_tx_frame_max_size_summary">Multiple Codec2 samples are aggregated into super frame not larger than this value</string>
+    <string name="usb_settings_title">USB Settings</string>
+    <string name="usb_data_bits_title">Serial Data Bits</string>
+    <string name="usb_parity_title">Serial Parity</string>
+    <string name="usb_dtr_title">Enable DTR</string>
+    <string name="usb_dtr_summary">Enable data terminal ready signal if supported</string>
+    <string name="usb_rts_title">Enable RTS</string>
+    <string name="usb_rts_summary">Enable serial ready to send signal if supported</string>
+    <string name="usb_stop_bits_title">Serial Stop Bits</string>
+    <string name="usb_serial_title">USB Serial Settings</string>
+    <string name="usb_serial_summary">Set USB serial settings, such as speed, bits, parity, etc.</string>
 
     <string-array name="lora_bandwidths">
         <item>7800</item>
@@ -196,4 +206,40 @@
         <item>7</item>
         <item>8</item>
     </string-array>
+
+    <string-array name="usb_data_bits">
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+
+    <string-array name="usb_stop_bits_entries">
+        <item>STOPBITS_1</item>
+        <item>STOPBITS_1_5</item>
+        <item>STOPBITS_2</item>
+    </string-array>
+
+    <string-array name="usb_stop_bits_values">
+        <item>1</item>
+        <item>3</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="usb_parity_entries">
+        <item>PARITY_NONE</item>
+        <item>PARITY_ODD</item>
+        <item>PARITY_EVEN</item>
+        <item>PARITY_MARK</item>
+        <item>PARITY_SPACE</item>
+    </string-array>
+
+    <string-array name="usb_parity_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+
 </resources>

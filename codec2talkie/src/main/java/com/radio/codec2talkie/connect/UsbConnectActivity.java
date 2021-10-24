@@ -35,11 +35,16 @@ public class UsbConnectActivity extends AppCompatActivity {
     private final int USB_CONNECTED = 2;
 
     private final int USB_BAUD_RATE_DEFAULT = 115200;
-    private final int USB_DATA_BITS = 8;
-    private final int USB_STOP_BITS = UsbSerialPort.STOPBITS_1;
-    private final int USB_PARITY = UsbSerialPort.PARITY_NONE;
+    private final int USB_DATA_BITS_DEFAULT = 8;
+    private final int USB_STOP_BITS_DEFAULT = UsbSerialPort.STOPBITS_1;
+    private final int USB_PARITY_DEFAULT = UsbSerialPort.PARITY_NONE;
 
     private int _baudRate;
+    private int _dataBits;
+    private int _stopBits;
+    private int _parity;
+    private boolean _enableDtr;
+    private boolean _enableRts;
 
     private String _usbDeviceName;
     private UsbSerialPort _usbPort;
@@ -51,6 +56,11 @@ public class UsbConnectActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         _baudRate = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_USB_SERIAL_SPEED, String.valueOf(USB_BAUD_RATE_DEFAULT)));
+        _dataBits = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_USB_DATA_BITS, String.valueOf(USB_DATA_BITS_DEFAULT)));
+        _stopBits = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_USB_STOP_BITS, String.valueOf(USB_STOP_BITS_DEFAULT)));
+        _parity = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_USB_PARITY, String.valueOf(USB_PARITY_DEFAULT)));
+        _enableDtr = sharedPreferences.getBoolean(PreferenceKeys.PORTS_USB_DTR, false);
+        _enableRts = sharedPreferences.getBoolean(PreferenceKeys.PORTS_USB_RTS, false);
 
         ProgressBar progressBarUsb = findViewById(R.id.progressBarUsb);
         progressBarUsb.setVisibility(View.VISIBLE);
@@ -101,9 +111,9 @@ public class UsbConnectActivity extends AppCompatActivity {
 
                 try {
                     port.open(connection);
-                    port.setParameters(_baudRate, USB_DATA_BITS, USB_STOP_BITS, USB_PARITY);
-                    port.setDTR(true);
-                    port.setRTS(true);
+                    port.setParameters(_baudRate, _dataBits, _stopBits, _parity);
+                    port.setDTR(_enableDtr);
+                    port.setRTS(_enableRts);
                 } catch (IOException e) {
                     resultMsg.what = USB_NOT_FOUND;
                     onUsbStateChanged.sendMessage(resultMsg);

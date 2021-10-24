@@ -2,6 +2,11 @@ package com.radio.codec2talkie.settings;
 
 public final class PreferenceKeys {
     public static String PORTS_USB_SERIAL_SPEED = "ports_usb_serial_speed";
+    public static String PORTS_USB_DATA_BITS = "ports_usb_data_bits";
+    public static String PORTS_USB_STOP_BITS = "ports_usb_stop_bits";
+    public static String PORTS_USB_PARITY = "ports_usb_parity";
+    public static String PORTS_USB_DTR = "ports_usb_dtr";
+    public static String PORTS_USB_RTS = "ports_usb_rts";
     public static String PORTS_BT_CLIENT_NAME = "ports_bt_client_name";
     public static String PORTS_TCP_IP_ENABLED = "ports_tcp_ip_enable";
     public static String PORTS_TCP_IP_ADDRESS = "ports_tcp_ip_address";
