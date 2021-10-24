@@ -13,6 +13,8 @@
 # Introduction
 **Turn your Android phone into real VHF/UHF Walkie-Talkie (requires additional digital radio modem).**
 
+For more information visit project [Wiki](https://github.com/sh123/codec2_talkie/wiki)
+
 ![alt text](images/diagram.png)
 
 ![alt text](images/screenshot.png)
@@ -122,7 +124,9 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
   - Uninstall previous version and try to install again
 - Cannot install application from unknown source
   - You need to allow installation of apps from unknown sources from Android settings, or just install Android Studio and build-install application yourself
-  
+- My USB modem is not detected
+  - Run `lsusb` command and find your adapter vendor:product pair, run `dmsg` command and find lines modem detection log lines, crate issue report with this information
+
 # KISS command extensions
 KISS command extensions are used for radio module control and signal report events on port 0, command for radio control is defined as 6 (KISS SetHardware) and signal report command as 7. Radio modules/modems can implement these commands, so they will be controllable from the application and application will be able to show signal levels on S-meter.
 
