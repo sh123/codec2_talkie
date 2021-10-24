@@ -222,7 +222,11 @@ public class Kiss implements Protocol {
 
     @Override
     public void close() {
-        _context.unregisterReceiver(onModemRebootRequested);
+        try {
+            _context.unregisterReceiver(onModemRebootRequested);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        }
     }
 
     private void processCommand(byte b) {
