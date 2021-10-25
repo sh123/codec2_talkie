@@ -127,7 +127,7 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 - My USB modem is not detected
   - Run `lsusb` command and find your adapter vendor:product pair, run `dmesg` command and find lines modem detection log lines, create issue report with this information
 - Application keeps reconnecting to USB modem
-  - Make sure Serial debugging is disabled in modem and serial USB is used only for data transfer, make sure it works with empty sketch. Make sure modem serial boot log is disabled.
+  - Make sure Serial debugging is disabled in the modem and serial USB is used only for data transfer, make sure it works with empty sketch. Make sure modem serial boot log is disabled (e.g. on ESP32).
 
 # KISS command extensions
 KISS command extensions are used for radio module control and signal report events on port 0, command for radio control is defined as 6 (KISS SetHardware) and signal report command as 7. Radio modules/modems can implement these commands, so they will be controllable from the application and application will be able to show signal levels on S-meter.
