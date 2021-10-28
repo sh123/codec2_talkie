@@ -1,7 +1,7 @@
 ![CI](https://github.com/sh123/codec2_talkie/workflows/CI/badge.svg)
 
 # Introduction
-**Turn your Android phone into real VHF/UHF Walkie-Talkie (requires additional digital radio modem).**
+**Turn your Android phone into real VHF/UHF Walkie-Talkie (requires additional digital radio hardware/software modem)**
 
 For more information visit project [Wiki](https://github.com/sh123/codec2_talkie/wiki)
 
