@@ -28,3 +28,20 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 - Android 5.0, 5.1, 6.0 (API 21, 22, 23)
   - Separate apk package is released with "legacy" suffix from legacy branch
 - Modem, radio module or transceiver which supports [KISS protocol](https://en.wikipedia.org/wiki/KISS_(TNC)) or can process KISS or raw Codec2 audio frames over serial Bluetooth, USB or TCP/IP
+
+# Dependencies
+- Source code is integrated into this project for easier building and customization:
+  - Codec2 codec: https://github.com/drowe67/codec2
+  - Android Codec2 wrapper code: https://github.com/UstadMobile/Codec2-Android
+- Fetched with gradle as dependency:
+  - Android USB serial: https://github.com/mik3y/usb-serial-for-android
+
+
+# Other similar or related projects
+- ESP32 LoRa APRS modem (used with this application for testing): https://github.com/sh123/esp32_loraprs
+- Version adopted for M17 protocol usage: https://github.com/mobilinkd/m17-kiss-ht
+- iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
+- Minimal Arduino LoRa KISS modem: https://github.com/sh123/lora_arduino_kiss_modem
+- Minimal Arduino NRF24 KISS modem: https://github.com/sh123/nrf24l01_arduino_kiss_modem
+- Other interesting projects:
+  - LoRa mesh GPS communicator: https://github.com/meshtastic/Meshtastic-device
