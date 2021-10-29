@@ -44,4 +44,4 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 - Minimal Arduino LoRa KISS modem: https://github.com/sh123/lora_arduino_kiss_modem
 - Minimal Arduino NRF24 KISS modem: https://github.com/sh123/nrf24l01_arduino_kiss_modem
 - Other interesting projects:
-  - LoRa mesh GPS communicator: https://github.com/meshtastic/Meshtastic-device
+  - LoRa mesh text GPS communicator: https://github.com/meshtastic/Meshtastic-device
