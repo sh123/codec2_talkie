@@ -1,7 +1,7 @@
 ![CI](https://github.com/sh123/codec2_talkie/workflows/CI/badge.svg)
 
 # Introduction
-**Turn your Android phone into real VHF/UHF Walkie-Talkie (requires additional digital radio modem).**
+**Turn your Android phone into real VHF/UHF Walkie-Talkie (requires additional digital radio hardware/software modem)**
 
 For more information visit project [Wiki](https://github.com/sh123/codec2_talkie/wiki)
 
@@ -12,13 +12,13 @@ For more information visit project [Wiki](https://github.com/sh123/codec2_talkie
 
 This minimalistic Android application is a Walkie-Talkie style digital voice frontend for your radio modem, which uses open source [Codec2](https://github.com/drowe67/codec2) for speech audio frame encoding/decoding. 
 
-It is mainly intended for DV experimentation with ultra low cost 3-8$ radio modems, such as LoRa and 15-25$ esp32 board flavours with built-in LoRa module: T-Beam,
+It is mainly intended for DV experimentation with ultra low cost 3-8$ radio modems, such as LoRa and 15-25$ ESP32 board flavours with built-in LoRa module: T-Beam,
 LoPy, TTGO, Heltec and others, but could also be used with custom hardware of software (Direwolf) modems + external transceivers or as a test harness for Codec2 frames generation and their playback.
 
 ![alt text](images/tracker.jpg)
 
 Application connects to your radio KISS Bluetooth/USB/TCPIP modem, records speech from the phone microphone on transmit, encodes audio into Codec2 format, encapsulates into KISS frames and sends to your modem. 
-On receive, modem sends KISS packets to the phone with Codec2 speech, application decodes Codec2 frames and plays them through phone speaker.
+On receive, modem sends KISS packets to the phone with Codec2 speech, application decodes Codec2 samples and plays them through phone speaker.
 
 It does not deal with radio management, modulation, etc, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK, FreeDV or any other modulation scheme. Radio just needs to expose KISS Bluetooth/USB/TCPIP interface for speech frames.
 
@@ -28,3 +28,20 @@ It does not deal with radio management, modulation, etc, it is up to your modem 
 - Android 5.0, 5.1, 6.0 (API 21, 22, 23)
   - Separate apk package is released with "legacy" suffix from legacy branch
 - Modem, radio module or transceiver which supports [KISS protocol](https://en.wikipedia.org/wiki/KISS_(TNC)) or can process KISS or raw Codec2 audio frames over serial Bluetooth, USB or TCP/IP
+
+# Dependencies
+- Source code is integrated into this project for easier building and customization:
+  - Codec2 codec: https://github.com/drowe67/codec2
+  - Android Codec2 wrapper code: https://github.com/UstadMobile/Codec2-Android
+- Fetched with gradle as dependency:
+  - Android USB serial: https://github.com/mik3y/usb-serial-for-android
+
+
+# Other similar or related projects
+- ESP32 LoRa APRS modem (used with this application for testing): https://github.com/sh123/esp32_loraprs
+- Version adopted for M17 protocol usage: https://github.com/mobilinkd/m17-kiss-ht
+- iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
+- Minimal Arduino LoRa KISS modem: https://github.com/sh123/lora_arduino_kiss_modem
+- Minimal Arduino NRF24 KISS modem: https://github.com/sh123/nrf24l01_arduino_kiss_modem
+- Other interesting projects:
+  - LoRa mesh text GPS communicator: https://github.com/meshtastic/Meshtastic-device
