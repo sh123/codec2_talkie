@@ -108,8 +108,13 @@ public class AudioProcessor extends Thread {
                 AUDIO_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
+        boolean isVoiceCommunication = _sharedPreferences.getBoolean(PreferenceKeys.APP_AUDIO_INPUT_VOICE_COMMUNICATION, false);
+        int audioSource = MediaRecorder.AudioSource.MIC;
+        if (isVoiceCommunication) {
+            audioSource = MediaRecorder.AudioSource.VOICE_COMMUNICATION;
+        }
         _systemAudioRecorder = new AudioRecord(
-                MediaRecorder.AudioSource.VOICE_COMMUNICATION,
+                audioSource,
                 AUDIO_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,

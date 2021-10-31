@@ -176,6 +176,8 @@
     <string name="usb_stop_bits_title">Serial Stop Bits</string>
     <string name="usb_serial_title">USB Serial Settings</string>
     <string name="usb_serial_summary">Set USB serial settings, such as speed, bits, parity, etc.</string>
+    <string name="app_audio_input_voice_communication_title">Microphone enhancements</string>
+    <string name="app_audio_input_voice_communication_summary">"Enable echo cancellation and noise suppression (might cause lower mic gain)"</string>
 
     <string-array name="lora_bandwidths">
         <item>7800</item>

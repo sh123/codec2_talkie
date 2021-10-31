@@ -45,5 +45,5 @@ public final class PreferenceKeys {
     public static String APP_VOLUME_PTT = "app_volume_ptt";
     public static String APP_KEEP_SCREEN_ON = "app_keep_screen_on";
     public static String APP_AUDIO_OUTPUT_SPEAKER = "app_audio_output_speaker";
-
+    public static String APP_AUDIO_INPUT_VOICE_COMMUNICATION = "app_audio_input_voice_communication";
 }
