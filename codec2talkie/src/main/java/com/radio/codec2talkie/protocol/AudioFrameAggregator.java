@@ -87,8 +87,10 @@ public class AudioFrameAggregator implements Protocol {
 
     @Override
     public void flush() throws IOException {
-        _childProtocol.send(Arrays.copyOf(_outputBuffer, _outputBufferPos));
-        _outputBufferPos = 0;
+        if (_outputBufferPos > 0) {
+            _childProtocol.send(Arrays.copyOf(_outputBuffer, _outputBufferPos));
+            _outputBufferPos = 0;
+        }
         _childProtocol.flush();
     }
 
