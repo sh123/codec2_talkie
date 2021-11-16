@@ -87,7 +87,7 @@ task compileCodec2 {
             System.out.println("Handle abi " + abi)
             exec {
                 workingDir "$projectDir/build/codec2_build_android_" + abi
-                commandLine "/usr/bin/cmake", "$projectDir/src/codec2",
+                commandLine "cmake", "$projectDir/src/codec2",
                         "-DCMAKE_TOOLCHAIN_FILE=" + android.ndkDirectory + "/build/cmake/android.toolchain.cmake",
                         "-DUNITTEST=FALSE",
                         "-DGENERATE_CODEBOOK=$projectDir/build/codec2_build_linux/src/generate_codebook",
