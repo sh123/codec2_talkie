@@ -78,7 +78,9 @@ public class MainActivity extends AppCompatActivity {
 
     private final String[] _requiredPermissions = new String[] {
             Manifest.permission.BLUETOOTH,
-            Manifest.permission.RECORD_AUDIO
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.ACCESS_FINE_LOCATION
     };
 
     private AudioProcessor _audioProcessor;
