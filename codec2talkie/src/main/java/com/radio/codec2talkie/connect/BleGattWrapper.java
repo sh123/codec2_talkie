@@ -9,6 +9,9 @@ import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
+
+import com.radio.codec2talkie.MainActivity;
 
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
@@ -17,20 +20,24 @@ import java.util.UUID;
 
 public class BleGattWrapper extends BluetoothGattCallback {
 
+    private static final String TAG = BleGattWrapper.class.getSimpleName();
+
     private final int BUFFER_SIZE = 1024;
+
+    public static final UUID BT_SERVICE_UUID = UUID.fromString("00000001-ba2a-46c9-ae49-01b0961f68bb");
+    public static final UUID BT_CHARACTERISTIC_TX_UUID = UUID.fromString("00000002-ba2a-46c9-ae49-01b0961f68bb");
+    public static final UUID BT_CHARACTERISTIC_RX_UUID = UUID.fromString("00000003-ba2a-46c9-ae49-01b0961f68bb");
 
     private BluetoothGatt _gatt;
     private BluetoothGattCharacteristic _rxCharacteristic;
     private BluetoothGattCharacteristic _txCharacteristic;
 
     private final Context _context;
-    private final UUID _serviceUuid;
     private final Handler _callback;
 
     private final ByteBuffer _readBuffer;
 
-    public BleGattWrapper(Context context, UUID serviceUuid, Handler callback) {
-        _serviceUuid = serviceUuid;
+    public BleGattWrapper(Context context, Handler callback) {
         _context = context;
         _callback = callback;
         _readBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
@@ -59,6 +66,7 @@ public class BleGattWrapper extends BluetoothGattCallback {
     }
 
     public int write(byte[] data) throws IOException {
+        Log.i(TAG, "write " + data.length);
         _rxCharacteristic.setValue(data);
         _gatt.writeCharacteristic(_txCharacteristic);
         return data.length;
@@ -67,7 +75,6 @@ public class BleGattWrapper extends BluetoothGattCallback {
     @Override
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         super.onCharacteristicRead(gatt, characteristic, status);
-        byte[] data = characteristic.getValue();
         _readBuffer.put(characteristic.getValue());
     }
 
@@ -80,10 +87,13 @@ public class BleGattWrapper extends BluetoothGattCallback {
     @Override
     public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         super.onCharacteristicWrite(gatt, characteristic, status);
+        Log.i(TAG, "onCharacteristicWrite " + status);
     }
 
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
+        Log.i(TAG, "onConnectionStateChange " + status + " " + newState);
+
         Message resultMsg = Message.obtain();
         if (newState == BluetoothProfile.STATE_CONNECTED) {
             resultMsg.what = BleConnectActivity.BT_GATT_CONNECT_SUCCESS;
@@ -110,13 +120,16 @@ public class BleGattWrapper extends BluetoothGattCallback {
 
     private boolean initializeCharacteristics() {
         for (BluetoothGattService service : _gatt.getServices()) {
-            if (service.getUuid().compareTo(_serviceUuid) != 0) continue;
+            Log.i(TAG, "service " + service.getUuid());
+            if (service.getUuid().compareTo(BT_SERVICE_UUID) != 0) continue;
             for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
                 int properties = characteristic.getProperties();
-                if ((properties & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0) {
+                if (characteristic.getUuid().compareTo(BT_CHARACTERISTIC_RX_UUID) == 0 &&
+                        ((properties & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0)) {
                     _rxCharacteristic = characteristic;
                     _gatt.setCharacteristicNotification(characteristic, true);
-                } else if ((properties & BluetoothGattCharacteristic.PROPERTY_WRITE) != 0) {
+                } else if (characteristic.getUuid().compareTo(BT_CHARACTERISTIC_TX_UUID) == 0 &&
+                        ((properties & BluetoothGattCharacteristic.PROPERTY_WRITE) != 0)) {
                     _txCharacteristic = characteristic;
                 }
             }

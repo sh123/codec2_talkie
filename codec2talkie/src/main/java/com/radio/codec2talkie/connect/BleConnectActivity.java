@@ -46,8 +46,6 @@ public class BleConnectActivity extends AppCompatActivity {
     public final static int BT_SERVICES_DISCOVER_FAILURE = 8;
     public final static int BT_UNSUPPORTED_CHARACTERISTICS = 9;
 
-    public static final UUID BT_CLIENT_UUID = UUID.fromString("00000001-ba2a-46c9-ae49-01b0961f68bb");
-
     private static final int BtAddressLength = 17;
 
     private ProgressBar _progressBarBt;
@@ -145,7 +143,7 @@ public class BleConnectActivity extends AppCompatActivity {
     private void startDevicesScan() {
         _btArrayAdapter.clear();
 
-        ScanFilter.Builder scanFilterBuilder = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(BT_CLIENT_UUID));
+        ScanFilter.Builder scanFilterBuilder = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(BleGattWrapper.BT_SERVICE_UUID));
         ScanFilter[] scanFilters = { scanFilterBuilder.build() };
 
         ScanSettings.Builder scanSettingsBuilder = new ScanSettings.Builder();
@@ -161,7 +159,7 @@ public class BleConnectActivity extends AppCompatActivity {
     private void gattConnectToBluetoothClient(String address) {
         showProgressBar();
         BluetoothDevice device = _btAdapter.getRemoteDevice(address);
-        _btGatt = new BleGattWrapper(getApplicationContext(), BT_CLIENT_UUID, onBtStateChanged);
+        _btGatt = new BleGattWrapper(getApplicationContext(), onBtStateChanged);
         _btGatt.connect(device);
     }
 
