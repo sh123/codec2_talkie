@@ -10,45 +10,76 @@ import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 
+import java.io.IOException;
+import java.nio.BufferUnderflowException;
+import java.nio.ByteBuffer;
 import java.util.UUID;
 
 public class BleGattWrapper extends BluetoothGattCallback {
 
-    public BluetoothGatt gatt;
-    public BluetoothGattCharacteristic rxCharacteristic;
-    public BluetoothGattCharacteristic txCharacteristic;
+    private final int BUFFER_SIZE = 1024;
+
+    private BluetoothGatt _gatt;
+    private BluetoothGattCharacteristic _rxCharacteristic;
+    private BluetoothGattCharacteristic _txCharacteristic;
 
     private final Context _context;
     private final UUID _serviceUuid;
     private final Handler _callback;
 
+    private final ByteBuffer _readBuffer;
+
     public BleGattWrapper(Context context, UUID serviceUuid, Handler callback) {
         _serviceUuid = serviceUuid;
         _context = context;
         _callback = callback;
+        _readBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
     }
 
     public void connect(BluetoothDevice device) {
-        gatt = device.connectGatt(_context, true, this);
+        _gatt = device.connectGatt(_context, true, this);
     }
 
     public void close() {
-        gatt.close();
+        _gatt.close();
     }
 
-    private boolean initializeCharacteristics() {
-        for (BluetoothGattService service : gatt.getServices()) {
-            if (service.getUuid().compareTo(_serviceUuid) != 0) continue;
-            for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
-                int properties = characteristic.getProperties();
-                if ((properties & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0) {
-                    rxCharacteristic = characteristic;
-                } else if ((properties & BluetoothGattCharacteristic.PROPERTY_WRITE) != 0) {
-                    txCharacteristic = characteristic;
-                }
+    public int read(byte[] data) throws IOException {
+        int countRead = 0;
+        try {
+            for (int i = 0; i < data.length; i++) {
+                byte b = _readBuffer.get();
+                data[i] = b;
+                countRead++;
             }
+        } catch (BufferUnderflowException ignored) {
         }
-        return (rxCharacteristic != null && txCharacteristic != null);
+        _gatt.readCharacteristic(_rxCharacteristic);
+        return countRead;
+    }
+
+    public int write(byte[] data) throws IOException {
+        _rxCharacteristic.setValue(data);
+        _gatt.writeCharacteristic(_txCharacteristic);
+        return data.length;
+    }
+
+    @Override
+    public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+        super.onCharacteristicRead(gatt, characteristic, status);
+        byte[] data = characteristic.getValue();
+        _readBuffer.put(characteristic.getValue());
+    }
+
+    @Override
+    public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
+        super.onCharacteristicChanged(gatt, characteristic);
+        _readBuffer.put(characteristic.getValue());
+    }
+
+    @Override
+    public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
+        super.onCharacteristicWrite(gatt, characteristic, status);
     }
 
     @Override
@@ -75,5 +106,21 @@ public class BleGattWrapper extends BluetoothGattCallback {
             resultMsg.what = BleConnectActivity.BT_SERVICES_DISCOVER_FAILURE;
         }
         _callback.sendMessage(resultMsg);
+    }
+
+    private boolean initializeCharacteristics() {
+        for (BluetoothGattService service : _gatt.getServices()) {
+            if (service.getUuid().compareTo(_serviceUuid) != 0) continue;
+            for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
+                int properties = characteristic.getProperties();
+                if ((properties & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0) {
+                    _rxCharacteristic = characteristic;
+                    _gatt.setCharacteristicNotification(characteristic, true);
+                } else if ((properties & BluetoothGattCharacteristic.PROPERTY_WRITE) != 0) {
+                    _txCharacteristic = characteristic;
+                }
+            }
+        }
+        return (_rxCharacteristic != null && _txCharacteristic != null);
     }
 }

@@ -13,12 +13,12 @@ public class Ble implements Transport {
 
     @Override
     public int read(byte[] data) throws IOException {
-        return 0;
+        return _gattWrapper.read(data);
     }
 
     @Override
     public int write(byte[] data) throws IOException {
-        return 0;
+        return _gattWrapper.write(data);
     }
 
     @Override
