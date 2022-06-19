@@ -11,6 +11,7 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -45,7 +46,7 @@ public class BleConnectActivity extends AppCompatActivity {
     public final static int BT_SERVICES_DISCOVER_FAILURE = 8;
     public final static int BT_UNSUPPORTED_CHARACTERISTICS = 9;
 
-    private static final UUID BT_CLIENT_UUID = UUID.fromString("00000001-ba2a-46c9-ae49-01b0961f68bb");
+    public static final UUID BT_CLIENT_UUID = UUID.fromString("00000001-ba2a-46c9-ae49-01b0961f68bb");
 
     private static final int BtAddressLength = 17;
 
@@ -134,7 +135,10 @@ public class BleConnectActivity extends AppCompatActivity {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
             super.onScanResult(callbackType, result);
-            _btArrayAdapter.add(result.getDevice().getName() + " | " + result.getDevice().getAddress());
+            String deviceName = result.getDevice().getName() + " | " + result.getDevice().getAddress();
+            if (_btArrayAdapter.getPosition(deviceName) == -1) {
+                _btArrayAdapter.add(deviceName);
+            }
             }
         };
 
@@ -143,7 +147,11 @@ public class BleConnectActivity extends AppCompatActivity {
 
         ScanFilter.Builder scanFilterBuilder = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(BT_CLIENT_UUID));
         ScanFilter[] scanFilters = { scanFilterBuilder.build() };
-        _btBleScanner.startScan(Arrays.asList(scanFilters), null, leScanCallback);
+
+        ScanSettings.Builder scanSettingsBuilder = new ScanSettings.Builder();
+        ScanSettings scanSettings = scanSettingsBuilder.build();
+
+        _btBleScanner.startScan(Arrays.asList(scanFilters), scanSettings, leScanCallback);
 
         Message resultMsg = new Message();
         resultMsg.what = BT_SCAN_COMPLETED;
