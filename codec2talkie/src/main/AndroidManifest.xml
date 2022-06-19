@@ -28,6 +28,9 @@
             android:name=".connect.BluetoothConnectActivity"
             android:configChanges="orientation|screenSize"/>
         <activity
+            android:name=".connect.BleConnectActivity"
+            android:configChanges="orientation|screenSize"/>
+        <activity
             android:name=".settings.BluetoothSettingsActivity"
             android:configChanges="orientation|screenSize" />
         <activity

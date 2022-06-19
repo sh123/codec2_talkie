@@ -180,6 +180,7 @@
     <string name="app_audio_input_voice_communication_summary">"Enable echo cancellation and noise suppression (might cause lower mic gain)"</string>
     <string name="ports_bt_ble_enable_title">Enable BLE</string>
     <string name="ports_bt_ble_enable_summary">Use BLE when communicating with the TNC</string>
+    <string name="bt_ble_scan_completed">BLE scan completed</string>
 
     <string-array name="lora_bandwidths">
         <item>7800</item>
