@@ -49,7 +49,6 @@ public class BleConnectActivity extends AppCompatActivity {
     private final static int BT_SERVICES_DISCOVER_FAILURE = 8;
 
     private static final UUID BT_CLIENT_UUID = UUID.fromString("00000001-ba2a-46c9-ae49-01b0961f68bb");
-    private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     private static final int BtAddressLength = 17;
 
