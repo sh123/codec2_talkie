@@ -1,15 +1,13 @@
 package com.radio.codec2talkie.connect;
 
-import android.bluetooth.BluetoothGatt;
-
 public class BleHandler {
-    private static BluetoothGatt bluetoothGatt;
+    private static BleGattWrapper bleGatt;
 
-    public static synchronized BluetoothGatt getGatt(){
-        return bluetoothGatt;
+    public static synchronized BleGattWrapper getGatt(){
+        return bleGatt;
     }
 
-    public static synchronized void setGatt(BluetoothGatt gatt){
-        BleHandler.bluetoothGatt = gatt;
+    public static synchronized void setGatt(BleGattWrapper gatt){
+        BleHandler.bleGatt = gatt;
     }
 }

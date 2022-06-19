@@ -47,6 +47,7 @@ public class BleConnectActivity extends AppCompatActivity {
     private final static int BT_SCAN_COMPLETED = 6;
     private final static int BT_SERVICES_DISCOVERED = 7;
     private final static int BT_SERVICES_DISCOVER_FAILURE = 8;
+    private final static int BT_UNSUPPORTED_CHARACTERISTICS = 9;
 
     private static final UUID BT_CLIENT_UUID = UUID.fromString("00000001-ba2a-46c9-ae49-01b0961f68bb");
 
@@ -58,7 +59,7 @@ public class BleConnectActivity extends AppCompatActivity {
 
     private BluetoothLeScanner _btBleScanner;
     private BluetoothAdapter _btAdapter;
-    private BluetoothGatt _btGatt;
+    private BleGattWrapper _btGatt;
     private ArrayAdapter<String> _btArrayAdapter;
     private String _btSelectedName;
     private String _btDefaultName;
@@ -158,7 +159,6 @@ public class BleConnectActivity extends AppCompatActivity {
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             Message resultMsg = Message.obtain();
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                _btGatt = gatt;
                 resultMsg.what = BT_GATT_CONNECT_SUCCESS;
                 gatt.discoverServices();
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
@@ -172,6 +172,10 @@ public class BleConnectActivity extends AppCompatActivity {
             Message resultMsg = Message.obtain();
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 resultMsg.what = BT_SERVICES_DISCOVERED;
+                _btGatt = new BleGattWrapper(gatt, BT_CLIENT_UUID);
+                if (!_btGatt.Initialize()) {
+                    resultMsg.what = BT_UNSUPPORTED_CHARACTERISTICS;
+                }
             } else {
                 resultMsg.what = BT_SERVICES_DISCOVER_FAILURE;
             }
@@ -206,6 +210,8 @@ public class BleConnectActivity extends AppCompatActivity {
                 _btBleScanner.stopScan(leScanCallback);
             } else if (msg.what == BT_GATT_CONNECT_SUCCESS) {
                 toastMsg = getString(R.string.bt_le_gatt_connected);
+            } else if (msg.what == BT_UNSUPPORTED_CHARACTERISTICS) {
+                toastMsg = getString(R.string.bt_le_unsupported_characteristics);
             } else {
                 toastMsg = getString(R.string.bt_le_services_discovered);
                 BleHandler.setGatt(_btGatt);

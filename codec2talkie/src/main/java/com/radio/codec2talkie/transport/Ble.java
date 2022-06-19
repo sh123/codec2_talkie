@@ -1,13 +1,13 @@
 package com.radio.codec2talkie.transport;
 
-import android.bluetooth.BluetoothGatt;
+import com.radio.codec2talkie.connect.BleGattWrapper;
 import java.io.IOException;
 
 public class Ble implements Transport {
 
-    private final BluetoothGatt _gatt;
+    private final BleGattWrapper _gatt;
 
-    public Ble(BluetoothGatt gatt) throws IOException {
+    public Ble(BleGattWrapper gatt) throws IOException {
         _gatt = gatt;
     }
 
