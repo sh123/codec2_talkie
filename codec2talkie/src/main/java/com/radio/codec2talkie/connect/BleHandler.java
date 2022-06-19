@@ -5,7 +5,7 @@ import android.bluetooth.BluetoothGatt;
 public class BleHandler {
     private static BluetoothGatt bluetoothGatt;
 
-    public static synchronized BluetoothGatt getSocket(){
+    public static synchronized BluetoothGatt getGatt(){
         return bluetoothGatt;
     }
 

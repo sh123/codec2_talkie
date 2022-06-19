@@ -10,7 +10,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothProfile;
-import android.bluetooth.BluetoothSocket;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
@@ -128,9 +127,9 @@ public class BleConnectActivity extends AppCompatActivity {
     private void connectOrPopulateDevices() {
         if (_btDefaultName != null && !_btDefaultName.trim().isEmpty()) {
             _btSelectedName = _btDefaultName;
-            connectToBluetoothClient(addressFromDisplayName(_btDefaultName));
+            gattConnectToBluetoothClient(addressFromDisplayName(_btDefaultName));
         } else {
-            populateBondedDevices();
+            startDevicesScan();
         }
     }
 
@@ -143,7 +142,7 @@ public class BleConnectActivity extends AppCompatActivity {
             }
         };
 
-    private void populateBondedDevices() {
+    private void startDevicesScan() {
         _btArrayAdapter.clear();
 
         ScanFilter.Builder scanFilterBuilder = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(BT_CLIENT_UUID));
@@ -181,7 +180,7 @@ public class BleConnectActivity extends AppCompatActivity {
         }
     };
 
-    private void connectToBluetoothClient(String address) {
+    private void gattConnectToBluetoothClient(String address) {
         showProgressBar();
         BluetoothDevice device = _btAdapter.getRemoteDevice(address);
         device.connectGatt(this, true, bluetoothGattCallback);
@@ -196,7 +195,7 @@ public class BleConnectActivity extends AppCompatActivity {
                 // connection to default device failed, fall back
                 if (_btDefaultName != null && !_btDefaultName.trim().isEmpty()) {
                     _btDefaultName = null;
-                    populateBondedDevices();
+                    startDevicesScan();
                     return;
                 }
             } else if (msg.what == BT_SOCKET_FAILURE) {
@@ -232,7 +231,7 @@ public class BleConnectActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             _btSelectedName = (String)parent.getAdapter().getItem(position);
             Toast.makeText(getApplicationContext(), getString(R.string.bt_connecting_to, _btSelectedName), Toast.LENGTH_LONG).show();
-            connectToBluetoothClient(addressFromDisplayName(_btSelectedName));
+            gattConnectToBluetoothClient(addressFromDisplayName(_btSelectedName));
         }
     };
 
