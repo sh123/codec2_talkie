@@ -7,9 +7,6 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
-import android.bluetooth.BluetoothGattCallback;
-import android.bluetooth.BluetoothProfile;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
@@ -39,15 +36,14 @@ public class BleConnectActivity extends AppCompatActivity {
 
     private final static int SCAN_PERIOD = 5000;
 
-    private final static int BT_ENABLE = 1;
-    private final static int BT_GATT_CONNECT_SUCCESS = 2;
-    private final static int BT_GATT_CONNECT_FAILURE = 3;
-    private final static int BT_SOCKET_FAILURE = 4;
-    private final static int BT_ADAPTER_FAILURE = 5;
-    private final static int BT_SCAN_COMPLETED = 6;
-    private final static int BT_SERVICES_DISCOVERED = 7;
-    private final static int BT_SERVICES_DISCOVER_FAILURE = 8;
-    private final static int BT_UNSUPPORTED_CHARACTERISTICS = 9;
+    public final static int BT_ENABLE = 1;
+    public final static int BT_GATT_CONNECT_SUCCESS = 2;
+    public final static int BT_GATT_CONNECT_FAILURE = 3;
+    public final static int BT_ADAPTER_FAILURE = 5;
+    public final static int BT_SCAN_COMPLETED = 6;
+    public final static int BT_SERVICES_DISCOVERED = 7;
+    public final static int BT_SERVICES_DISCOVER_FAILURE = 8;
+    public final static int BT_UNSUPPORTED_CHARACTERISTICS = 9;
 
     private static final UUID BT_CLIENT_UUID = UUID.fromString("00000001-ba2a-46c9-ae49-01b0961f68bb");
 
@@ -137,8 +133,8 @@ public class BleConnectActivity extends AppCompatActivity {
         new ScanCallback() {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
-                super.onScanResult(callbackType, result);
-                _btArrayAdapter.add(result.getDevice().getName() + " | " + result.getDevice().getAddress());
+            super.onScanResult(callbackType, result);
+            _btArrayAdapter.add(result.getDevice().getName() + " | " + result.getDevice().getAddress());
             }
         };
 
@@ -154,39 +150,11 @@ public class BleConnectActivity extends AppCompatActivity {
         onBtStateChanged.sendMessageDelayed(resultMsg, SCAN_PERIOD);
     }
 
-    private final BluetoothGattCallback bluetoothGattCallback = new BluetoothGattCallback() {
-        @Override
-        public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
-            Message resultMsg = Message.obtain();
-            if (newState == BluetoothProfile.STATE_CONNECTED) {
-                resultMsg.what = BT_GATT_CONNECT_SUCCESS;
-                gatt.discoverServices();
-            } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                resultMsg.what = BT_GATT_CONNECT_FAILURE;
-            }
-            onBtStateChanged.sendMessage(resultMsg);
-        }
-
-        @Override
-        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
-            Message resultMsg = Message.obtain();
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                resultMsg.what = BT_SERVICES_DISCOVERED;
-                _btGatt = new BleGattWrapper(gatt, BT_CLIENT_UUID);
-                if (!_btGatt.Initialize()) {
-                    resultMsg.what = BT_UNSUPPORTED_CHARACTERISTICS;
-                }
-            } else {
-                resultMsg.what = BT_SERVICES_DISCOVER_FAILURE;
-            }
-            onBtStateChanged.sendMessage(resultMsg);
-        }
-    };
-
     private void gattConnectToBluetoothClient(String address) {
         showProgressBar();
         BluetoothDevice device = _btAdapter.getRemoteDevice(address);
-        device.connectGatt(this, true, bluetoothGattCallback);
+        _btGatt = new BleGattWrapper(getApplicationContext(), BT_CLIENT_UUID, onBtStateChanged);
+        _btGatt.connect(device);
     }
 
     private final Handler onBtStateChanged = new Handler(Looper.getMainLooper()) {
@@ -201,15 +169,13 @@ public class BleConnectActivity extends AppCompatActivity {
                     startDevicesScan();
                     return;
                 }
-            } else if (msg.what == BT_SOCKET_FAILURE) {
-                toastMsg = getString(R.string.bt_socket_failed);
-            } else if (msg.what == BT_ADAPTER_FAILURE) {
-                toastMsg = getString(R.string.bt_adapter_not_found);
             } else if (msg.what == BT_SCAN_COMPLETED) {
                 toastMsg = getString(R.string.bt_ble_scan_completed);
                 _btBleScanner.stopScan(leScanCallback);
             } else if (msg.what == BT_GATT_CONNECT_SUCCESS) {
                 toastMsg = getString(R.string.bt_le_gatt_connected);
+            } else if (msg.what == BT_SERVICES_DISCOVER_FAILURE) {
+                toastMsg = getString(R.string.bt_le_services_discover_failure);
             } else if (msg.what == BT_UNSUPPORTED_CHARACTERISTICS) {
                 toastMsg = getString(R.string.bt_le_unsupported_characteristics);
             } else {

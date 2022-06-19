@@ -5,10 +5,10 @@ import java.io.IOException;
 
 public class Ble implements Transport {
 
-    private final BleGattWrapper _gatt;
+    private final BleGattWrapper _gattWrapper;
 
-    public Ble(BleGattWrapper gatt) throws IOException {
-        _gatt = gatt;
+    public Ble(BleGattWrapper gattWrapper) {
+        _gattWrapper = gattWrapper;
     }
 
     @Override
@@ -23,5 +23,6 @@ public class Ble implements Transport {
 
     @Override
     public void close() throws IOException {
+        _gattWrapper.close();
     }
 }
