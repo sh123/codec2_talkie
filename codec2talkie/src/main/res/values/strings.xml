@@ -181,6 +181,8 @@
     <string name="ports_bt_ble_enable_title">Enable BLE</string>
     <string name="ports_bt_ble_enable_summary">Use BLE when communicating with the TNC</string>
     <string name="bt_ble_scan_completed">BLE scan completed</string>
+    <string name="bt_le_gatt_connected">BLE GATT connected</string>
+    <string name="bt_le_services_discovered">BLE services discovered</string>
 
     <string-array name="lora_bandwidths">
         <item>7800</item>
