@@ -38,12 +38,16 @@ public class BleGattWrapper extends BluetoothGattCallback {
     private final ByteBuffer _readBuffer;
     private final ByteBuffer _writeBuffer;
 
+    private boolean _isConnected;
+
     public BleGattWrapper(Context context, Handler callback) {
         _context = context;
         _callback = callback;
 
         _readBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
         _writeBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
+
+        _isConnected = false;
     }
 
     public void connect(BluetoothDevice device) {
@@ -55,6 +59,8 @@ public class BleGattWrapper extends BluetoothGattCallback {
     }
 
     public int read(byte[] data) throws IOException {
+        if (!_isConnected) throw new IOException();
+
         int countRead = 0;
         try {
             for (int i = 0; i < data.length; i++) {
@@ -69,6 +75,8 @@ public class BleGattWrapper extends BluetoothGattCallback {
     }
 
     public int write(byte[] data) throws IOException {
+        if (!_isConnected) throw new IOException();
+
         _writeBuffer.put(data);
         _writeBuffer.flip();
 
@@ -127,6 +135,7 @@ public class BleGattWrapper extends BluetoothGattCallback {
             resultMsg.what = BleConnectActivity.BT_GATT_CONNECT_SUCCESS;
             gatt.discoverServices();
         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+            _isConnected = false;
             resultMsg.what = BleConnectActivity.BT_GATT_CONNECT_FAILURE;
         }
         _callback.sendMessage(resultMsg);
@@ -138,7 +147,9 @@ public class BleGattWrapper extends BluetoothGattCallback {
         Message resultMsg = Message.obtain();
         if (status == BluetoothGatt.GATT_SUCCESS) {
             resultMsg.what = BleConnectActivity.BT_SERVICES_DISCOVERED;
-            if (!initializeCharacteristics()) {
+            if (initializeCharacteristics()) {
+                _isConnected = true;
+            } else {
                 resultMsg.what = BleConnectActivity.BT_UNSUPPORTED_CHARACTERISTICS;
             }
         } else {
