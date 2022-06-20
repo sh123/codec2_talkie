@@ -31,7 +31,6 @@ import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 
 import java.util.Arrays;
-import java.util.UUID;
 
 public class BleConnectActivity extends AppCompatActivity {
 
@@ -143,7 +142,7 @@ public class BleConnectActivity extends AppCompatActivity {
     private void startDevicesScan() {
         _btArrayAdapter.clear();
 
-        ScanFilter.Builder scanFilterBuilder = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(BleGattWrapper.BT_SERVICE_UUID));
+        ScanFilter.Builder scanFilterBuilder = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(BleGattWrapper.BT_KISS_SERVICE_UUID));
         ScanFilter[] scanFilters = { scanFilterBuilder.build() };
 
         ScanSettings.Builder scanSettingsBuilder = new ScanSettings.Builder();

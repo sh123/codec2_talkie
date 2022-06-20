@@ -4,14 +4,13 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-
-import com.radio.codec2talkie.MainActivity;
 
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
@@ -24,9 +23,10 @@ public class BleGattWrapper extends BluetoothGattCallback {
 
     private final int BUFFER_SIZE = 1024;
 
-    public static final UUID BT_SERVICE_UUID = UUID.fromString("00000001-ba2a-46c9-ae49-01b0961f68bb");
-    public static final UUID BT_CHARACTERISTIC_TX_UUID = UUID.fromString("00000002-ba2a-46c9-ae49-01b0961f68bb");
-    public static final UUID BT_CHARACTERISTIC_RX_UUID = UUID.fromString("00000003-ba2a-46c9-ae49-01b0961f68bb");
+    public static final UUID BT_KISS_SERVICE_UUID = UUID.fromString("00000001-ba2a-46c9-ae49-01b0961f68bb");
+    public static final UUID BT_KISS_CHARACTERISTIC_TX_UUID = UUID.fromString("00000002-ba2a-46c9-ae49-01b0961f68bb");
+    public static final UUID BT_KISS_CHARACTERISTIC_RX_UUID = UUID.fromString("00000003-ba2a-46c9-ae49-01b0961f68bb");
+    public static final UUID BT_NOTIFY_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
     private BluetoothGatt _gatt;
     private BluetoothGattCharacteristic _rxCharacteristic;
@@ -106,7 +106,7 @@ public class BleGattWrapper extends BluetoothGattCallback {
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         super.onCharacteristicRead(gatt, characteristic, status);
         Log.i(TAG, "onCharacteristicRead " + characteristic.getUuid() + " " + status);
-        if (status == BluetoothGatt.GATT_SUCCESS && characteristic.getUuid().compareTo(BT_CHARACTERISTIC_RX_UUID) == 0) {
+        if (status == BluetoothGatt.GATT_SUCCESS && characteristic.getUuid().compareTo(BT_KISS_CHARACTERISTIC_RX_UUID) == 0) {
             _readBuffer.put(characteristic.getValue());
         }
     }
@@ -115,7 +115,7 @@ public class BleGattWrapper extends BluetoothGattCallback {
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         super.onCharacteristicChanged(gatt, characteristic);
         Log.i(TAG, "onCharacteristicChanged " + characteristic.getUuid());
-        if (characteristic.getUuid().compareTo(BT_CHARACTERISTIC_RX_UUID) == 0) {
+        if (characteristic.getUuid().compareTo(BT_KISS_CHARACTERISTIC_RX_UUID) == 0) {
             _readBuffer.put(characteristic.getValue());
         }
     }
@@ -172,16 +172,35 @@ public class BleGattWrapper extends BluetoothGattCallback {
     private boolean initializeCharacteristics() {
         for (BluetoothGattService service : _gatt.getServices()) {
             Log.i(TAG, "service " + service.getUuid());
-            if (service.getUuid().compareTo(BT_SERVICE_UUID) != 0) continue;
+
+            // ignore unknown services
+            if (service.getUuid().compareTo(BT_KISS_SERVICE_UUID) != 0) continue;
+
             for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
                 int properties = characteristic.getProperties();
-                if (characteristic.getUuid().compareTo(BT_CHARACTERISTIC_RX_UUID) == 0 &&
+
+                // RX characteristic
+                if (characteristic.getUuid().compareTo(BT_KISS_CHARACTERISTIC_RX_UUID) == 0 &&
                         ((properties & BluetoothGattCharacteristic.PROPERTY_NOTIFY) != 0)) {
                     _rxCharacteristic = characteristic;
-                    _gatt.setCharacteristicNotification(characteristic, true);
-                } else if (characteristic.getUuid().compareTo(BT_CHARACTERISTIC_TX_UUID) == 0 &&
+
+                    // enable notifications
+                    BluetoothGattDescriptor descriptor = characteristic.getDescriptor(BT_NOTIFY_UUID);
+                    if (descriptor == null) {
+                        Log.e(TAG, "Failed to get notification descriptor for " + characteristic.getUuid());
+                    } else {
+                        descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                        _gatt.writeDescriptor(descriptor);
+                    }
+                    _gatt.setCharacteristicNotification(_rxCharacteristic, true);
+
+                    Log.i(TAG, "got NOTIFY " + characteristic.getUuid());
+
+                // TX characteristic
+                } else if (characteristic.getUuid().compareTo(BT_KISS_CHARACTERISTIC_TX_UUID) == 0 &&
                         ((properties & BluetoothGattCharacteristic.PROPERTY_WRITE) != 0)) {
                     _txCharacteristic = characteristic;
+                    Log.i(TAG, "got TRANSMIT " + characteristic.getUuid());
                 }
             }
         }

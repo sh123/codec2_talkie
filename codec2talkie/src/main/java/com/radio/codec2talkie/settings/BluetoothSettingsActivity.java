@@ -21,7 +21,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.R;
-import com.radio.codec2talkie.connect.BleConnectActivity;
 import com.radio.codec2talkie.connect.BleGattWrapper;
 
 import java.util.Arrays;
@@ -75,7 +74,7 @@ public class BluetoothSettingsActivity extends AppCompatActivity {
         _btArrayAdapter.clear();
 
         if (_isBleEnabled) {
-            ScanFilter.Builder scanFilterBuilder = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(BleGattWrapper.BT_SERVICE_UUID));
+            ScanFilter.Builder scanFilterBuilder = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(BleGattWrapper.BT_KISS_SERVICE_UUID));
             ScanFilter[] scanFilters = { scanFilterBuilder.build() };
 
             ScanSettings.Builder scanSettingsBuilder = new ScanSettings.Builder();
