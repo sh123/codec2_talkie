@@ -61,6 +61,11 @@ public class BleGattWrapper extends BluetoothGattCallback {
     public int read(byte[] data) throws IOException {
         if (!_isConnected) throw new IOException();
 
+        // nothing to read
+        if (_readBuffer.position() == 0) return 0;
+
+        _readBuffer.flip();
+
         int countRead = 0;
         try {
             for (int i = 0; i < data.length; i++) {
@@ -68,7 +73,9 @@ public class BleGattWrapper extends BluetoothGattCallback {
                 data[i] = b;
                 countRead++;
             }
+            _readBuffer.compact();
         } catch (BufferUnderflowException ignored) {
+            _readBuffer.clear();
         }
         //_gatt.readCharacteristic(_rxCharacteristic);
         return countRead;
