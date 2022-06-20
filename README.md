@@ -1,4 +1,5 @@
-![CI](https://github.com/sh123/codec2_talkie/workflows/CI/badge.svg)
+![CI](https://github.com/sh123/codec2_talkie/workflows/CI/badge.svg) 
+![APK](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.radio.codec2talkie)
 
 # Introduction
 **Turn your Android phone into real VHF/UHF Walkie-Talkie (requires additional digital radio hardware/software modem)**
