@@ -21,8 +21,6 @@ public class BleGattWrapper extends BluetoothGattCallback {
 
     private static final String TAG = BleGattWrapper.class.getSimpleName();
 
-    private final int BUFFER_SIZE = 1024;
-
     public static final UUID BT_KISS_SERVICE_UUID = UUID.fromString("00000001-ba2a-46c9-ae49-01b0961f68bb");
     public static final UUID BT_KISS_CHARACTERISTIC_TX_UUID = UUID.fromString("00000002-ba2a-46c9-ae49-01b0961f68bb");
     public static final UUID BT_KISS_CHARACTERISTIC_RX_UUID = UUID.fromString("00000003-ba2a-46c9-ae49-01b0961f68bb");
@@ -44,6 +42,7 @@ public class BleGattWrapper extends BluetoothGattCallback {
         _context = context;
         _callback = callback;
 
+        int BUFFER_SIZE = 1024;
         _readBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
         _writeBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
 
@@ -62,10 +61,11 @@ public class BleGattWrapper extends BluetoothGattCallback {
         if (!_isConnected) throw new IOException();
 
         synchronized (_readBuffer) {
-
             // nothing to read
             if (_readBuffer.position() == 0) return 0;
+
             _readBuffer.flip();
+
             int countRead = 0;
             try {
                 for (int i = 0; i < data.length; i++) {
@@ -77,6 +77,7 @@ public class BleGattWrapper extends BluetoothGattCallback {
             } catch (BufferUnderflowException ignored) {
                 _readBuffer.clear();
             }
+            // enable for READ characteristic
             //_gatt.readCharacteristic(_rxCharacteristic);
             return countRead;
         }
@@ -109,7 +110,9 @@ public class BleGattWrapper extends BluetoothGattCallback {
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         super.onCharacteristicRead(gatt, characteristic, status);
         if (status == BluetoothGatt.GATT_SUCCESS && characteristic.getUuid().compareTo(BT_KISS_CHARACTERISTIC_RX_UUID) == 0) {
-            _readBuffer.put(characteristic.getValue());
+            synchronized (_readBuffer) {
+                _readBuffer.put(characteristic.getValue());
+            }
         }
     }
 
