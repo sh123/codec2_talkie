@@ -99,14 +99,18 @@ public class BleGattWrapper extends BluetoothGattCallback {
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         super.onCharacteristicRead(gatt, characteristic, status);
         Log.i(TAG, "onCharacteristicRead " + characteristic.getUuid() + " " + status);
-        _readBuffer.put(characteristic.getValue());
+        if (status == BluetoothGatt.GATT_SUCCESS && characteristic.getUuid().compareTo(BT_CHARACTERISTIC_RX_UUID) == 0) {
+            _readBuffer.put(characteristic.getValue());
+        }
     }
 
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         super.onCharacteristicChanged(gatt, characteristic);
         Log.i(TAG, "onCharacteristicChanged " + characteristic.getUuid());
-        _readBuffer.put(characteristic.getValue());
+        if (characteristic.getUuid().compareTo(BT_CHARACTERISTIC_RX_UUID) == 0) {
+            _readBuffer.put(characteristic.getValue());
+        }
     }
 
     @Override
