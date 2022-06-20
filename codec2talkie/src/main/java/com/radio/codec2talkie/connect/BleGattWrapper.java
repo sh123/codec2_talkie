@@ -36,11 +36,14 @@ public class BleGattWrapper extends BluetoothGattCallback {
     private final Handler _callback;
 
     private final ByteBuffer _readBuffer;
+    private final ByteBuffer _writeBuffer;
 
     public BleGattWrapper(Context context, Handler callback) {
         _context = context;
         _callback = callback;
+
         _readBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
+        _writeBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
     }
 
     public void connect(BluetoothDevice device) {
@@ -61,33 +64,58 @@ public class BleGattWrapper extends BluetoothGattCallback {
             }
         } catch (BufferUnderflowException ignored) {
         }
-        _gatt.readCharacteristic(_rxCharacteristic);
+        //_gatt.readCharacteristic(_rxCharacteristic);
         return countRead;
     }
 
     public int write(byte[] data) throws IOException {
-        Log.i(TAG, "write " + data.length);
-        _rxCharacteristic.setValue(data);
-        _gatt.writeCharacteristic(_txCharacteristic);
+        _writeBuffer.put(data);
+        _writeBuffer.flip();
+
+        byte[] arr = new byte[_writeBuffer.limit()];
+        _writeBuffer.get(arr);
+        _txCharacteristic.setValue(arr);
+
+        if (_gatt.writeCharacteristic(_txCharacteristic)) {
+            // written successfully
+            _writeBuffer.clear();
+        } else {
+            // redo
+            _writeBuffer.position(_writeBuffer.limit());
+            _writeBuffer.limit(_writeBuffer.capacity());
+        }
         return data.length;
     }
 
     @Override
     public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         super.onCharacteristicRead(gatt, characteristic, status);
+        Log.i(TAG, "onCharacteristicRead " + characteristic.getUuid() + " " + status);
         _readBuffer.put(characteristic.getValue());
     }
 
     @Override
     public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
         super.onCharacteristicChanged(gatt, characteristic);
+        Log.i(TAG, "onCharacteristicChanged " + characteristic.getUuid());
         _readBuffer.put(characteristic.getValue());
     }
 
     @Override
     public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         super.onCharacteristicWrite(gatt, characteristic, status);
-        Log.i(TAG, "onCharacteristicWrite " + status);
+        Log.i(TAG, "onCharacteristicWrite " + status + " " + _writeBuffer.position());
+
+        if (status == BluetoothGatt.GATT_SUCCESS && _writeBuffer.position() > 0) {
+            _writeBuffer.flip();
+
+            byte[] arr = new byte[_writeBuffer.limit()];
+            _writeBuffer.get(arr);
+            characteristic.setValue(arr);
+
+            _gatt.writeCharacteristic(characteristic);
+            _writeBuffer.clear();
+        }
     }
 
     @Override
@@ -106,6 +134,7 @@ public class BleGattWrapper extends BluetoothGattCallback {
 
     @Override
     public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+        Log.i(TAG, "onServicesDiscovered " + status);
         Message resultMsg = Message.obtain();
         if (status == BluetoothGatt.GATT_SUCCESS) {
             resultMsg.what = BleConnectActivity.BT_SERVICES_DISCOVERED;
