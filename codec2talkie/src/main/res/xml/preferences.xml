@@ -83,6 +83,13 @@
             </intent>
         </Preference>
 
+        <SwitchPreference
+            app:key="ports_bt_ble_enable"
+            app:title="@string/ports_bt_ble_enable_title"
+            app:summary="@string/ports_bt_ble_enable_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
         <Preference
             app:key="ports_usb_serial"
             app:title="@string/usb_serial_title"

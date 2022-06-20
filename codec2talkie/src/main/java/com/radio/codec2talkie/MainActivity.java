@@ -40,6 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.radio.codec2talkie.audio.AudioProcessor;
+import com.radio.codec2talkie.connect.BleConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothSocketHandler;
 import com.radio.codec2talkie.connect.TcpIpConnectActivity;
@@ -78,7 +79,9 @@ public class MainActivity extends AppCompatActivity {
 
     private final String[] _requiredPermissions = new String[] {
             Manifest.permission.BLUETOOTH,
-            Manifest.permission.RECORD_AUDIO
+            Manifest.permission.BLUETOOTH_ADMIN,
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.ACCESS_FINE_LOCATION
     };
 
     private AudioProcessor _audioProcessor;
@@ -86,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences _sharedPreferences;
 
     private boolean _isTestMode;
+    private boolean _isBleEnabled;
 
     private TextView _textConnInfo;
     private TextView _textStatus;
@@ -140,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(onUsbDetached, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
 
         _isTestMode = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_TEST_MODE, false);
+        _isBleEnabled = _sharedPreferences.getBoolean(PreferenceKeys.PORTS_BT_BLE_ENABLED, false);
 
         // show/hide S-meter
         FrameLayout frameRssi = findViewById(R.id.frameRssi);
@@ -195,13 +200,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     protected void startBluetoothConnectActivity() {
-        Intent bluetoothConnectIntent = new Intent(this, BluetoothConnectActivity.class);
+        Intent bluetoothConnectIntent;
+        if (_isBleEnabled) {
+            bluetoothConnectIntent = new Intent(this, BleConnectActivity.class);
+        } else {
+            bluetoothConnectIntent = new Intent(this, BluetoothConnectActivity.class);
+        }
         startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_BT);
     }
 
     protected void startTcpIpConnectActivity() {
-        Intent bluetoothConnectIntent = new Intent(this, TcpIpConnectActivity.class);
-        startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_TCP_IP);
+        Intent tcpIpConnectIntent = new Intent(this, TcpIpConnectActivity.class);
+        startActivityForResult(tcpIpConnectIntent, REQUEST_CONNECT_TCP_IP);
     }
 
     protected void startRecorderActivity() {
@@ -505,7 +515,11 @@ public class MainActivity extends AppCompatActivity {
                 startAudioProcessing(TransportFactory.TransportType.LOOPBACK);
             } else if (resultCode == RESULT_OK) {
                 _textConnInfo.setText(data.getStringExtra("name"));
-                startAudioProcessing(TransportFactory.TransportType.BLUETOOTH);
+                if (_isBleEnabled) {
+                    startAudioProcessing(TransportFactory.TransportType.BLE);
+                } else {
+                    startAudioProcessing(TransportFactory.TransportType.BLUETOOTH);
+                }
             }
         }
         else if (requestCode == REQUEST_CONNECT_TCP_IP) {

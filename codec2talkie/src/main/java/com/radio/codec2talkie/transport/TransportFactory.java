@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.transport;
 
+import com.radio.codec2talkie.connect.BleHandler;
 import com.radio.codec2talkie.connect.BluetoothSocketHandler;
 import com.radio.codec2talkie.connect.TcpIpSocketHandler;
 import com.radio.codec2talkie.connect.UsbPortHandler;
@@ -12,7 +13,8 @@ public class TransportFactory {
         USB,
         BLUETOOTH,
         LOOPBACK,
-        TCP_IP
+        TCP_IP,
+        BLE
     };
 
     public static Transport create(TransportType transportType) throws IOException {
@@ -23,6 +25,8 @@ public class TransportFactory {
                 return new Bluetooth(BluetoothSocketHandler.getSocket());
             case TCP_IP:
                 return new TcpIp(TcpIpSocketHandler.getSocket());
+            case BLE:
+                return new Ble(BleHandler.getGatt());
             case LOOPBACK:
             default:
                 return new Loopback();

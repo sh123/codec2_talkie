@@ -8,6 +8,7 @@ public final class PreferenceKeys {
     public static String PORTS_USB_DTR = "ports_usb_dtr";
     public static String PORTS_USB_RTS = "ports_usb_rts";
     public static String PORTS_BT_CLIENT_NAME = "ports_bt_client_name";
+    public static String PORTS_BT_BLE_ENABLED = "ports_bt_ble_enable";
     public static String PORTS_TCP_IP_ENABLED = "ports_tcp_ip_enable";
     public static String PORTS_TCP_IP_ADDRESS = "ports_tcp_ip_address";
     public static String PORTS_TCP_IP_PORT = "ports_tcp_ip_port";

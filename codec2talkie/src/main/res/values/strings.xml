@@ -178,6 +178,13 @@
     <string name="usb_serial_summary">Set USB serial settings, such as speed, bits, parity, etc.</string>
     <string name="app_audio_input_voice_communication_title">Microphone enhancements</string>
     <string name="app_audio_input_voice_communication_summary">"Enable echo cancellation and noise suppression (might cause lower mic gain)"</string>
+    <string name="ports_bt_ble_enable_title">Enable BLE</string>
+    <string name="ports_bt_ble_enable_summary">Use BLE when communicating with the TNC</string>
+    <string name="bt_ble_scan_completed">BLE scan completed</string>
+    <string name="bt_le_gatt_connected">BLE GATT connected</string>
+    <string name="bt_le_services_discovered">BLE services discovered</string>
+    <string name="bt_le_unsupported_characteristics">Supported GATT characteristics are not found</string>
+    <string name="bt_le_services_discover_failure">Failed to discover BLE services</string>
 
     <string-array name="lora_bandwidths">
         <item>7800</item>
