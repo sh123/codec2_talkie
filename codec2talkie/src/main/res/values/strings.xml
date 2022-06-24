@@ -185,6 +185,9 @@
     <string name="bt_le_services_discovered">BLE services discovered</string>
     <string name="bt_le_unsupported_characteristics">Supported GATT characteristics are not found</string>
     <string name="bt_le_services_discover_failure">Failed to discover BLE services</string>
+    <string name="aprs_category_title">AX.25/APRS settings</string>
+    <string name="aprs_enable_title">Enable AX.25/APRS</string>
+    <string name="aprs_enable_summary">Enable APRS and voice over AX.25</string>
 
     <string-array name="lora_bandwidths">
         <item>7800</item>

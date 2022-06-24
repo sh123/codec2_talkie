@@ -167,4 +167,17 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        app:key="aprs_category"
+        app:title="@string/aprs_category_title">
+
+        <SwitchPreference
+            app:key="aprs_enable"
+            app:title="@string/aprs_enable_title"
+            app:summary="@string/aprs_enable_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+    </PreferenceCategory>
+
 </PreferenceScreen>
