@@ -178,6 +178,41 @@
             app:defaultValue="false">
         </SwitchPreference>
 
+        <EditTextPreference
+            app:key="aprs_callsign"
+            app:title="@string/aprs_callsign_title"
+            app:summary="@string/aprs_callsign_summary"
+            app:defaultValue="NOCALL-7">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="aprs_ssid"
+            app:title="@string/aprs_ssid_title"
+            app:summary="@string/aprs_ssid_summary"
+            app:defaultValue="7">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="aprs_digipath"
+            app:title="@string/aprs_digipath_title"
+            app:summary="@string/aprs_digipath_summary"
+            app:defaultValue="">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="aprs_symbol"
+            app:title="@string/aprs_symbol_title"
+            app:summary="@string/aprs_symbol_summary"
+            app:defaultValue="\[">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="aprs_comment"
+            app:title="@string/aprs_comment_title"
+            app:summary="@string/aprs_comment_summary"
+            app:defaultValue="">
+        </EditTextPreference>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

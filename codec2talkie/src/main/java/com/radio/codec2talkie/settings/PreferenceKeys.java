@@ -49,4 +49,9 @@ public final class PreferenceKeys {
     public static String APP_AUDIO_INPUT_VOICE_COMMUNICATION = "app_audio_input_voice_communication";
 
     public static String APRS_ENABLED = "aprs_enable";
+    public static String APRS_CALLSIGN = "aprs_callsign";
+    public static String APRS_SSID = "aprs_ssid";
+    public static String APRS_DIGIPATH = "aprs_digipath";
+    public static String APRS_SYMBOL = "aprs_symbol";
+    public static String APRS_COMMENT = "aprs_comment";
 }
