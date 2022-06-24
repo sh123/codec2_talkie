@@ -54,4 +54,6 @@ public final class PreferenceKeys {
     public static String APRS_DIGIPATH = "aprs_digipath";
     public static String APRS_SYMBOL = "aprs_symbol";
     public static String APRS_COMMENT = "aprs_comment";
+    public static String APRS_LOCATION_COMPRESSED = "aprs_location_compressed";
+    public static String APRS_LOCATION_SOURCE = "aprs_location_source";
 }
