@@ -205,6 +205,20 @@
     <string name="app_location_compressed_title">Compressed beacons</string>
     <string name="app_location_compressed_summary">Send position in compressed format</string>
     <string name="aprs_location_source_title">Location source</string>
+    <string name="aprs_location_source_gps_title">Periodic GPS position</string>
+    <string name="aprs_location_source_manual_title">Manual position</string>
+    <string name="aprs_location_source_gps_update_time_title">Minimum update time</string>
+    <string name="aprs_location_source_gps_update_time_summary">Minutes between beacon transmissions</string>
+    <string name="aprs_location_source_gps_update_distance_title">Minimum update distance</string>
+    <string name="aprs_location_source_gps_update_distance_summary">Kilometers before beacon transmission (set to 0 for time only)</string>
+    <string name="aprs_location_source_manual_lat_title">Latitude</string>
+    <string name="aprs_location_source_manual_lat_summary">Latitude coordinate</string>
+    <string name="aprs_location_source_manual_lon_title">Longitude</string>
+    <string name="aprs_location_source_manual_lon_summary">Longitude coordinate</string>
+    <string name="aprs_location_source_manual_auto_send_title">Automatic posting</string>
+    <string name="aprs_location_source_manual_auto_send_summary">Perform periodic position posting</string>
+    <string name="aprs_location_source_manual_update_time_title">Minimum update time</string>
+    <string name="aprs_location_source_manual_update_time_summary">Minutes between beacon transmissions</string>
 
     <string-array name="lora_bandwidths">
         <item>7800</item>
