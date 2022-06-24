@@ -183,7 +183,7 @@
             app:title="@string/aprs_callsign_title"
             app:summary="@string/aprs_callsign_summary"
             app:dependency="aprs_enable"
-            app:defaultValue="NOCALL-7">
+            app:defaultValue="NOCALL">
         </EditTextPreference>
 
         <EditTextPreference
@@ -207,7 +207,7 @@
             app:title="@string/aprs_symbol_title"
             app:summary="@string/aprs_symbol_summary"
             app:dependency="aprs_enable"
-            app:defaultValue="\[">
+            app:defaultValue="\\\\[">
         </EditTextPreference>
 
         <EditTextPreference
