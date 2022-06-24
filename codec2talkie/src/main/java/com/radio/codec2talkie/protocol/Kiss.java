@@ -191,18 +191,13 @@ public class Kiss implements Protocol {
     };
 
     @Override
-    public void send(byte [] frame) throws IOException {
-        // escape
-        ByteBuffer escapedFrame = escape(frame);
-        int escapedFrameSize = escapedFrame.position();
-        escapedFrame.rewind();
+    public void sendAudio(byte [] frame) throws IOException {
+        send(frame);
+    }
 
-        // send
-        startKissPacket(KISS_CMD_DATA);
-        while (escapedFrame.position() < escapedFrameSize) {
-            sendKissByte(escapedFrame.get());
-        }
-        completeKissPacket();
+    @Override
+    public void sendData(byte[] dataPacket) throws IOException {
+        send(dataPacket);
     }
 
     @Override
@@ -227,6 +222,20 @@ public class Kiss implements Protocol {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
+    }
+
+    private void send(byte[] data) throws IOException {
+        // escape
+        ByteBuffer escapedFrame = escape(data);
+        int escapedFrameSize = escapedFrame.position();
+        escapedFrame.rewind();
+
+        // send
+        startKissPacket(KISS_CMD_DATA);
+        while (escapedFrame.position() < escapedFrameSize) {
+            sendKissByte(escapedFrame.get());
+        }
+        completeKissPacket();
     }
 
     private void processCommand(byte b) {

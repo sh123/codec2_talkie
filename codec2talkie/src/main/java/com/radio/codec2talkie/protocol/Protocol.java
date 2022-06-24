@@ -8,7 +8,8 @@ import java.io.IOException;
 
 public interface Protocol {
     void initialize(Transport transport, Context context) throws IOException;
-    void send(byte [] frame) throws IOException;
+    void sendAudio(byte[] frame) throws IOException;
+    void sendData(byte[] dataPacket) throws IOException;
     boolean receive(Callback callback) throws IOException;
     void flush() throws IOException;
     void close();

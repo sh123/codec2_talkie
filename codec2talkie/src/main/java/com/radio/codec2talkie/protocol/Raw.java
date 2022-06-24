@@ -24,8 +24,13 @@ public class Raw implements Protocol {
     }
 
     @Override
-    public void send(byte [] frame) throws IOException {
+    public void sendAudio(byte [] frame) throws IOException {
         _transport.write(Arrays.copyOf(frame, frame.length));
+    }
+
+    @Override
+    public void sendData(byte[] dataPacket) throws IOException {
+        _transport.write(Arrays.copyOf(dataPacket, dataPacket.length));
     }
 
     @Override

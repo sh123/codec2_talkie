@@ -42,24 +42,18 @@ public class ScramblerPipe implements Protocol {
     }
 
     @Override
-    public void send(byte[] audioFrame) throws IOException {
-        ScramblingTools.ScrambledData data = null;
-        try {
-            data = ScramblingTools.scramble(_scramblingKey, audioFrame, _iterationsCount);
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeySpecException |
-                InvalidKeyException | BadPaddingException | IllegalBlockSizeException |
-                InvalidAlgorithmParameterException e) {
-
-            e.printStackTrace();
+    public void sendAudio(byte[] audioFrame) throws IOException {
+        byte[] result = scrable(audioFrame);
+        if (result != null) {
+            _childProtocol.sendData(result);
         }
-        if (data != null) {
-            byte[] result = new byte[data.iv.length + data.salt.length + data.scrambledData.length];
+    }
 
-            System.arraycopy(data.iv, 0, result, 0, data.iv.length);
-            System.arraycopy(data.salt, 0, result, data.iv.length, data.salt.length);
-            System.arraycopy(data.scrambledData, 0, result, data.iv.length + data.salt.length, data.scrambledData.length);
-
-            _childProtocol.send(result);
+    @Override
+    public void sendData(byte[] dataPacket) throws IOException {
+        byte[] result = scrable(dataPacket);
+        if (result != null) {
+            _childProtocol.sendData(result);
         }
     }
 
@@ -120,5 +114,27 @@ public class ScramblerPipe implements Protocol {
     @Override
     public void close() {
         _childProtocol.close();
+    }
+
+    private byte[] scrable(byte[] srcData) throws IOException {
+        ScramblingTools.ScrambledData data = null;
+        try {
+            data = ScramblingTools.scramble(_scramblingKey, srcData, _iterationsCount);
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeySpecException |
+                InvalidKeyException | BadPaddingException | IllegalBlockSizeException |
+                InvalidAlgorithmParameterException e) {
+
+            e.printStackTrace();
+        }
+        if (data != null) {
+            byte[] result = new byte[data.iv.length + data.salt.length + data.scrambledData.length];
+
+            System.arraycopy(data.iv, 0, result, 0, data.iv.length);
+            System.arraycopy(data.salt, 0, result, data.iv.length, data.salt.length);
+            System.arraycopy(data.scrambledData, 0, result, data.iv.length + data.salt.length, data.scrambledData.length);
+
+            return result;
+        }
+        return null;
     }
 }

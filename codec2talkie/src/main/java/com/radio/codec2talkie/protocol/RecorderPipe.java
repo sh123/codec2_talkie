@@ -44,9 +44,14 @@ public class RecorderPipe implements Protocol {
     }
 
     @Override
-    public void send(byte[] frame) throws IOException {
-        _childProtocol.send(frame);
+    public void sendAudio(byte[] frame) throws IOException {
+        _childProtocol.sendAudio(frame);
         writeToFile(frame);
+    }
+
+    @Override
+    public void sendData(byte[] dataPacket) throws IOException {
+        _childProtocol.sendData(dataPacket);
     }
 
     @Override

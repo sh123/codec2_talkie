@@ -44,13 +44,18 @@ public class AudioFrameAggregator implements Protocol {
     }
 
     @Override
-    public void send(byte[] frame) throws IOException {
+    public void sendAudio(byte[] frame) throws IOException {
         if ( _outputBufferPos + frame.length >= _outputBufferSize) {
-            _childProtocol.send(Arrays.copyOf(_outputBuffer, _outputBufferPos));
+            _childProtocol.sendAudio(Arrays.copyOf(_outputBuffer, _outputBufferPos));
             _outputBufferPos = 0;
         }
         System.arraycopy(frame, 0, _outputBuffer, _outputBufferPos, frame.length);
         _outputBufferPos += frame.length;
+    }
+
+    @Override
+    public void sendData(byte[] dataPacket) throws IOException {
+        _childProtocol.sendData(dataPacket);
     }
 
     @Override
@@ -88,7 +93,7 @@ public class AudioFrameAggregator implements Protocol {
     @Override
     public void flush() throws IOException {
         if (_outputBufferPos > 0) {
-            _childProtocol.send(Arrays.copyOf(_outputBuffer, _outputBufferPos));
+            _childProtocol.sendAudio(Arrays.copyOf(_outputBuffer, _outputBufferPos));
             _outputBufferPos = 0;
         }
         _childProtocol.flush();
