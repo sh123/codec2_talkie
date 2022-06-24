@@ -233,8 +233,8 @@ public class AudioProcessor extends Thread {
         _protocol.send(frame);
     }
 
-    private void decodeAndPlayAudioFrame(byte[] data) {
-        Codec2.decode(_codec2Con, _playbackAudioBuffer, data);
+    private void decodeAndPlayAudioFrame(byte[] audioFrame) {
+        Codec2.decode(_codec2Con, _playbackAudioBuffer, audioFrame);
         sendRxAudioLevelUpdate(_playbackAudioBuffer);
         _systemAudioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
     }
@@ -247,9 +247,9 @@ public class AudioProcessor extends Thread {
         }
 
         @Override
-        protected void onReceiveSignalLevel(byte [] rawData) {
-            ByteBuffer data = ByteBuffer.wrap(rawData);
-            if (rawData.length == SIGNAL_LEVEL_EVENT_SIZE) {
+        protected void onReceiveSignalLevel(byte[] packet) {
+            ByteBuffer data = ByteBuffer.wrap(packet);
+            if (packet.length == SIGNAL_LEVEL_EVENT_SIZE) {
                 short rssi = data.getShort();
                 short snr = data.getShort();
                 sendRxRadioLevelUpdate(rssi, snr);
