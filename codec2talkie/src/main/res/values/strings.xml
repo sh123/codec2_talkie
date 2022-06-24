@@ -202,6 +202,9 @@
     <string name="aprs_location_settings_summary">Configure APRS location settings</string>
     <string name="aprs_position_privacy_settings_title">Position privacy</string>
     <string name="aprs_position_privacy_settings_summary">Position ambiguity and more</string>
+    <string name="app_location_compressed_title">Compressed beacons</string>
+    <string name="app_location_compressed_summary">Send position in compressed format</string>
+    <string name="aprs_location_source_title">Location source</string>
 
     <string-array name="lora_bandwidths">
         <item>7800</item>
@@ -266,6 +269,16 @@
         <item>2</item>
         <item>3</item>
         <item>4</item>
+    </string-array>
+
+    <string-array name="aprs_location_source">
+        <item>Periodic GPS position</item>
+        <item>Manual position</item>
+    </string-array>
+
+    <string-array name="aprs_location_source_values">
+        <item>periodic</item>
+        <item>manual</item>
     </string-array>
 
 </resources>

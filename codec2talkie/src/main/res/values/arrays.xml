@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="aprs_location_source_summary">Select location source</string-array>
+</resources>

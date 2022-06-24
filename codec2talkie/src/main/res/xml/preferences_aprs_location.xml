@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <CheckBoxPreference
+        app:key="aprs_location_compressed"
+        app:title="@string/app_location_compressed_title"
+        app:summary="@string/app_location_compressed_summary"
+        app:defaultValue="true">
+    </CheckBoxPreference>
+
+    <ListPreference
+        app:key="aprs_location_source"
+        app:title="@string/aprs_location_source_title"
+        app:entries="@array/aprs_location_source"
+        app:entryValues="@array/aprs_location_source_values"
+        app:defaultValue="periodic"
+        app:summary="%s">
+    </ListPreference>
 
 </PreferenceScreen>
