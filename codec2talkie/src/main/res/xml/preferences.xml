@@ -182,6 +182,7 @@
             app:key="aprs_callsign"
             app:title="@string/aprs_callsign_title"
             app:summary="@string/aprs_callsign_summary"
+            app:dependency="aprs_enable"
             app:defaultValue="NOCALL-7">
         </EditTextPreference>
 
@@ -189,6 +190,7 @@
             app:key="aprs_ssid"
             app:title="@string/aprs_ssid_title"
             app:summary="@string/aprs_ssid_summary"
+            app:dependency="aprs_enable"
             app:defaultValue="7">
         </EditTextPreference>
 
@@ -196,6 +198,7 @@
             app:key="aprs_digipath"
             app:title="@string/aprs_digipath_title"
             app:summary="@string/aprs_digipath_summary"
+            app:dependency="aprs_enable"
             app:defaultValue="">
         </EditTextPreference>
 
@@ -203,6 +206,7 @@
             app:key="aprs_symbol"
             app:title="@string/aprs_symbol_title"
             app:summary="@string/aprs_symbol_summary"
+            app:dependency="aprs_enable"
             app:defaultValue="\[">
         </EditTextPreference>
 
@@ -210,8 +214,25 @@
             app:key="aprs_comment"
             app:title="@string/aprs_comment_title"
             app:summary="@string/aprs_comment_summary"
+            app:dependency="aprs_enable"
             app:defaultValue="">
         </EditTextPreference>
+
+        <Preference
+            android:key="aprs_location_settings"
+            android:title="@string/aprs_location_settings_title"
+            android:summary="@string/aprs_location_settings_summary"
+            app:fragment="com.radio.codec2talkie.settings.SettingsActivity$SettingsAprsLocationFragment"
+            app:dependency="aprs_enable">
+        </Preference>
+
+        <Preference
+            android:key="aprs_position_privacy_settings"
+            android:title="@string/aprs_position_privacy_settings_title"
+            android:summary="@string/aprs_position_privacy_settings_summary"
+            app:fragment="com.radio.codec2talkie.settings.SettingsActivity$SettingsPositionPrivacyFragment"
+            app:dependency="aprs_enable">
+        </Preference>
 
     </PreferenceCategory>
 

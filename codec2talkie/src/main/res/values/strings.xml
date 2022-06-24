@@ -198,6 +198,10 @@
     <string name="aprs_comment_summary">The text after your coordinates: %s</string>
     <string name="aprs_digipath_title">APRS digi path</string>
     <string name="aprs_digipath_summary">Sequence of digipeaters: %s</string>
+    <string name="aprs_location_settings_title">Location setitngs</string>
+    <string name="aprs_location_settings_summary">Configure APRS location settings</string>
+    <string name="aprs_position_privacy_settings_title">Position privacy</string>
+    <string name="aprs_position_privacy_settings_summary">Position ambiguity and more</string>
 
     <string-array name="lora_bandwidths">
         <item>7800</item>

@@ -68,4 +68,20 @@ public class SettingsActivity extends AppCompatActivity
             setPreferencesFromResource(R.xml.preferences_usb, null);
         }
     }
+
+    public static class SettingsAprsLocationFragment extends PreferenceFragmentCompat
+    {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences_aprs_location, null);
+        }
+    }
+
+    public static class SettingsPositionPrivacyFragment extends PreferenceFragmentCompat
+    {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences_aprs_privacy, null);
+        }
+    }
 }
