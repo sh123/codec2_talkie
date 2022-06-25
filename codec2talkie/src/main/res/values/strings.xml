@@ -156,16 +156,17 @@
     <string name="processor_connected">Connected</string>
     <string name="processor_disconnected">Disconnected</string>
     <string name="audio_failed_to_start_processing">Failed to start audio processing</string>
+
     <string name="kiss_scrambler_label">SEC</string>
     <string name="kiss_extension_reboot_title">Reboot modem</string>
     <string name="kiss_extension_reboot_summary">Click to send reboot command to the modem</string>
     <string name="kiss_toast_modem_reboot">Modem reboot requested</string>
-    <string name="app_audio_output_speaker_title">Play audio through the speaker</string>
-    <string name="app_audio_output_speaker_summary">Output incoming audio through the speaker</string>
     <string name="kiss_scrambler_iterations_title">(Experimental) Number of iterations performed</string>
     <string name="kiss_scrambler_iterations_summary">(Experimental) Change to lower value on slow devices, >1000 recommended, should match on all devices</string>
+
     <string name="codec2_tx_frame_max_size_title">Maximum super frame size (bytes)</string>
     <string name="codec2_tx_frame_max_size_summary">Multiple Codec2 samples are aggregated into super frame not larger than this value</string>
+
     <string name="usb_settings_title">USB settings</string>
     <string name="usb_data_bits_title">Serial data bits</string>
     <string name="usb_parity_title">Serial parity</string>
@@ -176,15 +177,22 @@
     <string name="usb_stop_bits_title">Serial stop bits</string>
     <string name="usb_serial_title">USB serial settings</string>
     <string name="usb_serial_summary">Set USB serial settings, such as speed, bits, parity, etc.</string>
+
+    <string name="app_audio_output_speaker_title">Play audio through the speaker</string>
+    <string name="app_audio_output_speaker_summary">Output incoming audio through the speaker</string>
     <string name="app_audio_input_voice_communication_title">Microphone enhancements</string>
     <string name="app_audio_input_voice_communication_summary">"Enable echo cancellation and noise suppression (might cause lower mic gain)"</string>
+
     <string name="ports_bt_ble_enable_title">Enable BLE</string>
     <string name="ports_bt_ble_enable_summary">Use BLE when communicating with the TNC</string>
+
     <string name="bt_ble_scan_completed">BLE scan completed</string>
+
     <string name="bt_le_gatt_connected">BLE GATT connected</string>
     <string name="bt_le_services_discovered">BLE services discovered</string>
     <string name="bt_le_unsupported_characteristics">Supported GATT characteristics are not found</string>
     <string name="bt_le_services_discover_failure">Failed to discover BLE services</string>
+
     <string name="aprs_category_title">APRS settings</string>
     <string name="aprs_enable_title">Enable APRS</string>
     <string name="aprs_enable_summary">Enable APRS and voice over AX.25</string>
@@ -202,8 +210,10 @@
     <string name="aprs_location_settings_summary">Configure APRS location settings</string>
     <string name="aprs_position_privacy_settings_title">Position privacy</string>
     <string name="aprs_position_privacy_settings_summary">Position ambiguity and more</string>
-    <string name="app_location_compressed_title">Compressed beacons</string>
-    <string name="app_location_compressed_summary">Send position in compressed format</string>
+
+    <string name="aprs_location_compressed_title">Compressed beacons</string>
+    <string name="aprs_location_compressed_summary">Send position in compressed format</string>
+
     <string name="aprs_location_source_title">Location source</string>
     <string name="aprs_location_source_gps_title">Periodic GPS position</string>
     <string name="aprs_location_source_manual_title">Manual position</string>
@@ -219,6 +229,7 @@
     <string name="aprs_location_source_manual_auto_send_summary">Perform periodic position posting</string>
     <string name="aprs_location_source_manual_update_time_title">Minimum update time</string>
     <string name="aprs_location_source_manual_update_time_summary">Minutes between beacon transmissions</string>
+
     <string name="aprs_privacy_position_ambiguity_title">Position ambiguity</string>
     <string name="aprs_privacy_speed_title">Send speed &amp; bearing</string>
     <string name="aprs_privacy_speed_summary">Include speed and bearing in position reports</string>

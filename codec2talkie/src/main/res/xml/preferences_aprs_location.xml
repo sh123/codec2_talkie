@@ -4,8 +4,8 @@
 
     <CheckBoxPreference
         app:key="aprs_location_compressed"
-        app:title="@string/app_location_compressed_title"
-        app:summary="@string/app_location_compressed_summary"
+        app:title="@string/aprs_location_compressed_title"
+        app:summary="@string/aprs_location_compressed_summary"
         app:defaultValue="true">
     </CheckBoxPreference>
 
