@@ -65,16 +65,16 @@
     <string name="kiss_basic_tx_tail_title">Radio TX tail</string>
     <string name="kiss_basic_tx_tail_summary">Time delta between data TX stop and PTT stop (milliseconds / 10)</string>
 
-    <string name="kiss_parrot_enable_title">Enable Parrot</string>
+    <string name="kiss_parrot_enable_title">Enable parrot</string>
     <string name="kiss_parrot_enable_summary">Received packets will be transmitted back, digirepeated</string>
 
-    <string name="kiss_buffered_enable_title">Enable Playback Buffering</string>
+    <string name="kiss_buffered_enable_title">Enable playback buffering</string>
     <string name="kiss_buffered_enable_summary">Use when your modem data rate is less than Codec2 bitrate</string>
 
-    <string name="kiss_extensions_enable_title">Enable Extensions</string>
+    <string name="kiss_extensions_enable_title">Enable extensions</string>
     <string name="kiss_extensions_enable_summary">Enable radio control and signal level reports</string>
 
-    <string name="kiss_extensions_radio_control_title">Set Radio Parameters</string>
+    <string name="kiss_extensions_radio_control_title">Set radio parameters</string>
     <string name="kiss_extensions_radio_control_summary">Set frequency, bandwidth and other radio parameters</string>
 
     <string name="kiss_extensions_radio_frequency_title">Frequency (Hz)</string>
@@ -86,28 +86,28 @@
     <string name="kiss_extensions_radio_power_title">Power (dBm)</string>
     <string name="kiss_extensions_radio_power_summary">Set radio output power in dBm</string>
 
-    <string name="kiss_extensions_radio_sf_title">Spreading Factor (7–12)</string>
+    <string name="kiss_extensions_radio_sf_title">Spreading factor (7–12)</string>
     <string name="kiss_extensions_radio_sf_summary">Set spreading factor, 7–12 for LoRa</string>
 
-    <string name="kiss_extensions_radio_cr_title">Coding Rate (5–8)</string>
+    <string name="kiss_extensions_radio_cr_title">Coding rate (5–8)</string>
     <string name="kiss_extensions_radio_cr_summary">Set coding rate, 5–8 for LoRa</string>
 
-    <string name="kiss_extensions_radio_sync_title">Sync Word (HEX)</string>
+    <string name="kiss_extensions_radio_sync_title">Sync word (HEX)</string>
     <string name="kiss_extensions_radio_sync_summary">Set packet sync word as hex value</string>
 
     <string name="kiss_extensions_radio_crc_title">Enable CRC check</string>
     <string name="kiss_extensions_radio_crc_summary">Enable packet CRC check</string>
 
-    <string name="app_volume_ptt_title">Use Volume keys for PTT</string>
+    <string name="app_volume_ptt_title">Use volume keys for PTT</string>
     <string name="app_volume_ptt_summary">Volume up/down keys will be used for PTT</string>
 
-    <string name="app_category_title">Application Settings</string>
+    <string name="app_category_title">Application settings</string>
 
     <string name="app_keep_screen_on_title">Keep screen ON</string>
     <string name="app_keep_screen_on_summary">Prevent screen switching off when app is active</string>
-    <string name="menu_recorder">Play Recordings</string>
-    <string name="recorder_menu_play_all">Play All</string>
-    <string name="recorder_menu_delete_all">Delete All</string>
+    <string name="menu_recorder">Play recordings</string>
+    <string name="recorder_menu_play_all">Play all</string>
+    <string name="recorder_menu_delete_all">Delete all</string>
     <string name="recorder_remove_all_confirmation_message">Remove all recordings from %1$s?</string>
     <string name="recorder_remove_all_confirmation_title">Remove confirmation</string>
     <string name="ok">OK</string>
@@ -149,8 +149,8 @@
     <string name="kiss_enable_scrambler_summary">Enable speech scrambling, you MUST understand what you are doing, might be illegal in your country</string>
     <string name="kiss_scrambler_key_title">(Experimental) Set key for speech scrambling</string>
     <string name="kiss_scrambler_key_summary">Set key for speech scrambling, should be the same on all devices</string>
-    <string name="permissions_granted">Permissions Granted</string>
-    <string name="permissions_denied">Permissions Denied</string>
+    <string name="permissions_granted">Permissions granted</string>
+    <string name="permissions_denied">Permissions denied</string>
     <string name="usb_detached">USB detached</string>
     <string name="bt_disconnected">Bluetooth disconnected</string>
     <string name="processor_connected">Connected</string>
@@ -166,15 +166,15 @@
     <string name="kiss_scrambler_iterations_summary">(Experimental) Change to lower value on slow devices, >1000 recommended, should match on all devices</string>
     <string name="codec2_tx_frame_max_size_title">Maximum super frame size (bytes)</string>
     <string name="codec2_tx_frame_max_size_summary">Multiple Codec2 samples are aggregated into super frame not larger than this value</string>
-    <string name="usb_settings_title">USB Settings</string>
-    <string name="usb_data_bits_title">Serial Data Bits</string>
-    <string name="usb_parity_title">Serial Parity</string>
+    <string name="usb_settings_title">USB settings</string>
+    <string name="usb_data_bits_title">Serial data bits</string>
+    <string name="usb_parity_title">Serial parity</string>
     <string name="usb_dtr_title">Enable DTR</string>
     <string name="usb_dtr_summary">Enable data terminal ready signal if supported</string>
     <string name="usb_rts_title">Enable RTS</string>
     <string name="usb_rts_summary">Enable serial ready to send signal if supported</string>
-    <string name="usb_stop_bits_title">Serial Stop Bits</string>
-    <string name="usb_serial_title">USB Serial Settings</string>
+    <string name="usb_stop_bits_title">Serial stop bits</string>
+    <string name="usb_serial_title">USB serial settings</string>
     <string name="usb_serial_summary">Set USB serial settings, such as speed, bits, parity, etc.</string>
     <string name="app_audio_input_voice_communication_title">Microphone enhancements</string>
     <string name="app_audio_input_voice_communication_summary">"Enable echo cancellation and noise suppression (might cause lower mic gain)"</string>
@@ -219,6 +219,11 @@
     <string name="aprs_location_source_manual_auto_send_summary">Perform periodic position posting</string>
     <string name="aprs_location_source_manual_update_time_title">Minimum update time</string>
     <string name="aprs_location_source_manual_update_time_summary">Minutes between beacon transmissions</string>
+    <string name="aprs_privacy_position_ambiguity_title">Position ambiguity</string>
+    <string name="aprs_privacy_speed_title">Send speed &amp; bearing</string>
+    <string name="aprs_privacy_speed_summary">Include speed and bearing in position reports</string>
+    <string name="aprs_privacy_altitude_title">Send altitude</string>
+    <string name="aprs_privacy_altitude_summary">Include altitude in position reports</string>
 
     <string-array name="lora_bandwidths">
         <item>7800</item>
@@ -293,6 +298,22 @@
     <string-array name="aprs_location_source_values">
         <item>periodic</item>
         <item>manual</item>
+    </string-array>
+
+    <string-array name="aprs_privacy_position_ambiguity_entries">
+        <item>Off (DD°MM.mm\')</item>
+        <item>1 (DD°MM.m\')</item>
+        <item>2 (DD°MM\')</item>
+        <item>3 (DD°Mx\')</item>
+        <item>4 (DD°)</item>
+    </string-array>
+
+    <string-array name="aprs_privacy_position_ambiguity_values">
+        <item>off</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
     </string-array>
 
 </resources>

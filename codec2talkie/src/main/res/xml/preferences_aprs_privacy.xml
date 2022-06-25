@@ -1,4 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ListPreference
+        app:key="aprs_privacy_position_ambiguity"
+        app:title="@string/aprs_privacy_position_ambiguity_title"
+        app:entries="@array/aprs_privacy_position_ambiguity_entries"
+        app:entryValues="@array/aprs_privacy_position_ambiguity_values"
+        app:defaultValue="off"
+        app:summary="%s">
+    </ListPreference>
+
+    <CheckBoxPreference
+        app:key="aprs_privacy_speed_enable"
+        app:title="@string/aprs_privacy_speed_title"
+        app:summary="@string/aprs_privacy_speed_summary"
+        app:defaultValue="false">
+    </CheckBoxPreference>
+
+    <CheckBoxPreference
+        app:key="aprs_privacy_altitude_enable"
+        app:title="@string/aprs_privacy_altitude_title"
+        app:summary="@string/aprs_privacy_altitude_summary"
+        app:defaultValue="false">
+    </CheckBoxPreference>
 
 </PreferenceScreen>

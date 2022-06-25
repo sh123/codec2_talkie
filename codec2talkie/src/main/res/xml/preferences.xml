@@ -175,6 +175,7 @@
             app:key="aprs_enable"
             app:title="@string/aprs_enable_title"
             app:summary="@string/aprs_enable_summary"
+            app:dependency="kiss_enable">
             app:defaultValue="false">
         </SwitchPreference>
 

@@ -62,4 +62,7 @@ public final class PreferenceKeys {
     public static String APRS_LOCATION_SOURCE_MANUAL_LON = "aprs_location_source_manual_lon";
     public static String APRS_LOCATION_SOURCE_MANUAL_AUTO_SEND = "aprs_location_source_manual_auto_send";
     public static String APRS_LOCATION_SOURCE_MANUAL_UPDATE_TIME = "aprs_location_source_manual_update_time";
+    public static String APRS_PRIVACY_POSITION_AMBIGUITY = "aprs_privacy_position_ambiguity";
+    public static String APRS_PRIVACY_SPEED_ENABLED = "aprs_privacy_speed_enable";
+    public static String APRS_PRIVACY_ALTITUDE_ENABLED = "aprs_privacy_altitude_enable";
 }
