@@ -24,9 +24,9 @@
 
     <string name="codec2_category_title">Codec2 Settings</string>
     <string name="codec2_mode_title">Mode/Speed</string>
-    <string name="codec2_test_mode_title">Echo Test Mode</string>
+    <string name="codec2_test_mode_title">Echo test mode</string>
     <string name="codec2_test_mode_summary">Records and plays recording without transmission</string>
-    <string name="codec2_recorder_title">Enable Recorder</string>
+    <string name="codec2_recorder_title">Enable recorder</string>
     <string name="codec2_recorder_summary">Record incoming and outgoing transmissions for future playback</string>
     <string-array name="codec2_modes">
         <item>MODE_450=10</item>
