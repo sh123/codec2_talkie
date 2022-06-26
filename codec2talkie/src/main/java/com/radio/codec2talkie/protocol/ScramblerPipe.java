@@ -42,18 +42,18 @@ public class ScramblerPipe implements Protocol {
     }
 
     @Override
-    public void sendAudio(byte[] audioFrame) throws IOException {
+    public void sendAudio(String src, String dst, byte[] audioFrame) throws IOException {
         byte[] result = scramble(audioFrame);
         if (result != null) {
-            _childProtocol.sendData(result);
+            _childProtocol.sendData(src, dst, result);
         }
     }
 
     @Override
-    public void sendData(byte[] dataPacket) throws IOException {
+    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
         byte[] result = scramble(dataPacket);
         if (result != null) {
-            _childProtocol.sendData(result);
+            _childProtocol.sendData(src, dst, result);
         }
     }
 

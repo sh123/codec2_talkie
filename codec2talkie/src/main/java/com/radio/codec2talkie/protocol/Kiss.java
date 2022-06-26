@@ -191,12 +191,12 @@ public class Kiss implements Protocol {
     };
 
     @Override
-    public void sendAudio(byte [] frame) throws IOException {
+    public void sendAudio(String src, String dst, byte [] frame) throws IOException {
         send(frame);
     }
 
     @Override
-    public void sendData(byte[] dataPacket) throws IOException {
+    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
         send(dataPacket);
     }
 

@@ -44,14 +44,14 @@ public class RecorderPipe implements Protocol {
     }
 
     @Override
-    public void sendAudio(byte[] frame) throws IOException {
-        _childProtocol.sendAudio(frame);
-        writeToFile(frame);
+    public void sendAudio(String src, String dst, byte[] frame) throws IOException {
+        _childProtocol.sendAudio(src, dst, frame);
+        writeToFile(src, dst, frame);
     }
 
     @Override
-    public void sendData(byte[] dataPacket) throws IOException {
-        _childProtocol.sendData(dataPacket);
+    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
+        _childProtocol.sendData(src, dst, dataPacket);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class RecorderPipe implements Protocol {
             @Override
             protected void onReceiveAudioFrames(byte[] audioFrames) {
                 callback.onReceiveAudioFrames(audioFrames);
-                writeToFile(audioFrames);
+                writeToFile(null, null, audioFrames);
             }
 
             @Override
@@ -85,9 +85,9 @@ public class RecorderPipe implements Protocol {
         _childProtocol.close();
     }
 
-    private void writeToFile(byte[] rawData)  {
+    private void writeToFile(String src, String dst, byte[] rawData)  {
         stopRotationTimer();
-        createStreamIfNotExists();
+        createStreamIfNotExists(src, dst);
         writeToStream(rawData);
         startRotationTimer();
     }
@@ -102,7 +102,7 @@ public class RecorderPipe implements Protocol {
         }
     }
 
-    private void createStreamIfNotExists() {
+    private void createStreamIfNotExists(String src, String dst) {
         if (_activeStream == null) {
             try {
                 Date date = new Date();
@@ -110,7 +110,7 @@ public class RecorderPipe implements Protocol {
                 if (!newDirectory.exists() && !newDirectory.mkdirs()) {
                     Log.e(TAG, "Failed to create directory for voicemails");
                 }
-                File newAudioFile = new File(newDirectory, getNewFileName(date));
+                File newAudioFile = new File(newDirectory, getNewFileName(date, src, dst));
                 _activeStream = new FileOutputStream(newAudioFile);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -123,10 +123,15 @@ public class RecorderPipe implements Protocol {
         return df.format(date);
     }
 
-    private String getNewFileName(Date date) {
+    private String getNewFileName(Date date, String src, String dst) {
         SimpleDateFormat tf = new SimpleDateFormat("HHmmss", Locale.ENGLISH);
         String codec2mode = String.format(Locale.ENGLISH, "%02d", _codec2ModeId);
-        return codec2mode + "_" + tf.format(date)  + ".c2";
+        String fileName = codec2mode + "_" + tf.format(date);
+        if (src != null && dst != null) {
+            fileName += "_" + src + "_" + dst;
+        }
+        fileName += ".c2";
+        return fileName;
     }
 
     private void startRotationTimer() {

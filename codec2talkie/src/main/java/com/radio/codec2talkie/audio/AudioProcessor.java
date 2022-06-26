@@ -229,7 +229,7 @@ public class AudioProcessor extends Thread {
         for (int i = 0; i < _recordAudioEncodedBuffer.length; i++) {
             frame[i] = (byte)_recordAudioEncodedBuffer[i];
         }
-        _protocol.sendAudio(frame);
+        _protocol.sendAudio(null, null, frame);
     }
 
     private void decodeAndPlayAudioFrame(byte[] audioFrame) {
