@@ -12,6 +12,19 @@ import java.io.IOException;
 
 public class AX25 implements Protocol {
 
+    public static class AX25Data {
+        public String src;
+        public String dst;
+        public String digipath;
+        public boolean isAudio;
+        public byte[] rawData;
+    }
+
+    public static class AX25Callsign {
+        public String callsign;
+        public String ssid;
+    }
+
     final Protocol _childProtocol;
     private String _digipath;
 
@@ -28,14 +41,30 @@ public class AX25 implements Protocol {
 
     @Override
     public void sendAudio(String src, String dst, byte[] frame) throws IOException {
-        // build binary packet then send as audio data
-        _childProtocol.sendAudio(src, dst, frame);
+        AX25Data data = new AX25Data();
+        data.src = src;
+        data.dst = dst;
+        data.digipath = _digipath;
+        data.isAudio = true;
+        data.rawData = frame;
+        byte[] ax25Frame = buildPacket(data);
+        if (ax25Frame != null) {
+            _childProtocol.sendAudio(src, dst, frame);
+        }
     }
 
     @Override
     public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
-        // build binary packet then send as data frame (dataPacket is info data)
-        _childProtocol.sendData(src, dst, dataPacket);
+        AX25Data data = new AX25Data();
+        data.src = src;
+        data.dst = dst;
+        data.digipath = _digipath;
+        data.isAudio = false;
+        data.rawData = dataPacket;
+        byte[] ax25Frame = buildPacket(data);
+        if (ax25Frame != null) {
+            _childProtocol.sendData(src, dst, dataPacket);
+        }
     }
 
     @Override
@@ -43,10 +72,14 @@ public class AX25 implements Protocol {
         return _childProtocol.receive(new Callback() {
             @Override
             protected void onReceiveAudioFrames(String src, String dst, byte[] audioFrames) {
-                // parse ax25 packet
-                //  if data then call callback.onReceiveData
-                //      otherwise callback.onReceiveAudioFrames
-                callback.onReceiveAudioFrames(src, dst, audioFrames);
+                AX25Data ax25Data = parsePacket(audioFrames);
+                if (ax25Data != null) {
+                    if (ax25Data.isAudio) {
+                        callback.onReceiveAudioFrames(ax25Data.src, ax25Data.dst, audioFrames);
+                    } else {
+                        callback.onReceiveData(ax25Data.src, ax25Data.dst, audioFrames);
+                    }
+                }
             }
 
             @Override
@@ -74,5 +107,19 @@ public class AX25 implements Protocol {
     @Override
     public void close() {
         _childProtocol.close();
+    }
+
+    private byte[] buildPacket(AX25Data data) {
+        return data.rawData;
+    }
+
+    private AX25Data parsePacket(byte[] data) {
+        AX25Data ax25Data = new AX25Data();
+        ax25Data.src = null;
+        ax25Data.dst = null;
+        ax25Data.digipath = null;
+        ax25Data.isAudio = true;
+        ax25Data.rawData = data;
+        return ax25Data;
     }
 }
