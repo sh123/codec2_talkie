@@ -34,6 +34,7 @@ public class ProtocolFactory {
         boolean recordingEnabled = sharedPreferences.getBoolean(PreferenceKeys.CODEC2_RECORDING_ENABLED, false);
         boolean scramblingEnabled = sharedPreferences.getBoolean(PreferenceKeys.KISS_SCRAMBLING_ENABLED, false);
         String scramblingKey = sharedPreferences.getString(PreferenceKeys.KISS_SCRAMBLER_KEY, "");
+        boolean aprsEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
 
         Protocol proto;
         switch (protocolType) {
@@ -54,6 +55,9 @@ public class ProtocolFactory {
 
         if (scramblingEnabled) {
             proto = new ScramblerPipe(proto, scramblingKey);
+        }
+        if (aprsEnabled) {
+            proto = new AX25(proto);
         }
         if (recordingEnabled) {
             proto = new RecorderPipe(proto, codec2ModeId);

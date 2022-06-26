@@ -494,6 +494,12 @@ public class MainActivity extends AppCompatActivity {
             if (scramblingEnabled) {
                 speedModeInfo += ", " + getString(R.string.kiss_scrambler_label);
             }
+
+            // aprs
+            boolean aprsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
+            if (aprsEnabled) {
+                speedModeInfo += ", " + getString(R.string.aprs_label);
+            }
             _textCodecMode.setText(speedModeInfo);
 
             _audioProcessor = new AudioProcessor(transportType, protocolType, codec2ModeId, onAudioProcessorStateChanged, getApplicationContext());
