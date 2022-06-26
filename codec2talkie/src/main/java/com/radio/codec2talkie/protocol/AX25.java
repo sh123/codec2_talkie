@@ -37,6 +37,7 @@ public class AX25 implements Protocol {
     public void initialize(Transport transport, Context context) throws IOException {
         _childProtocol.initialize(transport, context);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        // NOTE, may need to pass through sendData/sendAudio
         _digipath = sharedPreferences.getString(PreferenceKeys.APRS_DIGIPATH, "");
     }
 
