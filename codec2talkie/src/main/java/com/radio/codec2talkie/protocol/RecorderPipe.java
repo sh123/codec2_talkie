@@ -58,9 +58,14 @@ public class RecorderPipe implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
-            protected void onReceiveAudioFrames(byte[] audioFrames) {
-                callback.onReceiveAudioFrames(audioFrames);
-                writeToFile(null, null, audioFrames);
+            protected void onReceiveAudioFrames(String src, String dst, byte[] audioFrames) {
+                callback.onReceiveAudioFrames(src, dst, audioFrames);
+                writeToFile(src, dst, audioFrames);
+            }
+
+            @Override
+            protected void onReceiveData(String src, String dst, byte[] data) {
+                callback.onReceiveData(src, dst, data);
             }
 
             @Override

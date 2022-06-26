@@ -265,7 +265,7 @@ public class Kiss implements Protocol {
                 break;
             case KISS_FEND:
                 if (_kissDataType == DataType.RAW) {
-                    callback.onReceiveAudioFrames(Arrays.copyOf(_frameOutputBuffer, _frameOutputBufferPos));
+                    callback.onReceiveAudioFrames(null, null, Arrays.copyOf(_frameOutputBuffer, _frameOutputBufferPos));
                 } else if (_kissDataType == DataType.SIGNAL_REPORT && _isExtendedMode) {
                     callback.onReceiveSignalLevel(Arrays.copyOf(_kissCmdBuffer, _kissCmdBufferPos));
                     _kissCmdBufferPos = 0;

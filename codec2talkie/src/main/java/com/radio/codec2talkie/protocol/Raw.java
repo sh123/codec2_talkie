@@ -37,7 +37,7 @@ public class Raw implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         int bytesRead = _transport.read(_rxDataBuffer);
         if (bytesRead > 0) {
-            callback.onReceiveAudioFrames(Arrays.copyOf(_rxDataBuffer, bytesRead));
+            callback.onReceiveAudioFrames(null, null, Arrays.copyOf(_rxDataBuffer, bytesRead));
             return true;
         }
         return false;

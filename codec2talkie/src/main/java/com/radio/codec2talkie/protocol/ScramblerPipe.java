@@ -61,36 +61,19 @@ public class ScramblerPipe implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
-            protected void onReceiveAudioFrames(byte[] scrambledFrame) {
+            protected void onReceiveAudioFrames(String src, String dst, byte[] scrambledFrame) {
 
-                ScramblingTools.ScrambledData data = new ScramblingTools.ScrambledData();
-
-                data.iv = new byte[ScramblingTools.BLOCK_SIZE];
-                data.salt = new byte [ScramblingTools.SALT_BYTES];
-                int dataSize = scrambledFrame.length - ScramblingTools.BLOCK_SIZE - ScramblingTools.SALT_BYTES;
-                if (dataSize <= 0) {
-                    Log.e(TAG, "Frame of wrong length " + dataSize);
-                    callback.onProtocolRxError();
-                    return;
-                }
-                data.scrambledData = new byte[dataSize];
-
-                System.arraycopy(scrambledFrame, 0, data.iv, 0, data.iv.length);
-                System.arraycopy(scrambledFrame, data.iv.length, data.salt, 0, data.salt.length);
-                System.arraycopy(scrambledFrame, data.iv.length + data.salt.length, data.scrambledData, 0, data.scrambledData.length);
-
-                byte[] audioFrames = null;
-                try {
-                    audioFrames = ScramblingTools.unscramble(_scramblingKey, data, _iterationsCount);
-                } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
-                        InvalidKeyException | BadPaddingException | IllegalBlockSizeException |
-                        InvalidAlgorithmParameterException e) {
-
-                    e.printStackTrace();
-                    callback.onProtocolRxError();
-                }
+                byte[] audioFrames = unscramble(scrambledFrame, callback);
                 if (audioFrames != null) {
-                    callback.onReceiveAudioFrames(audioFrames);
+                    callback.onReceiveAudioFrames(src, dst, audioFrames);
+                }
+            }
+
+            @Override
+            protected void onReceiveData(String src, String dst, byte[] scrambledData) {
+                byte[] data = unscramble(scrambledData, callback);
+                if (data != null) {
+                    callback.onReceiveData(src, dst, data);
                 }
             }
 
@@ -116,7 +99,7 @@ public class ScramblerPipe implements Protocol {
         _childProtocol.close();
     }
 
-    private byte[] scramble(byte[] srcData) throws IOException {
+    private byte[] scramble(byte[] srcData) {
         ScramblingTools.ScrambledData data = null;
         try {
             data = ScramblingTools.scramble(_scramblingKey, srcData, _iterationsCount);
@@ -136,5 +119,35 @@ public class ScramblerPipe implements Protocol {
             return result;
         }
         return null;
+    }
+
+    private byte[] unscramble(byte[] scrambledData, Callback callback) {
+        ScramblingTools.ScrambledData data = new ScramblingTools.ScrambledData();
+
+        data.iv = new byte[ScramblingTools.BLOCK_SIZE];
+        data.salt = new byte [ScramblingTools.SALT_BYTES];
+        int dataSize = scrambledData.length - ScramblingTools.BLOCK_SIZE - ScramblingTools.SALT_BYTES;
+        if (dataSize <= 0) {
+            Log.e(TAG, "Frame of wrong length " + dataSize);
+            callback.onProtocolRxError();
+            return null;
+        }
+        data.scrambledData = new byte[dataSize];
+
+        System.arraycopy(scrambledData, 0, data.iv, 0, data.iv.length);
+        System.arraycopy(scrambledData, data.iv.length, data.salt, 0, data.salt.length);
+        System.arraycopy(scrambledData, data.iv.length + data.salt.length, data.scrambledData, 0, data.scrambledData.length);
+
+        byte[] unscrambledData = null;
+        try {
+            unscrambledData = ScramblingTools.unscramble(_scramblingKey, data, _iterationsCount);
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
+                InvalidKeyException | BadPaddingException | IllegalBlockSizeException |
+                InvalidAlgorithmParameterException e) {
+
+            e.printStackTrace();
+            callback.onProtocolRxError();
+        }
+        return unscrambledData;
     }
 }

@@ -240,9 +240,14 @@ public class AudioProcessor extends Thread {
 
     private final Callback _protocolReceiveCallback = new Callback() {
         @Override
-        protected void onReceiveAudioFrames(byte[] audioFrame) {
+        protected void onReceiveAudioFrames(String src, String dst, byte[] audioFrame) {
             sendStatusUpdate(PROCESSOR_PLAYING);
             decodeAndPlayAudioFrame(audioFrame);
+        }
+
+        @Override
+        protected void onReceiveData(String src, String dst, byte[] data) {
+            // handle incoming messages
         }
 
         @Override
