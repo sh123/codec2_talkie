@@ -105,7 +105,7 @@
 
     <string name="app_keep_screen_on_title">Keep screen ON</string>
     <string name="app_keep_screen_on_summary">Prevent screen switching off when app is active</string>
-    <string name="menu_recorder">Play recordings</string>
+    <string name="menu_recorder">Recorder</string>
     <string name="recorder_menu_play_all">Play all</string>
     <string name="recorder_menu_delete_all">Delete all</string>
     <string name="recorder_remove_all_confirmation_message">Remove all recordings from %1$s?</string>
