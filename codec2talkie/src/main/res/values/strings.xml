@@ -137,7 +137,7 @@
     <string name="bt_connected">Connected</string>
     <string name="bt_connecting_to">Connecting to %1$s</string>
     <string name="bt_turned_on">Bluetooth turned on</string>
-    <string name="menu_reconnect">Reconnect</string>
+    <string name="menu_reconnect">Reconnect to TNC</string>
     <string name="tcp_ip_connecting">Connecting to remote KISS server…</string>
     <string name="bt_connecting">Connecting bluetooth…</string>
     <string name="usb_connecting">Connecting USB…</string>
