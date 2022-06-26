@@ -43,7 +43,7 @@ public class ScramblerPipe implements Protocol {
 
     @Override
     public void sendAudio(byte[] audioFrame) throws IOException {
-        byte[] result = scrable(audioFrame);
+        byte[] result = scramble(audioFrame);
         if (result != null) {
             _childProtocol.sendData(result);
         }
@@ -51,7 +51,7 @@ public class ScramblerPipe implements Protocol {
 
     @Override
     public void sendData(byte[] dataPacket) throws IOException {
-        byte[] result = scrable(dataPacket);
+        byte[] result = scramble(dataPacket);
         if (result != null) {
             _childProtocol.sendData(result);
         }
@@ -116,7 +116,7 @@ public class ScramblerPipe implements Protocol {
         _childProtocol.close();
     }
 
-    private byte[] scrable(byte[] srcData) throws IOException {
+    private byte[] scramble(byte[] srcData) throws IOException {
         ScramblingTools.ScrambledData data = null;
         try {
             data = ScramblingTools.scramble(_scramblingKey, srcData, _iterationsCount);
