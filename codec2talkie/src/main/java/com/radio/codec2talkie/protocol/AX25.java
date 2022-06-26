@@ -21,11 +21,13 @@ public class AX25 implements Protocol {
 
     @Override
     public void sendAudio(String src, String dst, byte[] frame) throws IOException {
+        // build binary packet then send as audio data
         _childProtocol.sendAudio(src, dst, frame);
     }
 
     @Override
     public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
+        // build binary packet then send as data frame (dataPacket is info data)
         _childProtocol.sendData(src, dst, dataPacket);
     }
 
@@ -34,6 +36,9 @@ public class AX25 implements Protocol {
         return _childProtocol.receive(new Callback() {
             @Override
             protected void onReceiveAudioFrames(String src, String dst, byte[] audioFrames) {
+                // parse ax25 packet
+                //  if data then call callback.onReceiveData
+                //      otherwise callback.onReceiveAudioFrames
                 callback.onReceiveAudioFrames(src, dst, audioFrames);
             }
 
