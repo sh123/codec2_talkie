@@ -2,19 +2,30 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <CheckBoxPreference
-        app:key="aprs_location_compressed"
-        app:title="@string/aprs_location_compressed_title"
-        app:summary="@string/aprs_location_compressed_summary"
-        app:defaultValue="true">
-    </CheckBoxPreference>
-
     <ListPreference
         app:key="aprs_location_source"
         app:title="@string/aprs_location_source_title"
         app:entries="@array/aprs_location_source"
         app:entryValues="@array/aprs_location_source_values"
         app:defaultValue="periodic"
+        app:summary="%s">
+    </ListPreference>
+
+    <ListPreference
+        app:key="aprs_location_packet_format"
+        app:title="@string/aprs_location_packet_format_title"
+        app:entries="@array/aprs_location_packet_format_labels"
+        app:entryValues="@array/aprs_location_packet_format_values"
+        app:defaultValue="compressed"
+        app:summary="%s">
+    </ListPreference>
+
+    <ListPreference
+        app:key="aprs_location_emic_message_type"
+        app:title="@string/aprs_location_emic_message_type_title"
+        app:entries="@array/aprs_location_mice_message_type_labels"
+        app:entryValues="@array/aprs_location_mice_message_type_values"
+        app:defaultValue="en_route"
         app:summary="%s">
     </ListPreference>
 

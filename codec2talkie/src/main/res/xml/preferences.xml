@@ -187,29 +187,33 @@
             app:defaultValue="NOCALL">
         </EditTextPreference>
 
-        <EditTextPreference
+        <ListPreference
             app:key="aprs_ssid"
             app:title="@string/aprs_ssid_title"
-            app:summary="@string/aprs_ssid_summary"
+            app:entries="@array/aprs_ssid_labels"
+            app:entryValues="@array/aprs_ssid_values"
             app:dependency="aprs_enable"
+            app:summary="%s"
             app:defaultValue="7">
-        </EditTextPreference>
+        </ListPreference>
 
         <EditTextPreference
             app:key="aprs_digipath"
             app:title="@string/aprs_digipath_title"
             app:summary="@string/aprs_digipath_summary"
             app:dependency="aprs_enable"
-            app:defaultValue="">
+            app:defaultValue="WIDE1-1">
         </EditTextPreference>
 
-        <EditTextPreference
+        <ListPreference
             app:key="aprs_symbol"
             app:title="@string/aprs_symbol_title"
-            app:summary="@string/aprs_symbol_summary"
+            app:entries="@array/aprs_symbol_labels"
+            app:entryValues="@array/aprs_symbol_values"
+            app:summary="%s"
             app:dependency="aprs_enable"
-            app:defaultValue="\\\\[">
-        </EditTextPreference>
+            app:defaultValue="/$">
+        </ListPreference>
 
         <EditTextPreference
             app:key="aprs_comment"

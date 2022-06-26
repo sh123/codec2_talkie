@@ -235,6 +235,8 @@
     <string name="aprs_privacy_speed_summary">Include speed and bearing in position reports</string>
     <string name="aprs_privacy_altitude_title">Send altitude</string>
     <string name="aprs_privacy_altitude_summary">Include altitude in position reports</string>
+    <string name="aprs_location_packet_format_title">Packet format</string>
+    <string name="aprs_location_emic_message_type_title">E-Mic message type</string>
 
     <string-array name="lora_bandwidths">
         <item>7800</item>
@@ -325,6 +327,110 @@
         <item>2</item>
         <item>3</item>
         <item>4</item>
+    </string-array>
+
+    <string-array name="aprs_location_packet_format_labels">
+        <item>Uncompressed</item>
+        <item>Compressed</item>
+        <item>Mic-E</item>
+    </string-array>
+
+    <string-array name="aprs_location_packet_format_values">
+        <item>uncompressed</item>
+        <item>compressed</item>
+        <item>mic_e</item>
+    </string-array>
+
+    <string-array name="aprs_location_mice_message_type_labels">
+        <item>Off Duty</item>
+        <item>En Route</item>
+        <item>In Service</item>
+        <item>Returning</item>
+        <item>Committed</item>
+        <item>Special</item>
+        <item>Priority</item>
+    </string-array>
+
+    <string-array name="aprs_location_mice_message_type_values">
+        <item>off_duty</item>
+        <item>en_route</item>
+        <item>in_service</item>
+        <item>returning</item>
+        <item>committed</item>
+        <item>special</item>
+        <item>priority</item>
+    </string-array>
+
+    <string-array name="aprs_ssid_labels">
+        <item>(none) Primary station</item>
+        <item>1: Generic additional station</item>
+        <item>2: Generic additional station</item>
+        <item>3: Generic additional station</item>
+        <item>4: Generic additional station</item>
+        <item>5: Other network (D-Star, DMR, ...)</item>
+        <item>6: Satellite</item>
+        <item>7: Handheld radio</item>
+        <item>8: Boat/ship</item>
+        <item>9: Mobile station</item>
+        <item>10: APRS-S (no radio)</item>
+        <item>11: Balloon, aircraft, spacecraft, drone</item>
+        <item>12: APRStt, DTMF (one way)</item>
+        <item>13: Weather station</item>
+        <item>14: Freight vehicle</item>
+        <item>15: Generic additional station</item>
+    </string-array>
+
+    <string-array name="aprs_ssid_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+    </string-array>
+
+    <string-array name="aprs_symbol_labels">
+        <item>Bicycle</item>
+        <item>Car</item>
+        <item>House</item>
+        <item>House HF</item>
+        <item>House Yagi</item>
+        <item>IOTA</item>
+        <item>Jeep</item>
+        <item>Jogger</item>
+        <item>Phone</item>>
+        <item>Plane</item>
+        <item>Power boat</item>
+        <item>Truck</item>
+        <item>Van</item>
+        <item>Yacht</item>
+    </string-array>
+
+    <string-array name="aprs_symbol_values">
+        <item>\\b</item>
+        <item>/\></item>
+        <item>/-</item>
+        <item>\\-</item>
+        <item>/y</item>
+        <item>/i</item>
+        <item>/j</item>
+        <item>/[</item>
+        <item>/$</item>>
+        <item>/\'</item>
+        <item>/s</item>
+        <item>/k</item>
+        <item>/v</item>
+        <item>/y</item>
     </string-array>
 
 </resources>
