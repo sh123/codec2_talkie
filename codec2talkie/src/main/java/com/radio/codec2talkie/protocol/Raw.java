@@ -24,7 +24,7 @@ public class Raw implements Protocol {
     }
 
     @Override
-    public void sendAudio(String src, String dst, byte [] frame) throws IOException {
+    public void sendAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
         _transport.write(Arrays.copyOf(frame, frame.length));
     }
 
@@ -37,7 +37,7 @@ public class Raw implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         int bytesRead = _transport.read(_rxDataBuffer);
         if (bytesRead > 0) {
-            callback.onReceiveAudioFrames(null, null, Arrays.copyOf(_rxDataBuffer, bytesRead));
+            callback.onReceiveAudioFrames(null, null, -1, Arrays.copyOf(_rxDataBuffer, bytesRead));
             return true;
         }
         return false;

@@ -56,6 +56,7 @@ public class AudioProcessor extends Thread {
     private final int SIGNAL_LEVEL_EVENT_SIZE = 4;
 
     private long _codec2Con;
+    private int _codec2Mode;
 
     private int _audioBufferSize;
     private int _codec2FrameSize;
@@ -145,6 +146,7 @@ public class AudioProcessor extends Thread {
     }
 
     private void constructCodec2(int codecMode) {
+        _codec2Mode = codecMode;
         _codec2Con = Codec2.create(codecMode);
 
         _audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
@@ -229,7 +231,7 @@ public class AudioProcessor extends Thread {
         for (int i = 0; i < _recordAudioEncodedBuffer.length; i++) {
             frame[i] = (byte)_recordAudioEncodedBuffer[i];
         }
-        _protocol.sendAudio(null, null, frame);
+        _protocol.sendAudio(null, null, _codec2Mode, frame);
     }
 
     private void decodeAndPlayAudioFrame(byte[] audioFrame) {
@@ -240,7 +242,7 @@ public class AudioProcessor extends Thread {
 
     private final Callback _protocolReceiveCallback = new Callback() {
         @Override
-        protected void onReceiveAudioFrames(String src, String dst, byte[] audioFrame) {
+        protected void onReceiveAudioFrames(String src, String dst, int codec2Mode, byte[] audioFrame) {
             sendStatusUpdate(PROCESSOR_PLAYING);
             decodeAndPlayAudioFrame(audioFrame);
         }

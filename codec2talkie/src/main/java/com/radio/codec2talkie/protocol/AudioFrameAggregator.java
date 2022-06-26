@@ -25,13 +25,15 @@ public class AudioFrameAggregator implements Protocol {
     private byte[] _outputBuffer;
 
     private final int _codec2FrameSize;
+    private final int _codec2ModeId;
 
     private String _lastSrc;
     private String _lastDst;
+    private int _lastCodec2Mode;
 
     public AudioFrameAggregator(Protocol childProtocol, int codec2ModeId) {
         _childProtocol = childProtocol;
-
+        _codec2ModeId = codec2ModeId;
         long codec2Con = Codec2.create(codec2ModeId);
         _codec2FrameSize = Codec2.getBitsSize(codec2Con); // returns number of bytes
         Codec2.destroy(codec2Con);
@@ -47,11 +49,12 @@ public class AudioFrameAggregator implements Protocol {
     }
 
     @Override
-    public void sendAudio(String src, String dst, byte[] frame) throws IOException {
+    public void sendAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
         if ( _outputBufferPos + frame.length >= _outputBufferSize) {
-            _childProtocol.sendAudio(src, dst, Arrays.copyOf(_outputBuffer, _outputBufferPos));
+            _childProtocol.sendAudio(src, dst, codec2Mode, Arrays.copyOf(_outputBuffer, _outputBufferPos));
             _lastSrc = src;
             _lastDst = dst;
+            _lastCodec2Mode = codec2Mode;
             _outputBufferPos = 0;
         }
         System.arraycopy(frame, 0, _outputBuffer, _outputBufferPos, frame.length);
@@ -67,7 +70,11 @@ public class AudioFrameAggregator implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
-            protected void onReceiveAudioFrames(String src, String dst, byte[] audioFrames) {
+            protected void onReceiveAudioFrames(String src, String dst, int codec2Mode, byte[] audioFrames) {
+                int mode = codec2Mode;
+                if (mode == -1) {
+                    mode = _codec2ModeId;
+                }
                 if (audioFrames.length % _codec2FrameSize != 0) {
                     Log.e(TAG, "Ignoring audio frame of wrong size: " + audioFrames.length);
                     callback.onProtocolRxError();
@@ -78,7 +85,7 @@ public class AudioFrameAggregator implements Protocol {
                         for (int j = 0; j < _codec2FrameSize && (j + i) < audioFrames.length; j++) {
                             audioFrame[j] = audioFrames[i + j];
                         }
-                        callback.onReceiveAudioFrames(src, dst, audioFrame);
+                        callback.onReceiveAudioFrames(src, dst, mode, audioFrame);
                     }
                 }
             }
@@ -103,7 +110,7 @@ public class AudioFrameAggregator implements Protocol {
     @Override
     public void flush() throws IOException {
         if (_outputBufferPos > 0) {
-            _childProtocol.sendAudio(_lastSrc, _lastDst, Arrays.copyOf(_outputBuffer, _outputBufferPos));
+            _childProtocol.sendAudio(_lastSrc, _lastDst, _lastCodec2Mode, Arrays.copyOf(_outputBuffer, _outputBufferPos));
             _outputBufferPos = 0;
         }
         _childProtocol.flush();

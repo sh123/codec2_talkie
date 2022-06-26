@@ -16,6 +16,7 @@ public class AX25 implements Protocol {
         public String src;
         public String dst;
         public String digipath;
+        public int codec2Mode;
         public boolean isAudio;
         public byte[] rawData;
     }
@@ -40,16 +41,17 @@ public class AX25 implements Protocol {
     }
 
     @Override
-    public void sendAudio(String src, String dst, byte[] frame) throws IOException {
+    public void sendAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
         AX25Data data = new AX25Data();
         data.src = src;
         data.dst = dst;
         data.digipath = _digipath;
+        data.codec2Mode = codec2Mode;
         data.isAudio = true;
         data.rawData = frame;
         byte[] ax25Frame = buildPacket(data);
         if (ax25Frame != null) {
-            _childProtocol.sendAudio(src, dst, frame);
+            _childProtocol.sendAudio(src, dst, codec2Mode, frame);
         }
     }
 
@@ -71,11 +73,11 @@ public class AX25 implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
-            protected void onReceiveAudioFrames(String src, String dst, byte[] audioFrames) {
+            protected void onReceiveAudioFrames(String src, String dst, int codec2Mode, byte[] audioFrames) {
                 AX25Data ax25Data = parsePacket(audioFrames);
                 if (ax25Data != null) {
                     if (ax25Data.isAudio) {
-                        callback.onReceiveAudioFrames(ax25Data.src, ax25Data.dst, audioFrames);
+                        callback.onReceiveAudioFrames(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, audioFrames);
                     } else {
                         callback.onReceiveData(ax25Data.src, ax25Data.dst, audioFrames);
                     }
@@ -118,6 +120,7 @@ public class AX25 implements Protocol {
         ax25Data.src = null;
         ax25Data.dst = null;
         ax25Data.digipath = null;
+        ax25Data.codec2Mode = -1;
         ax25Data.isAudio = true;
         ax25Data.rawData = data;
         return ax25Data;

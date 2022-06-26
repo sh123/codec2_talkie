@@ -191,7 +191,7 @@ public class Kiss implements Protocol {
     };
 
     @Override
-    public void sendAudio(String src, String dst, byte [] frame) throws IOException {
+    public void sendAudio(String src, String dst, int codec2Mode, byte [] frame) throws IOException {
         // NOTE, KISS does not distinguish between audio and data packet, upper layer should decide
         send(frame);
     }
@@ -268,7 +268,7 @@ public class Kiss implements Protocol {
             case KISS_FEND:
                 if (_kissDataType == DataType.RAW) {
                     // NOTE, KISS does not distinguish between audio and data packets, upper layer should decide
-                    callback.onReceiveAudioFrames(null, null, Arrays.copyOf(_frameOutputBuffer, _frameOutputBufferPos));
+                    callback.onReceiveAudioFrames(null, null, -1, Arrays.copyOf(_frameOutputBuffer, _frameOutputBufferPos));
                 } else if (_kissDataType == DataType.SIGNAL_REPORT && _isExtendedMode) {
                     callback.onReceiveSignalLevel(Arrays.copyOf(_kissCmdBuffer, _kissCmdBufferPos));
                     _kissCmdBufferPos = 0;
