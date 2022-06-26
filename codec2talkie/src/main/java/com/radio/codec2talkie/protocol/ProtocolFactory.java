@@ -25,7 +25,7 @@ public class ProtocolFactory {
         public String toString() {
             return _name;
         }
-    };
+    }
 
     public static Protocol create(ProtocolType protocolType, int codec2ModeId, Context context) {
 
