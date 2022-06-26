@@ -1,7 +1,11 @@
 package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
+import androidx.preference.PreferenceManager;
+
+import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -9,6 +13,7 @@ import java.io.IOException;
 public class AX25 implements Protocol {
 
     final Protocol _childProtocol;
+    private String _digipath;
 
     public AX25(Protocol childProtocol) {
         _childProtocol = childProtocol;
@@ -17,6 +22,8 @@ public class AX25 implements Protocol {
     @Override
     public void initialize(Transport transport, Context context) throws IOException {
         _childProtocol.initialize(transport, context);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        _digipath = sharedPreferences.getString(PreferenceKeys.APRS_DIGIPATH, "");
     }
 
     @Override
