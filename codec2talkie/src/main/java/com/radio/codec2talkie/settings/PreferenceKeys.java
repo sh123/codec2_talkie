@@ -54,9 +54,10 @@ public final class PreferenceKeys {
     public static String APRS_DIGIPATH = "aprs_digipath";
     public static String APRS_SYMBOL = "aprs_symbol";
     public static String APRS_COMMENT = "aprs_comment";
-    public static String APRS_LOCATION_COMPRESSED = "aprs_location_compressed";
+    public static String APRS_LOCATION_PACKET_FORMAT = "aprs_location_packet_format";
     public static String APRS_LOCATION_SOURCE = "aprs_location_source";
     public static String APRS_LOCATION_SOURCE_GPS_UPDATE_TIME = "aprs_location_source_gps_update_time";
+    public static String APRS_LOCATION_MIC_E_MESSAGE_TYPE = "aprs_location_mice_message_type";
     public static String APRS_LOCATION_SOURCE_GPS_UPDATE_DISTANCE = "aprs_location_source_gps_update_distance";
     public static String APRS_LOCATION_SOURCE_MANUAL_LATE = "aprs_location_source_manual_lat";
     public static String APRS_LOCATION_SOURCE_MANUAL_LON = "aprs_location_source_manual_lon";
