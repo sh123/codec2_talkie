@@ -5,7 +5,8 @@ import java.util.Arrays;
 
 public class AX25Packet {
 
-    public final int MaximumSize = 512;
+    public static int MaximumSize = 512;
+    public static int MaximumRptCount = 7;
 
     public String src;
     public String dst;
@@ -35,14 +36,43 @@ public class AX25Packet {
         buffer.get(dstBytes);
         dstCallsign.fromBinary(dstBytes);
         if (!dstCallsign.isValid) return;
-        src = dstCallsign.toString();
+        dst = dstCallsign.toString();
         // digipath
-        // isAudio
+        if (!dstCallsign.isLast) {
+            StringBuilder rptBuilder = new StringBuilder();
+            for (int i = 0; i < MaximumRptCount; i++) {
+                AX25Callsign rptCallsign = new AX25Callsign();
+                byte[] rptBytes = new byte[AX25Callsign.CallsignMaxSize];
+                buffer.get(rptBytes);
+                rptCallsign.fromBinary(rptBytes);
+                if (!rptCallsign.isValid) return;
+                rptBuilder.append(dstCallsign.toString());
+                if (dstCallsign.isLast) break;
+                rptBuilder.append(',');
+            }
+            digipath = rptBuilder.toString();
+        }
+        // ctrl, UI
+        byte ax25Ctrl = buffer.get();
+        if (ax25Ctrl != AX25CTRL_UI) return;
+        // pid, isAudio
+        byte ax25Pid = buffer.get();
+        if (ax25Pid == AX25PID_AUDIO) {
+            isAudio = true;
+        } else if (ax25Pid == AX25PID_NO_LAYER3) {
+            isAudio = false;
+        } else {
+            return;
+        }
         // rawData
+        rawData = new byte[buffer.remaining()];
+        buffer.get(rawData);
+        isValid = true;
     }
 
     public byte[] toBinary() {
         ByteBuffer buffer = ByteBuffer.allocate(MaximumSize);
+        String[] rptCallsigns = digipath.replaceAll(" ", "").split(",");
         // src
         AX25Callsign srcCallsign = new AX25Callsign();
         srcCallsign.fromString(src);
@@ -52,9 +82,9 @@ public class AX25Packet {
         AX25Callsign dstCallsign = new AX25Callsign();
         dstCallsign.fromString(dst);
         if (!dstCallsign.isValid) return null;
+        if (rptCallsigns.length == 0) dstCallsign.isLast = true;
         buffer.put(dstCallsign.toBinary());
         // digipath
-        String[] rptCallsigns = digipath.replaceAll(" ", "").split(",");
         for (int i = 0; i < rptCallsigns.length; i++) {
             String callsign = rptCallsigns[i];
             AX25Callsign digiCallsign = new AX25Callsign();
