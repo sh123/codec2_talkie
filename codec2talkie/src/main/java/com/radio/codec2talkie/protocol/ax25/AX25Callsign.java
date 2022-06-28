@@ -1,13 +1,16 @@
 package com.radio.codec2talkie.protocol.ax25;
 
+import androidx.annotation.NonNull;
+
 import java.nio.ByteBuffer;
 
 public class AX25Callsign {
-    public final int CallsignMaxSize = 7;
+    public static int CallsignMaxSize = 7;
 
     public String callsign;
     public int ssid;
     public boolean isValid;
+    public boolean isLast = false;
 
     public void fromString(String callsignWithSsid) {
         isValid = false;
@@ -49,13 +52,16 @@ public class AX25Callsign {
         buffer[CallsignMaxSize - 1] = '\0';
 
         callsign = new String(buffer);
-        ssid = (data[data.length - 1] >> 1) & 0x0f;
+        byte lastByte = data[data.length - 1];
+        isLast = (lastByte & 0x01) == 1;
+        ssid = (lastByte >> 1) & 0x0f;
 
         if (callsign.length() == 0) return;
         isValid = true;
     }
 
-    public String toStr() {
+    @NonNull
+    public String toString() {
         return callsign + "-" + ssid;
     }
 
@@ -69,8 +75,16 @@ public class AX25Callsign {
                 // append ' ' for short callsigns
                 buffer.put((byte)(0x20 << 1));
             }
-            buffer.put((byte)(ssid << 1));
+            byte binSsid = (byte)(ssid << 1);
+            if (isLast) {
+                binSsid |= 1;
+            }
+            buffer.put(binSsid);
         }
-        return buffer.array();
+        // return
+        buffer.flip();
+        byte[] b = new byte[buffer.remaining()];
+        buffer.get(b);
+        return b;
     }
 }
