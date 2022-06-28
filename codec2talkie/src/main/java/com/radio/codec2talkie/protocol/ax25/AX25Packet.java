@@ -1,7 +1,6 @@
 package com.radio.codec2talkie.protocol.ax25;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 public class AX25Packet {
 
