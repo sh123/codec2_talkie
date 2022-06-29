@@ -55,13 +55,13 @@ public class ProtocolFactory {
 
         if (protocolType != ProtocolType.RAW) {
             if (scramblingEnabled) {
-                proto = new ScramblerPipe(proto, scramblingKey);
+                proto = new Scrambler(proto, scramblingKey);
             }
             if (aprsEnabled) {
                 proto = new AX25(proto);
             }
             if (recordingEnabled) {
-                proto = new RecorderPipe(proto, codec2ModeId);
+                proto = new Recorder(proto, codec2ModeId);
             }
         }
 

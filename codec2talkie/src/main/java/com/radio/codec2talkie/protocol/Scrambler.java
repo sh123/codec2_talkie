@@ -20,16 +20,16 @@ import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
-public class ScramblerPipe implements Protocol {
+public class Scrambler implements Protocol {
 
-    private static final String TAG = ScramblerPipe.class.getSimpleName();
+    private static final String TAG = Scrambler.class.getSimpleName();
 
     private final Protocol _childProtocol;
     private final String _scramblingKey;
 
     private int _iterationsCount;
 
-    public ScramblerPipe(Protocol childProtocol, String scramblingKey) {
+    public Scrambler(Protocol childProtocol, String scramblingKey) {
         _childProtocol = childProtocol;
         _scramblingKey = scramblingKey;
     }

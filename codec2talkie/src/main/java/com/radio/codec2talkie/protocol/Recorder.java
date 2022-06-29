@@ -17,7 +17,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class RecorderPipe implements Protocol {
+public class Recorder implements Protocol {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -31,7 +31,7 @@ public class RecorderPipe implements Protocol {
     final Protocol _childProtocol;
     final int _codec2ModeId;
 
-    public RecorderPipe(Protocol childProtocol, int codec2ModeId) {
+    public Recorder(Protocol childProtocol, int codec2ModeId) {
         _childProtocol = childProtocol;
         _codec2ModeId = codec2ModeId;
     }

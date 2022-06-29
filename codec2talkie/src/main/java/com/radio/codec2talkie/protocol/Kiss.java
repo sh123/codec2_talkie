@@ -196,7 +196,7 @@ public class Kiss implements Protocol {
     };
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte [] frame) throws IOException {
+    public void sendCompressedAudio(String src, String dst, int codec, byte [] frame) throws IOException {
         // NOTE, KISS does not distinguish between audio and data packet, upper layer should decide
         send(frame);
     }
