@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.protocol.ax25;
 
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 public class AX25Packet {
@@ -23,51 +24,55 @@ public class AX25Packet {
         isValid = false;
         if (data == null) return;
         ByteBuffer buffer = ByteBuffer.wrap(data);
-        // src
-        AX25Callsign srcCallsign = new AX25Callsign();
-        byte[] srcBytes = new byte[AX25Callsign.CallsignMaxSize];
-        buffer.get(srcBytes);
-        srcCallsign.fromBinary(srcBytes);
-        if (!srcCallsign.isValid) return;
-        src = srcCallsign.toString();
-        // dst
-        AX25Callsign dstCallsign = new AX25Callsign();
-        byte[] dstBytes = new byte[AX25Callsign.CallsignMaxSize];
-        buffer.get(dstBytes);
-        dstCallsign.fromBinary(dstBytes);
-        if (!dstCallsign.isValid) return;
-        dst = dstCallsign.toString();
-        // digipath
-        if (!dstCallsign.isLast) {
-            StringBuilder rptBuilder = new StringBuilder();
-            for (int i = 0; i < MaximumRptCount; i++) {
-                AX25Callsign rptCallsign = new AX25Callsign();
-                byte[] rptBytes = new byte[AX25Callsign.CallsignMaxSize];
-                buffer.get(rptBytes);
-                rptCallsign.fromBinary(rptBytes);
-                if (!rptCallsign.isValid) return;
-                rptBuilder.append(dstCallsign.toString());
-                if (dstCallsign.isLast) break;
-                rptBuilder.append(',');
+        try {
+            // src
+            AX25Callsign srcCallsign = new AX25Callsign();
+            byte[] srcBytes = new byte[AX25Callsign.CallsignMaxSize];
+            buffer.get(srcBytes);
+            srcCallsign.fromBinary(srcBytes);
+            if (!srcCallsign.isValid) return;
+            src = srcCallsign.toString();
+            // dst
+            AX25Callsign dstCallsign = new AX25Callsign();
+            byte[] dstBytes = new byte[AX25Callsign.CallsignMaxSize];
+            buffer.get(dstBytes);
+            dstCallsign.fromBinary(dstBytes);
+            if (!dstCallsign.isValid) return;
+            dst = dstCallsign.toString();
+            // digipath
+            if (!dstCallsign.isLast) {
+                StringBuilder rptBuilder = new StringBuilder();
+                for (int i = 0; i < MaximumRptCount; i++) {
+                    AX25Callsign rptCallsign = new AX25Callsign();
+                    byte[] rptBytes = new byte[AX25Callsign.CallsignMaxSize];
+                    buffer.get(rptBytes);
+                    rptCallsign.fromBinary(rptBytes);
+                    if (!rptCallsign.isValid) return;
+                    rptBuilder.append(rptCallsign.toString());
+                    if (rptCallsign.isLast) break;
+                    rptBuilder.append(',');
+                }
+                digipath = rptBuilder.toString();
             }
-            digipath = rptBuilder.toString();
+            // ctrl, UI
+            byte ax25Ctrl = buffer.get();
+            if (ax25Ctrl != AX25CTRL_UI) return;
+            // pid, isAudio
+            byte ax25Pid = buffer.get();
+            if (ax25Pid == AX25PID_AUDIO) {
+                isAudio = true;
+            } else if (ax25Pid == AX25PID_NO_LAYER3) {
+                isAudio = false;
+            } else {
+                return;
+            }
+            // rawData
+            rawData = new byte[buffer.remaining()];
+            buffer.get(rawData);
+            isValid = true;
+        } catch (BufferUnderflowException e) {
+            e.printStackTrace();
         }
-        // ctrl, UI
-        byte ax25Ctrl = buffer.get();
-        if (ax25Ctrl != AX25CTRL_UI) return;
-        // pid, isAudio
-        byte ax25Pid = buffer.get();
-        if (ax25Pid == AX25PID_AUDIO) {
-            isAudio = true;
-        } else if (ax25Pid == AX25PID_NO_LAYER3) {
-            isAudio = false;
-        } else {
-            return;
-        }
-        // rawData
-        rawData = new byte[buffer.remaining()];
-        buffer.get(rawData);
-        isValid = true;
     }
 
     public byte[] toBinary() {

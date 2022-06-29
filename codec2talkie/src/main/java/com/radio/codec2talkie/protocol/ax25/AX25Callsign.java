@@ -41,22 +41,21 @@ public class AX25Callsign {
         if (data == null) return;
         if (data.length != CallsignMaxSize) return;
 
-        char[] buffer = new char[CallsignMaxSize];
+        StringBuilder buffer = new StringBuilder();
 
         for (int i = 0; i < data.length - 1; i++) {
-            char c = (char)(data[i] >> 1);
+            int d = (data[i] & 0xff) >>> 1;
+            char c = (char)d;
             if (c == ' '){
-                buffer[i] = '\0';
+                break;
             } else {
-                buffer[i] = c;
+                buffer.append(c);
             }
         }
-        buffer[CallsignMaxSize - 1] = '\0';
-
-        callsign = new String(buffer);
+        callsign = buffer.toString();
         byte lastByte = data[data.length - 1];
         isLast = (lastByte & 0x01) == 1;
-        ssid = (lastByte >> 1) & 0x0f;
+        ssid = (lastByte >>> 1) & 0x0f;
 
         if (callsign.length() == 0) return;
         isValid = true;
@@ -72,17 +71,17 @@ public class AX25Callsign {
         for (int i = 0; i < CallsignMaxSize - 1; i++) {
             if (i < callsign.length()) {
                 byte c = (byte) callsign.charAt(i);
-                buffer.put((byte) (c << 1));
+                buffer.put((byte)(c << 1));
             } else {
                 // append ' ' for short callsigns
                 buffer.put((byte)(0x20 << 1));
             }
-            byte binSsid = (byte)(ssid << 1);
-            if (isLast) {
-                binSsid |= 1;
-            }
-            buffer.put(binSsid);
         }
+        byte binSsid = (byte)(ssid << 1);
+        if (isLast) {
+            binSsid |= 1;
+        }
+        buffer.put(binSsid);
         // return
         buffer.flip();
         byte[] b = new byte[buffer.remaining()];

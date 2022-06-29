@@ -2,11 +2,13 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.protocol.ax25.AX25Packet;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -44,7 +46,7 @@ public class Ax25 implements Protocol {
         ax25Packet.rawData = frame;
         byte[] ax25Frame = ax25Packet.toBinary();
         if (ax25Frame != null) {
-            _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
+            _childProtocol.sendCompressedAudio(src, dst, codec2Mode, ax25Frame);
         }
     }
 
@@ -86,7 +88,7 @@ public class Ax25 implements Protocol {
                 ax25Data.fromBinary(audioFrames);
                 if (ax25Data.isValid) {
                     if (ax25Data.isAudio) {
-                        callback.onReceiveCompressedAudio(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, audioFrames);
+                        callback.onReceiveCompressedAudio(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, ax25Data.rawData);
                     } else {
                         callback.onReceiveData(ax25Data.src, ax25Data.dst, audioFrames);
                     }

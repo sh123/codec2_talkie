@@ -1,7 +1,11 @@
 package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
+import androidx.preference.PreferenceManager;
+
+import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -10,6 +14,9 @@ public class Aprs implements Protocol {
 
     private final Protocol _childProtocol;
 
+    private String _srcCallsign;
+    private String _dstCallsign;
+
     public Aprs(Protocol childProtocol) {
         _childProtocol = childProtocol;
     }
@@ -17,6 +24,11 @@ public class Aprs implements Protocol {
     @Override
     public void initialize(Transport transport, Context context) throws IOException {
         _childProtocol.initialize(transport, context);
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        _srcCallsign = sharedPreferences.getString(PreferenceKeys.APRS_CALLSIGN, "NOCALL") + "-" +
+                sharedPreferences.getString(PreferenceKeys.APRS_SSID, "0");
+        _dstCallsign = "APZMDM";
     }
 
     @Override
@@ -31,13 +43,12 @@ public class Aprs implements Protocol {
 
     @Override
     public void sendPcmAudio(String src, String dst, int codec2Mode, short[] pcmFrame) throws IOException {
-        // set src and dst if not provided
-        _childProtocol.sendPcmAudio(src, dst, codec2Mode, pcmFrame);
+        _childProtocol.sendPcmAudio(src == null ? _srcCallsign : src, dst == null ? _dstCallsign : dst, codec2Mode, pcmFrame);
     }
 
     @Override
     public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
-        _childProtocol.sendData(src, dst, dataPacket);
+        _childProtocol.sendData(src == null ? _srcCallsign : src, dst == null ? _dstCallsign : dst, dataPacket);
     }
 
     @Override
