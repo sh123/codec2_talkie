@@ -210,7 +210,7 @@ public class AudioProcessor extends Thread {
 
     private final Callback _protocolReceiveCallback = new Callback() {
         @Override
-        protected void onReceivePosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+        protected void onReceivePosition(String src, String dst, double latitude, double longitude, double altitude, float bearing, String comment) {
             throw new UnsupportedOperationException();
         }
 
@@ -223,7 +223,7 @@ public class AudioProcessor extends Thread {
 
         @Override
         protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) {
-            // not supported
+            throw new UnsupportedOperationException();
         }
 
         @Override

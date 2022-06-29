@@ -2,13 +2,11 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.protocol.ax25.AX25Packet;
 import com.radio.codec2talkie.settings.PreferenceKeys;
-import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -73,7 +71,7 @@ public class Ax25 implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
-            protected void onReceivePosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+            protected void onReceivePosition(String src, String dst, double latitude, double longitude, double altitude, float bearing, String comment) {
                 throw new UnsupportedOperationException();
             }
 
