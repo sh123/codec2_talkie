@@ -49,9 +49,14 @@ public class AudioFrameAggregator implements Protocol {
     }
 
     @Override
-    public void sendAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+    public int getPcmAudioBufferSize(int codec) {
+        return -1;
+    }
+
+    @Override
+    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
         if ( _outputBufferPos + frame.length >= _outputBufferSize) {
-            _childProtocol.sendAudio(src, dst, codec2Mode, Arrays.copyOf(_outputBuffer, _outputBufferPos));
+            _childProtocol.sendCompressedAudio(src, dst, codec2Mode, Arrays.copyOf(_outputBuffer, _outputBufferPos));
             _lastSrc = src;
             _lastDst = dst;
             _lastCodec2Mode = codec2Mode;
@@ -59,6 +64,11 @@ public class AudioFrameAggregator implements Protocol {
         }
         System.arraycopy(frame, 0, _outputBuffer, _outputBufferPos, frame.length);
         _outputBufferPos += frame.length;
+    }
+
+    @Override
+    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+        // not supported
     }
 
     @Override
@@ -70,7 +80,12 @@ public class AudioFrameAggregator implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
-            protected void onReceiveAudioFrames(String src, String dst, int codec2Mode, byte[] audioFrames) {
+            protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+                // not supported
+            }
+
+            @Override
+            protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
                 int mode = codec2Mode;
                 if (mode == -1) {
                     mode = _codec2ModeId;
@@ -85,7 +100,7 @@ public class AudioFrameAggregator implements Protocol {
                         for (int j = 0; j < _codec2FrameSize && (j + i) < audioFrames.length; j++) {
                             audioFrame[j] = audioFrames[i + j];
                         }
-                        callback.onReceiveAudioFrames(src, dst, mode, audioFrame);
+                        callback.onReceiveCompressedAudio(src, dst, mode, audioFrame);
                     }
                 }
             }
@@ -110,7 +125,7 @@ public class AudioFrameAggregator implements Protocol {
     @Override
     public void flush() throws IOException {
         if (_outputBufferPos > 0) {
-            _childProtocol.sendAudio(_lastSrc, _lastDst, _lastCodec2Mode, Arrays.copyOf(_outputBuffer, _outputBufferPos));
+            _childProtocol.sendCompressedAudio(_lastSrc, _lastDst, _lastCodec2Mode, Arrays.copyOf(_outputBuffer, _outputBufferPos));
             _outputBufferPos = 0;
         }
         _childProtocol.flush();

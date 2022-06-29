@@ -15,6 +15,7 @@ public class AX25Callsign {
     public void fromString(String callsignWithSsid) {
         isValid = false;
         // ABCDEF-XX
+        if (callsignWithSsid == null) return;
         if (callsignWithSsid.length() > CallsignMaxSize + 2 || callsignWithSsid.length() == 0) return;
         int delimiterIndex = callsignWithSsid.indexOf('-');
         // ABCDEF-
@@ -37,6 +38,7 @@ public class AX25Callsign {
 
     public void fromBinary(byte[] data) {
         isValid = false;
+        if (data == null) return;
         if (data.length != CallsignMaxSize) return;
 
         char[] buffer = new char[CallsignMaxSize];

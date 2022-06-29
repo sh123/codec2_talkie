@@ -21,6 +21,7 @@ public class AX25Packet {
 
     public void fromBinary(byte[] data) {
         isValid = false;
+        if (data == null) return;
         ByteBuffer buffer = ByteBuffer.wrap(data);
         // src
         AX25Callsign srcCallsign = new AX25Callsign();

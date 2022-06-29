@@ -29,7 +29,12 @@ public class AX25 implements Protocol {
     }
 
     @Override
-    public void sendAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+    public int getPcmAudioBufferSize(int codec) {
+        return -1;
+    }
+
+    @Override
+    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
         AX25Packet ax25Packet = new AX25Packet();
         ax25Packet.src = src;
         ax25Packet.dst = dst;
@@ -39,8 +44,13 @@ public class AX25 implements Protocol {
         ax25Packet.rawData = frame;
         byte[] ax25Frame = ax25Packet.toBinary();
         if (ax25Frame != null) {
-            _childProtocol.sendAudio(src, dst, codec2Mode, frame);
+            _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
         }
+    }
+
+    @Override
+    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+        // not supported
     }
 
     @Override
@@ -61,12 +71,17 @@ public class AX25 implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
-            protected void onReceiveAudioFrames(String src, String dst, int codec2Mode, byte[] audioFrames) {
+            protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+                // not supported
+            }
+
+            @Override
+            protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
                 AX25Packet ax25Data = new AX25Packet();
                 ax25Data.fromBinary(audioFrames);
                 if (ax25Data.isValid) {
                     if (ax25Data.isAudio) {
-                        callback.onReceiveAudioFrames(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, audioFrames);
+                        callback.onReceiveCompressedAudio(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, audioFrames);
                     } else {
                         callback.onReceiveData(ax25Data.src, ax25Data.dst, audioFrames);
                     }

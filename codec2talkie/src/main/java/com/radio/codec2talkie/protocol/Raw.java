@@ -24,8 +24,18 @@ public class Raw implements Protocol {
     }
 
     @Override
-    public void sendAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+    public int getPcmAudioBufferSize(int codec) {
+        return -1;
+    }
+
+    @Override
+    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
         _transport.write(Arrays.copyOf(frame, frame.length));
+    }
+
+    @Override
+    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+        // not supported
     }
 
     @Override
@@ -37,7 +47,7 @@ public class Raw implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         int bytesRead = _transport.read(_rxDataBuffer);
         if (bytesRead > 0) {
-            callback.onReceiveAudioFrames(null, null, -1, Arrays.copyOf(_rxDataBuffer, bytesRead));
+            callback.onReceiveCompressedAudio(null, null, -1, Arrays.copyOf(_rxDataBuffer, bytesRead));
             return true;
         }
         return false;

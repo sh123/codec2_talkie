@@ -44,9 +44,19 @@ public class RecorderPipe implements Protocol {
     }
 
     @Override
-    public void sendAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
-        _childProtocol.sendAudio(src, dst, codec2Mode, frame);
+    public int getPcmAudioBufferSize(int codec) {
+        return -1;
+    }
+
+    @Override
+    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+        _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
         writeToFile(src, dst, codec2Mode, frame);
+    }
+
+    @Override
+    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+        // not supported
     }
 
     @Override
@@ -58,8 +68,13 @@ public class RecorderPipe implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
-            protected void onReceiveAudioFrames(String src, String dst, int codec2Mode, byte[] audioFrames) {
-                callback.onReceiveAudioFrames(src, dst, codec2Mode, audioFrames);
+            protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+                // not supported
+            }
+
+            @Override
+            protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
+                callback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
                 writeToFile(src, dst, codec2Mode, audioFrames);
             }
 

@@ -42,11 +42,21 @@ public class ScramblerPipe implements Protocol {
     }
 
     @Override
-    public void sendAudio(String src, String dst, int codec2Mode, byte[] audioFrame) throws IOException {
+    public int getPcmAudioBufferSize(int codec) {
+        return -1;
+    }
+
+    @Override
+    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) throws IOException {
         byte[] result = scramble(audioFrame);
         if (result != null) {
             _childProtocol.sendData(src, dst, result);
         }
+    }
+
+    @Override
+    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+        // not supported
     }
 
     @Override
@@ -61,11 +71,16 @@ public class ScramblerPipe implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
-            protected void onReceiveAudioFrames(String src, String dst, int codec2Mode, byte[] scrambledFrame) {
+            protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+                // not supported
+            }
+
+            @Override
+            protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] scrambledFrame) {
 
                 byte[] audioFrames = unscramble(scrambledFrame, callback);
                 if (audioFrames != null) {
-                    callback.onReceiveAudioFrames(src, dst, codec2Mode, audioFrames);
+                    callback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
                 }
             }
 
