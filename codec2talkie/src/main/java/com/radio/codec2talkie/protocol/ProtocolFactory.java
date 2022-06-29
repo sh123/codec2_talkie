@@ -58,7 +58,7 @@ public class ProtocolFactory {
                 proto = new Scrambler(proto, scramblingKey);
             }
             if (aprsEnabled) {
-                proto = new AX25(proto);
+                proto = new Ax25(proto);
             }
             if (recordingEnabled) {
                 proto = new Recorder(proto, codec2ModeId);
@@ -66,6 +66,11 @@ public class ProtocolFactory {
         }
 
         proto = new AudioFrameAggregator(proto, codec2ModeId);
-        return new AudioCodec2(proto, codec2ModeId);
+        proto = new AudioCodec2(proto, codec2ModeId);
+
+        if (aprsEnabled && protocolType != ProtocolType.RAW) {
+            proto = new Aprs(proto);
+        }
+        return proto;
     }
 }

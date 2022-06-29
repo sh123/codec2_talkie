@@ -24,8 +24,8 @@ public class AudioFrameAggregator implements Protocol {
     private int _outputBufferPos;
     private byte[] _outputBuffer;
 
-    private final int _codec2FrameSize;
-    private final int _codec2ModeId;
+    private int _codec2FrameSize;
+    private int _codec2ModeId;
 
     private String _lastSrc;
     private String _lastDst;
@@ -34,9 +34,7 @@ public class AudioFrameAggregator implements Protocol {
     public AudioFrameAggregator(Protocol childProtocol, int codec2ModeId) {
         _childProtocol = childProtocol;
         _codec2ModeId = codec2ModeId;
-        long codec2Con = Codec2.create(codec2ModeId);
-        _codec2FrameSize = Codec2.getBitsSize(codec2Con); // returns number of bytes
-        Codec2.destroy(codec2Con);
+        _codec2FrameSize = getPcmAudioBufferSize(codec2ModeId);
     }
 
     @Override
@@ -49,8 +47,11 @@ public class AudioFrameAggregator implements Protocol {
     }
 
     @Override
-    public int getPcmAudioBufferSize(int codec) {
-        return -1;
+    public int getPcmAudioBufferSize(int codec2ModeId) {
+        long codec2Con = Codec2.create(codec2ModeId);
+        int codec2FrameSize = Codec2.getBitsSize(codec2Con); // returns number of bytes
+        Codec2.destroy(codec2Con);
+        return codec2FrameSize;
     }
 
     @Override
@@ -68,7 +69,7 @@ public class AudioFrameAggregator implements Protocol {
 
     @Override
     public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-        // not supported
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -80,16 +81,17 @@ public class AudioFrameAggregator implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
+            protected void onReceivePosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
             protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-                // not supported
+                throw new UnsupportedOperationException();
             }
 
             @Override
             protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
-                int mode = codec2Mode;
-                if (mode == -1) {
-                    mode = _codec2ModeId;
-                }
                 if (audioFrames.length % _codec2FrameSize != 0) {
                     Log.e(TAG, "Ignoring audio frame of wrong size: " + audioFrames.length);
                     callback.onProtocolRxError();
@@ -100,7 +102,7 @@ public class AudioFrameAggregator implements Protocol {
                         for (int j = 0; j < _codec2FrameSize && (j + i) < audioFrames.length; j++) {
                             audioFrame[j] = audioFrames[i + j];
                         }
-                        callback.onReceiveCompressedAudio(src, dst, mode, audioFrame);
+                        callback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrame);
                     }
                 }
             }
@@ -120,6 +122,11 @@ public class AudioFrameAggregator implements Protocol {
                 callback.onProtocolRxError();
             }
         });
+    }
+
+    @Override
+    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

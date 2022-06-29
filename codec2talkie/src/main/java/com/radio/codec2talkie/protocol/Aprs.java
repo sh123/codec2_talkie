@@ -3,24 +3,15 @@ package com.radio.codec2talkie.protocol;
 import android.content.Context;
 
 import com.radio.codec2talkie.transport.Transport;
-import com.ustadmobile.codec2.Codec2;
 
 import java.io.IOException;
 
-public class AudioCodec2 implements Protocol {
+public class Aprs implements Protocol {
 
     private final Protocol _childProtocol;
 
-    private long _codec2Con;
-    private int _codec2Mode;
-    private int _audioBufferSize;
-
-    private char[] _recordAudioEncodedBuffer;
-    private short[] _playbackAudioBuffer;
-
-    public AudioCodec2(Protocol childProtocol, int codec2ModeId) {
+    public Aprs(Protocol childProtocol) {
         _childProtocol = childProtocol;
-        constructCodec2(codec2ModeId);
     }
 
     @Override
@@ -30,7 +21,7 @@ public class AudioCodec2 implements Protocol {
 
     @Override
     public int getPcmAudioBufferSize(int codec) {
-        return _audioBufferSize;
+        return _childProtocol.getPcmAudioBufferSize(codec);
     }
 
     @Override
@@ -40,14 +31,8 @@ public class AudioCodec2 implements Protocol {
 
     @Override
     public void sendPcmAudio(String src, String dst, int codec2Mode, short[] pcmFrame) throws IOException {
-        Codec2.encode(_codec2Con, pcmFrame, _recordAudioEncodedBuffer);
-
-        byte [] frame = new byte[_recordAudioEncodedBuffer.length];
-
-        for (int i = 0; i < _recordAudioEncodedBuffer.length; i++) {
-            frame[i] = (byte)_recordAudioEncodedBuffer[i];
-        }
-        _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
+        // set src and dst if not provided
+        _childProtocol.sendPcmAudio(src, dst, codec2Mode, pcmFrame);
     }
 
     @Override
@@ -65,17 +50,17 @@ public class AudioCodec2 implements Protocol {
 
             @Override
             protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-                throw new UnsupportedOperationException();
+                callback.onReceivePcmAudio(src, dst, codec, pcmFrame);
             }
 
             @Override
             protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) {
-                Codec2.decode(_codec2Con, _playbackAudioBuffer, audioFrame);
-                callback.onReceivePcmAudio(src, dst, codec2Mode, _playbackAudioBuffer);
+                throw new UnsupportedOperationException();
             }
 
             @Override
             protected void onReceiveData(String src, String dst, byte[] data) {
+                // process aprs data and call onReceivePosition if position packet is received
                 callback.onReceiveData(src, dst, data);
             }
 
@@ -93,7 +78,7 @@ public class AudioCodec2 implements Protocol {
 
     @Override
     public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
-        throw new UnsupportedOperationException();
+        // TODO, implement
     }
 
     @Override
@@ -103,18 +88,6 @@ public class AudioCodec2 implements Protocol {
 
     @Override
     public void close() {
-        Codec2.destroy(_codec2Con);
         _childProtocol.close();
-    }
-
-    private void constructCodec2(int codecMode) {
-        _codec2Mode = codecMode;
-        _codec2Con = Codec2.create(codecMode);
-
-        _audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
-        int codec2FrameSize = Codec2.getBitsSize(_codec2Con); // returns number of bytes
-
-        _recordAudioEncodedBuffer = new char[codec2FrameSize];
-        _playbackAudioBuffer = new short[_audioBufferSize];
     }
 }

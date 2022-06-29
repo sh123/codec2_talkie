@@ -45,7 +45,7 @@ public class Recorder implements Protocol {
 
     @Override
     public int getPcmAudioBufferSize(int codec) {
-        return -1;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -56,7 +56,7 @@ public class Recorder implements Protocol {
 
     @Override
     public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-        // not supported
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -68,8 +68,13 @@ public class Recorder implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
+            protected void onReceivePosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
             protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-                // not supported
+                throw new UnsupportedOperationException();
             }
 
             @Override
@@ -93,6 +98,11 @@ public class Recorder implements Protocol {
                 callback.onProtocolRxError();
             }
         });
+    }
+
+    @Override
+    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -163,14 +173,14 @@ public class Recorder implements Protocol {
         _fileRotationTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (_activeStream != null) {
-                    try {
-                        _activeStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            if (_activeStream != null) {
+                try {
+                    _activeStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                _activeStream = null;
+            }
+            _activeStream = null;
             }
         }, ROTATION_DELAY_MS);
     }

@@ -1,6 +1,7 @@
 package com.radio.codec2talkie.protocol;
 
 public abstract class Callback {
+    abstract protected void onReceivePosition(double latitude, double longitude, double altitude, float bearing, String comment);
     abstract protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame);
     abstract protected void onReceiveCompressedAudio(String src, String dst, int codec, byte[] frame);
     abstract protected void onReceiveData(String src, String dst, byte[] data);

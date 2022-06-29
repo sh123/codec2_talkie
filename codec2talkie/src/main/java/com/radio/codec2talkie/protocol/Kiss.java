@@ -138,7 +138,7 @@ public class Kiss implements Protocol {
 
     @Override
     public int getPcmAudioBufferSize(int codec) {
-        return -1;
+        throw new UnsupportedOperationException();
     }
 
     private void initializeExtended() throws IOException {
@@ -220,6 +220,11 @@ public class Kiss implements Protocol {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

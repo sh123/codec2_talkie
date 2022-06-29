@@ -210,6 +210,11 @@ public class AudioProcessor extends Thread {
 
     private final Callback _protocolReceiveCallback = new Callback() {
         @Override
+        protected void onReceivePosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
         protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
             sendStatusUpdate(PROCESSOR_PLAYING);
             sendRxAudioLevelUpdate(pcmFrame);

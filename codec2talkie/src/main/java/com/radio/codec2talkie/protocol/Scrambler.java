@@ -43,7 +43,7 @@ public class Scrambler implements Protocol {
 
     @Override
     public int getPcmAudioBufferSize(int codec) {
-        return -1;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -56,7 +56,7 @@ public class Scrambler implements Protocol {
 
     @Override
     public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-        // not supported
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -71,23 +71,32 @@ public class Scrambler implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
+            protected void onReceivePosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
             protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-                // not supported
+                throw new UnsupportedOperationException();
             }
 
             @Override
             protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] scrambledFrame) {
 
-                byte[] audioFrames = unscramble(scrambledFrame, callback);
-                if (audioFrames != null) {
+                byte[] audioFrames = unscramble(scrambledFrame);
+                if (audioFrames == null) {
+                    callback.onProtocolRxError();
+                } else {
                     callback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
                 }
             }
 
             @Override
             protected void onReceiveData(String src, String dst, byte[] scrambledData) {
-                byte[] data = unscramble(scrambledData, callback);
-                if (data != null) {
+                byte[] data = unscramble(scrambledData);
+                if (data == null) {
+                    callback.onProtocolRxError();
+                } else {
                     callback.onReceiveData(src, dst, data);
                 }
             }
@@ -102,6 +111,11 @@ public class Scrambler implements Protocol {
                 callback.onProtocolRxError();
             }
         });
+    }
+
+    @Override
+    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -136,7 +150,7 @@ public class Scrambler implements Protocol {
         return null;
     }
 
-    private byte[] unscramble(byte[] scrambledData, Callback callback) {
+    private byte[] unscramble(byte[] scrambledData) {
         ScramblingTools.ScrambledData data = new ScramblingTools.ScrambledData();
 
         data.iv = new byte[ScramblingTools.BLOCK_SIZE];
@@ -144,7 +158,6 @@ public class Scrambler implements Protocol {
         int dataSize = scrambledData.length - ScramblingTools.BLOCK_SIZE - ScramblingTools.SALT_BYTES;
         if (dataSize <= 0) {
             Log.e(TAG, "Frame of wrong length " + dataSize);
-            callback.onProtocolRxError();
             return null;
         }
         data.scrambledData = new byte[dataSize];
@@ -161,7 +174,7 @@ public class Scrambler implements Protocol {
                 InvalidAlgorithmParameterException e) {
 
             e.printStackTrace();
-            callback.onProtocolRxError();
+            return null;
         }
         return unscrambledData;
     }

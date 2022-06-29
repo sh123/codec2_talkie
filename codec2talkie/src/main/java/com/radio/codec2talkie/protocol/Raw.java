@@ -25,7 +25,7 @@ public class Raw implements Protocol {
 
     @Override
     public int getPcmAudioBufferSize(int codec) {
-        return -1;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -35,7 +35,7 @@ public class Raw implements Protocol {
 
     @Override
     public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-        // not supported
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -51,6 +51,11 @@ public class Raw implements Protocol {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
