@@ -71,7 +71,7 @@ public class Ax25 implements Protocol {
     public boolean receive(Callback callback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
-            protected void onReceivePosition(String src, String dst, double latitude, double longitude, double altitude, float bearing, String comment) {
+            protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
                 throw new UnsupportedOperationException();
             }
 
