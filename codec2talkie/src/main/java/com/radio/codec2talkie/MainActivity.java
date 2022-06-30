@@ -295,6 +295,15 @@ public class MainActivity extends AppCompatActivity {
             stopRunning();
             return true;
         }
+        else if (itemId == R.id.send_position) {
+            return true;
+        }
+        else if (itemId == R.id.start_tracking) {
+            return true;
+        }
+        else if (itemId == R.id.messages) {
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
