@@ -17,7 +17,7 @@ import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class RecorderPipe implements Protocol {
+public class Recorder implements Protocol {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -31,7 +31,7 @@ public class RecorderPipe implements Protocol {
     final Protocol _childProtocol;
     final int _codec2ModeId;
 
-    public RecorderPipe(Protocol childProtocol, int codec2ModeId) {
+    public Recorder(Protocol childProtocol, int codec2ModeId) {
         _childProtocol = childProtocol;
         _codec2ModeId = codec2ModeId;
     }
@@ -44,18 +44,48 @@ public class RecorderPipe implements Protocol {
     }
 
     @Override
-    public void send(byte[] frame) throws IOException {
-        _childProtocol.send(frame);
-        writeToFile(frame);
+    public int getPcmAudioBufferSize(int codec) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+        _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
+        writeToFile(src, dst, codec2Mode, frame);
+    }
+
+    @Override
+    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
+        _childProtocol.sendData(src, dst, dataPacket);
     }
 
     @Override
     public boolean receive(Callback callback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
-            protected void onReceiveAudioFrames(byte[] audioFrames) {
-                callback.onReceiveAudioFrames(audioFrames);
-                writeToFile(audioFrames);
+            protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
+                callback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
+                writeToFile(src, dst, codec2Mode, audioFrames);
+            }
+
+            @Override
+            protected void onReceiveData(String src, String dst, byte[] data) {
+                callback.onReceiveData(src, dst, data);
             }
 
             @Override
@@ -71,6 +101,11 @@ public class RecorderPipe implements Protocol {
     }
 
     @Override
+    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void flush() throws IOException {
         _childProtocol.flush();
     }
@@ -80,9 +115,9 @@ public class RecorderPipe implements Protocol {
         _childProtocol.close();
     }
 
-    private void writeToFile(byte[] rawData)  {
+    private void writeToFile(String src, String dst, int codec2Mode, byte[] rawData)  {
         stopRotationTimer();
-        createStreamIfNotExists();
+        createStreamIfNotExists(src, dst, codec2Mode);
         writeToStream(rawData);
         startRotationTimer();
     }
@@ -97,7 +132,7 @@ public class RecorderPipe implements Protocol {
         }
     }
 
-    private void createStreamIfNotExists() {
+    private void createStreamIfNotExists(String src, String dst, int codec2Mode) {
         if (_activeStream == null) {
             try {
                 Date date = new Date();
@@ -105,7 +140,7 @@ public class RecorderPipe implements Protocol {
                 if (!newDirectory.exists() && !newDirectory.mkdirs()) {
                     Log.e(TAG, "Failed to create directory for voicemails");
                 }
-                File newAudioFile = new File(newDirectory, getNewFileName(date));
+                File newAudioFile = new File(newDirectory, getNewFileName(date, src, dst, codec2Mode));
                 _activeStream = new FileOutputStream(newAudioFile);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -118,10 +153,19 @@ public class RecorderPipe implements Protocol {
         return df.format(date);
     }
 
-    private String getNewFileName(Date date) {
+    private String getNewFileName(Date date, String src, String dst, int codec2Mode) {
+        int mode = codec2Mode;
+        if (mode == -1) {
+            mode = _codec2ModeId;
+        }
         SimpleDateFormat tf = new SimpleDateFormat("HHmmss", Locale.ENGLISH);
-        String codec2mode = String.format(Locale.ENGLISH, "%02d", _codec2ModeId);
-        return codec2mode + "_" + tf.format(date)  + ".c2";
+        String codec2mode = String.format(Locale.ENGLISH, "%02d", mode);
+        String fileName = codec2mode + "_" + tf.format(date);
+        if (src != null && dst != null) {
+            fileName += "_" + src + "_" + dst;
+        }
+        fileName += ".c2";
+        return fileName;
     }
 
     private void startRotationTimer() {
@@ -129,14 +173,14 @@ public class RecorderPipe implements Protocol {
         _fileRotationTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                if (_activeStream != null) {
-                    try {
-                        _activeStream.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            if (_activeStream != null) {
+                try {
+                    _activeStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                _activeStream = null;
+            }
+            _activeStream = null;
             }
         }, ROTATION_DELAY_MS);
     }

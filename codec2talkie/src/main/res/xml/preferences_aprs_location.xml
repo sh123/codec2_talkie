@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <ListPreference
+        app:key="aprs_location_source"
+        app:title="@string/aprs_location_source_title"
+        app:entries="@array/aprs_location_source"
+        app:entryValues="@array/aprs_location_source_values"
+        app:defaultValue="periodic"
+        app:summary="%s">
+    </ListPreference>
+
+    <ListPreference
+        app:key="aprs_location_packet_format"
+        app:title="@string/aprs_location_packet_format_title"
+        app:entries="@array/aprs_location_packet_format_labels"
+        app:entryValues="@array/aprs_location_packet_format_values"
+        app:defaultValue="compressed"
+        app:summary="%s">
+    </ListPreference>
+
+    <ListPreference
+        app:key="aprs_location_mice_message_type"
+        app:title="@string/aprs_location_emic_message_type_title"
+        app:entries="@array/aprs_location_mice_message_type_labels"
+        app:entryValues="@array/aprs_location_mice_message_type_values"
+        app:defaultValue="en_route"
+        app:summary="%s">
+    </ListPreference>
+
+    <PreferenceCategory
+        app:key="aprs_location_source_gps"
+        app:title="@string/aprs_location_source_gps_title">
+
+        <EditTextPreference
+            app:key="aprs_location_source_gps_update_time"
+            app:title="@string/aprs_location_source_gps_update_time_title"
+            app:summary="@string/aprs_location_source_gps_update_time_summary"
+            app:defaultValue="10">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="aprs_location_source_gps_update_distance"
+            app:title="@string/aprs_location_source_gps_update_distance_title"
+            app:summary="@string/aprs_location_source_gps_update_distance_summary"
+            app:defaultValue="1">
+        </EditTextPreference>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="aprs_location_source_manual"
+        app:title="@string/aprs_location_source_manual_title">
+
+        <EditTextPreference
+            app:key="aprs_location_source_manual_lat"
+            app:title="@string/aprs_location_source_manual_lat_title"
+            app:summary="@string/aprs_location_source_manual_lat_summary"
+            app:defaultValue="0.0">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="aprs_location_source_manual_lon"
+            app:title="@string/aprs_location_source_manual_lon_title"
+            app:summary="@string/aprs_location_source_manual_lon_summary"
+            app:defaultValue="0.0">
+        </EditTextPreference>
+
+        <CheckBoxPreference
+            app:key="aprs_location_source_manual_auto_send"
+            app:title="@string/aprs_location_source_manual_auto_send_title"
+            app:summary="@string/aprs_location_source_manual_auto_send_summary"
+            app:defaultValue="true">
+        </CheckBoxPreference>
+
+        <EditTextPreference
+            app:key="aprs_location_source_manual_update_time"
+            app:title="@string/aprs_location_source_manual_update_time_title"
+            app:summary="@string/aprs_location_source_manual_update_time_summary"
+            app:defaultValue="5">
+        </EditTextPreference>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

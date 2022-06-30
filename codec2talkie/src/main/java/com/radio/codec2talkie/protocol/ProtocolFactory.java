@@ -25,7 +25,7 @@ public class ProtocolFactory {
         public String toString() {
             return _name;
         }
-    };
+    }
 
     public static Protocol create(ProtocolType protocolType, int codec2ModeId, Context context) {
 
@@ -34,6 +34,7 @@ public class ProtocolFactory {
         boolean recordingEnabled = sharedPreferences.getBoolean(PreferenceKeys.CODEC2_RECORDING_ENABLED, false);
         boolean scramblingEnabled = sharedPreferences.getBoolean(PreferenceKeys.KISS_SCRAMBLING_ENABLED, false);
         String scramblingKey = sharedPreferences.getString(PreferenceKeys.KISS_SCRAMBLER_KEY, "");
+        boolean aprsEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
 
         Protocol proto;
         switch (protocolType) {
@@ -52,13 +53,24 @@ public class ProtocolFactory {
                 break;
         }
 
-        if (scramblingEnabled) {
-            proto = new ScramblerPipe(proto, scramblingKey);
-        }
-        if (recordingEnabled) {
-            proto = new RecorderPipe(proto, codec2ModeId);
+        if (protocolType != ProtocolType.RAW) {
+            if (scramblingEnabled) {
+                proto = new Scrambler(proto, scramblingKey);
+            }
+            if (aprsEnabled) {
+                proto = new Ax25(proto);
+            }
+            if (recordingEnabled) {
+                proto = new Recorder(proto, codec2ModeId);
+            }
         }
 
-        return new AudioFrameAggregator(proto, codec2ModeId);
+        proto = new AudioFrameAggregator(proto, codec2ModeId);
+        proto = new AudioCodec2(proto, codec2ModeId);
+
+        if (aprsEnabled && protocolType != ProtocolType.RAW) {
+            proto = new Aprs(proto);
+        }
+        return proto;
     }
 }

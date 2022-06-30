@@ -19,7 +19,6 @@ import java.nio.ByteBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.radio.codec2talkie.connect.TcpIpSocketHandler;
 import com.radio.codec2talkie.protocol.Callback;
 import com.radio.codec2talkie.protocol.Protocol;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
@@ -27,7 +26,6 @@ import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.radio.codec2talkie.transport.TransportFactory;
-import com.ustadmobile.codec2.Codec2;
 
 public class AudioProcessor extends Thread {
 
@@ -56,25 +54,20 @@ public class AudioProcessor extends Thread {
 
     private final int SIGNAL_LEVEL_EVENT_SIZE = 4;
 
-    private long _codec2Con;
-
-    private int _audioBufferSize;
-    private int _codec2FrameSize;
-
     private boolean _needsRecording = false;
     private int _currentStatus = PROCESSOR_DISCONNECTED;
 
     private final Protocol _protocol;
     private final Transport _transport;
 
+    private final int _codec2Mode;
+
     // input data, bt -> audio
     private AudioTrack _systemAudioPlayer;
-    private short[] _playbackAudioBuffer;
 
     // output data., mic -> bt
     private AudioRecord _systemAudioRecorder;
-    private short[] _recordAudioBuffer;
-    private char[] _recordAudioEncodedBuffer;
+    private final short[] _recordAudioBuffer;
 
     // callbacks
     private final Handler _onPlayerStateChanged;
@@ -99,7 +92,9 @@ public class AudioProcessor extends Thread {
 
         _processPeriodicTimer = new Timer();
 
-        constructCodec2(codec2Mode);
+        _codec2Mode = codec2Mode;
+        _recordAudioBuffer = new short[_protocol.getPcmAudioBufferSize(codec2Mode)];
+
         constructSystemAudioDevices();
     }
 
@@ -143,18 +138,6 @@ public class AudioProcessor extends Thread {
                 .setTransferMode(AudioTrack.MODE_STREAM)
                 .setBufferSizeInBytes(10 * _audioPlayerMinBufferSize)
                 .build();
-    }
-
-    private void constructCodec2(int codecMode) {
-        _codec2Con = Codec2.create(codecMode);
-
-        _audioBufferSize = Codec2.getSamplesPerFrame(_codec2Con);
-        _codec2FrameSize = Codec2.getBitsSize(_codec2Con); // returns number of bytes
-
-        _recordAudioBuffer = new short[_audioBufferSize];
-        _recordAudioEncodedBuffer = new char[_codec2FrameSize];
-
-        _playbackAudioBuffer = new short[_audioBufferSize];
     }
 
     public static int getAudioMinLevel() {
@@ -220,30 +203,32 @@ public class AudioProcessor extends Thread {
     private void recordAndSendAudioFrame() throws IOException {
         sendStatusUpdate(PROCESSOR_RECORDING);
 
-        _systemAudioRecorder.read(_recordAudioBuffer, 0, _audioBufferSize);
+        _systemAudioRecorder.read(_recordAudioBuffer, 0, _recordAudioBuffer.length);
         sendTxAudioLevelUpdate(_recordAudioBuffer);
-
-        Codec2.encode(_codec2Con, _recordAudioBuffer, _recordAudioEncodedBuffer);
-
-        byte [] frame = new byte[_recordAudioEncodedBuffer.length];
-
-        for (int i = 0; i < _recordAudioEncodedBuffer.length; i++) {
-            frame[i] = (byte)_recordAudioEncodedBuffer[i];
-        }
-        _protocol.send(frame);
-    }
-
-    private void decodeAndPlayAudioFrame(byte[] audioFrame) {
-        Codec2.decode(_codec2Con, _playbackAudioBuffer, audioFrame);
-        sendRxAudioLevelUpdate(_playbackAudioBuffer);
-        _systemAudioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
+        _protocol.sendPcmAudio(null, null, _codec2Mode, _recordAudioBuffer);
     }
 
     private final Callback _protocolReceiveCallback = new Callback() {
         @Override
-        protected void onReceiveAudioFrames(byte[] audioFrame) {
+        protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
             sendStatusUpdate(PROCESSOR_PLAYING);
-            decodeAndPlayAudioFrame(audioFrame);
+            sendRxAudioLevelUpdate(pcmFrame);
+            _systemAudioPlayer.write(pcmFrame, 0, pcmFrame.length);
+        }
+
+        @Override
+        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void onReceiveData(String src, String dst, byte[] data) {
+            // handle incoming messages
         }
 
         @Override
@@ -324,8 +309,6 @@ public class AudioProcessor extends Thread {
 
         _systemAudioPlayer.stop();
         _systemAudioPlayer.release();
-
-        Codec2.destroy(_codec2Con);
 
         try {
             _protocol.flush();

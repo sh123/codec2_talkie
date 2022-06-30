@@ -24,18 +24,38 @@ public class Raw implements Protocol {
     }
 
     @Override
-    public void send(byte [] frame) throws IOException {
+    public int getPcmAudioBufferSize(int codec) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
         _transport.write(Arrays.copyOf(frame, frame.length));
+    }
+
+    @Override
+    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
+        _transport.write(Arrays.copyOf(dataPacket, dataPacket.length));
     }
 
     @Override
     public boolean receive(Callback callback) throws IOException {
         int bytesRead = _transport.read(_rxDataBuffer);
         if (bytesRead > 0) {
-            callback.onReceiveAudioFrames(Arrays.copyOf(_rxDataBuffer, bytesRead));
+            callback.onReceiveCompressedAudio(null, null, -1, Arrays.copyOf(_rxDataBuffer, bytesRead));
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+        throw new UnsupportedOperationException();
     }
 
     @Override

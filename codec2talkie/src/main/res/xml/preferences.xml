@@ -167,4 +167,86 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        app:key="aprs_category"
+        app:title="@string/aprs_category_title">
+
+        <SwitchPreference
+            app:key="aprs_enable"
+            app:title="@string/aprs_enable_title"
+            app:summary="@string/aprs_enable_summary"
+            app:dependency="kiss_enable">
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <SwitchPreference
+            app:key="aprs_voax25_enable"
+            app:title="@string/aprs_voax25_enable_title"
+            app:summary="@string/aprs_voax25_enable_summary"
+            app:dependency="aprs_enable">
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <EditTextPreference
+            app:key="aprs_callsign"
+            app:title="@string/aprs_callsign_title"
+            app:summary="@string/aprs_callsign_summary"
+            app:dependency="aprs_enable"
+            app:defaultValue="NOCALL">
+        </EditTextPreference>
+
+        <ListPreference
+            app:key="aprs_ssid"
+            app:title="@string/aprs_ssid_title"
+            app:entries="@array/aprs_ssid_labels"
+            app:entryValues="@array/aprs_ssid_values"
+            app:dependency="aprs_enable"
+            app:summary="%s"
+            app:defaultValue="7">
+        </ListPreference>
+
+        <EditTextPreference
+            app:key="aprs_digipath"
+            app:title="@string/aprs_digipath_title"
+            app:summary="@string/aprs_digipath_summary"
+            app:dependency="aprs_enable"
+            app:defaultValue="WIDE1-1">
+        </EditTextPreference>
+
+        <ListPreference
+            app:key="aprs_symbol"
+            app:title="@string/aprs_symbol_title"
+            app:entries="@array/aprs_symbol_labels"
+            app:entryValues="@array/aprs_symbol_values"
+            app:summary="%s"
+            app:dependency="aprs_enable"
+            app:defaultValue="/$">
+        </ListPreference>
+
+        <EditTextPreference
+            app:key="aprs_comment"
+            app:title="@string/aprs_comment_title"
+            app:summary="@string/aprs_comment_summary"
+            app:dependency="aprs_enable"
+            app:defaultValue="">
+        </EditTextPreference>
+
+        <Preference
+            android:key="aprs_location_settings"
+            android:title="@string/aprs_location_settings_title"
+            android:summary="@string/aprs_location_settings_summary"
+            app:fragment="com.radio.codec2talkie.settings.SettingsActivity$SettingsAprsLocationFragment"
+            app:dependency="aprs_enable">
+        </Preference>
+
+        <Preference
+            android:key="aprs_position_privacy_settings"
+            android:title="@string/aprs_position_privacy_settings_title"
+            android:summary="@string/aprs_position_privacy_settings_summary"
+            app:fragment="com.radio.codec2talkie.settings.SettingsActivity$SettingsPositionPrivacyFragment"
+            app:dependency="aprs_enable">
+        </Preference>
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

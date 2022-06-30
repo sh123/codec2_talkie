@@ -136,6 +136,11 @@ public class Kiss implements Protocol {
         }
     }
 
+    @Override
+    public int getPcmAudioBufferSize(int codec) {
+        throw new UnsupportedOperationException();
+    }
+
     private void initializeExtended() throws IOException {
         /*
           struct LoraControlCommand {
@@ -191,18 +196,20 @@ public class Kiss implements Protocol {
     };
 
     @Override
-    public void send(byte [] frame) throws IOException {
-        // escape
-        ByteBuffer escapedFrame = escape(frame);
-        int escapedFrameSize = escapedFrame.position();
-        escapedFrame.rewind();
+    public void sendCompressedAudio(String src, String dst, int codec, byte [] frame) throws IOException {
+        // NOTE, KISS does not distinguish between audio and data packet, upper layer should decide
+        send(frame);
+    }
 
-        // send
-        startKissPacket(KISS_CMD_DATA);
-        while (escapedFrame.position() < escapedFrameSize) {
-            sendKissByte(escapedFrame.get());
-        }
-        completeKissPacket();
+    @Override
+    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame)  {
+        // not supported
+    }
+
+    @Override
+    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
+        // NOTE, KISS does not distinguish between audio and data packet, upper layer should decide
+        send(dataPacket);
     }
 
     @Override
@@ -213,6 +220,11 @@ public class Kiss implements Protocol {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -227,6 +239,20 @@ public class Kiss implements Protocol {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
+    }
+
+    private void send(byte[] data) throws IOException {
+        // escape
+        ByteBuffer escapedFrame = escape(data);
+        int escapedFrameSize = escapedFrame.position();
+        escapedFrame.rewind();
+
+        // send
+        startKissPacket(KISS_CMD_DATA);
+        while (escapedFrame.position() < escapedFrameSize) {
+            sendKissByte(escapedFrame.get());
+        }
+        completeKissPacket();
     }
 
     private void processCommand(byte b) {
@@ -256,7 +282,8 @@ public class Kiss implements Protocol {
                 break;
             case KISS_FEND:
                 if (_kissDataType == DataType.RAW) {
-                    callback.onReceiveAudioFrames(Arrays.copyOf(_frameOutputBuffer, _frameOutputBufferPos));
+                    // NOTE, KISS does not distinguish between audio and data packets, upper layer should decide
+                    callback.onReceiveCompressedAudio(null, null, -1, Arrays.copyOf(_frameOutputBuffer, _frameOutputBufferPos));
                 } else if (_kissDataType == DataType.SIGNAL_REPORT && _isExtendedMode) {
                     callback.onReceiveSignalLevel(Arrays.copyOf(_kissCmdBuffer, _kissCmdBufferPos));
                     _kissCmdBufferPos = 0;

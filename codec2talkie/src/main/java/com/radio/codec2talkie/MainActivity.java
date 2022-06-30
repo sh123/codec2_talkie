@@ -432,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
                     _progressAudioLevel.setProgress(msg.arg1 - AudioProcessor.getAudioMinLevel());
                     break;
                 case AudioProcessor.PROCESSOR_CODEC_ERROR:
-                    _textStatus.setText(R.string.main_status_codec_error);
+                    _textStatus.setText(R.string.main_status_rx_error);
                     break;
             }
         }
@@ -493,6 +493,12 @@ public class MainActivity extends AppCompatActivity {
             boolean scramblingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.KISS_SCRAMBLING_ENABLED, false);
             if (scramblingEnabled) {
                 speedModeInfo += ", " + getString(R.string.kiss_scrambler_label);
+            }
+
+            // aprs
+            boolean aprsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
+            if (aprsEnabled) {
+                speedModeInfo += ", " + getString(R.string.aprs_label);
             }
             _textCodecMode.setText(speedModeInfo);
 

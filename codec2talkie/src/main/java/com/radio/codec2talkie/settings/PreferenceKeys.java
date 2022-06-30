@@ -47,4 +47,24 @@ public final class PreferenceKeys {
     public static String APP_KEEP_SCREEN_ON = "app_keep_screen_on";
     public static String APP_AUDIO_OUTPUT_SPEAKER = "app_audio_output_speaker";
     public static String APP_AUDIO_INPUT_VOICE_COMMUNICATION = "app_audio_input_voice_communication";
+
+    public static String APRS_ENABLED = "aprs_enable";
+    public static String APRS_VOAX25_ENABLE = "aprs_voax25_enable";
+    public static String APRS_CALLSIGN = "aprs_callsign";
+    public static String APRS_SSID = "aprs_ssid";
+    public static String APRS_DIGIPATH = "aprs_digipath";
+    public static String APRS_SYMBOL = "aprs_symbol";
+    public static String APRS_COMMENT = "aprs_comment";
+    public static String APRS_LOCATION_PACKET_FORMAT = "aprs_location_packet_format";
+    public static String APRS_LOCATION_SOURCE = "aprs_location_source";
+    public static String APRS_LOCATION_SOURCE_GPS_UPDATE_TIME = "aprs_location_source_gps_update_time";
+    public static String APRS_LOCATION_MIC_E_MESSAGE_TYPE = "aprs_location_mice_message_type";
+    public static String APRS_LOCATION_SOURCE_GPS_UPDATE_DISTANCE = "aprs_location_source_gps_update_distance";
+    public static String APRS_LOCATION_SOURCE_MANUAL_LATE = "aprs_location_source_manual_lat";
+    public static String APRS_LOCATION_SOURCE_MANUAL_LON = "aprs_location_source_manual_lon";
+    public static String APRS_LOCATION_SOURCE_MANUAL_AUTO_SEND = "aprs_location_source_manual_auto_send";
+    public static String APRS_LOCATION_SOURCE_MANUAL_UPDATE_TIME = "aprs_location_source_manual_update_time";
+    public static String APRS_PRIVACY_POSITION_AMBIGUITY = "aprs_privacy_position_ambiguity";
+    public static String APRS_PRIVACY_SPEED_ENABLED = "aprs_privacy_speed_enable";
+    public static String APRS_PRIVACY_ALTITUDE_ENABLED = "aprs_privacy_altitude_enable";
 }
