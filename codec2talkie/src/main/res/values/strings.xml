@@ -194,7 +194,7 @@
 
     <string name="aprs_category_title">AX.25/APRS settings</string>
     <string name="aprs_voax25_enable_title">Enable voice over AX.25</string>
-    <string name="aprs_voax25_enable_summary">Send voice packets inside AX.25 frames</string>
+    <string name="aprs_voax25_enable_summary">Send voice packets inside AX.25 UI frames with PID 0x1f</string>
     <string name="aprs_enable_title">Enable APRS</string>
     <string name="aprs_enable_summary">Enable APRS tracker</string>
     <string name="aprs_callsign_title">Callsign (without SSID)</string>
