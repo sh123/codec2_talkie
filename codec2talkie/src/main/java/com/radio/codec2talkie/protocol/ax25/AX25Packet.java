@@ -61,6 +61,7 @@ public class AX25Packet {
             byte ax25Pid = buffer.get();
             if (ax25Pid == AX25PID_AUDIO) {
                 isAudio = true;
+                codec2Mode = (int)buffer.get();
             } else if (ax25Pid == AX25PID_NO_LAYER3) {
                 isAudio = false;
             } else {
@@ -102,6 +103,7 @@ public class AX25Packet {
         buffer.put(AX25CTRL_UI);
         if (isAudio) {
             buffer.put(AX25PID_AUDIO);
+            buffer.put((byte)codec2Mode);
         } else {
             buffer.put(AX25PID_NO_LAYER3);
         }
