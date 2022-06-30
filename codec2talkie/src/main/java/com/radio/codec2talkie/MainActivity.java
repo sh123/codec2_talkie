@@ -398,24 +398,20 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getBaseContext(), R.string.processor_connected, Toast.LENGTH_SHORT).show();
                     break;
                 case AudioProcessor.PROCESSOR_DISCONNECTED:
-                    _textStatus.setText(R.string.main_status_stop);
+                    _btnPtt.setText(R.string.main_status_stop);
                     Toast.makeText(getBaseContext(), R.string.processor_disconnected, Toast.LENGTH_SHORT).show();
                     startTransportConnection();
                     break;
                 case AudioProcessor.PROCESSOR_LISTENING:
-                    _textStatus.setText(R.string.main_status_idle);
                     _btnPtt.setText(R.string.push_to_talk);
                     break;
                 case AudioProcessor.PROCESSOR_RECORDING:
-                    _textStatus.setText(R.string.main_status_tx);
                     _btnPtt.setText(R.string.main_status_tx);
                     break;
                 case AudioProcessor.PROCESSOR_RECEIVING:
-                    _textStatus.setText(R.string.main_status_rx);
                     _btnPtt.setText(R.string.main_status_rx);
                     break;
                 case AudioProcessor.PROCESSOR_PLAYING:
-                    _textStatus.setText(R.string.main_status_play);
                     _btnPtt.setText(R.string.main_status_play);
                     break;
                 case AudioProcessor.PROCESSOR_RX_RADIO_LEVEL:
