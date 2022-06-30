@@ -20,6 +20,7 @@ public class AudioCodec2 implements Protocol {
 
     public AudioCodec2(Protocol childProtocol, int codec2ModeId) {
         _childProtocol = childProtocol;
+        _codec2Con = 0;
         constructCodec2(codec2ModeId);
     }
 
@@ -108,6 +109,9 @@ public class AudioCodec2 implements Protocol {
     }
 
     private void constructCodec2(int codecMode) {
+        if (_codec2Con != 0) {
+            Codec2.destroy(_codec2Con);
+        }
         _codec2Mode = codecMode;
         _codec2Con = Codec2.create(codecMode);
 

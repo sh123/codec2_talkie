@@ -16,7 +16,7 @@ import java.util.Arrays;
 public class AudioFrameAggregator implements Protocol {
 
     private static final String TAG = AudioFrameAggregator.class.getSimpleName();
-    
+
     private final Protocol _childProtocol;
 
     private int _outputBufferSize;

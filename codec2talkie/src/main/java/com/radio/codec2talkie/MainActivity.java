@@ -404,15 +404,19 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case AudioProcessor.PROCESSOR_LISTENING:
                     _textStatus.setText(R.string.main_status_idle);
+                    _btnPtt.setText(R.string.push_to_talk);
                     break;
                 case AudioProcessor.PROCESSOR_RECORDING:
                     _textStatus.setText(R.string.main_status_tx);
+                    _btnPtt.setText(R.string.main_status_tx);
                     break;
                 case AudioProcessor.PROCESSOR_RECEIVING:
                     _textStatus.setText(R.string.main_status_rx);
+                    _btnPtt.setText(R.string.main_status_rx);
                     break;
                 case AudioProcessor.PROCESSOR_PLAYING:
                     _textStatus.setText(R.string.main_status_play);
+                    _btnPtt.setText(R.string.main_status_play);
                     break;
                 case AudioProcessor.PROCESSOR_RX_RADIO_LEVEL:
                     if (msg.arg1 == 0) {
@@ -433,6 +437,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case AudioProcessor.PROCESSOR_RX_ERROR:
                     _textStatus.setText(R.string.main_status_rx_error);
+                    _btnPtt.setText(R.string.main_status_rx_error);
                     break;
             }
         }
