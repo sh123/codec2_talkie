@@ -462,53 +462,60 @@ public class MainActivity extends AppCompatActivity {
         try {
             Log.i(TAG, "Started audio processing: " + transportType.toString());
 
-            // codec2 mode
             String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
-
-            String[] codecNameCodecId = codec2ModeName.split("=");
-            String[] modeSpeed = codecNameCodecId[0].split("_");
 
             ProtocolFactory.ProtocolType protocolType = getRequiredProtocolType();
             _btnPtt.setEnabled(protocolType != ProtocolFactory.ProtocolType.KISS_PARROT);
 
-            // codec2 speed
-            String speedModeInfo = "C2: " + modeSpeed[1];
-            int codec2ModeId = Integer.parseInt(codecNameCodecId[1]);
+            String statusLine = getSpeedStatusText(codec2ModeName) + ", " + getFeatureStatusText(protocolType);
+            _textCodecMode.setText(statusLine);
 
-            // radio speed
-            int radioSpeedBps = RadioTools.getRadioSpeed(_sharedPreferences);
-            if (radioSpeedBps > 0) {
-                speedModeInfo = "RF: " + radioSpeedBps + ", " + speedModeInfo;
-            }
-
-            // protocol
-            speedModeInfo += ", " + protocolType.toString();
-
-            // recording
-            boolean recordingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_RECORDING_ENABLED, false);
-            if (recordingEnabled) {
-                speedModeInfo += ", " + getString(R.string.recorder_status_label);
-            }
-
-            // scrambling
-            boolean scramblingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.KISS_SCRAMBLING_ENABLED, false);
-            if (scramblingEnabled) {
-                speedModeInfo += ", " + getString(R.string.kiss_scrambler_label);
-            }
-
-            // aprs
-            boolean aprsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
-            if (aprsEnabled) {
-                speedModeInfo += ", " + getString(R.string.aprs_label);
-            }
-            _textCodecMode.setText(speedModeInfo);
-
-            _audioProcessor = new AudioProcessor(transportType, protocolType, codec2ModeId, onAudioProcessorStateChanged, getApplicationContext());
+            _audioProcessor = new AudioProcessor(transportType,
+                    protocolType,
+                    AudioTools.extractCodec2ModeId(codec2ModeName),
+                    onAudioProcessorStateChanged,
+                    getApplicationContext());
             _audioProcessor.start();
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(MainActivity.this, R.string.audio_failed_to_start_processing, Toast.LENGTH_LONG).show();
         }
+    }
+
+    private String getSpeedStatusText(String codec2ModeName) {
+        // codec2 speed
+        String speedModeInfo = "C2: " + AudioTools.extractCodec2Speed(codec2ModeName);
+
+        // radio speed
+        int radioSpeedBps = RadioTools.getRadioSpeed(_sharedPreferences);
+        if (radioSpeedBps > 0) {
+            speedModeInfo = "RF: " + radioSpeedBps + ", " + speedModeInfo;
+        }
+        return speedModeInfo;
+    }
+
+    private String getFeatureStatusText(ProtocolFactory.ProtocolType protocolType) {
+        // protocol
+        String status = protocolType.toString();
+
+        // recording
+        boolean recordingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_RECORDING_ENABLED, false);
+        if (recordingEnabled) {
+            status += ", " + getString(R.string.recorder_status_label);
+        }
+
+        // scrambling
+        boolean scramblingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.KISS_SCRAMBLING_ENABLED, false);
+        if (scramblingEnabled) {
+            status += ", " + getString(R.string.kiss_scrambler_label);
+        }
+
+        // aprs
+        boolean aprsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
+        if (aprsEnabled) {
+            status += ", " + getString(R.string.aprs_label);
+        }
+        return status;
     }
 
     @Override
