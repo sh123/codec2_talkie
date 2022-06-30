@@ -31,7 +31,7 @@ public class Ax25 implements Protocol {
     }
 
     @Override
-    public int getPcmAudioBufferSize(int codec) {
+    public int getPcmAudioBufferSize() {
         throw new UnsupportedOperationException();
     }
 

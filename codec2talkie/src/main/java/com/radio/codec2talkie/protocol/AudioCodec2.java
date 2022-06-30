@@ -30,7 +30,7 @@ public class AudioCodec2 implements Protocol {
     }
 
     @Override
-    public int getPcmAudioBufferSize(int codec) {
+    public int getPcmAudioBufferSize() {
         return _audioBufferSize;
     }
 

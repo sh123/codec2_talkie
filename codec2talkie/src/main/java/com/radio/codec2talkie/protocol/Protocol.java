@@ -10,7 +10,7 @@ public interface Protocol {
     // init
     void initialize(Transport transport, Context context) throws IOException;
     // audio
-    int getPcmAudioBufferSize(int codec);
+    int getPcmAudioBufferSize();
     void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException;
     void sendCompressedAudio(String src, String dst, int codec, byte[] frame) throws IOException;
     // data

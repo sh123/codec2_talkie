@@ -93,7 +93,7 @@ public class AudioProcessor extends Thread {
         _processPeriodicTimer = new Timer();
 
         _codec2Mode = codec2Mode;
-        _recordAudioBuffer = new short[_protocol.getPcmAudioBufferSize(codec2Mode)];
+        _recordAudioBuffer = new short[_protocol.getPcmAudioBufferSize()];
 
         constructSystemAudioDevices();
     }

@@ -46,6 +46,10 @@ public class AudioFrameAggregator implements Protocol {
     }
 
     @Override
+    public int getPcmAudioBufferSize() {
+        throw new UnsupportedOperationException();
+
+    }
     public int getPcmAudioBufferSize(int codec2ModeId) {
         long codec2Con = Codec2.create(codec2ModeId);
         int codec2FrameSize = Codec2.getBitsSize(codec2Con); // returns number of bytes
