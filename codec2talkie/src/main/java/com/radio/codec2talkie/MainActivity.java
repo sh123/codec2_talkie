@@ -431,7 +431,7 @@ public class MainActivity extends AppCompatActivity {
                     _progressAudioLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(AudioTools.colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
                     _progressAudioLevel.setProgress(msg.arg1 - AudioProcessor.getAudioMinLevel());
                     break;
-                case AudioProcessor.PROCESSOR_CODEC_ERROR:
+                case AudioProcessor.PROCESSOR_RX_ERROR:
                     _textStatus.setText(R.string.main_status_rx_error);
                     break;
             }
