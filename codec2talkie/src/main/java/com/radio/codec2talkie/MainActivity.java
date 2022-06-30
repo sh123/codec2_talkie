@@ -432,7 +432,6 @@ public class MainActivity extends AppCompatActivity {
                     _progressAudioLevel.setProgress(msg.arg1 - AudioProcessor.getAudioMinLevel());
                     break;
                 case AudioProcessor.PROCESSOR_RX_ERROR:
-                    _textStatus.setText(R.string.main_status_rx_error);
                     _btnPtt.setText(R.string.main_status_rx_error);
                     break;
             }
