@@ -71,7 +71,7 @@ public class AX25Packet {
             buffer.get(rawData);
             isValid = true;
         } catch (BufferUnderflowException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 

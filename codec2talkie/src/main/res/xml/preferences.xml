@@ -179,6 +179,14 @@
             app:defaultValue="false">
         </SwitchPreference>
 
+        <SwitchPreference
+            app:key="aprs_voax25_enable"
+            app:title="@string/aprs_voax25_enable_title"
+            app:summary="@string/aprs_voax25_enable_summary"
+            app:dependency="aprs_enable">
+            app:defaultValue="false">
+        </SwitchPreference>
+
         <EditTextPreference
             app:key="aprs_callsign"
             app:title="@string/aprs_callsign_title"

@@ -432,7 +432,7 @@ public class MainActivity extends AppCompatActivity {
                     _progressAudioLevel.setProgress(msg.arg1 - AudioProcessor.getAudioMinLevel());
                     break;
                 case AudioProcessor.PROCESSOR_CODEC_ERROR:
-                    _textStatus.setText(R.string.main_status_codec_error);
+                    _textStatus.setText(R.string.main_status_rx_error);
                     break;
             }
         }

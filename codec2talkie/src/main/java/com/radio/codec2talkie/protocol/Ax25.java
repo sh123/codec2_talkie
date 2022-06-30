@@ -15,6 +15,7 @@ public class Ax25 implements Protocol {
 
     final Protocol _childProtocol;
     private String _digipath;
+    private boolean _isVoax25Enabled;
 
     public Ax25(Protocol childProtocol) {
         _childProtocol = childProtocol;
@@ -26,6 +27,7 @@ public class Ax25 implements Protocol {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         // NOTE, may need to pass through sendData/sendAudio
         _digipath = sharedPreferences.getString(PreferenceKeys.APRS_DIGIPATH, "");
+        _isVoax25Enabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_VOAX25_ENABLE, false);
     }
 
     @Override
@@ -35,16 +37,20 @@ public class Ax25 implements Protocol {
 
     @Override
     public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
-        AX25Packet ax25Packet = new AX25Packet();
-        ax25Packet.src = src;
-        ax25Packet.dst = dst;
-        ax25Packet.digipath = _digipath;
-        ax25Packet.codec2Mode = codec2Mode;
-        ax25Packet.isAudio = true;
-        ax25Packet.rawData = frame;
-        byte[] ax25Frame = ax25Packet.toBinary();
-        if (ax25Frame != null) {
-            _childProtocol.sendCompressedAudio(src, dst, codec2Mode, ax25Frame);
+        if (_isVoax25Enabled) {
+            AX25Packet ax25Packet = new AX25Packet();
+            ax25Packet.src = src;
+            ax25Packet.dst = dst;
+            ax25Packet.digipath = _digipath;
+            ax25Packet.codec2Mode = codec2Mode;
+            ax25Packet.isAudio = true;
+            ax25Packet.rawData = frame;
+            byte[] ax25Frame = ax25Packet.toBinary();
+            if (ax25Frame != null) {
+                _childProtocol.sendCompressedAudio(src, dst, codec2Mode, ax25Frame);
+            }
+        } else {
+            _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
         }
     }
 
@@ -91,7 +97,8 @@ public class Ax25 implements Protocol {
                         callback.onReceiveData(ax25Data.src, ax25Data.dst, audioFrames);
                     }
                 } else {
-                    callback.onProtocolRxError();
+                    // fallback to raw audio is ax25 frame is invalid
+                    callback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
                 }
             }
 
