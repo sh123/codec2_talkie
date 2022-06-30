@@ -258,6 +258,13 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        boolean isAprsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
+        menu.setGroupVisible(R.id.group_aprs, isAprsEnabled);
+        return true;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuCompat.setGroupDividerEnabled(menu, true);
         getMenuInflater().inflate(R.menu.main_menu, menu);
