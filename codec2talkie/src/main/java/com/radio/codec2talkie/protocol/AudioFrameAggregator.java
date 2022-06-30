@@ -16,8 +16,7 @@ import java.util.Arrays;
 public class AudioFrameAggregator implements Protocol {
 
     private static final String TAG = AudioFrameAggregator.class.getSimpleName();
-
-    private final String DEFAULT_TX_FRAME_MAX_SIZE = "48";
+    
     private final Protocol _childProtocol;
 
     private int _outputBufferSize;
@@ -40,7 +39,7 @@ public class AudioFrameAggregator implements Protocol {
     @Override
     public void initialize(Transport transport, Context context) throws IOException {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        _outputBufferSize = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.CODEC2_TX_FRAME_MAX_SIZE, DEFAULT_TX_FRAME_MAX_SIZE));
+        _outputBufferSize = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.CODEC2_TX_FRAME_MAX_SIZE, "48"));
         _outputBuffer = new byte[_outputBufferSize];
         _outputBufferPos = 0;
         _childProtocol.initialize(transport, context);
