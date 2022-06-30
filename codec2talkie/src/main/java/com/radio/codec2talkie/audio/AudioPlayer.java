@@ -7,6 +7,7 @@ import android.media.AudioTrack;
 import android.media.session.PlaybackState;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import com.ustadmobile.codec2.Codec2;
 
@@ -125,9 +126,7 @@ public class AudioPlayer extends Thread {
                 Codec2.decode(_codec2Con, _playbackAudioBuffer, codec2Buffer);
                 _systemAudioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
             }
-            while (!_stopPlayback &&_systemAudioPlayer.getPlayState() == PlaybackState.STATE_PLAYING) {
-                Thread.sleep(100);
-            }
+            Thread.sleep(1500);
         } catch (IOException | InterruptedException e) {
             sendStatusUpdate(PLAYER_ERROR, file.getName());
             e.printStackTrace();

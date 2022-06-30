@@ -1,6 +1,7 @@
 package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.radio.codec2talkie.MainActivity;
@@ -21,24 +22,28 @@ public class Recorder implements Protocol {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private final int ROTATION_DELAY_MS = 10000;
+    private final int ROTATION_DELAY_MS = 5000;
 
-    Context _context;
-    File _storage;
-    FileOutputStream _activeStream;
-    Timer _fileRotationTimer;
+    private File _storage;
+    private FileOutputStream _activeStream;
+    private Timer _fileRotationTimer;
 
     final Protocol _childProtocol;
     final int _codec2ModeId;
 
+    private String _prevSrcCallsign;
+    private String _prevDstCallsign;
+
     public Recorder(Protocol childProtocol, int codec2ModeId) {
         _childProtocol = childProtocol;
         _codec2ModeId = codec2ModeId;
+
+        _prevSrcCallsign = null;
+        _prevDstCallsign = null;
     }
 
     @Override
     public void initialize(Transport transport, Context context) throws IOException {
-        _context = context;
         _storage = StorageTools.getStorage(context);
         _childProtocol.initialize(transport, context);
     }
@@ -50,6 +55,7 @@ public class Recorder implements Protocol {
 
     @Override
     public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+        rotateIfNewSrcOrDstCallsign(src, dst);
         _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
         writeToFile(src, dst, codec2Mode, frame);
     }
@@ -79,6 +85,7 @@ public class Recorder implements Protocol {
 
             @Override
             protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
+                rotateIfNewSrcOrDstCallsign(src, dst);
                 callback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
                 writeToFile(src, dst, codec2Mode, audioFrames);
             }
@@ -166,6 +173,21 @@ public class Recorder implements Protocol {
         }
         fileName += ".c2";
         return fileName;
+    }
+
+    private void rotateIfNewSrcOrDstCallsign(String newSrcCallsign, String newDstCallsign) {
+        if (!TextUtils.equals(_prevSrcCallsign, newSrcCallsign) || !TextUtils.equals(_prevDstCallsign, newDstCallsign)) {
+            _prevSrcCallsign = newSrcCallsign;
+            _prevDstCallsign = newDstCallsign;
+            if (_activeStream != null) {
+                try {
+                    _activeStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                _activeStream = null;
+            }
+        }
     }
 
     private void startRotationTimer() {
