@@ -40,12 +40,11 @@
     </string-array>
 
     <string name="main_status_loopback_test">ECHO TEST</string>
-    <string name="main_status_stop">STOP</string>
-    <string name="main_status_idle">IDLE</string>
-    <string name="main_status_tx">TX</string>
-    <string name="main_status_rx">RX</string>
-    <string name="main_status_play">.RX</string>
-    <string name="main_status_rx_error">RX_ERR</string>
+    <string name="main_status_stop">STOPPED</string>
+    <string name="main_status_tx">TRANSMITTING</string>
+    <string name="main_status_rx">RECEIVING</string>
+    <string name="main_status_play">PLAYING</string>
+    <string name="main_status_rx_error">RECEIVE ERROR</string>
 
     <string name="kiss_enable_title">Enable KISS</string>
     <string name="kiss_enable_summary">Enables KISS protocol, otherwise RAW frames will be sent</string>

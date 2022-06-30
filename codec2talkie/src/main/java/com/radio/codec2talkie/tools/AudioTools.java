@@ -3,7 +3,9 @@ package com.radio.codec2talkie.tools;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 
+import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.audio.AudioProcessor;
+import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 
 public class AudioTools {
@@ -31,5 +33,16 @@ public class AudioTools {
         else if (audioLevel < AudioProcessor.getAudioMinLevel() + UV_METER_MIN_DELTA)
             color = Color.LTGRAY;
         return color;
+    }
+
+    public static int extractCodec2ModeId(String codec2ModeName) {
+        String[] codecNameCodecId = codec2ModeName.split("=");
+        return Integer.parseInt(codecNameCodecId[1]);
+    }
+
+    public static String extractCodec2Speed(String codec2ModeName) {
+        String[] codecNameCodecId = codec2ModeName.split("=");
+        String[] modeSpeed = codecNameCodecId[0].split("_");
+        return modeSpeed[1];
     }
 }

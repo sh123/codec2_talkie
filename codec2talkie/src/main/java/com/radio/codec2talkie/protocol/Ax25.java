@@ -2,9 +2,11 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.audio.AudioProcessor;
 import com.radio.codec2talkie.protocol.ax25.AX25Packet;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.transport.Transport;
@@ -12,6 +14,8 @@ import com.radio.codec2talkie.transport.Transport;
 import java.io.IOException;
 
 public class Ax25 implements Protocol {
+
+    private static final String TAG = Ax25.class.getSimpleName();
 
     final Protocol _childProtocol;
     private String _digipath;
@@ -31,7 +35,7 @@ public class Ax25 implements Protocol {
     }
 
     @Override
-    public int getPcmAudioBufferSize(int codec) {
+    public int getPcmAudioBufferSize() {
         throw new UnsupportedOperationException();
     }
 
@@ -46,7 +50,9 @@ public class Ax25 implements Protocol {
             ax25Packet.isAudio = true;
             ax25Packet.rawData = frame;
             byte[] ax25Frame = ax25Packet.toBinary();
-            if (ax25Frame != null) {
+            if (ax25Frame == null) {
+                Log.e(TAG, "Invalid source data for AX.25");
+            } else {
                 _childProtocol.sendCompressedAudio(src, dst, codec2Mode, ax25Frame);
             }
         } else {
@@ -68,7 +74,9 @@ public class Ax25 implements Protocol {
         ax25Packet.isAudio = false;
         ax25Packet.rawData = dataPacket;
         byte[] ax25Frame = ax25Packet.toBinary();
-        if (ax25Frame != null) {
+        if (ax25Frame == null) {
+            Log.e(TAG, "Invalid source data for AX.25");
+        } else {
             _childProtocol.sendData(src, dst, dataPacket);
         }
     }

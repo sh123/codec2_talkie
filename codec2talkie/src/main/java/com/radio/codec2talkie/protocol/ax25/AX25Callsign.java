@@ -63,7 +63,10 @@ public class AX25Callsign {
 
     @NonNull
     public String toString() {
-        return callsign + "-" + ssid;
+        String callsignPlusSsid = callsign;
+        if (ssid != 0)
+            callsignPlusSsid += "-" + ssid;
+        return callsignPlusSsid;
     }
 
     public byte[] toBinary() {

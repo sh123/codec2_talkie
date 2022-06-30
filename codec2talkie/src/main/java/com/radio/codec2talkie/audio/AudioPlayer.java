@@ -4,10 +4,11 @@ import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioTrack;
+import android.media.session.PlaybackState;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
-import com.radio.codec2talkie.MainActivity;
 import com.ustadmobile.codec2.Codec2;
 
 import java.io.File;
@@ -17,7 +18,6 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class AudioPlayer extends Thread {
-    private static final String TAG = MainActivity.class.getSimpleName();
 
     public static final int PLAYER_STARTED = 1;
     public static final int PLAYER_PLAYING_FILE = 2;
@@ -26,7 +26,6 @@ public class AudioPlayer extends Thread {
     public static final int PLAYER_STOPPED = 5;
 
     private final Handler _onPlayerStateChanged;
-    private final Context _context;
     private final File[] _files;
 
     private final int AUDIO_SAMPLE_SIZE = 8000;
@@ -47,7 +46,6 @@ public class AudioPlayer extends Thread {
     public AudioPlayer(File[] files, Handler onPlayerStateChanged, Context context) {
 
         _onPlayerStateChanged = onPlayerStateChanged;
-        _context = context;
         _files = files;
         _codec2Con = 0;
 
@@ -128,7 +126,8 @@ public class AudioPlayer extends Thread {
                 Codec2.decode(_codec2Con, _playbackAudioBuffer, codec2Buffer);
                 _systemAudioPlayer.write(_playbackAudioBuffer, 0, _audioBufferSize);
             }
-        } catch (IOException e) {
+            Thread.sleep(1500);
+        } catch (IOException | InterruptedException e) {
             sendStatusUpdate(PLAYER_ERROR, file.getName());
             e.printStackTrace();
             return false;

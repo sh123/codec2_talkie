@@ -32,8 +32,8 @@ public class Aprs implements Protocol {
     }
 
     @Override
-    public int getPcmAudioBufferSize(int codec) {
-        return _childProtocol.getPcmAudioBufferSize(codec);
+    public int getPcmAudioBufferSize() {
+        return _childProtocol.getPcmAudioBufferSize();
     }
 
     @Override
