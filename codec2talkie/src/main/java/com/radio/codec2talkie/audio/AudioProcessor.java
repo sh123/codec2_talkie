@@ -163,7 +163,7 @@ public class AudioProcessor extends Thread {
         }
     }
 
-    private void sendStatusUpdate(int newStatus) {
+    private void sendStatusUpdate(int newStatus, String note) {
         if (newStatus != PROCESSOR_LISTENING) {
             restartListening();
         }
@@ -171,7 +171,9 @@ public class AudioProcessor extends Thread {
             _currentStatus = newStatus;
             Message msg = Message.obtain();
             msg.what = newStatus;
-
+            if (note != null) {
+                msg.obj = note;
+            }
             _onPlayerStateChanged.sendMessage(msg);
         }
     }
@@ -202,9 +204,9 @@ public class AudioProcessor extends Thread {
         _systemAudioRecorder.read(_recordAudioBuffer, 0, _recordAudioBuffer.length);
         sendTxAudioLevelUpdate(_recordAudioBuffer);
         if (_protocol.sendPcmAudio(null, null, _codec2Mode, _recordAudioBuffer)) {
-            sendStatusUpdate(PROCESSOR_TRANSMITTING);
+            sendStatusUpdate(PROCESSOR_TRANSMITTING, null);
         } else {
-            sendStatusUpdate(PROCESSOR_TX_ERROR);
+            sendStatusUpdate(PROCESSOR_TX_ERROR, null);
             Log.e(TAG, "Protocol TX error");
         }
     }
@@ -217,7 +219,8 @@ public class AudioProcessor extends Thread {
 
         @Override
         protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-            sendStatusUpdate(PROCESSOR_PLAYING);
+            String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
+            sendStatusUpdate(PROCESSOR_PLAYING, note);
             sendRxAudioLevelUpdate(pcmFrame);
             _systemAudioPlayer.write(pcmFrame, 0, pcmFrame.length);
         }
@@ -239,7 +242,7 @@ public class AudioProcessor extends Thread {
 
         @Override
         protected void onProtocolRxError() {
-            sendStatusUpdate(PROCESSOR_RX_ERROR);
+            sendStatusUpdate(PROCESSOR_RX_ERROR, null);
             Log.e(TAG, "Protocol RX error");
         }
     };
@@ -277,7 +280,7 @@ public class AudioProcessor extends Thread {
         sendRxAudioLevelUpdate(null);
         sendTxAudioLevelUpdate(null);
         sendRxRadioLevelUpdate(0, 0);
-        sendStatusUpdate(PROCESSOR_LISTENING);
+        sendStatusUpdate(PROCESSOR_LISTENING, null);
     }
 
     private void processRecordPlaybackToggle() throws IOException {
@@ -327,7 +330,7 @@ public class AudioProcessor extends Thread {
         } else {
             // playback
             if (_protocol.receive(_protocolCallback)) {
-                sendStatusUpdate(PROCESSOR_RECEIVING);
+                sendStatusUpdate(PROCESSOR_RECEIVING, null);
             }
         }
     }
@@ -380,7 +383,7 @@ public class AudioProcessor extends Thread {
         setPriority(Thread.MAX_PRIORITY);
         Looper.prepare();
 
-        sendStatusUpdate(PROCESSOR_CONNECTED);
+        sendStatusUpdate(PROCESSOR_CONNECTED, null);
         _systemAudioPlayer.play();
 
         try {
@@ -392,7 +395,7 @@ public class AudioProcessor extends Thread {
         }
 
         cleanup();
-        sendStatusUpdate(PROCESSOR_DISCONNECTED);
+        sendStatusUpdate(PROCESSOR_DISCONNECTED, null);
         Log.i(TAG, "Exiting message loop");
     }
 }

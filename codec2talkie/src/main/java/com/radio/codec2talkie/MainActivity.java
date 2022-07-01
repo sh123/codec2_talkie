@@ -423,6 +423,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case AudioProcessor.PROCESSOR_LISTENING:
                     _btnPtt.setText(R.string.push_to_talk);
+                    _textStatus.setText("");
                     break;
                 case AudioProcessor.PROCESSOR_TRANSMITTING:
                     _btnPtt.setText(R.string.main_status_tx);
@@ -431,6 +432,9 @@ public class MainActivity extends AppCompatActivity {
                     _btnPtt.setText(R.string.main_status_rx);
                     break;
                 case AudioProcessor.PROCESSOR_PLAYING:
+                    if (msg.obj != null) {
+                        _textStatus.setText((String) msg.obj);
+                    }
                     _btnPtt.setText(R.string.main_status_play);
                     break;
                 case AudioProcessor.PROCESSOR_RX_RADIO_LEVEL:
@@ -517,26 +521,29 @@ public class MainActivity extends AppCompatActivity {
 
     private String getFeatureStatusText(ProtocolFactory.ProtocolType protocolType) {
         // protocol
-        String status = protocolType.toString();
+        String status = "";
 
         // recording
         boolean recordingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_RECORDING_ENABLED, false);
         if (recordingEnabled) {
-            status += ", " + getString(R.string.recorder_status_label);
+            status += getString(R.string.recorder_status_label);
         }
 
         // scrambling
         boolean scramblingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.KISS_SCRAMBLING_ENABLED, false);
         if (scramblingEnabled) {
-            status += ", " + getString(R.string.kiss_scrambler_label);
+            status += getString(R.string.kiss_scrambler_label);
         }
 
         // aprs
         boolean aprsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
         if (aprsEnabled) {
-            status += ", " + getString(R.string.aprs_label);
+            status += getString(R.string.aprs_label);
         }
-        return status;
+        if (status.length() == 0) {
+            return protocolType.toString();
+        }
+        return protocolType.toString() + " " + status;
     }
 
     @Override

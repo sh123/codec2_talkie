@@ -93,7 +93,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="recorder_name">Recorder</string>
-    <string name="recorder_status_label">REC</string>
+    <string name="recorder_status_label">&#9210;</string>
     <string name="player_status_stopped">Playback stopped</string>
     <string name="player_status_started">Playback started</string>
     <string name="player_status_error">Playback error, %1$s</string>
@@ -137,7 +137,7 @@
     <string name="processor_disconnected">Disconnected</string>
     <string name="audio_failed_to_start_processing">Failed to start audio processing</string>
 
-    <string name="kiss_scrambler_label">SEC</string>
+    <string name="kiss_scrambler_label">&#128274;</string>
     <string name="kiss_extension_reboot_title">Reboot modem</string>
     <string name="kiss_extension_reboot_summary">Click to send reboot command to the modem</string>
     <string name="kiss_toast_modem_reboot">Modem reboot requested</string>
@@ -219,7 +219,7 @@
     <string name="aprs_privacy_altitude_summary">Include altitude in position reports</string>
     <string name="aprs_location_packet_format_title">Packet format</string>
     <string name="aprs_location_emic_message_type_title">E-Mic message type</string>
-    <string name="aprs_label">APRS</string>
+    <string name="aprs_label">&#127757;</string>
     <string name="menu_messages">Messages</string>
     <string name="menu_start_tracking">Start tracking</string>
     <string name="menu_send_position">Send position</string>
