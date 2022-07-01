@@ -1,4 +1,4 @@
-package com.radio.codec2talkie.protocol.aprs.position;
+package com.radio.codec2talkie.protocol.aprs;
 
 public class AprsPosition {
     public double latitude;

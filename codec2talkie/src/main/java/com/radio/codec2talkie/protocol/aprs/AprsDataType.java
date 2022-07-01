@@ -33,6 +33,14 @@ public class AprsDataType {
         return _dataType;
     }
 
+    public boolean isPositionReport() {
+        return (_dataType == DataType.MIC_E ||
+                _dataType == DataType.POSITION_WITH_TIMESTAMP_MSG ||
+                _dataType == DataType.POSITION_WITHOUT_TIMESTAMP_MSG ||
+                _dataType == DataType.POSITION_WITH_TIMESTAMP_NO_MSG ||
+                _dataType == DataType.POSITION_WITHOUT_TIMESTAMP_NO_MSG);
+    }
+
     private DataType getDataTypeFromIdent(char ident) {
         if (ident == '`') {
             return DataType.MIC_E;
