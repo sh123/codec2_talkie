@@ -50,6 +50,8 @@ public class Kiss implements Protocol {
     private final byte TX_DELAY_10MS_UNITS = (byte)(250 / 10);
     private final byte TX_TAIL_10MS_UNITS = (byte)(500 / 10);
 
+    private final int SIGNAL_LEVEL_EVENT_SIZE = 4;
+
     private enum State {
         GET_START,
         GET_END,
@@ -287,7 +289,16 @@ public class Kiss implements Protocol {
                     // NOTE, KISS does not distinguish between audio and data packets, upper layer should decide
                     callback.onReceiveCompressedAudio(null, null, -1, Arrays.copyOf(_frameOutputBuffer, _frameOutputBufferPos));
                 } else if (_kissDataType == DataType.SIGNAL_REPORT && _isExtendedMode) {
-                    callback.onReceiveSignalLevel(Arrays.copyOf(_kissCmdBuffer, _kissCmdBufferPos));
+                    byte[] signalLevelRaw = Arrays.copyOf(_kissCmdBuffer, _kissCmdBufferPos);
+                    ByteBuffer data = ByteBuffer.wrap(signalLevelRaw);
+                    if (signalLevelRaw.length == SIGNAL_LEVEL_EVENT_SIZE) {
+                        short rssi = data.getShort();
+                        short snr = data.getShort();
+                        callback.onReceiveSignalLevel(rssi, snr);
+                    } else {
+                        callback.onProtocolRxError();
+                        Log.e(TAG, "Signal event of wrong size");
+                    }
                     _kissCmdBufferPos = 0;
                 }
                 resetState();

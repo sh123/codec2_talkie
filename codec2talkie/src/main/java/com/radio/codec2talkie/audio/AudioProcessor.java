@@ -53,8 +53,6 @@ public class AudioProcessor extends Thread {
     private final int PROCESS_INTERVAL_MS = 20;
     private final int LISTEN_AFTER_MS = 1500;
 
-    private final int SIGNAL_LEVEL_EVENT_SIZE = 4;
-
     private boolean _needsRecording = false;
     private int _currentStatus = PROCESSOR_DISCONNECTED;
 
@@ -236,15 +234,8 @@ public class AudioProcessor extends Thread {
         }
 
         @Override
-        protected void onReceiveSignalLevel(byte[] packet) {
-            ByteBuffer data = ByteBuffer.wrap(packet);
-            if (packet.length == SIGNAL_LEVEL_EVENT_SIZE) {
-                short rssi = data.getShort();
-                short snr = data.getShort();
-                sendRxRadioLevelUpdate(rssi, snr);
-            } else {
-                Log.e(TAG, "Signal event of wrong size");
-            }
+        protected void onReceiveSignalLevel(short rssi, short snr) {
+            sendRxRadioLevelUpdate(rssi, snr);
         }
 
         @Override

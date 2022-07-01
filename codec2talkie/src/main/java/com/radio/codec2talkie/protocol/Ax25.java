@@ -117,8 +117,8 @@ public class Ax25 implements Protocol {
             }
 
             @Override
-            protected void onReceiveSignalLevel(byte[] rawData) {
-                callback.onReceiveSignalLevel(rawData);
+            protected void onReceiveSignalLevel(short rssi, short snr) {
+                callback.onReceiveSignalLevel(rssi, snr);
             }
 
             @Override
