@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 import androidx.preference.PreferenceManager;
 
-import com.radio.codec2talkie.protocol.aprs.AprsTools;
+import com.radio.codec2talkie.protocol.aprs.AprsCallsign;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.transport.Transport;
 
@@ -75,7 +75,7 @@ public class Aprs implements Protocol {
 
         @Override
         protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-            String dstCallsign = AprsTools.isAprsSoftwareCallsign(dst) ? "ALL" : dst;
+            String dstCallsign = new AprsCallsign(dst).isSoftware() ? "ALL" : dst;
             _parentCallback.onReceivePcmAudio(src, dstCallsign, codec, pcmFrame);
         }
 
@@ -102,7 +102,7 @@ public class Aprs implements Protocol {
 
         @Override
         protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
-            String dstCallsign = AprsTools.isAprsSoftwareCallsign(dst) ? "ALL" : dst;
+            String dstCallsign = new AprsCallsign(dst).isSoftware() ? "ALL" : dst;
             _parentCallback.onTransmitPcmAudio(src, dstCallsign, codec, frame);
         }
 
