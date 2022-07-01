@@ -21,6 +21,11 @@ public class AprsDataFactory {
     public static AprsData fromBinary(byte[] infoData) {
         ByteBuffer buffer = ByteBuffer.wrap(infoData);
         AprsDataType dataType = new AprsDataType(buffer.getChar());
-        return create(dataType);
+        AprsData aprsData = create(dataType);
+        if (aprsData == null) return null;
+        byte[] data = new byte[buffer.remaining()];
+        buffer.get(data);
+        aprsData.fromBinary(data);
+        return aprsData;
     }
 }
