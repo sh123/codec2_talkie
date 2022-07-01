@@ -42,8 +42,8 @@ public class AudioProcessor extends Thread {
     public static final int PROCESSOR_TX_ERROR = 10;
     public static final int PROCESSOR_RX_RADIO_LEVEL = 11;
 
-    public static final int PROCESSOR_PROCESS = 11;
-    public static final int PROCESSOR_QUIT = 12;
+    public static final int PROCESSOR_PROCESS = 12;
+    public static final int PROCESSOR_QUIT = 13;
 
     private static final int AUDIO_MIN_LEVEL = -70;
     private static final int AUDIO_MAX_LEVEL = 0;
