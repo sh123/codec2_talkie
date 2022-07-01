@@ -235,6 +235,11 @@ public class AudioProcessor extends Thread {
         }
 
         @Override
+        protected void onReceiveLog(String logData) {
+            Log.i(TAG, logData);
+        }
+
+        @Override
         protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
             sendStatusUpdate(PROCESSOR_TRANSMITTING, note);
@@ -250,6 +255,11 @@ public class AudioProcessor extends Thread {
         protected void onTransmitData(String src, String dst, byte[] data) {
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
             sendStatusUpdate(PROCESSOR_TRANSMITTING, note);
+        }
+
+        @Override
+        protected void onTransmitLog(String logData) {
+            Log.i(TAG, logData);
         }
 
         @Override

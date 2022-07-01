@@ -96,6 +96,11 @@ public class Aprs implements Protocol {
         }
 
         @Override
+        protected void onReceiveLog(String logData) {
+            _parentCallback.onReceiveLog(logData);
+        }
+
+        @Override
         protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
             String dstCallsign = AprsTools.isAprsSoftwareCallsign(dst) ? "ALL" : dst;
             _parentCallback.onTransmitPcmAudio(src, dstCallsign, codec, frame);
@@ -109,6 +114,11 @@ public class Aprs implements Protocol {
         @Override
         protected void onTransmitData(String src, String dst, byte[] data) {
             _parentCallback.onTransmitData(src, dst, data);
+        }
+
+        @Override
+        protected void onTransmitLog(String logData) {
+            _parentCallback.onTransmitLog(logData);
         }
 
         @Override

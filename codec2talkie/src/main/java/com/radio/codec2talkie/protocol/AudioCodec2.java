@@ -94,6 +94,11 @@ public class AudioCodec2 implements Protocol {
         }
 
         @Override
+        protected void onReceiveLog(String logData) {
+            _parentCallback.onReceiveLog(logData);
+        }
+
+        @Override
         protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
             throw new UnsupportedOperationException();
         }
@@ -106,6 +111,11 @@ public class AudioCodec2 implements Protocol {
         @Override
         protected void onTransmitData(String src, String dst, byte[] data) {
             _parentCallback.onTransmitData(src, dst, data);
+        }
+
+        @Override
+        protected void onTransmitLog(String logData) {
+            _parentCallback.onTransmitLog(logData);
         }
 
         @Override
