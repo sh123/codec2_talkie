@@ -51,7 +51,7 @@ public class Aprs implements Protocol {
     @Override
     public void sendPcmAudio(String src, String dst, int codec2Mode, short[] pcmFrame) throws IOException {
         if (_isVoax25Enabled) {
-            // just add callsigns AX.25 will handle the rest
+            // just add callsigns and AX.25 will handle the rest
             _childProtocol.sendPcmAudio(src == null ? _srcCallsign : src, dst == null ? _dstCallsign : dst, codec2Mode, pcmFrame);
         } else {
             _childProtocol.sendPcmAudio(src, dst, codec2Mode, pcmFrame);

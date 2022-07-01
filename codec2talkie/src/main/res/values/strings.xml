@@ -218,7 +218,7 @@
     <string name="aprs_privacy_altitude_title">Send altitude</string>
     <string name="aprs_privacy_altitude_summary">Include altitude in position reports</string>
     <string name="aprs_location_packet_format_title">Packet format</string>
-    <string name="aprs_location_emic_message_type_title">E-Mic message type</string>
+    <string name="aprs_location_emic_message_type_title">Mic-E message type</string>
     <string name="aprs_label">&#127757;</string>
     <string name="menu_messages">Messages</string>
     <string name="menu_start_tracking">Start tracking</string>
