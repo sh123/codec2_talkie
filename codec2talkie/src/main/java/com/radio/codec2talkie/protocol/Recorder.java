@@ -34,6 +34,8 @@ public class Recorder implements Protocol {
     private String _prevSrcCallsign;
     private String _prevDstCallsign;
 
+    private Callback _parentCallback;
+
     public Recorder(Protocol childProtocol, int codec2ModeId) {
         _childProtocol = childProtocol;
         _codec2ModeId = codec2ModeId;
@@ -43,9 +45,10 @@ public class Recorder implements Protocol {
     }
 
     @Override
-    public void initialize(Transport transport, Context context) throws IOException {
+    public void initialize(Transport transport, Context context, Callback callback) throws IOException {
+        _parentCallback = callback;
         _storage = StorageTools.getStorage(context);
-        _childProtocol.initialize(transport, context);
+        _childProtocol.initialize(transport, context, _protocolCallback);
     }
 
     @Override
@@ -54,61 +57,83 @@ public class Recorder implements Protocol {
     }
 
     @Override
-    public boolean sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
         rotateIfNewSrcOrDstCallsign(src, dst);
         writeToFile(src, dst, codec2Mode, frame);
-        return _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
+        _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
     }
 
     @Override
-    public boolean sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean sendData(String src, String dst, byte[] dataPacket) throws IOException {
-        return _childProtocol.sendData(src, dst, dataPacket);
+    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
+        _childProtocol.sendData(src, dst, dataPacket);
     }
 
     @Override
-    public boolean receive(Callback parentCallback) throws IOException {
-        return _childProtocol.receive(new Callback() {
-            @Override
-            protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
-                rotateIfNewSrcOrDstCallsign(src, dst);
-                parentCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
-                writeToFile(src, dst, codec2Mode, audioFrames);
-            }
-
-            @Override
-            protected void onReceiveData(String src, String dst, byte[] data) {
-                parentCallback.onReceiveData(src, dst, data);
-            }
-
-            @Override
-            protected void onReceiveSignalLevel(short rssi, short snr) {
-                parentCallback.onReceiveSignalLevel(rssi, snr);
-            }
-
-            @Override
-            protected void onProtocolRxError() {
-                parentCallback.onProtocolRxError();
-            }
-        });
+    public boolean receive() throws IOException {
+        return _childProtocol.receive();
     }
 
+    Callback _protocolCallback = new Callback() {
+        @Override
+        protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
+            rotateIfNewSrcOrDstCallsign(src, dst);
+            _parentCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
+            writeToFile(src, dst, codec2Mode, audioFrames);
+        }
+
+        @Override
+        protected void onReceiveData(String src, String dst, byte[] data) {
+            _parentCallback.onReceiveData(src, dst, data);
+        }
+
+        @Override
+        protected void onReceiveSignalLevel(short rssi, short snr) {
+            _parentCallback.onReceiveSignalLevel(rssi, snr);
+        }
+
+        @Override
+        protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
+            _parentCallback.onTransmitPcmAudio(src, dst, codec, frame);
+        }
+
+        @Override
+        protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
+            _parentCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        }
+
+        @Override
+        protected void onTransmitData(String src, String dst, byte[] data) {
+            _parentCallback.onTransmitData(src, dst, data);
+        }
+
+        @Override
+        protected void onProtocolRxError() {
+            _parentCallback.onProtocolRxError();
+        }
+
+        @Override
+        protected void onProtocolTxError() {
+            _parentCallback.onProtocolTxError();
+        }
+    };
+
     @Override
-    public boolean sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
         throw new UnsupportedOperationException();
     }
 

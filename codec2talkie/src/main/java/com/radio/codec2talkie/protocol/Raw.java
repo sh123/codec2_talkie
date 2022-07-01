@@ -14,13 +14,16 @@ public class Raw implements Protocol {
     protected Transport _transport;
     protected final byte[] _rxDataBuffer;
 
+    private Callback _parentCallback;
+
     public Raw() {
         _rxDataBuffer = new byte[RX_BUFFER_SIZE];
     }
 
     @Override
-    public void initialize(Transport transport, Context context) {
+    public void initialize(Transport transport, Context context, Callback callback) {
         _transport = transport;
+        _parentCallback = callback;
     }
 
     @Override
@@ -29,34 +32,32 @@ public class Raw implements Protocol {
     }
 
     @Override
-    public boolean sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
         _transport.write(Arrays.copyOf(frame, frame.length));
-        return true;
     }
 
     @Override
-    public boolean sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean sendData(String src, String dst, byte[] dataPacket) throws IOException {
+    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
         _transport.write(Arrays.copyOf(dataPacket, dataPacket.length));
-        return true;
     }
 
     @Override
-    public boolean receive(Callback callback) throws IOException {
+    public boolean receive() throws IOException {
         int bytesRead = _transport.read(_rxDataBuffer);
         if (bytesRead > 0) {
-            callback.onReceiveCompressedAudio(null, null, -1, Arrays.copyOf(_rxDataBuffer, bytesRead));
+            _parentCallback.onReceiveCompressedAudio(null, null, -1, Arrays.copyOf(_rxDataBuffer, bytesRead));
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
         throw new UnsupportedOperationException();
     }
 

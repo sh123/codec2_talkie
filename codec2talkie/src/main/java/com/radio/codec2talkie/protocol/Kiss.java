@@ -86,6 +86,8 @@ public class Kiss implements Protocol {
 
     private Context _context;
 
+    private Callback _parentCallback;
+
     public Kiss() {
         _transportInputBuffer = new byte[TRANSPORT_INPUT_BUFFER_SIZE];
         _transportOutputBuffer = new byte[TRANSPORT_OUTPUT_BUFFER_SIZE];
@@ -102,10 +104,11 @@ public class Kiss implements Protocol {
     }
 
     @Override
-    public void initialize(Transport transport, Context context) throws IOException {
+    public void initialize(Transport transport, Context context, Callback callback) throws IOException {
 
         Log.i(TAG, "Initializing " + transport.toString());
 
+        _parentCallback = callback;
         _transport = transport;
         _context = context;
 
@@ -198,36 +201,34 @@ public class Kiss implements Protocol {
     };
 
     @Override
-    public boolean sendCompressedAudio(String src, String dst, int codec, byte [] frame) throws IOException {
+    public void sendCompressedAudio(String src, String dst, int codec, byte[] frame) throws IOException {
         // NOTE, KISS does not distinguish between audio and data packet, upper layer should decide
         send(frame);
-        return true;
     }
 
     @Override
-    public boolean sendPcmAudio(String src, String dst, int codec, short[] pcmFrame)  {
+    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame)  {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean sendData(String src, String dst, byte[] dataPacket) throws IOException {
+    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
         // NOTE, KISS does not distinguish between audio and data packet, upper layer should decide
         send(dataPacket);
-        return true;
     }
 
     @Override
-    public boolean receive(Callback callback) throws IOException {
+    public boolean receive() throws IOException {
         int bytesRead = _transport.read(_transportInputBuffer);
         if (bytesRead > 0) {
-            receiveKissData(Arrays.copyOf(_transportInputBuffer, bytesRead), callback);
+            receiveKissData(Arrays.copyOf(_transportInputBuffer, bytesRead), _parentCallback);
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
         throw new UnsupportedOperationException();
     }
 

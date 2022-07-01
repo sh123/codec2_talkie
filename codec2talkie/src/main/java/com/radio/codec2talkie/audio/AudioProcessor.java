@@ -202,13 +202,7 @@ public class AudioProcessor extends Thread {
 
     private void recordAndSendAudioFrame() throws IOException {
         _systemAudioRecorder.read(_recordAudioBuffer, 0, _recordAudioBuffer.length);
-        sendTxAudioLevelUpdate(_recordAudioBuffer);
-        if (_protocol.sendPcmAudio(null, null, _codec2Mode, _recordAudioBuffer)) {
-            sendStatusUpdate(PROCESSOR_TRANSMITTING, null);
-        } else {
-            sendStatusUpdate(PROCESSOR_TX_ERROR, null);
-            Log.e(TAG, "Protocol TX error");
-        }
+        _protocol.sendPcmAudio(null, null, _codec2Mode, _recordAudioBuffer);
     }
 
     private final Callback _protocolCallback = new Callback() {
@@ -241,9 +235,33 @@ public class AudioProcessor extends Thread {
         }
 
         @Override
+        protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
+            String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
+            sendStatusUpdate(PROCESSOR_TRANSMITTING, note);
+            sendTxAudioLevelUpdate(frame);
+        }
+
+        @Override
+        protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void onTransmitData(String src, String dst, byte[] data) {
+            String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
+            sendStatusUpdate(PROCESSOR_TRANSMITTING, note);
+        }
+
+        @Override
         protected void onProtocolRxError() {
             sendStatusUpdate(PROCESSOR_RX_ERROR, null);
             Log.e(TAG, "Protocol RX error");
+        }
+
+        @Override
+        protected void onProtocolTxError() {
+            sendStatusUpdate(PROCESSOR_TX_ERROR, null);
+            Log.e(TAG, "Protocol TX error");
         }
     };
 
@@ -329,7 +347,7 @@ public class AudioProcessor extends Thread {
             recordAndSendAudioFrame();
         } else {
             // playback
-            if (_protocol.receive(_protocolCallback)) {
+            if (_protocol.receive()) {
                 sendStatusUpdate(PROCESSOR_RECEIVING, null);
             }
         }
@@ -387,7 +405,7 @@ public class AudioProcessor extends Thread {
         _systemAudioPlayer.play();
 
         try {
-            _protocol.initialize(_transport, _context);
+            _protocol.initialize(_transport, _context, _protocolCallback);
             startProcessorMessageHandler();
             Looper.loop();
         } catch (IOException e) {

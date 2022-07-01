@@ -8,17 +8,17 @@ import java.io.IOException;
 
 public interface Protocol {
     // init
-    void initialize(Transport transport, Context context) throws IOException;
+    void initialize(Transport transport, Context context, Callback callback) throws IOException;
     // audio
     int getPcmAudioBufferSize();
-    boolean sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException;
-    boolean sendCompressedAudio(String src, String dst, int codec, byte[] frame) throws IOException;
+    void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException;
+    void sendCompressedAudio(String src, String dst, int codec, byte[] frame) throws IOException;
     // data
-    boolean sendData(String src, String dst, byte[] dataPacket) throws IOException;
+    void sendData(String src, String dst, byte[] dataPacket) throws IOException;
     // callback
-    boolean receive(Callback callback) throws IOException;
+    boolean receive() throws IOException;
     // gps
-    boolean sendPosition(double latitude, double longitude, double altitude, float bearing, String comment);
+    void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment);
     // control
     void flush() throws IOException;
     void close();

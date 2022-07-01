@@ -20,13 +20,16 @@ public class Ax25 implements Protocol {
     private String _digipath;
     private boolean _isVoax25Enabled;
 
+    private Callback _parentCallback;
+
     public Ax25(Protocol childProtocol) {
         _childProtocol = childProtocol;
     }
 
     @Override
-    public void initialize(Transport transport, Context context) throws IOException {
-        _childProtocol.initialize(transport, context);
+    public void initialize(Transport transport, Context context, Callback callback) throws IOException {
+        _parentCallback = callback;
+        _childProtocol.initialize(transport, context, _protocolCallback);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         // NOTE, may need to pass through sendData/sendAudio
         _digipath = sharedPreferences.getString(PreferenceKeys.APRS_DIGIPATH, "");
@@ -39,7 +42,7 @@ public class Ax25 implements Protocol {
     }
 
     @Override
-    public boolean sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
         if (_isVoax25Enabled) {
             AX25Packet ax25Packet = new AX25Packet();
             ax25Packet.src = src;
@@ -51,22 +54,22 @@ public class Ax25 implements Protocol {
             byte[] ax25Frame = ax25Packet.toBinary();
             if (ax25Frame == null) {
                 Log.e(TAG, "Invalid source data for AX.25");
-                return false;
+                _parentCallback.onProtocolTxError();
             } else {
-                return _childProtocol.sendCompressedAudio(src, dst, codec2Mode, ax25Frame);
+                _childProtocol.sendCompressedAudio(src, dst, codec2Mode, ax25Frame);
             }
         } else {
-            return _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
+            _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
         }
     }
 
     @Override
-    public boolean sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean sendData(String src, String dst, byte[] dataPacket) throws IOException {
+    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
         AX25Packet ax25Packet = new AX25Packet();
         ax25Packet.src = src;
         ax25Packet.dst = dst;
@@ -76,60 +79,82 @@ public class Ax25 implements Protocol {
         byte[] ax25Frame = ax25Packet.toBinary();
         if (ax25Frame == null) {
             Log.e(TAG, "Invalid source data for AX.25");
-            return false;
+            _parentCallback.onProtocolTxError();
         } else {
-            return _childProtocol.sendData(src, dst, dataPacket);
+            _childProtocol.sendData(src, dst, dataPacket);
         }
     }
 
     @Override
-    public boolean receive(Callback parentCallback) throws IOException {
-        return _childProtocol.receive(new Callback() {
-            @Override
-            protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
-                AX25Packet ax25Data = new AX25Packet();
-                ax25Data.fromBinary(audioFrames);
-                if (ax25Data.isValid) {
-                    if (ax25Data.isAudio) {
-                        parentCallback.onReceiveCompressedAudio(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, ax25Data.rawData);
-                    } else {
-                        parentCallback.onReceiveData(ax25Data.src, ax25Data.dst, audioFrames);
-                    }
-                } else {
-                    // fallback to raw audio is ax25 frame is invalid
-                    parentCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
-                }
-            }
-
-            @Override
-            protected void onReceiveData(String src, String dst, byte[] data) {
-                parentCallback.onReceiveData(src, dst, data);
-            }
-
-            @Override
-            protected void onReceiveSignalLevel(short rssi, short snr) {
-                parentCallback.onReceiveSignalLevel(rssi, snr);
-            }
-
-            @Override
-            protected void onProtocolRxError() {
-                parentCallback.onProtocolRxError();
-            }
-        });
+    public boolean receive() throws IOException {
+        return _childProtocol.receive();
     }
 
+    Callback _protocolCallback = new Callback() {
+        @Override
+        protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
+            AX25Packet ax25Data = new AX25Packet();
+            ax25Data.fromBinary(audioFrames);
+            if (ax25Data.isValid) {
+                if (ax25Data.isAudio) {
+                    _parentCallback.onReceiveCompressedAudio(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, ax25Data.rawData);
+                } else {
+                    _parentCallback.onReceiveData(ax25Data.src, ax25Data.dst, audioFrames);
+                }
+            } else {
+                // fallback to raw audio if ax25 frame is invalid
+                _parentCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
+            }
+        }
+
+        @Override
+        protected void onReceiveData(String src, String dst, byte[] data) {
+            _parentCallback.onReceiveData(src, dst, data);
+        }
+
+        @Override
+        protected void onReceiveSignalLevel(short rssi, short snr) {
+            _parentCallback.onReceiveSignalLevel(rssi, snr);
+        }
+
+        @Override
+        protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
+            _parentCallback.onTransmitPcmAudio(src, dst, codec, frame);
+        }
+
+        @Override
+        protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
+            _parentCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        }
+
+        @Override
+        protected void onTransmitData(String src, String dst, byte[] data) {
+            _parentCallback.onTransmitData(src, dst, data);
+        }
+
+        @Override
+        protected void onProtocolRxError() {
+            _parentCallback.onProtocolRxError();
+        }
+
+        @Override
+        protected void onProtocolTxError() {
+            _parentCallback.onProtocolTxError();
+        }
+    };
+
     @Override
-    public boolean sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
         throw new UnsupportedOperationException();
     }
 

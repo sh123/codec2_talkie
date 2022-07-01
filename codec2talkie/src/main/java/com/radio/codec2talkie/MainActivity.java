@@ -426,6 +426,9 @@ public class MainActivity extends AppCompatActivity {
                     _textStatus.setText("");
                     break;
                 case AudioProcessor.PROCESSOR_TRANSMITTING:
+                    if (msg.obj != null) {
+                        _textStatus.setText((String) msg.obj);
+                    }
                     _btnPtt.setText(R.string.main_status_tx);
                     break;
                 case AudioProcessor.PROCESSOR_RECEIVING:
@@ -539,6 +542,12 @@ public class MainActivity extends AppCompatActivity {
         boolean aprsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
         if (aprsEnabled) {
             status += getString(R.string.aprs_label);
+        }
+
+        // VoAX25
+        boolean voax25Enabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_VOAX25_ENABLE, false);
+        if (voax25Enabled) {
+            status += getString(R.string.voax25_label);
         }
         if (status.length() == 0) {
             return protocolType.toString();

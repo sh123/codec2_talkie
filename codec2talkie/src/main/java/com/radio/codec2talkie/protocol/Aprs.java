@@ -18,15 +18,21 @@ public class Aprs implements Protocol {
     private String _srcCallsign;
     private String _dstCallsign;
 
+    private Callback _parentCallback;
+
+    boolean _isVoax25Enabled;
+
     public Aprs(Protocol childProtocol) {
         _childProtocol = childProtocol;
     }
 
     @Override
-    public void initialize(Transport transport, Context context) throws IOException {
-        _childProtocol.initialize(transport, context);
+    public void initialize(Transport transport, Context context, Callback callback) throws IOException {
+        _parentCallback = callback;
+        _childProtocol.initialize(transport, context, _protocolCallback);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        _isVoax25Enabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_VOAX25_ENABLE, false);
         _srcCallsign = sharedPreferences.getString(PreferenceKeys.APRS_CALLSIGN, "NOCALL") + "-" +
                 sharedPreferences.getString(PreferenceKeys.APRS_SSID, "0");
         _dstCallsign = "APZMDM";
@@ -38,61 +44,87 @@ public class Aprs implements Protocol {
     }
 
     @Override
-    public boolean sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) {
+    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean sendPcmAudio(String src, String dst, int codec2Mode, short[] pcmFrame) throws IOException {
-        return _childProtocol.sendPcmAudio(src == null ? _srcCallsign : src, dst == null ? _dstCallsign : dst, codec2Mode, pcmFrame);
+    public void sendPcmAudio(String src, String dst, int codec2Mode, short[] pcmFrame) throws IOException {
+        if (_isVoax25Enabled) {
+            _childProtocol.sendPcmAudio(src == null ? _srcCallsign : src, dst == null ? _dstCallsign : dst, codec2Mode, pcmFrame);
+        } else {
+            _childProtocol.sendPcmAudio(src, dst, codec2Mode, pcmFrame);
+        }
     }
 
     @Override
-    public boolean sendData(String src, String dst, byte[] dataPacket) throws IOException {
-        return _childProtocol.sendData(src == null ? _srcCallsign : src, dst == null ? _dstCallsign : dst, dataPacket);
+    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
+        _childProtocol.sendData(src == null ? _srcCallsign : src, dst == null ? _dstCallsign : dst, dataPacket);
     }
 
     @Override
-    public boolean receive(Callback parentCallback) throws IOException {
-        return _childProtocol.receive(new Callback() {
-            @Override
-            protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-                String dstCallsign = AprsTools.isAprsSoftwareCallsign(dst) ? "ALL" : dst;
-                parentCallback.onReceivePcmAudio(src, dstCallsign, codec, pcmFrame);
-            }
-
-            @Override
-            protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            protected void onReceiveData(String src, String dst, byte[] data) {
-                // process aprs data and call onReceivePosition if position packet is received
-                parentCallback.onReceiveData(src, dst, data);
-            }
-
-            @Override
-            protected void onReceiveSignalLevel(short rssi, short snr) {
-                parentCallback.onReceiveSignalLevel(rssi, snr);
-            }
-
-            @Override
-            protected void onProtocolRxError() {
-                parentCallback.onProtocolRxError();
-            }
-        });
+    public boolean receive() throws IOException {
+        return _childProtocol.receive();
     }
 
+    Callback _protocolCallback = new Callback() {
+        @Override
+        protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+            String dstCallsign = AprsTools.isAprsSoftwareCallsign(dst) ? "ALL" : dst;
+            _parentCallback.onReceivePcmAudio(src, dstCallsign, codec, pcmFrame);
+        }
+
+        @Override
+        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void onReceiveData(String src, String dst, byte[] data) {
+            // process aprs data and call onReceivePosition if position packet is received
+            _parentCallback.onReceiveData(src, dst, data);
+        }
+
+        @Override
+        protected void onReceiveSignalLevel(short rssi, short snr) {
+            _parentCallback.onReceiveSignalLevel(rssi, snr);
+        }
+
+        @Override
+        protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
+            String dstCallsign = AprsTools.isAprsSoftwareCallsign(dst) ? "ALL" : dst;
+            _parentCallback.onTransmitPcmAudio(src, dstCallsign, codec, frame);
+        }
+
+        @Override
+        protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
+            _parentCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        }
+
+        @Override
+        protected void onTransmitData(String src, String dst, byte[] data) {
+            _parentCallback.onTransmitData(src, dst, data);
+        }
+
+        @Override
+        protected void onProtocolRxError() {
+            _parentCallback.onProtocolRxError();
+        }
+
+        @Override
+        protected void onProtocolTxError() {
+            _parentCallback.onProtocolTxError();
+        }
+    };
+
     @Override
-    public boolean sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
         // TODO, implement
-        return true;
     }
 
     @Override

@@ -28,6 +28,7 @@ public class Scrambler implements Protocol {
     private final String _scramblingKey;
 
     private int _iterationsCount;
+    private Callback _parentCallback;
 
     public Scrambler(Protocol childProtocol, String scramblingKey) {
         _childProtocol = childProtocol;
@@ -35,10 +36,11 @@ public class Scrambler implements Protocol {
     }
 
     @Override
-    public void initialize(Transport transport, Context context) throws IOException {
+    public void initialize(Transport transport, Context context, Callback callback) throws IOException {
+        _parentCallback = callback;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         _iterationsCount = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_SCRAMBLER_ITERATIONS, "1000"));
-        _childProtocol.initialize(transport, context);
+        _childProtocol.initialize(transport, context, _protocolCallback);
     }
 
     @Override
@@ -47,78 +49,100 @@ public class Scrambler implements Protocol {
     }
 
     @Override
-    public boolean sendCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) throws IOException {
+    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) throws IOException {
         byte[] result = scramble(audioFrame);
         if (result == null) {
-            return false;
+            _parentCallback.onProtocolTxError();
         } else {
-            return _childProtocol.sendData(src, dst, result);
+            _childProtocol.sendData(src, dst, result);
         }
     }
 
     @Override
-    public boolean sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean sendData(String src, String dst, byte[] dataPacket) throws IOException {
+    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
         byte[] result = scramble(dataPacket);
         if (result == null) {
-            return false;
+            _parentCallback.onProtocolTxError();
         } else {
-            return _childProtocol.sendData(src, dst, result);
+            _childProtocol.sendData(src, dst, result);
         }
     }
 
     @Override
-    public boolean receive(Callback parentCallback) throws IOException {
-        return _childProtocol.receive(new Callback() {
-            @Override
-            protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] scrambledFrame) {
-
-                byte[] audioFrames = unscramble(scrambledFrame);
-                if (audioFrames == null) {
-                    parentCallback.onProtocolRxError();
-                } else {
-                    parentCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
-                }
-            }
-
-            @Override
-            protected void onReceiveData(String src, String dst, byte[] scrambledData) {
-                byte[] data = unscramble(scrambledData);
-                if (data == null) {
-                    parentCallback.onProtocolRxError();
-                } else {
-                    parentCallback.onReceiveData(src, dst, data);
-                }
-            }
-
-            @Override
-            protected void onReceiveSignalLevel(short rssi, short snr) {
-                parentCallback.onReceiveSignalLevel(rssi, snr);
-            }
-
-            @Override
-            protected void onProtocolRxError() {
-                parentCallback.onProtocolRxError();
-            }
-        });
+    public boolean receive() throws IOException {
+        return _childProtocol.receive();
     }
 
+    Callback _protocolCallback = new Callback() {
+        @Override
+        protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] scrambledFrame) {
+
+            byte[] audioFrames = unscramble(scrambledFrame);
+            if (audioFrames == null) {
+                _parentCallback.onProtocolRxError();
+            } else {
+                _parentCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
+            }
+        }
+
+        @Override
+        protected void onReceiveData(String src, String dst, byte[] scrambledData) {
+            byte[] data = unscramble(scrambledData);
+            if (data == null) {
+                _parentCallback.onProtocolRxError();
+            } else {
+                _parentCallback.onReceiveData(src, dst, data);
+            }
+        }
+
+        @Override
+        protected void onReceiveSignalLevel(short rssi, short snr) {
+            _parentCallback.onReceiveSignalLevel(rssi, snr);
+        }
+
+        @Override
+        protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
+            _parentCallback.onTransmitPcmAudio(src, dst, codec, frame);
+        }
+
+        @Override
+        protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
+            _parentCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        }
+
+        @Override
+        protected void onTransmitData(String src, String dst, byte[] data) {
+            _parentCallback.onTransmitData(src, dst, data);
+        }
+
+        @Override
+        protected void onProtocolRxError() {
+            _parentCallback.onProtocolRxError();
+        }
+
+        @Override
+        protected void onProtocolTxError() {
+            _parentCallback.onProtocolTxError();
+        }
+    };
+
     @Override
-    public boolean sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
         throw new UnsupportedOperationException();
     }
 
