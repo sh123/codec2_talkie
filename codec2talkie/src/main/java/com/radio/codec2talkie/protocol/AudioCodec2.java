@@ -35,12 +35,12 @@ public class AudioCodec2 implements Protocol {
     }
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) {
+    public boolean sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec2Mode, short[] pcmFrame) throws IOException {
+    public boolean sendPcmAudio(String src, String dst, int codec2Mode, short[] pcmFrame) throws IOException {
         Codec2.encode(_codec2Con, pcmFrame, _recordAudioEncodedBuffer);
 
         byte [] frame = new byte[_recordAudioEncodedBuffer.length];
@@ -48,12 +48,12 @@ public class AudioCodec2 implements Protocol {
         for (int i = 0; i < _recordAudioEncodedBuffer.length; i++) {
             frame[i] = (byte)_recordAudioEncodedBuffer[i];
         }
-        _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
+        return _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
     }
 
     @Override
-    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
-        _childProtocol.sendData(src, dst, dataPacket);
+    public boolean sendData(String src, String dst, byte[] dataPacket) throws IOException {
+        return _childProtocol.sendData(src, dst, dataPacket);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class AudioCodec2 implements Protocol {
     }
 
     @Override
-    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+    public boolean sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
         throw new UnsupportedOperationException();
     }
 

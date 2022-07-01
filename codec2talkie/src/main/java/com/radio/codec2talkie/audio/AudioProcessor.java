@@ -34,13 +34,14 @@ public class AudioProcessor extends Thread {
     public static final int PROCESSOR_DISCONNECTED = 1;
     public static final int PROCESSOR_CONNECTED = 2;
     public static final int PROCESSOR_LISTENING = 3;
-    public static final int PROCESSOR_RECORDING = 4;
+    public static final int PROCESSOR_TRANSMITTING = 4;
     public static final int PROCESSOR_RECEIVING = 5;
     public static final int PROCESSOR_PLAYING = 6;
     public static final int PROCESSOR_RX_LEVEL = 7;
     public static final int PROCESSOR_TX_LEVEL = 8;
     public static final int PROCESSOR_RX_ERROR = 9;
-    public static final int PROCESSOR_RX_RADIO_LEVEL = 10;
+    public static final int PROCESSOR_TX_ERROR = 10;
+    public static final int PROCESSOR_RX_RADIO_LEVEL = 11;
 
     public static final int PROCESSOR_PROCESS = 11;
     public static final int PROCESSOR_QUIT = 12;
@@ -201,11 +202,14 @@ public class AudioProcessor extends Thread {
     }
 
     private void recordAndSendAudioFrame() throws IOException {
-        sendStatusUpdate(PROCESSOR_RECORDING);
-
         _systemAudioRecorder.read(_recordAudioBuffer, 0, _recordAudioBuffer.length);
         sendTxAudioLevelUpdate(_recordAudioBuffer);
-        _protocol.sendPcmAudio(null, null, _codec2Mode, _recordAudioBuffer);
+        if (_protocol.sendPcmAudio(null, null, _codec2Mode, _recordAudioBuffer)) {
+            sendStatusUpdate(PROCESSOR_TRANSMITTING);
+        } else {
+            sendStatusUpdate(PROCESSOR_TX_ERROR);
+            Log.e(TAG, "Protocol TX error");
+        }
     }
 
     private final Callback _protocolReceiveCallback = new Callback() {

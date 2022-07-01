@@ -47,23 +47,27 @@ public class Scrambler implements Protocol {
     }
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) throws IOException {
+    public boolean sendCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) throws IOException {
         byte[] result = scramble(audioFrame);
-        if (result != null) {
-            _childProtocol.sendData(src, dst, result);
+        if (result == null) {
+            return false;
+        } else {
+            return _childProtocol.sendData(src, dst, result);
         }
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+    public boolean sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
+    public boolean sendData(String src, String dst, byte[] dataPacket) throws IOException {
         byte[] result = scramble(dataPacket);
-        if (result != null) {
-            _childProtocol.sendData(src, dst, result);
+        if (result == null) {
+            return false;
+        } else {
+            return _childProtocol.sendData(src, dst, result);
         }
     }
 
@@ -114,7 +118,7 @@ public class Scrambler implements Protocol {
     }
 
     @Override
-    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+    public boolean sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
         throw new UnsupportedOperationException();
     }
 
@@ -166,7 +170,7 @@ public class Scrambler implements Protocol {
         System.arraycopy(scrambledData, data.iv.length, data.salt, 0, data.salt.length);
         System.arraycopy(scrambledData, data.iv.length + data.salt.length, data.scrambledData, 0, data.scrambledData.length);
 
-        byte[] unscrambledData = null;
+        byte[] unscrambledData;
         try {
             unscrambledData = ScramblingTools.unscramble(_scramblingKey, data, _iterationsCount);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |

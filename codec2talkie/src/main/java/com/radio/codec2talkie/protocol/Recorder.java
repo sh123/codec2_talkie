@@ -54,20 +54,20 @@ public class Recorder implements Protocol {
     }
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+    public boolean sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
         rotateIfNewSrcOrDstCallsign(src, dst);
-        _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
         writeToFile(src, dst, codec2Mode, frame);
+        return _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+    public boolean sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
-        _childProtocol.sendData(src, dst, dataPacket);
+    public boolean sendData(String src, String dst, byte[] dataPacket) throws IOException {
+        return _childProtocol.sendData(src, dst, dataPacket);
     }
 
     @Override
@@ -108,7 +108,7 @@ public class Recorder implements Protocol {
     }
 
     @Override
-    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+    public boolean sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
         throw new UnsupportedOperationException();
     }
 

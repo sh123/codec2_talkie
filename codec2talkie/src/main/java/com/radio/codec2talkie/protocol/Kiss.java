@@ -196,20 +196,22 @@ public class Kiss implements Protocol {
     };
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec, byte [] frame) throws IOException {
+    public boolean sendCompressedAudio(String src, String dst, int codec, byte [] frame) throws IOException {
         // NOTE, KISS does not distinguish between audio and data packet, upper layer should decide
         send(frame);
+        return true;
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame)  {
-        // not supported
+    public boolean sendPcmAudio(String src, String dst, int codec, short[] pcmFrame)  {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
+    public boolean sendData(String src, String dst, byte[] dataPacket) throws IOException {
         // NOTE, KISS does not distinguish between audio and data packet, upper layer should decide
         send(dataPacket);
+        return true;
     }
 
     @Override
@@ -223,7 +225,7 @@ public class Kiss implements Protocol {
     }
 
     @Override
-    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+    public boolean sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
         throw new UnsupportedOperationException();
     }
 

@@ -296,12 +296,15 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         else if (itemId == R.id.send_position) {
+            Toast.makeText(getBaseContext(), "Not implemented", Toast.LENGTH_SHORT).show();
             return true;
         }
         else if (itemId == R.id.start_tracking) {
+            Toast.makeText(getBaseContext(), "Not implemented", Toast.LENGTH_SHORT).show();
             return true;
         }
         else if (itemId == R.id.messages) {
+            Toast.makeText(getBaseContext(), "Not implemented", Toast.LENGTH_SHORT).show();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -421,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
                 case AudioProcessor.PROCESSOR_LISTENING:
                     _btnPtt.setText(R.string.push_to_talk);
                     break;
-                case AudioProcessor.PROCESSOR_RECORDING:
+                case AudioProcessor.PROCESSOR_TRANSMITTING:
                     _btnPtt.setText(R.string.main_status_tx);
                     break;
                 case AudioProcessor.PROCESSOR_RECEIVING:
@@ -449,6 +452,9 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case AudioProcessor.PROCESSOR_RX_ERROR:
                     _btnPtt.setText(R.string.main_status_rx_error);
+                    break;
+                case AudioProcessor.PROCESSOR_TX_ERROR:
+                    _btnPtt.setText(R.string.main_status_tx_error);
                     break;
             }
         }

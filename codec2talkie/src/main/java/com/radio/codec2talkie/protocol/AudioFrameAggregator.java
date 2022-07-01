@@ -23,8 +23,8 @@ public class AudioFrameAggregator implements Protocol {
     private int _outputBufferPos;
     private byte[] _outputBuffer;
 
-    private int _codec2FrameSize;
-    private int _codec2ModeId;
+    private final int _codec2FrameSize;
+    private final int _codec2ModeId;
 
     private String _lastSrc;
     private String _lastDst;
@@ -58,9 +58,10 @@ public class AudioFrameAggregator implements Protocol {
     }
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+    public boolean sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+        boolean isSuccess = true;
         if ( _outputBufferPos + frame.length >= _outputBufferSize) {
-            _childProtocol.sendCompressedAudio(src, dst, codec2Mode, Arrays.copyOf(_outputBuffer, _outputBufferPos));
+            isSuccess = _childProtocol.sendCompressedAudio(src, dst, codec2Mode, Arrays.copyOf(_outputBuffer, _outputBufferPos));
             _lastSrc = src;
             _lastDst = dst;
             _lastCodec2Mode = codec2Mode;
@@ -68,16 +69,17 @@ public class AudioFrameAggregator implements Protocol {
         }
         System.arraycopy(frame, 0, _outputBuffer, _outputBufferPos, frame.length);
         _outputBufferPos += frame.length;
+        return isSuccess;
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+    public boolean sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
-        _childProtocol.sendData(src, dst, dataPacket);
+    public boolean sendData(String src, String dst, byte[] dataPacket) throws IOException {
+        return _childProtocol.sendData(src, dst, dataPacket);
     }
 
     @Override
@@ -128,7 +130,7 @@ public class AudioFrameAggregator implements Protocol {
     }
 
     @Override
-    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+    public boolean sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
         throw new UnsupportedOperationException();
     }
 

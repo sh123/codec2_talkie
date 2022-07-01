@@ -11,14 +11,14 @@ public interface Protocol {
     void initialize(Transport transport, Context context) throws IOException;
     // audio
     int getPcmAudioBufferSize();
-    void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException;
-    void sendCompressedAudio(String src, String dst, int codec, byte[] frame) throws IOException;
+    boolean sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException;
+    boolean sendCompressedAudio(String src, String dst, int codec, byte[] frame) throws IOException;
     // data
-    void sendData(String src, String dst, byte[] dataPacket) throws IOException;
+    boolean sendData(String src, String dst, byte[] dataPacket) throws IOException;
     // callback
     boolean receive(Callback callback) throws IOException;
     // gps
-    void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment);
+    boolean sendPosition(double latitude, double longitude, double altitude, float bearing, String comment);
     // control
     void flush() throws IOException;
     void close();
