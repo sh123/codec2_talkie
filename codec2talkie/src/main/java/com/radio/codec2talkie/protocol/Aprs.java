@@ -52,7 +52,7 @@ public class Aprs implements Protocol {
     }
 
     @Override
-    public boolean receive(Callback callback) throws IOException {
+    public boolean receive(Callback parentCallback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
             protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
@@ -61,7 +61,7 @@ public class Aprs implements Protocol {
 
             @Override
             protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-                callback.onReceivePcmAudio(src, dst, codec, pcmFrame);
+                parentCallback.onReceivePcmAudio(src, dst, codec, pcmFrame);
             }
 
             @Override
@@ -72,17 +72,17 @@ public class Aprs implements Protocol {
             @Override
             protected void onReceiveData(String src, String dst, byte[] data) {
                 // process aprs data and call onReceivePosition if position packet is received
-                callback.onReceiveData(src, dst, data);
+                parentCallback.onReceiveData(src, dst, data);
             }
 
             @Override
             protected void onReceiveSignalLevel(short rssi, short snr) {
-                callback.onReceiveSignalLevel(rssi, snr);
+                parentCallback.onReceiveSignalLevel(rssi, snr);
             }
 
             @Override
             protected void onProtocolRxError() {
-                callback.onProtocolRxError();
+                parentCallback.onProtocolRxError();
             }
         });
     }

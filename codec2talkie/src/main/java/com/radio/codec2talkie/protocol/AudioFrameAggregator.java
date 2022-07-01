@@ -83,7 +83,7 @@ public class AudioFrameAggregator implements Protocol {
     }
 
     @Override
-    public boolean receive(Callback callback) throws IOException {
+    public boolean receive(Callback parentCallback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
             protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
@@ -99,7 +99,7 @@ public class AudioFrameAggregator implements Protocol {
             protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
                 if (audioFrames.length % _codec2FrameSize != 0) {
                     Log.e(TAG, "Ignoring audio frame of wrong size: " + audioFrames.length);
-                    callback.onProtocolRxError();
+                    parentCallback.onProtocolRxError();
                 } else {
                     // split by audio frame
                     byte[] audioFrame = new byte[_codec2FrameSize];
@@ -107,24 +107,24 @@ public class AudioFrameAggregator implements Protocol {
                         for (int j = 0; j < _codec2FrameSize && (j + i) < audioFrames.length; j++) {
                             audioFrame[j] = audioFrames[i + j];
                         }
-                        callback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrame);
+                        parentCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrame);
                     }
                 }
             }
 
             @Override
             protected void onReceiveData(String src, String dst, byte[] data) {
-                callback.onReceiveData(src, dst, data);
+                parentCallback.onReceiveData(src, dst, data);
             }
 
             @Override
             protected void onReceiveSignalLevel(short rssi, short snr) {
-                callback.onReceiveSignalLevel(rssi, snr);
+                parentCallback.onReceiveSignalLevel(rssi, snr);
             }
 
             @Override
             protected void onProtocolRxError() {
-                callback.onProtocolRxError();
+                parentCallback.onProtocolRxError();
             }
         });
     }

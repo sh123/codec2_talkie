@@ -83,7 +83,7 @@ public class Ax25 implements Protocol {
     }
 
     @Override
-    public boolean receive(Callback callback) throws IOException {
+    public boolean receive(Callback parentCallback) throws IOException {
         return _childProtocol.receive(new Callback() {
             @Override
             protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
@@ -101,29 +101,29 @@ public class Ax25 implements Protocol {
                 ax25Data.fromBinary(audioFrames);
                 if (ax25Data.isValid) {
                     if (ax25Data.isAudio) {
-                        callback.onReceiveCompressedAudio(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, ax25Data.rawData);
+                        parentCallback.onReceiveCompressedAudio(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, ax25Data.rawData);
                     } else {
-                        callback.onReceiveData(ax25Data.src, ax25Data.dst, audioFrames);
+                        parentCallback.onReceiveData(ax25Data.src, ax25Data.dst, audioFrames);
                     }
                 } else {
                     // fallback to raw audio is ax25 frame is invalid
-                    callback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
+                    parentCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
                 }
             }
 
             @Override
             protected void onReceiveData(String src, String dst, byte[] data) {
-                callback.onReceiveData(src, dst, data);
+                parentCallback.onReceiveData(src, dst, data);
             }
 
             @Override
             protected void onReceiveSignalLevel(short rssi, short snr) {
-                callback.onReceiveSignalLevel(rssi, snr);
+                parentCallback.onReceiveSignalLevel(rssi, snr);
             }
 
             @Override
             protected void onProtocolRxError() {
-                callback.onProtocolRxError();
+                parentCallback.onProtocolRxError();
             }
         });
     }

@@ -15,7 +15,6 @@ import android.util.Log;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -210,7 +209,7 @@ public class AudioProcessor extends Thread {
         }
     }
 
-    private final Callback _protocolReceiveCallback = new Callback() {
+    private final Callback _protocolCallback = new Callback() {
         @Override
         protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
             throw new UnsupportedOperationException();
@@ -327,7 +326,7 @@ public class AudioProcessor extends Thread {
             recordAndSendAudioFrame();
         } else {
             // playback
-            if (_protocol.receive(_protocolReceiveCallback)) {
+            if (_protocol.receive(_protocolCallback)) {
                 sendStatusUpdate(PROCESSOR_RECEIVING);
             }
         }
