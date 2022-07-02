@@ -1,7 +1,7 @@
 package com.radio.codec2talkie.protocol.aprs;
 
 import com.radio.codec2talkie.protocol.position.Position;
-import com.radio.codec2talkie.tools.CoordinateTools;
+import com.radio.codec2talkie.tools.UnitTools;
 
 import java.nio.ByteBuffer;
 import java.util.Locale;
@@ -20,6 +20,11 @@ public class AprsDataPositionReport implements AprsData {
         buffer.putChar('!');
         buffer.put(getUncompressedNmeaCoordinate(position).getBytes());
         // put altitude, course
+        if (position.isAltitudeEnabled && position.altitudeMeters >= 0) {
+            buffer.put(String.format(Locale.US, "/A=%05d", UnitTools.metersToFeet(position.altitudeMeters)).getBytes());
+        }
+        if (position.isSpeedBearingEnabled) {
+        }
         buffer.put(position.comment.getBytes());
         buffer.flip();
         _binary = new byte[buffer.remaining()];
@@ -57,10 +62,10 @@ public class AprsDataPositionReport implements AprsData {
 
     private String getUncompressedNmeaCoordinate(Position position) {
         String latitude = applyPrivacyOnNmeaCoordinate(
-                CoordinateTools.decimalToNmea(position.latitude, true),
+                UnitTools.decimalToNmea(position.latitude, true),
                 position.privacyLevel);
         String longitude = applyPrivacyOnNmeaCoordinate(
-                CoordinateTools.decimalToNmea(position.latitude, false),
+                UnitTools.decimalToNmea(position.latitude, false),
                 position.privacyLevel);
         byte[] symbol = position.symbolCode.getBytes();
         return String.format(Locale.US, "%s%c%s%c", latitude, symbol[0], longitude, symbol[1]);

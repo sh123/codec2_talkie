@@ -32,6 +32,8 @@ public class Aprs implements Protocol {
     private String _comment;
     private boolean _isVoax25Enabled;
     private boolean _isCompressed;
+    private boolean _isBearingCourseEnabled;
+    private boolean _isAltitudeEnabled;
     private int _privacyLevel;
 
     private AprsDataType _positionDataType;
@@ -58,6 +60,8 @@ public class Aprs implements Protocol {
         _status = sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_MIC_E_MESSAGE_TYPE, "off_duty");
         _comment = sharedPreferences.getString(PreferenceKeys.APRS_COMMENT, "off_duty");
         _privacyLevel = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_PRIVACY_POSITION_AMBIGUITY, "0"));
+        _isAltitudeEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_PRIVACY_ALTITUDE_ENABLED, false);
+        _isBearingCourseEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_PRIVACY_SPEED_ENABLED, false);
         _isCompressed = packetFormat.equals("compressed");
 
         AprsDataType.DataType dataType = packetFormat.equals("mic_e") ?
@@ -176,6 +180,8 @@ public class Aprs implements Protocol {
         position.status = _status;
         position.isCompressed = _isCompressed;
         position.privacyLevel = _privacyLevel;
+        position.isSpeedBearingEnabled = _isBearingCourseEnabled;
+        position.isAltitudeEnabled = _isAltitudeEnabled;
         AprsData aprsData = AprsDataFactory.create(_positionDataType);
         if (aprsData != null) {
             aprsData.fromPosition(position);

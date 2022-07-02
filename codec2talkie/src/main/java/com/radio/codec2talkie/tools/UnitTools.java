@@ -2,7 +2,7 @@ package com.radio.codec2talkie.tools;
 
 import java.util.Locale;
 
-public class CoordinateTools {
+public class UnitTools {
 
     public static String decimalToNmea(double degrees, boolean isLatitude) {
         double degreesFractional = Math.abs(degrees) % 1;
@@ -15,5 +15,9 @@ public class CoordinateTools {
                 isLatitude ? "%.2f%c" : "0%.2f%c",
                 nmeaDouble,
                 isLatitude ? (degrees > 0 ? 'N' : 'S') : (degrees > 0 ? 'E' : 'W'));
+    }
+
+    public static long metersToFeet(double meters) {
+        return (long)(meters * 3.2808);
     }
 }
