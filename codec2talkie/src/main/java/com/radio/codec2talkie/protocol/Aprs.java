@@ -112,7 +112,14 @@ public class Aprs implements Protocol {
 
         @Override
         protected void onReceiveData(String src, String dst, byte[] data) {
-            // process aprs data and call onReceivePosition if position packet is received
+            AprsData aprsData = AprsDataFactory.fromBinary(data);
+            if (aprsData != null && aprsData.isValid()) {
+                Position position = aprsData.toPosition();
+                if (position != null) {
+                    _parentCallback.onReceivePosition(position);
+                    return;
+                }
+            }
             _parentCallback.onReceiveData(src, dst, data);
         }
 
