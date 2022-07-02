@@ -7,7 +7,8 @@ public class Position {
     public double latitude;
     public double longitude;
     public double altitudeMeters;
-    public float bearing;
+    public float bearingDegrees;
+    public float speedMetersPerSecond;
     public String status;
     public String comment;
     public String symbolCode;

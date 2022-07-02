@@ -19,11 +19,15 @@ public class AprsDataPositionReport implements AprsData {
         ByteBuffer buffer = ByteBuffer.allocate(256);
         buffer.putChar('!');
         buffer.put(getUncompressedNmeaCoordinate(position).getBytes());
-        // put altitude, course
-        if (position.isAltitudeEnabled && position.altitudeMeters >= 0) {
-            buffer.put(String.format(Locale.US, "/A=%05d", UnitTools.metersToFeet(position.altitudeMeters)).getBytes());
-        }
+        // put course altitude
         if (position.isSpeedBearingEnabled) {
+            buffer.put(String.format(Locale.US, "%03d/%03d",
+                    (int)position.bearingDegrees,
+                    UnitTools.metersPerSecondToKnots(position.speedMetersPerSecond)).getBytes());
+        }
+        if (position.isAltitudeEnabled && position.altitudeMeters >= 0) {
+            buffer.put(String.format(Locale.US, "/A=%05d",
+                    UnitTools.metersToFeet(position.altitudeMeters)).getBytes());
         }
         buffer.put(position.comment.getBytes());
         buffer.flip();

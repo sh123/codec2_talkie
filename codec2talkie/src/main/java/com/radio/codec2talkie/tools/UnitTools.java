@@ -20,4 +20,8 @@ public class UnitTools {
     public static long metersToFeet(double meters) {
         return (long)(meters * 3.2808);
     }
+
+    public static long metersPerSecondToKnots(float metersPerSecond) {
+        return (long)(metersPerSecond / 0.514444);
+    }
 }
