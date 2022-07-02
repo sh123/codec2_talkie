@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.radio.codec2talkie.MainActivity;
+import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.tools.StorageTools;
 import com.radio.codec2talkie.transport.Transport;
 
@@ -80,7 +81,7 @@ public class Recorder implements Protocol {
 
     Callback _protocolCallback = new Callback() {
         @Override
-        protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
+        protected void onReceivePosition(Position position) {
             throw new UnsupportedOperationException();
         }
 
@@ -143,7 +144,7 @@ public class Recorder implements Protocol {
     };
 
     @Override
-    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+    public void sendPosition(Position position) {
         throw new UnsupportedOperationException();
     }
 

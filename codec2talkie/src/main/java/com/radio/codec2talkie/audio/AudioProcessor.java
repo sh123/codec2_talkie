@@ -21,6 +21,7 @@ import java.util.TimerTask;
 import com.radio.codec2talkie.protocol.Callback;
 import com.radio.codec2talkie.protocol.Protocol;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
+import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.transport.Transport;
@@ -207,7 +208,7 @@ public class AudioProcessor extends Thread {
 
     private final Callback _protocolCallback = new Callback() {
         @Override
-        protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
+        protected void onReceivePosition(Position position) {
             throw new UnsupportedOperationException();
         }
 

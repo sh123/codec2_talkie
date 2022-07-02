@@ -307,6 +307,10 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getBaseContext(), "Not implemented", Toast.LENGTH_SHORT).show();
             return true;
         }
+        else if (itemId == R.id.aprs_log) {
+            Toast.makeText(getBaseContext(), "Not implemented", Toast.LENGTH_SHORT).show();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 

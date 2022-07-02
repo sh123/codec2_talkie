@@ -2,6 +2,7 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 
+import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ public interface Protocol {
     // callback
     boolean receive() throws IOException;
     // gps
-    void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment);
+    void sendPosition(Position position) throws IOException;
     // control
     void flush() throws IOException;
     void close();

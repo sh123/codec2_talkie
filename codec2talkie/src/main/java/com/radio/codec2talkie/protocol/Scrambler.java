@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.ScramblingTools;
 import com.radio.codec2talkie.transport.Transport;
@@ -80,7 +81,7 @@ public class Scrambler implements Protocol {
 
     Callback _protocolCallback = new Callback() {
         @Override
-        protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
+        protected void onReceivePosition(Position position) {
             throw new UnsupportedOperationException();
         }
 
@@ -152,7 +153,7 @@ public class Scrambler implements Protocol {
     };
 
     @Override
-    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+    public void sendPosition(Position position) {
         throw new UnsupportedOperationException();
     }
 

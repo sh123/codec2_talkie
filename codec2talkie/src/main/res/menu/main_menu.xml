@@ -10,6 +10,9 @@
         <item
             android:id="@+id/messages"
             android:title="@string/menu_messages" />
+        <item
+            android:id="@+id/aprs_log"
+            android:title="@string/menu_aprs_log" />
     </group>
     <group android:id="@+id/group_main">
         <item

@@ -224,5 +224,6 @@
     <string name="menu_start_tracking">Start tracking</string>
     <string name="menu_send_position">Send position</string>
     <string name="voax25_label">&#9742;</string>
+    <string name="menu_aprs_log">View log</string>
 
 </resources>

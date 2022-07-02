@@ -2,25 +2,38 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.audio.AudioProcessor;
 import com.radio.codec2talkie.protocol.aprs.AprsCallsign;
+import com.radio.codec2talkie.protocol.aprs.AprsData;
+import com.radio.codec2talkie.protocol.aprs.AprsDataFactory;
+import com.radio.codec2talkie.protocol.aprs.AprsDataType;
+import com.radio.codec2talkie.protocol.position.Position;
+import com.radio.codec2talkie.protocol.ax25.AX25Callsign;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
 
 public class Aprs implements Protocol {
+    private static final String TAG = Aprs.class.getSimpleName();
 
     private final Protocol _childProtocol;
 
-    private String _srcCallsign;
-    private String _dstCallsign;
-
     private Callback _parentCallback;
 
-    boolean _isVoax25Enabled;
+    private String _srcCallsign;
+    private String _dstCallsign;
+    private String _symbolCode;
+    private String _status;
+    private String _comment;
+    private boolean _isVoax25Enabled;
+    private boolean _isCompressed;
+
+    private AprsDataType _positionDataType;
 
     public Aprs(Protocol childProtocol) {
         _childProtocol = childProtocol;
@@ -33,9 +46,21 @@ public class Aprs implements Protocol {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         _isVoax25Enabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_VOAX25_ENABLE, false);
-        _srcCallsign = sharedPreferences.getString(PreferenceKeys.APRS_CALLSIGN, "NOCALL") + "-" +
-                sharedPreferences.getString(PreferenceKeys.APRS_SSID, "0");
+
+        _srcCallsign = AX25Callsign.formatCallsign(
+                sharedPreferences.getString(PreferenceKeys.APRS_CALLSIGN, "NOCALL"),
+                sharedPreferences.getString(PreferenceKeys.APRS_SSID, "0"));
         _dstCallsign = "APZMDM";
+
+        _symbolCode = sharedPreferences.getString(PreferenceKeys.APRS_SYMBOL, "/[");
+        String packetFormat = sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_PACKET_FORMAT, "uncompressed");
+        _status = sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_MIC_E_MESSAGE_TYPE, "off_duty");
+        _comment = sharedPreferences.getString(PreferenceKeys.APRS_COMMENT, "off_duty");
+        _isCompressed = packetFormat.equals("compressed");
+
+        AprsDataType.DataType dataType = packetFormat.equals("mic_e") ?
+                AprsDataType.DataType.MIC_E : AprsDataType.DataType.POSITION_WITHOUT_TIMESTAMP_MSG;
+        _positionDataType = new AprsDataType(dataType);
     }
 
     @Override
@@ -70,7 +95,7 @@ public class Aprs implements Protocol {
 
     Callback _protocolCallback = new Callback() {
         @Override
-        protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
+        protected void onReceivePosition(Position position) {
             throw new UnsupportedOperationException();
         }
 
@@ -134,8 +159,22 @@ public class Aprs implements Protocol {
     };
 
     @Override
-    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
-        // TODO, implement
+    public void sendPosition(Position position) throws IOException {
+        position.dstCallsign = _dstCallsign;
+        position.srcCallsign = _srcCallsign;
+        position.symbolCode = _symbolCode;
+        position.comment = _comment;
+        position.status = _status;
+        position.isCompressed = _isCompressed;
+        AprsData aprsData = AprsDataFactory.create(_positionDataType);
+        if (aprsData != null) {
+            aprsData.fromPosition(position);
+            if (aprsData.isValid()) {
+                sendData(position.srcCallsign, position.dstCallsign, aprsData.toBinary());
+            } else {
+                Log.e(TAG, "Send position protocol error");
+            }
+        }
     }
 
     @Override

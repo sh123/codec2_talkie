@@ -12,6 +12,10 @@ public class AX25Callsign {
     public boolean isValid;
     public boolean isLast = false;
 
+    public static String formatCallsign(String callsign, String ssid) {
+        return String.format("%s-%s", callsign, ssid);
+    }
+
     public void fromString(String callsignWithSsid) {
         isValid = false;
         // ABCDEF-XX

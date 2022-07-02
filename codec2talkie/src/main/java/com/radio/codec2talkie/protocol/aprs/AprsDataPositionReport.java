@@ -1,8 +1,16 @@
 package com.radio.codec2talkie.protocol.aprs;
 
+import com.radio.codec2talkie.protocol.position.Position;
+
 public class AprsDataPositionReport implements AprsData {
+
     @Override
-    public void fromPosition(AprsPosition position) {
+    public void fromPosition(Position position) {
+    }
+
+    @Override
+    public Position toPosition() {
+        return null;
     }
 
     @Override
