@@ -29,6 +29,15 @@
         app:summary="%s">
     </ListPreference>
 
+    <ListPreference
+        app:key="aprs_location_mice_digipath"
+        app:title="@string/aprs_location_emic_digipath_title"
+        app:entries="@array/aprs_location_mice_digipath_labels"
+        app:entryValues="@array/aprs_location_mice_digipath_values"
+        app:defaultValue="0"
+        app:summary="%s">
+    </ListPreference>
+
     <PreferenceCategory
         app:key="aprs_location_source_gps"
         app:title="@string/aprs_location_source_gps_title">

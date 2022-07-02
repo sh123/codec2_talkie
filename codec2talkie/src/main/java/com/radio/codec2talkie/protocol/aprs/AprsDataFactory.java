@@ -8,6 +8,7 @@ public class AprsDataFactory {
             case UNKNOWN:
             case MESSAGE:
             case MIC_E:
+                return new AprsDataPositionReportMicE();
             case POSITION_WITH_TIMESTAMP_MSG:
             case POSITION_WITH_TIMESTAMP_NO_MSG:
             case POSITION_WITHOUT_TIMESTAMP_NO_MSG:

@@ -14,6 +14,7 @@ public class Position {
     public String symbolCode;
     public boolean isCompressed;
     public int privacyLevel;
+    public int extDigipathSsid;
     public boolean isSpeedBearingEnabled;
     public boolean isAltitudeEnabled;
 }

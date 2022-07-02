@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.protocol.aprs;
 
+import com.radio.codec2talkie.protocol.aprs.tools.AprsTools;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.tools.MathTools;
 import com.radio.codec2talkie.tools.UnitTools;
@@ -102,11 +103,11 @@ public class AprsDataPositionReport implements AprsData {
     }
 
     private String getUncompressedNmeaCoordinate(Position position) {
-        String latitude = applyPrivacyOnUncompressedNmeaCoordinate(
-                UnitTools.decimalToNmea(position.latitude, true),
+        String latitude = AprsTools.applyPrivacyOnUncompressedNmeaCoordinate(
+                UnitTools.decimalToDecimalNmea(position.latitude, true),
                 position.privacyLevel);
-        String longitude = applyPrivacyOnUncompressedNmeaCoordinate(
-                UnitTools.decimalToNmea(position.latitude, false),
+        String longitude = AprsTools.applyPrivacyOnUncompressedNmeaCoordinate(
+                UnitTools.decimalToDecimalNmea(position.latitude, false),
                 position.privacyLevel);
         byte[] symbol = position.symbolCode.getBytes();
         return String.format(Locale.US, "%s%c%s%c", latitude, symbol[0], longitude, symbol[1]);
@@ -142,16 +143,5 @@ public class AprsDataPositionReport implements AprsData {
         byte [] binaryCoordinate = new byte[buffer.remaining()];
         buffer.get(binaryCoordinate);
         return binaryCoordinate;
-    }
-
-    public static String applyPrivacyOnUncompressedNmeaCoordinate(String nmeaCoordinate, int privacyLevel) {
-        byte [] buffer = nmeaCoordinate.getBytes();
-        int level = 0;
-        for (int i = buffer.length - 2; i > 0 && level < privacyLevel; i--) {
-            if (buffer[i] == '.') continue;
-            buffer[i] = ' ';
-            level++;
-        }
-        return new String(buffer);
     }
 }

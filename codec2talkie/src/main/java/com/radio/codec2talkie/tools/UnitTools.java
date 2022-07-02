@@ -9,12 +9,19 @@ public class UnitTools {
         double degreesIntegral = Math.abs(degrees) - degreesFractional;
         degreesFractional *= 60;
         degreesIntegral *= 100;
-        double nmeaDouble = Math.round((degreesIntegral + degreesFractional) * 100.0) / 100.0;
+        long nmeaDouble = (long)Math.round((degreesIntegral + degreesFractional) * 100.0);
         return String.format(
                 Locale.US,
-                isLatitude ? "%.2f%c" : "0%.2f%c",
+                isLatitude ? "%06d%c" : "%07d%c",
                 nmeaDouble,
                 isLatitude ? (degrees > 0 ? 'N' : 'S') : (degrees > 0 ? 'E' : 'W'));
+    }
+
+    public static String decimalToDecimalNmea(double degrees, boolean isLatitude) {
+        String value = decimalToNmea(degrees, isLatitude);
+        return value.substring(0, isLatitude ? 4 : 5) +
+                '.' +
+                value.substring(isLatitude ? 4 : 5, value.length() - 1);
     }
 
     public static long metersToFeet(double meters) {

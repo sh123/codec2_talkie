@@ -30,6 +30,7 @@ public class Aprs implements Protocol {
     private String _symbolCode;
     private String _status;
     private String _comment;
+    private int _miceDigipath;
     private boolean _isVoax25Enabled;
     private boolean _isCompressed;
     private boolean _isBearingCourseEnabled;
@@ -62,6 +63,7 @@ public class Aprs implements Protocol {
         _privacyLevel = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_PRIVACY_POSITION_AMBIGUITY, "0"));
         _isAltitudeEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_PRIVACY_ALTITUDE_ENABLED, false);
         _isBearingCourseEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_PRIVACY_SPEED_ENABLED, false);
+        _miceDigipath = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_MIC_E_DIGIPATH, "0"));
         _isCompressed = packetFormat.equals("compressed");
 
         AprsDataType.DataType dataType = packetFormat.equals("mic_e") ?
@@ -82,7 +84,6 @@ public class Aprs implements Protocol {
     @Override
     public void sendPcmAudio(String src, String dst, int codec2Mode, short[] pcmFrame) throws IOException {
         if (_isVoax25Enabled) {
-            // just add callsigns and AX.25 will handle the rest
             _childProtocol.sendPcmAudio(src == null ? _srcCallsign : src, dst == null ? _dstCallsign : dst, codec2Mode, pcmFrame);
         } else {
             _childProtocol.sendPcmAudio(src, dst, codec2Mode, pcmFrame);
@@ -182,6 +183,7 @@ public class Aprs implements Protocol {
         position.privacyLevel = _privacyLevel;
         position.isSpeedBearingEnabled = _isBearingCourseEnabled;
         position.isAltitudeEnabled = _isAltitudeEnabled;
+        position.extDigipathSsid = _miceDigipath;
         AprsData aprsData = AprsDataFactory.create(_positionDataType);
         if (aprsData != null) {
             aprsData.fromPosition(position);

@@ -225,5 +225,6 @@
     <string name="menu_send_position">Send position</string>
     <string name="voax25_label">&#9742;</string>
     <string name="menu_aprs_log">View log</string>
+    <string name="aprs_location_emic_digipath_title">Mic-E digipath</string>
 
 </resources>

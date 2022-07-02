@@ -147,6 +147,44 @@
         <item>priority</item>
     </string-array>
 
+    <string-array name="aprs_location_mice_digipath_labels">
+        <item>Use AX.25 path</item>
+        <item>WIDE1-1</item>
+        <item>WIDE2-2</item>
+        <item>WIDE3-3</item>
+        <item>WIDE4-4</item>
+        <item>WIDE5-5</item>
+        <item>WIDE6-6</item>
+        <item>WIDE7-7</item>
+        <item>North path</item>
+        <item>South path</item>
+        <item>East path</item>
+        <item>West path</item>
+        <item>North path + WIDE</item>
+        <item>South path + WIDE</item>
+        <item>East path + WIDE</item>
+        <item>West path + WIDE</item>
+    </string-array>
+
+    <string-array name="aprs_location_mice_digipath_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+    </string-array>
+
     <string-array name="aprs_ssid_labels">
         <item>(none) Primary station</item>
         <item>1: Generic additional station</item>
