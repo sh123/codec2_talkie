@@ -12,4 +12,5 @@ public class Position {
     public String comment;
     public String symbolCode;
     public boolean isCompressed;
+    public int privacyLevel;
 }

@@ -108,7 +108,7 @@
     </string-array>
 
     <string-array name="aprs_privacy_position_ambiguity_values">
-        <item>off</item>
+        <item>0</item>
         <item>1</item>
         <item>2</item>
         <item>3</item>
