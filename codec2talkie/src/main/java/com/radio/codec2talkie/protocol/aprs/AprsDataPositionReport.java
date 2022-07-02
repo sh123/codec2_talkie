@@ -19,10 +19,6 @@ public class AprsDataPositionReport implements AprsData {
         ByteBuffer buffer = ByteBuffer.allocate(256);
         buffer.putChar('!');
         buffer.put(getUncompressedNmeaCoordinate(position).getBytes());
-        // put latitude
-        // put symbol table identifier
-        // put longitude
-        // put symbol
         // put altitude, course
         buffer.put(position.comment.getBytes());
         buffer.flip();

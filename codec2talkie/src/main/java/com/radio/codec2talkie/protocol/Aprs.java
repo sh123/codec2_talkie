@@ -103,7 +103,7 @@ public class Aprs implements Protocol {
 
         @Override
         protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-            String dstCallsign = new AprsCallsign(dst).isSoftware() ? "ALL" : dst;
+            String dstCallsign = new AprsCallsign(dst).isSoftware() ? "*" : dst;
             _parentCallback.onReceivePcmAudio(src, dstCallsign, codec, pcmFrame);
         }
 
@@ -137,7 +137,7 @@ public class Aprs implements Protocol {
 
         @Override
         protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
-            String dstCallsign = new AprsCallsign(dst).isSoftware() ? "ALL" : dst;
+            String dstCallsign = new AprsCallsign(dst).isSoftware() ? "*" : dst;
             _parentCallback.onTransmitPcmAudio(src, dstCallsign, codec, frame);
         }
 
