@@ -542,13 +542,14 @@ public class MainActivity extends AppCompatActivity {
         boolean aprsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
         if (aprsEnabled) {
             status += getString(R.string.aprs_label);
+
+            // VoAX25
+            boolean voax25Enabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_VOAX25_ENABLE, false);
+            if (voax25Enabled) {
+                status += getString(R.string.voax25_label);
+            }
         }
 
-        // VoAX25
-        boolean voax25Enabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_VOAX25_ENABLE, false);
-        if (voax25Enabled) {
-            status += getString(R.string.voax25_label);
-        }
         if (status.length() == 0) {
             return protocolType.toString();
         }
