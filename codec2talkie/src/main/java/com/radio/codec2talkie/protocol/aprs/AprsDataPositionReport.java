@@ -110,7 +110,7 @@ public class AprsDataPositionReport implements AprsData {
                 UnitTools.decimalToDecimalNmea(position.latitude, true),
                 position.privacyLevel);
         String longitude = AprsTools.applyPrivacyOnUncompressedNmeaCoordinate(
-                UnitTools.decimalToDecimalNmea(position.latitude, false),
+                UnitTools.decimalToDecimalNmea(position.longitude, false),
                 position.privacyLevel);
         byte[] symbol = position.symbolCode.getBytes();
         return String.format(Locale.US, "%s%c%s%c", latitude, symbol[0], longitude, symbol[1]);
