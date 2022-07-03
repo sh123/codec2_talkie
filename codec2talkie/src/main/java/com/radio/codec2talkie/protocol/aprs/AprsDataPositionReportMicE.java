@@ -33,15 +33,8 @@ public class AprsDataPositionReportMicE implements AprsData {
         _isValid = false;
         _position = position;
 
-        byte[] latitude = AprsTools.applyPrivacyOnUncompressedNmeaCoordinate(
-                UnitTools.decimalToNmea(position.latitude, true),
-                position.privacyLevel).getBytes();
-        byte[] longitude = AprsTools.applyPrivacyOnUncompressedNmeaCoordinate(
-                UnitTools.decimalToNmea(position.longitude, false),
-                position.privacyLevel).getBytes();
-
         // latitude into the callsign
-        _dstCallsign = generateDestinationCallsign(position, latitude, longitude);
+        _dstCallsign = generateDestinationCallsign(position);
         position.dstCallsign = _dstCallsign;
 
         ByteBuffer buffer = ByteBuffer.allocate(256);
@@ -50,7 +43,7 @@ public class AprsDataPositionReportMicE implements AprsData {
         buffer.put((byte)'`');
 
         // longitude, speed/course into the information field
-        buffer.put(generateInfo(position, longitude));
+        buffer.put(generateInfo(position));
 
         // symbol code + symbol table id
         byte[] symbol = position.symbolCode.getBytes();
@@ -98,12 +91,17 @@ public class AprsDataPositionReportMicE implements AprsData {
     }
 
 
-    private String generateDestinationCallsign(Position position, byte[] latitude, byte[] longitude) {
+    private String generateDestinationCallsign(Position position) {
+
+        byte[] latitude = AprsTools.applyPrivacyOnUncompressedNmeaCoordinate(
+                UnitTools.decimalToNmea(position.latitude, true),
+                position.privacyLevel).getBytes();
+        byte[] longitude = UnitTools.decimalToNmea(position.longitude, false).getBytes();
 
         // get Mic-E status bit mapping
         Integer miceMessageTypeEncoding = _miceMessageTypeMap.get(position.status);
         miceMessageTypeEncoding = miceMessageTypeEncoding == null
-                ? _miceMessageTypeMap.get("off_duty")   // default message
+                ? 0b111
                 : miceMessageTypeEncoding;
 
         // decide if Mic-E "longitude offset" must be added
@@ -114,10 +112,22 @@ public class AprsDataPositionReportMicE implements AprsData {
         ByteBuffer buffer = ByteBuffer.allocate(16);
         buffer.put((byte)(latitude[0] + 32 * ((miceMessageTypeEncoding >> 2) & 1)));
         buffer.put((byte)(latitude[1] + 32 * ((miceMessageTypeEncoding >> 1) & 1)));
-        buffer.put((byte)(latitude[2] + 32 * ((miceMessageTypeEncoding) & 1)));
-        buffer.put((byte)(latitude[3] + 32 * (latitude[6] == 'N' ? 1 : 0)));
-        buffer.put((byte)(latitude[4] + 32 * (longOffset & 1)));
-        buffer.put((byte)(latitude[5] + 32 * (longitude[6] == 'W' ? 1 : 0)));
+        if (latitude[2] == (byte)' ')
+            buffer.put((miceMessageTypeEncoding & 1) == 1 ? (byte)'Z' : (byte)'L');
+        else
+            buffer.put((byte)(latitude[2] + 32 * ((miceMessageTypeEncoding) & 1)));
+        if (latitude[3] == (byte)' ')
+            buffer.put(latitude[6] == 'N' ? (byte)'Z' : (byte)'L');
+        else
+            buffer.put((byte)(latitude[3] + 32 * (latitude[6] == 'N' ? 1 : 0)));
+        if (latitude[4] == (byte)' ')
+            buffer.put((longOffset & 1) == 1 ? (byte)'Z' : (byte)'L');
+        else
+            buffer.put((byte)(latitude[4] + 32 * (longOffset & 1)));
+        if (latitude[5] == (byte)' ')
+            buffer.put(longitude[7] == 'W' ? (byte)'Z' : (byte)'L');
+        else
+            buffer.put((byte) (latitude[5] + 32 * (longitude[7] == 'W' ? 1 : 0)));
 
         // include E-Mic digipath if specified (!= 0)
         if (position.extDigipathSsid > 0) {
@@ -132,16 +142,19 @@ public class AprsDataPositionReportMicE implements AprsData {
         return new String(callsign);
     }
 
-    private byte[] generateInfo(Position position, byte[] longitude) {
+    private byte[] generateInfo(Position position) {
+        byte[] longitude = UnitTools.decimalToNmea(position.longitude, false).getBytes();
+
         ByteBuffer buffer = ByteBuffer.allocate(16);
         String longStr = new String(longitude);
 
         // encode Mic-E longitude into the information field
         byte lonDeg = (byte)(Integer.parseInt(longStr.substring(0, 3)));
+        Log.i("====>", longStr + " " + Integer.parseInt(longStr.substring(0, 3)));
         if (lonDeg >= 0 && lonDeg <= 9) lonDeg += (90 + 28);
         else if (lonDeg >= 10 && lonDeg <= 99) lonDeg += 28;
         else if (lonDeg >= 100 && lonDeg <= 109) lonDeg += 8;
-        else lonDeg += (100 - 28);
+        else lonDeg -= (44 + 28);
         buffer.put(lonDeg);
 
         byte lonMin = (byte)(Integer.parseInt(longStr.substring(3, 5)));

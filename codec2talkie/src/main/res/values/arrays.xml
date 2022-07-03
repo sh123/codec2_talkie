@@ -241,7 +241,7 @@
     </string-array>
 
     <string-array name="aprs_symbol_values">
-        <item>\\b</item>
+        <item>/b</item>
         <item>/\></item>
         <item>/-</item>
         <item>\\-</item>
