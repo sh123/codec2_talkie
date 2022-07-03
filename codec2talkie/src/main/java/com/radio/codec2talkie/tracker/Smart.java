@@ -1,6 +1,7 @@
 package com.radio.codec2talkie.tracker;
 
 import android.content.Context;
+import android.location.LocationManager;
 
 public class Smart implements Tracker {
     private boolean _isTracking = false;
