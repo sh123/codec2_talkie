@@ -1,5 +1,7 @@
 package com.radio.codec2talkie.tracker;
 
+import androidx.annotation.NonNull;
+
 public class TrackerFactory {
 
     public enum TrackerType {
@@ -13,6 +15,7 @@ public class TrackerFactory {
             _name = name;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return _name;
