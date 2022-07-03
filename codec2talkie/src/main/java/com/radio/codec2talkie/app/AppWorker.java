@@ -25,6 +25,7 @@ import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.AudioTools;
+import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.radio.codec2talkie.transport.TransportFactory;
 
@@ -237,6 +238,7 @@ public class AppWorker extends Thread {
         @Override
         protected void onReceiveData(String src, String dst, byte[] data) {
             // handle incoming messages
+            Log.i(TAG, src + ">" + dst + ":" + DebugTools.bytesToDebugString(data));
         }
 
         @Override

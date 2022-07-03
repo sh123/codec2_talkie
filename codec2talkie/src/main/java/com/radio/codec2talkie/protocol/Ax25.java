@@ -112,7 +112,7 @@ public class Ax25 implements Protocol {
                 if (ax25Data.isAudio) {
                     _parentProtocolCallback.onReceiveCompressedAudio(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, ax25Data.rawData);
                 } else {
-                    _parentProtocolCallback.onReceiveData(ax25Data.src, ax25Data.dst, audioFrames);
+                    _parentProtocolCallback.onReceiveData(ax25Data.src, ax25Data.dst, ax25Data.rawData);
                 }
             } else {
                 // fallback to raw audio if ax25 frame is invalid
