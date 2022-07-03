@@ -58,7 +58,6 @@ public class Ax25 implements Protocol {
                 Log.e(TAG, "Invalid source data for AX.25");
                 _parentProtocolCallback.onProtocolTxError();
             } else {
-                Log.i(TAG, DebugTools.bytesToDebugString(ax25Frame));
                 _childProtocol.sendCompressedAudio(src, dst, codec2Mode, ax25Frame);
             }
         } else {

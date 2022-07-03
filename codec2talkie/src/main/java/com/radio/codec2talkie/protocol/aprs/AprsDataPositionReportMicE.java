@@ -96,7 +96,7 @@ public class AprsDataPositionReportMicE implements AprsData {
     }
 
     private byte[] generateInfo(Position position, byte[] longitude) {
-        ByteBuffer buffer = ByteBuffer.allocate(6);
+        ByteBuffer buffer = ByteBuffer.allocate(16);
 
         // longitude
         byte lonDeg = (byte)(longitude[0] * 10 + longitude[1]);
@@ -126,7 +126,9 @@ public class AprsDataPositionReportMicE implements AprsData {
 
         buffer.put((byte)(position.bearingDegrees % 100.0));
 
-        byte[] info = new byte[6];
+        // return
+        buffer.flip();
+        byte[] info = new byte[buffer.remaining()];
         buffer.get(info);
         return info;
     }

@@ -44,6 +44,7 @@ public class Manual implements Tracker {
 
     @Override
     public void startTracking() {
+        sendPosition();
         _sendTimer = new Timer();
         _sendTimer.schedule(new TimerTask() {
             @Override
