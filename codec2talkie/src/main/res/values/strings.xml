@@ -11,16 +11,6 @@
     <string name="usb_serial_speed_title">USB Serial Speed</string>
     <string name="usb_bt_client_name_title">Bluetooth Device</string>
     <string name="usb_bt_client_name_summary">Default Bluetooth device to connect on startup</string>
-    <string-array name="usb_serial_speed">
-        <item>1200</item>
-        <item>2400</item>
-        <item>4800</item>
-        <item>9600</item>
-        <item>19200</item>
-        <item>38400</item>
-        <item>57600</item>
-        <item>115200</item>
-    </string-array>
 
     <string name="codec2_category_title">Codec2 Settings</string>
     <string name="codec2_mode_title">Mode/Speed</string>
@@ -28,23 +18,14 @@
     <string name="codec2_test_mode_summary">Records and plays recording without transmission</string>
     <string name="codec2_recorder_title">Enable recorder</string>
     <string name="codec2_recorder_summary">Record incoming and outgoing transmissions for future playback</string>
-    <string-array name="codec2_modes">
-        <item>MODE_450=10</item>
-        <item>MODE_700C=8</item>
-        <item>MODE_1200=5</item>
-        <item>MODE_1300=4</item>
-        <item>MODE_1400=3</item>
-        <item>MODE_1600=2</item>
-        <item>MODE_2400=1</item>
-        <item>MODE_3200=0</item>
-    </string-array>
 
     <string name="main_status_loopback_test">ECHO TEST</string>
     <string name="main_status_stop">STOPPED</string>
     <string name="main_status_tx">TRANSMITTING</string>
     <string name="main_status_rx">RECEIVING</string>
     <string name="main_status_play">PLAYING</string>
-    <string name="main_status_rx_error">RECEIVE ERROR</string>
+    <string name="main_status_rx_error">RECEIVING\nERROR</string>
+    <string name="main_status_tx_error">TRANSMITTING\nERROR</string>
 
     <string name="kiss_enable_title">Enable KISS</string>
     <string name="kiss_enable_summary">Enables KISS protocol, otherwise RAW frames will be sent</string>
@@ -112,7 +93,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="recorder_name">Recorder</string>
-    <string name="recorder_status_label">REC</string>
+    <string name="recorder_status_label">&#9210;</string>
     <string name="player_status_stopped">Playback stopped</string>
     <string name="player_status_started">Playback started</string>
     <string name="player_status_error">Playback error, %1$s</string>
@@ -156,7 +137,7 @@
     <string name="processor_disconnected">Disconnected</string>
     <string name="audio_failed_to_start_processing">Failed to start audio processing</string>
 
-    <string name="kiss_scrambler_label">SEC</string>
+    <string name="kiss_scrambler_label">&#128274;</string>
     <string name="kiss_extension_reboot_title">Reboot modem</string>
     <string name="kiss_extension_reboot_summary">Click to send reboot command to the modem</string>
     <string name="kiss_toast_modem_reboot">Modem reboot requested</string>
@@ -194,7 +175,7 @@
 
     <string name="aprs_category_title">AX.25/APRS settings</string>
     <string name="aprs_voax25_enable_title">Enable voice over AX.25</string>
-    <string name="aprs_voax25_enable_summary">Send voice packets inside AX.25 frames</string>
+    <string name="aprs_voax25_enable_summary">Send voice packets inside AX.25 UI frames with PID 0x1f</string>
     <string name="aprs_enable_title">Enable APRS</string>
     <string name="aprs_enable_summary">Enable APRS tracker</string>
     <string name="aprs_callsign_title">Callsign (without SSID)</string>
@@ -237,202 +218,14 @@
     <string name="aprs_privacy_altitude_title">Send altitude</string>
     <string name="aprs_privacy_altitude_summary">Include altitude in position reports</string>
     <string name="aprs_location_packet_format_title">Packet format</string>
-    <string name="aprs_location_emic_message_type_title">E-Mic message type</string>
-    <string name="aprs_label">APRS</string>
-
-    <string-array name="lora_bandwidths">
-        <item>7800</item>
-        <item>10400</item>
-        <item>15600</item>
-        <item>20800</item>
-        <item>31250</item>
-        <item>41700</item>
-        <item>62500</item>
-        <item>125000</item>
-        <item>250000</item>
-        <item>500000</item>
-    </string-array>
-
-    <string-array name="lora_spreading_factors">
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-    </string-array>
-
-    <string-array name="lora_coding_rates">
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-    </string-array>
-
-    <string-array name="usb_data_bits">
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-    </string-array>
-
-    <string-array name="usb_stop_bits_entries">
-        <item>STOPBITS_1</item>
-        <item>STOPBITS_1_5</item>
-        <item>STOPBITS_2</item>
-    </string-array>
-
-    <string-array name="usb_stop_bits_values">
-        <item>1</item>
-        <item>3</item>
-        <item>2</item>
-    </string-array>
-
-    <string-array name="usb_parity_entries">
-        <item>PARITY_NONE</item>
-        <item>PARITY_ODD</item>
-        <item>PARITY_EVEN</item>
-        <item>PARITY_MARK</item>
-        <item>PARITY_SPACE</item>
-    </string-array>
-
-    <string-array name="usb_parity_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-    </string-array>
-
-    <string-array name="aprs_location_source">
-        <item>Periodic GPS position</item>
-        <item>Manual position</item>
-    </string-array>
-
-    <string-array name="aprs_location_source_values">
-        <item>periodic</item>
-        <item>manual</item>
-    </string-array>
-
-    <string-array name="aprs_privacy_position_ambiguity_entries">
-        <item>Off (DD°MM.mm\')</item>
-        <item>1 (DD°MM.m\')</item>
-        <item>2 (DD°MM\')</item>
-        <item>3 (DD°Mx\')</item>
-        <item>4 (DD°)</item>
-    </string-array>
-
-    <string-array name="aprs_privacy_position_ambiguity_values">
-        <item>off</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-    </string-array>
-
-    <string-array name="aprs_location_packet_format_labels">
-        <item>Uncompressed</item>
-        <item>Compressed</item>
-        <item>Mic-E</item>
-    </string-array>
-
-    <string-array name="aprs_location_packet_format_values">
-        <item>uncompressed</item>
-        <item>compressed</item>
-        <item>mic_e</item>
-    </string-array>
-
-    <string-array name="aprs_location_mice_message_type_labels">
-        <item>Off Duty</item>
-        <item>En Route</item>
-        <item>In Service</item>
-        <item>Returning</item>
-        <item>Committed</item>
-        <item>Special</item>
-        <item>Priority</item>
-    </string-array>
-
-    <string-array name="aprs_location_mice_message_type_values">
-        <item>off_duty</item>
-        <item>en_route</item>
-        <item>in_service</item>
-        <item>returning</item>
-        <item>committed</item>
-        <item>special</item>
-        <item>priority</item>
-    </string-array>
-
-    <string-array name="aprs_ssid_labels">
-        <item>(none) Primary station</item>
-        <item>1: Generic additional station</item>
-        <item>2: Generic additional station</item>
-        <item>3: Generic additional station</item>
-        <item>4: Generic additional station</item>
-        <item>5: Other network (D-Star, DMR, ...)</item>
-        <item>6: Satellite</item>
-        <item>7: Handheld radio</item>
-        <item>8: Boat/ship</item>
-        <item>9: Mobile station</item>
-        <item>10: APRS-S (no radio)</item>
-        <item>11: Balloon, aircraft, spacecraft, drone</item>
-        <item>12: APRStt, DTMF (one way)</item>
-        <item>13: Weather station</item>
-        <item>14: Freight vehicle</item>
-        <item>15: Generic additional station</item>
-    </string-array>
-
-    <string-array name="aprs_ssid_values">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-        <item>5</item>
-        <item>6</item>
-        <item>7</item>
-        <item>8</item>
-        <item>9</item>
-        <item>10</item>
-        <item>11</item>
-        <item>12</item>
-        <item>13</item>
-        <item>14</item>
-        <item>15</item>
-    </string-array>
-
-    <string-array name="aprs_symbol_labels">
-        <item>Bicycle</item>
-        <item>Car</item>
-        <item>House</item>
-        <item>House HF</item>
-        <item>House Yagi</item>
-        <item>IOTA</item>
-        <item>Jeep</item>
-        <item>Jogger</item>
-        <item>Phone</item>>
-        <item>Plane</item>
-        <item>Power boat</item>
-        <item>Truck</item>
-        <item>Van</item>
-        <item>Yacht</item>
-    </string-array>
-
-    <string-array name="aprs_symbol_values">
-        <item>\\b</item>
-        <item>/\></item>
-        <item>/-</item>
-        <item>\\-</item>
-        <item>/y</item>
-        <item>/i</item>
-        <item>/j</item>
-        <item>/[</item>
-        <item>/$</item>>
-        <item>/\'</item>
-        <item>/s</item>
-        <item>/k</item>
-        <item>/v</item>
-        <item>/y</item>
-    </string-array>
+    <string name="aprs_location_emic_message_type_title">Mic-E message type</string>
+    <string name="aprs_label">&#127757;</string>
+    <string name="menu_messages">Messages</string>
+    <string name="menu_start_tracking">Start tracking</string>
+    <string name="menu_stop_tracking">Stop tracking</string>
+    <string name="menu_send_position">Send position</string>
+    <string name="voax25_label">&#9742;</string>
+    <string name="menu_aprs_log">View log</string>
+    <string name="aprs_location_emic_digipath_title">Mic-E digipath</string>
 
 </resources>

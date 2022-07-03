@@ -1,7 +1,8 @@
-package com.radio.codec2talkie.audio;
+package com.radio.codec2talkie.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -15,35 +16,38 @@ import android.util.Log;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.radio.codec2talkie.protocol.Callback;
+import com.radio.codec2talkie.protocol.ProtocolCallback;
 import com.radio.codec2talkie.protocol.Protocol;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
+import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.AudioTools;
+import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.radio.codec2talkie.transport.TransportFactory;
 
-public class AudioProcessor extends Thread {
+public class AppWorker extends Thread {
 
-    private static final String TAG = AudioProcessor.class.getSimpleName();
+    private static final String TAG = AppWorker.class.getSimpleName();
 
     public static final int PROCESSOR_DISCONNECTED = 1;
     public static final int PROCESSOR_CONNECTED = 2;
     public static final int PROCESSOR_LISTENING = 3;
-    public static final int PROCESSOR_RECORDING = 4;
+    public static final int PROCESSOR_TRANSMITTING = 4;
     public static final int PROCESSOR_RECEIVING = 5;
     public static final int PROCESSOR_PLAYING = 6;
     public static final int PROCESSOR_RX_LEVEL = 7;
     public static final int PROCESSOR_TX_LEVEL = 8;
     public static final int PROCESSOR_RX_ERROR = 9;
-    public static final int PROCESSOR_RX_RADIO_LEVEL = 10;
+    public static final int PROCESSOR_TX_ERROR = 10;
+    public static final int PROCESSOR_RX_RADIO_LEVEL = 11;
 
-    public static final int PROCESSOR_PROCESS = 11;
-    public static final int PROCESSOR_QUIT = 12;
+    public static final int PROCESSOR_PROCESS = 12;
+    public static final int PROCESSOR_QUIT = 13;
+    public static final int PROCESSOR_SEND_LOCATION = 14;
 
     private static final int AUDIO_MIN_LEVEL = -70;
     private static final int AUDIO_MAX_LEVEL = 0;
@@ -51,8 +55,6 @@ public class AudioProcessor extends Thread {
 
     private final int PROCESS_INTERVAL_MS = 20;
     private final int LISTEN_AFTER_MS = 1500;
-
-    private final int SIGNAL_LEVEL_EVENT_SIZE = 4;
 
     private boolean _needsRecording = false;
     private int _currentStatus = PROCESSOR_DISCONNECTED;
@@ -80,8 +82,8 @@ public class AudioProcessor extends Thread {
     private final Context _context;
     private final SharedPreferences _sharedPreferences;
 
-    public AudioProcessor(TransportFactory.TransportType transportType, ProtocolFactory.ProtocolType protocolType, int codec2Mode,
-                          Handler onPlayerStateChanged, Context context) throws IOException {
+    public AppWorker(TransportFactory.TransportType transportType, ProtocolFactory.ProtocolType protocolType, int codec2Mode,
+                     Handler onPlayerStateChanged, Context context) throws IOException {
         _onPlayerStateChanged = onPlayerStateChanged;
 
         _context = context;
@@ -157,24 +159,34 @@ public class AudioProcessor extends Thread {
     }
 
     public void stopRunning() {
-        if (_currentStatus != PROCESSOR_DISCONNECTED) {
-            Log.i(TAG, "stopRunning()");
-            Message msg = new Message();
-            msg.what = PROCESSOR_QUIT;
-            _onMessageReceived.sendMessage(msg);
-        }
+        if (_currentStatus == PROCESSOR_DISCONNECTED) return;
+        Log.i(TAG, "stopRunning()");
+        Message msg = new Message();
+        msg.what = PROCESSOR_QUIT;
+        _onMessageReceived.sendMessage(msg);
     }
 
-    private void sendStatusUpdate(int newStatus) {
-        if (newStatus != PROCESSOR_LISTENING) {
-            restartListening();
-        }
+    public void sendPosition(Position position) {
+        if (_currentStatus == PROCESSOR_DISCONNECTED) return;
+        Message msg = new Message();
+        msg.what = PROCESSOR_SEND_LOCATION;
+        msg.obj = position;
+        _onMessageReceived.sendMessage(msg);
+    }
+
+    private void sendStatusUpdate(int newStatus, String note) {
+
         if (newStatus != _currentStatus) {
             _currentStatus = newStatus;
             Message msg = Message.obtain();
             msg.what = newStatus;
-
+            if (note != null) {
+                msg.obj = note;
+            }
             _onPlayerStateChanged.sendMessage(msg);
+        }
+        if (newStatus != PROCESSOR_LISTENING) {
+            restartListening();
         }
     }
 
@@ -201,22 +213,20 @@ public class AudioProcessor extends Thread {
     }
 
     private void recordAndSendAudioFrame() throws IOException {
-        sendStatusUpdate(PROCESSOR_RECORDING);
-
         _systemAudioRecorder.read(_recordAudioBuffer, 0, _recordAudioBuffer.length);
-        sendTxAudioLevelUpdate(_recordAudioBuffer);
         _protocol.sendPcmAudio(null, null, _codec2Mode, _recordAudioBuffer);
     }
 
-    private final Callback _protocolReceiveCallback = new Callback() {
+    private final ProtocolCallback _protocolCallback = new ProtocolCallback() {
         @Override
-        protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
+        protected void onReceivePosition(Position position) {
             throw new UnsupportedOperationException();
         }
 
         @Override
         protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-            sendStatusUpdate(PROCESSOR_PLAYING);
+            String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
+            sendStatusUpdate(PROCESSOR_PLAYING, note);
             sendRxAudioLevelUpdate(pcmFrame);
             _systemAudioPlayer.write(pcmFrame, 0, pcmFrame.length);
         }
@@ -229,24 +239,55 @@ public class AudioProcessor extends Thread {
         @Override
         protected void onReceiveData(String src, String dst, byte[] data) {
             // handle incoming messages
+            Log.i(TAG, src + ">" + dst + ":" + DebugTools.bytesToDebugString(data));
+            String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
+            sendStatusUpdate(PROCESSOR_PLAYING, note);
         }
 
         @Override
-        protected void onReceiveSignalLevel(byte[] packet) {
-            ByteBuffer data = ByteBuffer.wrap(packet);
-            if (packet.length == SIGNAL_LEVEL_EVENT_SIZE) {
-                short rssi = data.getShort();
-                short snr = data.getShort();
-                sendRxRadioLevelUpdate(rssi, snr);
-            } else {
-                Log.e(TAG, "Signal event of wrong size");
-            }
+        protected void onReceiveSignalLevel(short rssi, short snr) {
+            sendRxRadioLevelUpdate(rssi, snr);
+        }
+
+        @Override
+        protected void onReceiveLog(String logData) {
+            Log.i(TAG, logData);
+        }
+
+        @Override
+        protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
+            String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
+            sendStatusUpdate(PROCESSOR_TRANSMITTING, note);
+            sendTxAudioLevelUpdate(frame);
+        }
+
+        @Override
+        protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void onTransmitData(String src, String dst, byte[] data) {
+            Log.i(TAG, src + ">" + dst + ":" + DebugTools.bytesToDebugString(data));
+            String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
+            sendStatusUpdate(PROCESSOR_TRANSMITTING, note);
+        }
+
+        @Override
+        protected void onTransmitLog(String logData) {
+            Log.i(TAG, logData);
         }
 
         @Override
         protected void onProtocolRxError() {
-            sendStatusUpdate(PROCESSOR_RX_ERROR);
+            sendStatusUpdate(PROCESSOR_RX_ERROR, null);
             Log.e(TAG, "Protocol RX error");
+        }
+
+        @Override
+        protected void onProtocolTxError() {
+            sendStatusUpdate(PROCESSOR_TX_ERROR, null);
+            Log.e(TAG, "Protocol TX error");
         }
     };
 
@@ -283,7 +324,7 @@ public class AudioProcessor extends Thread {
         sendRxAudioLevelUpdate(null);
         sendTxAudioLevelUpdate(null);
         sendRxRadioLevelUpdate(0, 0);
-        sendStatusUpdate(PROCESSOR_LISTENING);
+        sendStatusUpdate(PROCESSOR_LISTENING, null);
     }
 
     private void processRecordPlaybackToggle() throws IOException {
@@ -332,8 +373,8 @@ public class AudioProcessor extends Thread {
             recordAndSendAudioFrame();
         } else {
             // playback
-            if (_protocol.receive(_protocolReceiveCallback)) {
-                sendStatusUpdate(PROCESSOR_RECEIVING);
+            if (_protocol.receive()) {
+                sendStatusUpdate(PROCESSOR_RECEIVING, null);
             }
         }
     }
@@ -357,6 +398,14 @@ public class AudioProcessor extends Thread {
                 break;
             case PROCESSOR_QUIT:
                 quitProcessing();
+                break;
+            case PROCESSOR_SEND_LOCATION:
+                try {
+                    _protocol.sendPosition((Position)msg.obj);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    quitProcessing();
+                }
                 break;
             default:
                 break;
@@ -386,11 +435,11 @@ public class AudioProcessor extends Thread {
         setPriority(Thread.MAX_PRIORITY);
         Looper.prepare();
 
-        sendStatusUpdate(PROCESSOR_CONNECTED);
+        sendStatusUpdate(PROCESSOR_CONNECTED, null);
         _systemAudioPlayer.play();
 
         try {
-            _protocol.initialize(_transport, _context);
+            _protocol.initialize(_transport, _context, _protocolCallback);
             startProcessorMessageHandler();
             Looper.loop();
         } catch (IOException e) {
@@ -398,7 +447,7 @@ public class AudioProcessor extends Thread {
         }
 
         cleanup();
-        sendStatusUpdate(PROCESSOR_DISCONNECTED);
+        sendStatusUpdate(PROCESSOR_DISCONNECTED, null);
         Log.i(TAG, "Exiting message loop");
     }
 }

@@ -11,7 +11,9 @@ import android.widget.Toast;
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -50,6 +52,8 @@ public class Kiss implements Protocol {
     private final byte TX_DELAY_10MS_UNITS = (byte)(250 / 10);
     private final byte TX_TAIL_10MS_UNITS = (byte)(500 / 10);
 
+    private final int SIGNAL_LEVEL_EVENT_SIZE = 4;
+
     private enum State {
         GET_START,
         GET_END,
@@ -84,6 +88,8 @@ public class Kiss implements Protocol {
 
     private Context _context;
 
+    private ProtocolCallback _parentProtocolCallback;
+
     public Kiss() {
         _transportInputBuffer = new byte[TRANSPORT_INPUT_BUFFER_SIZE];
         _transportOutputBuffer = new byte[TRANSPORT_OUTPUT_BUFFER_SIZE];
@@ -100,10 +106,11 @@ public class Kiss implements Protocol {
     }
 
     @Override
-    public void initialize(Transport transport, Context context) throws IOException {
+    public void initialize(Transport transport, Context context, ProtocolCallback protocolCallback) throws IOException {
 
         Log.i(TAG, "Initializing " + transport.toString());
 
+        _parentProtocolCallback = protocolCallback;
         _transport = transport;
         _context = context;
 
@@ -196,14 +203,14 @@ public class Kiss implements Protocol {
     };
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec, byte [] frame) throws IOException {
+    public void sendCompressedAudio(String src, String dst, int codec, byte[] frame) throws IOException {
         // NOTE, KISS does not distinguish between audio and data packet, upper layer should decide
         send(frame);
     }
 
     @Override
     public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame)  {
-        // not supported
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -213,17 +220,17 @@ public class Kiss implements Protocol {
     }
 
     @Override
-    public boolean receive(Callback callback) throws IOException {
+    public boolean receive() throws IOException {
         int bytesRead = _transport.read(_transportInputBuffer);
         if (bytesRead > 0) {
-            receiveKissData(Arrays.copyOf(_transportInputBuffer, bytesRead), callback);
+            receiveKissData(Arrays.copyOf(_transportInputBuffer, bytesRead), _parentProtocolCallback);
             return true;
         }
         return false;
     }
 
     @Override
-    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+    public void sendPosition(Position position) {
         throw new UnsupportedOperationException();
     }
 
@@ -275,7 +282,7 @@ public class Kiss implements Protocol {
         }
     }
 
-    private void processData(byte b, Callback callback) {
+    private void processData(byte b, ProtocolCallback protocolCallback) {
         switch (b) {
             case KISS_FESC:
                 _kissState = State.ESCAPE;
@@ -283,9 +290,18 @@ public class Kiss implements Protocol {
             case KISS_FEND:
                 if (_kissDataType == DataType.RAW) {
                     // NOTE, KISS does not distinguish between audio and data packets, upper layer should decide
-                    callback.onReceiveCompressedAudio(null, null, -1, Arrays.copyOf(_frameOutputBuffer, _frameOutputBufferPos));
+                    protocolCallback.onReceiveCompressedAudio(null, null, -1, Arrays.copyOf(_frameOutputBuffer, _frameOutputBufferPos));
                 } else if (_kissDataType == DataType.SIGNAL_REPORT && _isExtendedMode) {
-                    callback.onReceiveSignalLevel(Arrays.copyOf(_kissCmdBuffer, _kissCmdBufferPos));
+                    byte[] signalLevelRaw = Arrays.copyOf(_kissCmdBuffer, _kissCmdBufferPos);
+                    ByteBuffer data = ByteBuffer.wrap(signalLevelRaw);
+                    if (signalLevelRaw.length == SIGNAL_LEVEL_EVENT_SIZE) {
+                        short rssi = data.getShort();
+                        short snr = data.getShort();
+                        protocolCallback.onReceiveSignalLevel(rssi, snr);
+                    } else {
+                        protocolCallback.onProtocolRxError();
+                        Log.e(TAG, "Signal event of wrong size");
+                    }
                     _kissCmdBufferPos = 0;
                 }
                 resetState();
@@ -300,7 +316,7 @@ public class Kiss implements Protocol {
         }
     }
 
-    protected void receiveKissData(byte[] data, Callback callback) {
+    protected void receiveKissData(byte[] data, ProtocolCallback protocolCallback) {
         for (byte b : data) {
             switch (_kissState) {
                 case GET_START:
@@ -317,7 +333,7 @@ public class Kiss implements Protocol {
                     processCommand(b);
                     break;
                 case GET_DATA:
-                    processData(b, callback);
+                    processData(b, protocolCallback);
                     break;
                 case ESCAPE:
                     if (b == KISS_TFEND) {

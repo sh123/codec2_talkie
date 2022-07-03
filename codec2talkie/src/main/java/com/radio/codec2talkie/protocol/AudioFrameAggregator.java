@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.transport.Transport;
 import com.ustadmobile.codec2.Codec2;
@@ -23,12 +24,14 @@ public class AudioFrameAggregator implements Protocol {
     private int _outputBufferPos;
     private byte[] _outputBuffer;
 
-    private int _codec2FrameSize;
-    private int _codec2ModeId;
+    private final int _codec2FrameSize;
+    private final int _codec2ModeId;
 
     private String _lastSrc;
     private String _lastDst;
     private int _lastCodec2Mode;
+
+    private ProtocolCallback _parentProtocolCallback;
 
     public AudioFrameAggregator(Protocol childProtocol, int codec2ModeId) {
         _childProtocol = childProtocol;
@@ -37,12 +40,13 @@ public class AudioFrameAggregator implements Protocol {
     }
 
     @Override
-    public void initialize(Transport transport, Context context) throws IOException {
+    public void initialize(Transport transport, Context context, ProtocolCallback protocolCallback) throws IOException {
+        _parentProtocolCallback = protocolCallback;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         _outputBufferSize = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.CODEC2_TX_FRAME_MAX_SIZE, "48"));
         _outputBuffer = new byte[_outputBufferSize];
         _outputBufferPos = 0;
-        _childProtocol.initialize(transport, context);
+        _childProtocol.initialize(transport, context, _protocolCallback);
     }
 
     @Override
@@ -81,54 +85,86 @@ public class AudioFrameAggregator implements Protocol {
     }
 
     @Override
-    public boolean receive(Callback callback) throws IOException {
-        return _childProtocol.receive(new Callback() {
-            @Override
-            protected void onReceivePosition(String src, double latitude, double longitude, double altitude, float bearing, String comment) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-                throw new UnsupportedOperationException();
-            }
-
-            @Override
-            protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
-                if (audioFrames.length % _codec2FrameSize != 0) {
-                    Log.e(TAG, "Ignoring audio frame of wrong size: " + audioFrames.length);
-                    callback.onProtocolRxError();
-                } else {
-                    // split by audio frame
-                    byte[] audioFrame = new byte[_codec2FrameSize];
-                    for (int i = 0; i < audioFrames.length; i += _codec2FrameSize) {
-                        for (int j = 0; j < _codec2FrameSize && (j + i) < audioFrames.length; j++) {
-                            audioFrame[j] = audioFrames[i + j];
-                        }
-                        callback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrame);
-                    }
-                }
-            }
-
-            @Override
-            protected void onReceiveData(String src, String dst, byte[] data) {
-                callback.onReceiveData(src, dst, data);
-            }
-
-            @Override
-            protected void onReceiveSignalLevel(byte[] rawData) {
-                callback.onReceiveSignalLevel(rawData);
-            }
-
-            @Override
-            protected void onProtocolRxError() {
-                callback.onProtocolRxError();
-            }
-        });
+    public boolean receive() throws IOException {
+        return _childProtocol.receive();
     }
 
+    ProtocolCallback _protocolCallback = new ProtocolCallback() {
+        @Override
+        protected void onReceivePosition(Position position) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
+            if (audioFrames.length % _codec2FrameSize != 0) {
+                Log.e(TAG, "Ignoring audio frame of wrong size: " + audioFrames.length);
+                _parentProtocolCallback.onProtocolRxError();
+            } else {
+                // split by audio frame
+                byte[] audioFrame = new byte[_codec2FrameSize];
+                for (int i = 0; i < audioFrames.length; i += _codec2FrameSize) {
+                    for (int j = 0; j < _codec2FrameSize && (j + i) < audioFrames.length; j++) {
+                        audioFrame[j] = audioFrames[i + j];
+                    }
+                    _parentProtocolCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrame);
+                }
+            }
+        }
+
+        @Override
+        protected void onReceiveData(String src, String dst, byte[] data) {
+            _parentProtocolCallback.onReceiveData(src, dst, data);
+        }
+
+        @Override
+        protected void onReceiveSignalLevel(short rssi, short snr) {
+            _parentProtocolCallback.onReceiveSignalLevel(rssi, snr);
+        }
+
+        @Override
+        protected void onReceiveLog(String logData) {
+            _parentProtocolCallback.onReceiveLog(logData);
+        }
+
+        @Override
+        protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
+            _parentProtocolCallback.onTransmitPcmAudio(src, dst, codec, frame);
+        }
+
+        @Override
+        protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
+            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        }
+
+        @Override
+        protected void onTransmitData(String src, String dst, byte[] data) {
+            _parentProtocolCallback.onTransmitData(src, dst, data);
+        }
+
+        @Override
+        protected void onTransmitLog(String logData) {
+            _parentProtocolCallback.onTransmitLog(logData);
+        }
+
+        @Override
+        protected void onProtocolRxError() {
+            _parentProtocolCallback.onProtocolRxError();
+        }
+
+        @Override
+        protected void onProtocolTxError() {
+            _parentProtocolCallback.onProtocolTxError();
+        }
+    };
+
     @Override
-    public void sendPosition(double latitude, double longitude, double altitude, float bearing, String comment) {
+    public void sendPosition(Position position) {
         throw new UnsupportedOperationException();
     }
 

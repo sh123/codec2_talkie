@@ -184,7 +184,7 @@
             app:title="@string/aprs_voax25_enable_title"
             app:summary="@string/aprs_voax25_enable_summary"
             app:dependency="aprs_enable">
-            app:defaultValue="false">
+            app:defaultValue="true">
         </SwitchPreference>
 
         <EditTextPreference

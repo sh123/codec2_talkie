@@ -7,7 +7,7 @@
         app:title="@string/aprs_privacy_position_ambiguity_title"
         app:entries="@array/aprs_privacy_position_ambiguity_entries"
         app:entryValues="@array/aprs_privacy_position_ambiguity_values"
-        app:defaultValue="off"
+        app:defaultValue="0"
         app:summary="%s">
     </ListPreference>
 

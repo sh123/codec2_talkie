@@ -39,7 +39,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.radio.codec2talkie.audio.AudioProcessor;
+import com.radio.codec2talkie.app.AppWorker;
 import com.radio.codec2talkie.connect.BleConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothSocketHandler;
@@ -50,6 +50,8 @@ import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.tools.RadioTools;
+import com.radio.codec2talkie.tracker.Tracker;
+import com.radio.codec2talkie.tracker.TrackerFactory;
 import com.radio.codec2talkie.transport.TransportFactory;
 import com.radio.codec2talkie.connect.UsbConnectActivity;
 import com.radio.codec2talkie.connect.UsbPortHandler;
@@ -84,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_FINE_LOCATION
     };
 
-    private AudioProcessor _audioProcessor;
+    private AppWorker _appWorker;
+    private Tracker _tracker;
 
     private SharedPreferences _sharedPreferences;
 
@@ -121,11 +124,11 @@ public class MainActivity extends AppCompatActivity {
         _textRssi = findViewById(R.id.textRssi);
 
         // UV bar
-        int barMaxValue = AudioProcessor.getAudioMaxLevel() - AudioProcessor.getAudioMinLevel();
+        int barMaxValue = AppWorker.getAudioMaxLevel() - AppWorker.getAudioMinLevel();
         _progressAudioLevel = findViewById(R.id.progressAudioLevel);
         _progressAudioLevel.setMax(barMaxValue);
         _progressAudioLevel.getProgressDrawable().setColorFilter(
-                new PorterDuffColorFilter(AudioTools.colorFromAudioLevel(AudioProcessor.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
+                new PorterDuffColorFilter(AudioTools.colorFromAudioLevel(AppWorker.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
 
         // S-meter
         _progressRssi = findViewById(R.id.progressRssi);
@@ -163,6 +166,11 @@ public class MainActivity extends AppCompatActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
+        // tracker
+        String trackerName = _sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE, "manual");
+        _tracker = TrackerFactory.create(trackerName);
+        _tracker.initialize(getApplicationContext(), position -> _appWorker.sendPosition(position));
+
         startTransportConnection();
     }
 
@@ -174,8 +182,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void stopRunning() {
-        if (_audioProcessor != null) {
-            _audioProcessor.stopRunning();
+        if (_appWorker != null) {
+            _appWorker.stopRunning();
         }
         finish();
     }
@@ -240,9 +248,9 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_audioProcessor != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
+        if (_appWorker != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
             Toast.makeText(MainActivity.this, R.string.bt_disconnected, Toast.LENGTH_LONG).show();
-            _audioProcessor.stopRunning();
+            _appWorker.stopRunning();
         }
         }
     };
@@ -250,12 +258,19 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onUsbDetached = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_audioProcessor != null && UsbPortHandler.getPort() != null && !_isTestMode) {
+        if (_appWorker != null && UsbPortHandler.getPort() != null && !_isTestMode) {
             Toast.makeText(MainActivity.this, R.string.usb_detached, Toast.LENGTH_LONG).show();
-            _audioProcessor.stopRunning();
+            _appWorker.stopRunning();
         }
         }
     };
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        boolean isAprsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
+        menu.setGroupVisible(R.id.group_aprs, isAprsEnabled);
+        return true;
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -279,13 +294,35 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         if (itemId == R.id.reconnect) {
-            if (_audioProcessor != null) {
-                _audioProcessor.stopRunning();
+            if (_appWorker != null) {
+                _appWorker.stopRunning();
             }
             return true;
         }
         else if (itemId == R.id.exit) {
             stopRunning();
+            return true;
+        }
+        else if (itemId == R.id.send_position) {
+            _tracker.sendPosition();
+            return true;
+        }
+        else if (itemId == R.id.start_tracking) {
+            if (_tracker.isTracking()) {
+                _tracker.stopTracking();
+                item.setTitle(R.string.menu_start_tracking);
+            } else {
+                _tracker.startTracking();
+                item.setTitle(R.string.menu_stop_tracking);
+            }
+            return true;
+        }
+        else if (itemId == R.id.messages) {
+            Toast.makeText(getBaseContext(), "Not implemented", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        else if (itemId == R.id.aprs_log) {
+            Toast.makeText(getBaseContext(), "Not implemented", Toast.LENGTH_SHORT).show();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -356,13 +393,13 @@ public class MainActivity extends AppCompatActivity {
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    if (_audioProcessor != null)
-                        _audioProcessor.startRecording();
+                    if (_appWorker != null)
+                        _appWorker.startRecording();
                     break;
                 case MotionEvent.ACTION_UP:
                     v.performClick();
-                    if (_audioProcessor != null)
-                        _audioProcessor.startPlayback();
+                    if (_appWorker != null)
+                        _appWorker.startPlayback();
                     break;
             }
             return false;
@@ -394,27 +431,34 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case AudioProcessor.PROCESSOR_CONNECTED:
+                case AppWorker.PROCESSOR_CONNECTED:
                     Toast.makeText(getBaseContext(), R.string.processor_connected, Toast.LENGTH_SHORT).show();
                     break;
-                case AudioProcessor.PROCESSOR_DISCONNECTED:
+                case AppWorker.PROCESSOR_DISCONNECTED:
                     _btnPtt.setText(R.string.main_status_stop);
                     Toast.makeText(getBaseContext(), R.string.processor_disconnected, Toast.LENGTH_SHORT).show();
                     startTransportConnection();
                     break;
-                case AudioProcessor.PROCESSOR_LISTENING:
+                case AppWorker.PROCESSOR_LISTENING:
                     _btnPtt.setText(R.string.push_to_talk);
+                    _textStatus.setText("");
                     break;
-                case AudioProcessor.PROCESSOR_RECORDING:
+                case AppWorker.PROCESSOR_TRANSMITTING:
+                    if (msg.obj != null) {
+                        _textStatus.setText((String) msg.obj);
+                    }
                     _btnPtt.setText(R.string.main_status_tx);
                     break;
-                case AudioProcessor.PROCESSOR_RECEIVING:
+                case AppWorker.PROCESSOR_RECEIVING:
                     _btnPtt.setText(R.string.main_status_rx);
                     break;
-                case AudioProcessor.PROCESSOR_PLAYING:
+                case AppWorker.PROCESSOR_PLAYING:
+                    if (msg.obj != null) {
+                        _textStatus.setText((String) msg.obj);
+                    }
                     _btnPtt.setText(R.string.main_status_play);
                     break;
-                case AudioProcessor.PROCESSOR_RX_RADIO_LEVEL:
+                case AppWorker.PROCESSOR_RX_RADIO_LEVEL:
                     if (msg.arg1 == 0) {
                         _textRssi.setText("");
                         _progressRssi.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN));
@@ -426,13 +470,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 // same progress bar is reused for rx and tx levels
-                case AudioProcessor.PROCESSOR_RX_LEVEL:
-                case AudioProcessor.PROCESSOR_TX_LEVEL:
+                case AppWorker.PROCESSOR_RX_LEVEL:
+                case AppWorker.PROCESSOR_TX_LEVEL:
                     _progressAudioLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(AudioTools.colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
-                    _progressAudioLevel.setProgress(msg.arg1 - AudioProcessor.getAudioMinLevel());
+                    _progressAudioLevel.setProgress(msg.arg1 - AppWorker.getAudioMinLevel());
                     break;
-                case AudioProcessor.PROCESSOR_RX_ERROR:
+                case AppWorker.PROCESSOR_RX_ERROR:
                     _btnPtt.setText(R.string.main_status_rx_error);
+                    break;
+                case AppWorker.PROCESSOR_TX_ERROR:
+                    _btnPtt.setText(R.string.main_status_tx_error);
                     break;
             }
         }
@@ -469,12 +516,12 @@ public class MainActivity extends AppCompatActivity {
             String statusLine = getSpeedStatusText(codec2ModeName) + ", " + getFeatureStatusText(protocolType);
             _textCodecMode.setText(statusLine);
 
-            _audioProcessor = new AudioProcessor(transportType,
+            _appWorker = new AppWorker(transportType,
                     protocolType,
                     AudioTools.extractCodec2ModeId(codec2ModeName),
                     onAudioProcessorStateChanged,
                     getApplicationContext());
-            _audioProcessor.start();
+            _appWorker.start();
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(MainActivity.this, R.string.audio_failed_to_start_processing, Toast.LENGTH_LONG).show();
@@ -495,26 +542,36 @@ public class MainActivity extends AppCompatActivity {
 
     private String getFeatureStatusText(ProtocolFactory.ProtocolType protocolType) {
         // protocol
-        String status = protocolType.toString();
+        String status = "";
 
         // recording
         boolean recordingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_RECORDING_ENABLED, false);
         if (recordingEnabled) {
-            status += ", " + getString(R.string.recorder_status_label);
+            status += getString(R.string.recorder_status_label);
         }
 
         // scrambling
         boolean scramblingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.KISS_SCRAMBLING_ENABLED, false);
         if (scramblingEnabled) {
-            status += ", " + getString(R.string.kiss_scrambler_label);
+            status += getString(R.string.kiss_scrambler_label);
         }
 
         // aprs
         boolean aprsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
         if (aprsEnabled) {
-            status += ", " + getString(R.string.aprs_label);
+            status += getString(R.string.aprs_label);
+
+            // VoAX25
+            boolean voax25Enabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_VOAX25_ENABLE, false);
+            if (voax25Enabled) {
+                status += getString(R.string.voax25_label);
+            }
         }
-        return status;
+
+        if (status.length() == 0) {
+            return protocolType.toString();
+        }
+        return protocolType.toString() + " " + status;
     }
 
     @Override

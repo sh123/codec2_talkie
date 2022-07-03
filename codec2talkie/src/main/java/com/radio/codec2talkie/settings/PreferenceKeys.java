@@ -59,11 +59,12 @@ public final class PreferenceKeys {
     public static String APRS_LOCATION_SOURCE = "aprs_location_source";
     public static String APRS_LOCATION_SOURCE_GPS_UPDATE_TIME = "aprs_location_source_gps_update_time";
     public static String APRS_LOCATION_MIC_E_MESSAGE_TYPE = "aprs_location_mice_message_type";
+    public static String APRS_LOCATION_MIC_E_DIGIPATH = "aprs_location_mice_digipath";
     public static String APRS_LOCATION_SOURCE_GPS_UPDATE_DISTANCE = "aprs_location_source_gps_update_distance";
-    public static String APRS_LOCATION_SOURCE_MANUAL_LATE = "aprs_location_source_manual_lat";
+    public static String APRS_LOCATION_SOURCE_MANUAL_LAT = "aprs_location_source_manual_lat";
     public static String APRS_LOCATION_SOURCE_MANUAL_LON = "aprs_location_source_manual_lon";
+    public static String APRS_LOCATION_SOURCE_MANUAL_UPDATE_INTERVAL_MINUTES = "aprs_location_source_manual_update_time";
     public static String APRS_LOCATION_SOURCE_MANUAL_AUTO_SEND = "aprs_location_source_manual_auto_send";
-    public static String APRS_LOCATION_SOURCE_MANUAL_UPDATE_TIME = "aprs_location_source_manual_update_time";
     public static String APRS_PRIVACY_POSITION_AMBIGUITY = "aprs_privacy_position_ambiguity";
     public static String APRS_PRIVACY_SPEED_ENABLED = "aprs_privacy_speed_enable";
     public static String APRS_PRIVACY_ALTITUDE_ENABLED = "aprs_privacy_altitude_enable";
