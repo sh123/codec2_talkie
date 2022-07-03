@@ -1,7 +1,10 @@
 package com.radio.codec2talkie.protocol.aprs;
 
+import android.util.Log;
+
 import com.radio.codec2talkie.protocol.aprs.tools.AprsTools;
 import com.radio.codec2talkie.protocol.position.Position;
+import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.tools.MathTools;
 import com.radio.codec2talkie.tools.UnitTools;
 
@@ -56,19 +59,19 @@ public class AprsDataPositionReport implements AprsData {
 
     private byte[] generateCompressedInfo(Position position) {
         ByteBuffer buffer = ByteBuffer.allocate(256);
-        buffer.putChar('!');
+        buffer.put((byte)'!');
         buffer.put(getCompressedNmeaCoordinate(position));
         // compressed can hold either speed and bearing or altitude
         if (position.isSpeedBearingEnabled) {
             buffer.put((byte)(33 + (byte)(position.bearingDegrees / 4.0)));
             double compressedSpeed = MathTools.log(1.08, 1 + UnitTools.metersPerSecondToKnots(position.speedMetersPerSecond));
             buffer.put((byte)(33 + (byte)(compressedSpeed)));
-            buffer.putChar('[');
+            buffer.put((byte)'[');
         } else if (position.isAltitudeEnabled) {
             double compressedAltitude = MathTools.log(1.002, UnitTools.metersToFeet(position.altitudeMeters));
             buffer.put((byte)(33 + (byte)(compressedAltitude / 100)));
             buffer.put((byte)(33 + (byte)(compressedAltitude % 100)));
-            buffer.putChar('T');
+            buffer.put((byte)'T');
         } else {
             buffer.put(" sT".getBytes());
         }
@@ -82,7 +85,7 @@ public class AprsDataPositionReport implements AprsData {
 
     private byte[] generateUncompressedInfo(Position position) {
         ByteBuffer buffer = ByteBuffer.allocate(256);
-        buffer.putChar('!');
+        buffer.put((byte)'!');
         buffer.put(getUncompressedNmeaCoordinate(position).getBytes());
         // put course altitude
         if (position.isSpeedBearingEnabled) {

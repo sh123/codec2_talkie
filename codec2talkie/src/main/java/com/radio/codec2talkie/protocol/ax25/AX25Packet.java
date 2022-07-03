@@ -1,5 +1,7 @@
 package com.radio.codec2talkie.protocol.ax25;
 
+import android.util.Log;
+
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 

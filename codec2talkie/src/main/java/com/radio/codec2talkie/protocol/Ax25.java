@@ -9,6 +9,7 @@ import androidx.preference.PreferenceManager;
 import com.radio.codec2talkie.protocol.ax25.AX25Packet;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -57,6 +58,7 @@ public class Ax25 implements Protocol {
                 Log.e(TAG, "Invalid source data for AX.25");
                 _parentProtocolCallback.onProtocolTxError();
             } else {
+                Log.i(TAG, DebugTools.bytesToDebugString(ax25Frame));
                 _childProtocol.sendCompressedAudio(src, dst, codec2Mode, ax25Frame);
             }
         } else {
@@ -82,7 +84,7 @@ public class Ax25 implements Protocol {
             Log.e(TAG, "Invalid source data for AX.25");
             _parentProtocolCallback.onProtocolTxError();
         } else {
-            _childProtocol.sendData(src, dst, dataPacket);
+            _childProtocol.sendData(src, dst, ax25Frame);
         }
     }
 

@@ -165,11 +165,11 @@ public class AppWorker extends Thread {
         _onMessageReceived.sendMessage(msg);
     }
 
-    private void sendLocation(Location location) {
+    public void sendPosition(Position position) {
         if (_currentStatus == PROCESSOR_DISCONNECTED) return;
         Message msg = new Message();
         msg.what = PROCESSOR_SEND_LOCATION;
-        msg.obj = location;
+        msg.obj = position;
         _onMessageReceived.sendMessage(msg);
     }
 
@@ -395,7 +395,7 @@ public class AppWorker extends Thread {
                 break;
             case PROCESSOR_SEND_LOCATION:
                 try {
-                    _protocol.sendPosition(Position.fromLocation((Location) msg.obj));
+                    _protocol.sendPosition((Position)msg.obj);
                 } catch (IOException e) {
                     e.printStackTrace();
                     quitProcessing();

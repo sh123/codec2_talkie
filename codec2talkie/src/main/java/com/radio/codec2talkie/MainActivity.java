@@ -50,6 +50,8 @@ import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.tools.RadioTools;
+import com.radio.codec2talkie.tracker.Tracker;
+import com.radio.codec2talkie.tracker.TrackerFactory;
 import com.radio.codec2talkie.transport.TransportFactory;
 import com.radio.codec2talkie.connect.UsbConnectActivity;
 import com.radio.codec2talkie.connect.UsbPortHandler;
@@ -85,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private AppWorker _appWorker;
+    private Tracker _tracker;
 
     private SharedPreferences _sharedPreferences;
 
@@ -162,6 +165,11 @@ public class MainActivity extends AppCompatActivity {
         if (_sharedPreferences.getBoolean(PreferenceKeys.APP_KEEP_SCREEN_ON, false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
+
+        // tracker
+        String trackerName = _sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE, "manual");
+        _tracker = TrackerFactory.create(trackerName);
+        _tracker.initialize(getApplicationContext(), position -> _appWorker.sendPosition(position));
 
         startTransportConnection();
     }
@@ -296,11 +304,17 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         else if (itemId == R.id.send_position) {
-            Toast.makeText(getBaseContext(), "Not implemented", Toast.LENGTH_SHORT).show();
+            _tracker.sendPosition();
             return true;
         }
         else if (itemId == R.id.start_tracking) {
-            Toast.makeText(getBaseContext(), "Not implemented", Toast.LENGTH_SHORT).show();
+            if (_tracker.isTracking()) {
+                _tracker.stopTracking();
+                item.setTitle(R.string.menu_start_tracking);
+            } else {
+                _tracker.startTracking();
+                item.setTitle(R.string.menu_stop_tracking);
+            }
             return true;
         }
         else if (itemId == R.id.messages) {

@@ -13,6 +13,7 @@ import androidx.preference.PreferenceManager;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;

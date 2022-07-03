@@ -45,7 +45,7 @@ public class AprsDataPositionReportMicE implements AprsData {
         ByteBuffer buffer = ByteBuffer.allocate(256);
 
         // identifier
-        buffer.putChar('`');
+        buffer.put((byte)'`');
 
         // longitude, speed/course
         buffer.put(generateInfo(position, longitude));
@@ -146,7 +146,7 @@ public class AprsDataPositionReportMicE implements AprsData {
         buffer.put((byte)((latitude[4] << 1) | (longOffset & 1)));
         buffer.put((byte)((latitude[5] << 1) | (longitude[6] == 'W' ? 1 : 0)));
         if (position.extDigipathSsid > 0) {
-            buffer.putChar('-');
+            buffer.put((byte)'-');
             buffer.put(Integer.toString(position.extDigipathSsid).getBytes());
         }
 

@@ -31,4 +31,8 @@ public class UnitTools {
     public static long metersPerSecondToKnots(float metersPerSecond) {
         return (long)(metersPerSecond / 0.514444);
     }
+
+    public static long minutesToMillis(long minutes ) {
+        return minutes * 60L * 1000L;
+    }
 }
