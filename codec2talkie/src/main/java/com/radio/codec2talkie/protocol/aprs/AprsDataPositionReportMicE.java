@@ -1,5 +1,7 @@
 package com.radio.codec2talkie.protocol.aprs;
 
+import android.util.Log;
+
 import com.radio.codec2talkie.protocol.aprs.tools.AprsTools;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.tools.UnitTools;
@@ -141,12 +143,12 @@ public class AprsDataPositionReportMicE implements AprsData {
 
         // generate Mic-E position and flags into the destination callsign
         ByteBuffer buffer = ByteBuffer.allocate(16);
-        buffer.put((byte)((latitude[0] << 1) | ((miceMessageTypeEncoding >> 2) & 1)));
-        buffer.put((byte)((latitude[1] << 1) | ((miceMessageTypeEncoding >> 1) & 1)));
-        buffer.put((byte)((latitude[2] << 1) | ((miceMessageTypeEncoding) & 1)));
-        buffer.put((byte)((latitude[3] << 1) | (latitude[6] == 'N' ? 1 : 0)));
-        buffer.put((byte)((latitude[4] << 1) | (longOffset & 1)));
-        buffer.put((byte)((latitude[5] << 1) | (longitude[6] == 'W' ? 1 : 0)));
+        buffer.put((byte)(latitude[0] + 32 * ((miceMessageTypeEncoding >> 2) & 1)));
+        buffer.put((byte)(latitude[1] + 32 * ((miceMessageTypeEncoding >> 1) & 1)));
+        buffer.put((byte)(latitude[2] + 32 * ((miceMessageTypeEncoding) & 1)));
+        buffer.put((byte)(latitude[3] + 32 * (latitude[6] == 'N' ? 1 : 0)));
+        buffer.put((byte)(latitude[4] + 32 * (longOffset & 1)));
+        buffer.put((byte)(latitude[5] + 32 * (longitude[6] == 'W' ? 1 : 0)));
         if (position.extDigipathSsid > 0) {
             buffer.put((byte)'-');
             buffer.put(Integer.toString(position.extDigipathSsid).getBytes());
@@ -156,6 +158,7 @@ public class AprsDataPositionReportMicE implements AprsData {
         buffer.flip();
         byte[] callsign = new byte[buffer.remaining()];
         buffer.get(callsign);
+        Log.i("--->", new String(callsign));
         return new String(callsign);
     }
 }

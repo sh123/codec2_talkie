@@ -39,6 +39,9 @@ public class Manual implements Tracker {
         Position position = new Position();
         position.latitude = _latitude;
         position.longitude = _longitude;
+        position.bearingDegrees = 0;
+        position.speedMetersPerSecond = 0;
+        position.altitudeMeters = 0;
         _trackerCallback.onSendLocation(position);
     }
 
