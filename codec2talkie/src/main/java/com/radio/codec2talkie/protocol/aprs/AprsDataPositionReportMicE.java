@@ -1,7 +1,5 @@
 package com.radio.codec2talkie.protocol.aprs;
 
-import android.util.Log;
-
 import com.radio.codec2talkie.protocol.aprs.tools.AprsTools;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.tools.UnitTools;
@@ -150,7 +148,6 @@ public class AprsDataPositionReportMicE implements AprsData {
 
         // encode Mic-E longitude into the information field
         byte lonDeg = (byte)(Integer.parseInt(longStr.substring(0, 3)));
-        Log.i("====>", longStr + " " + Integer.parseInt(longStr.substring(0, 3)));
         if (lonDeg >= 0 && lonDeg <= 9) lonDeg += (90 + 28);
         else if (lonDeg >= 10 && lonDeg <= 99) lonDeg += 28;
         else if (lonDeg >= 100 && lonDeg <= 109) lonDeg += 8;
