@@ -21,7 +21,8 @@ public class UnitTools {
         String value = decimalToNmea(degrees, isLatitude);
         return value.substring(0, isLatitude ? 4 : 5) +
                 '.' +
-                value.substring(isLatitude ? 4 : 5, value.length() - 1);
+                value.substring(isLatitude ? 4 : 5, value.length() - 1) +
+                value.substring(value.length() - 1);
     }
 
     public static long metersToFeet(double meters) {
