@@ -29,7 +29,7 @@ public class Scrambler implements Protocol {
     private final String _scramblingKey;
 
     private int _iterationsCount;
-    private Callback _parentCallback;
+    private ProtocolCallback _parentProtocolCallback;
 
     public Scrambler(Protocol childProtocol, String scramblingKey) {
         _childProtocol = childProtocol;
@@ -37,8 +37,8 @@ public class Scrambler implements Protocol {
     }
 
     @Override
-    public void initialize(Transport transport, Context context, Callback callback) throws IOException {
-        _parentCallback = callback;
+    public void initialize(Transport transport, Context context, ProtocolCallback protocolCallback) throws IOException {
+        _parentProtocolCallback = protocolCallback;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         _iterationsCount = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_SCRAMBLER_ITERATIONS, "1000"));
         _childProtocol.initialize(transport, context, _protocolCallback);
@@ -53,7 +53,7 @@ public class Scrambler implements Protocol {
     public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) throws IOException {
         byte[] result = scramble(audioFrame);
         if (result == null) {
-            _parentCallback.onProtocolTxError();
+            _parentProtocolCallback.onProtocolTxError();
         } else {
             _childProtocol.sendData(src, dst, result);
         }
@@ -68,7 +68,7 @@ public class Scrambler implements Protocol {
     public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
         byte[] result = scramble(dataPacket);
         if (result == null) {
-            _parentCallback.onProtocolTxError();
+            _parentProtocolCallback.onProtocolTxError();
         } else {
             _childProtocol.sendData(src, dst, result);
         }
@@ -79,7 +79,7 @@ public class Scrambler implements Protocol {
         return _childProtocol.receive();
     }
 
-    Callback _protocolCallback = new Callback() {
+    ProtocolCallback _protocolCallback = new ProtocolCallback() {
         @Override
         protected void onReceivePosition(Position position) {
             throw new UnsupportedOperationException();
@@ -95,9 +95,9 @@ public class Scrambler implements Protocol {
 
             byte[] audioFrames = unscramble(scrambledFrame);
             if (audioFrames == null) {
-                _parentCallback.onProtocolRxError();
+                _parentProtocolCallback.onProtocolRxError();
             } else {
-                _parentCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
+                _parentProtocolCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
             }
         }
 
@@ -105,50 +105,50 @@ public class Scrambler implements Protocol {
         protected void onReceiveData(String src, String dst, byte[] scrambledData) {
             byte[] data = unscramble(scrambledData);
             if (data == null) {
-                _parentCallback.onProtocolRxError();
+                _parentProtocolCallback.onProtocolRxError();
             } else {
-                _parentCallback.onReceiveData(src, dst, data);
+                _parentProtocolCallback.onReceiveData(src, dst, data);
             }
         }
 
         @Override
         protected void onReceiveSignalLevel(short rssi, short snr) {
-            _parentCallback.onReceiveSignalLevel(rssi, snr);
+            _parentProtocolCallback.onReceiveSignalLevel(rssi, snr);
         }
 
         @Override
         protected void onReceiveLog(String logData) {
-            _parentCallback.onReceiveLog(logData);
+            _parentProtocolCallback.onReceiveLog(logData);
         }
 
         @Override
         protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
-            _parentCallback.onTransmitPcmAudio(src, dst, codec, frame);
+            _parentProtocolCallback.onTransmitPcmAudio(src, dst, codec, frame);
         }
 
         @Override
         protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
-            _parentCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
         }
 
         @Override
         protected void onTransmitData(String src, String dst, byte[] data) {
-            _parentCallback.onTransmitData(src, dst, data);
+            _parentProtocolCallback.onTransmitData(src, dst, data);
         }
 
         @Override
         protected void onTransmitLog(String logData) {
-            _parentCallback.onTransmitLog(logData);
+            _parentProtocolCallback.onTransmitLog(logData);
         }
 
         @Override
         protected void onProtocolRxError() {
-            _parentCallback.onProtocolRxError();
+            _parentProtocolCallback.onProtocolRxError();
         }
 
         @Override
         protected void onProtocolTxError() {
-            _parentCallback.onProtocolTxError();
+            _parentProtocolCallback.onProtocolTxError();
         }
     };
 

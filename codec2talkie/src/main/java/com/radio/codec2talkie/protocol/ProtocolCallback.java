@@ -2,7 +2,7 @@ package com.radio.codec2talkie.protocol;
 
 import com.radio.codec2talkie.protocol.position.Position;
 
-public abstract class Callback {
+public abstract class ProtocolCallback {
     // receive
     abstract protected void onReceivePosition(Position position);
     abstract protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame);

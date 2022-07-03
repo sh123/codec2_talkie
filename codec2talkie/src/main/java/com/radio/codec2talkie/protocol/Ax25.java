@@ -21,15 +21,15 @@ public class Ax25 implements Protocol {
     private String _digipath;
     private boolean _isVoax25Enabled;
 
-    private Callback _parentCallback;
+    private ProtocolCallback _parentProtocolCallback;
 
     public Ax25(Protocol childProtocol) {
         _childProtocol = childProtocol;
     }
 
     @Override
-    public void initialize(Transport transport, Context context, Callback callback) throws IOException {
-        _parentCallback = callback;
+    public void initialize(Transport transport, Context context, ProtocolCallback protocolCallback) throws IOException {
+        _parentProtocolCallback = protocolCallback;
         _childProtocol.initialize(transport, context, _protocolCallback);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         // NOTE, may need to pass through sendData/sendAudio
@@ -55,7 +55,7 @@ public class Ax25 implements Protocol {
             byte[] ax25Frame = ax25Packet.toBinary();
             if (ax25Frame == null) {
                 Log.e(TAG, "Invalid source data for AX.25");
-                _parentCallback.onProtocolTxError();
+                _parentProtocolCallback.onProtocolTxError();
             } else {
                 _childProtocol.sendCompressedAudio(src, dst, codec2Mode, ax25Frame);
             }
@@ -80,7 +80,7 @@ public class Ax25 implements Protocol {
         byte[] ax25Frame = ax25Packet.toBinary();
         if (ax25Frame == null) {
             Log.e(TAG, "Invalid source data for AX.25");
-            _parentCallback.onProtocolTxError();
+            _parentProtocolCallback.onProtocolTxError();
         } else {
             _childProtocol.sendData(src, dst, dataPacket);
         }
@@ -91,7 +91,7 @@ public class Ax25 implements Protocol {
         return _childProtocol.receive();
     }
 
-    Callback _protocolCallback = new Callback() {
+    ProtocolCallback _protocolCallback = new ProtocolCallback() {
         @Override
         protected void onReceivePosition(Position position) {
             throw new UnsupportedOperationException();
@@ -108,59 +108,59 @@ public class Ax25 implements Protocol {
             ax25Data.fromBinary(audioFrames);
             if (ax25Data.isValid) {
                 if (ax25Data.isAudio) {
-                    _parentCallback.onReceiveCompressedAudio(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, ax25Data.rawData);
+                    _parentProtocolCallback.onReceiveCompressedAudio(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, ax25Data.rawData);
                 } else {
-                    _parentCallback.onReceiveData(ax25Data.src, ax25Data.dst, audioFrames);
+                    _parentProtocolCallback.onReceiveData(ax25Data.src, ax25Data.dst, audioFrames);
                 }
             } else {
                 // fallback to raw audio if ax25 frame is invalid
-                _parentCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
+                _parentProtocolCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
             }
         }
 
         @Override
         protected void onReceiveData(String src, String dst, byte[] data) {
-            _parentCallback.onReceiveData(src, dst, data);
+            _parentProtocolCallback.onReceiveData(src, dst, data);
         }
 
         @Override
         protected void onReceiveSignalLevel(short rssi, short snr) {
-            _parentCallback.onReceiveSignalLevel(rssi, snr);
+            _parentProtocolCallback.onReceiveSignalLevel(rssi, snr);
         }
 
         @Override
         protected void onReceiveLog(String logData) {
-            _parentCallback.onReceiveLog(logData);
+            _parentProtocolCallback.onReceiveLog(logData);
         }
 
         @Override
         protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
-            _parentCallback.onTransmitPcmAudio(src, dst, codec, frame);
+            _parentProtocolCallback.onTransmitPcmAudio(src, dst, codec, frame);
         }
 
         @Override
         protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
-            _parentCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
         }
 
         @Override
         protected void onTransmitData(String src, String dst, byte[] data) {
-            _parentCallback.onTransmitData(src, dst, data);
+            _parentProtocolCallback.onTransmitData(src, dst, data);
         }
 
         @Override
         protected void onTransmitLog(String logData) {
-            _parentCallback.onTransmitLog(logData);
+            _parentProtocolCallback.onTransmitLog(logData);
         }
 
         @Override
         protected void onProtocolRxError() {
-            _parentCallback.onProtocolRxError();
+            _parentProtocolCallback.onProtocolRxError();
         }
 
         @Override
         protected void onProtocolTxError() {
-            _parentCallback.onProtocolTxError();
+            _parentProtocolCallback.onProtocolTxError();
         }
     };
 

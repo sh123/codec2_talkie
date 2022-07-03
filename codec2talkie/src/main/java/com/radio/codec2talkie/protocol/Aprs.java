@@ -22,7 +22,7 @@ public class Aprs implements Protocol {
 
     private final Protocol _childProtocol;
 
-    private Callback _parentCallback;
+    private ProtocolCallback _parentProtocolCallback;
 
     private String _srcCallsign;
     private String _dstCallsign;
@@ -43,8 +43,8 @@ public class Aprs implements Protocol {
     }
 
     @Override
-    public void initialize(Transport transport, Context context, Callback callback) throws IOException {
-        _parentCallback = callback;
+    public void initialize(Transport transport, Context context, ProtocolCallback protocolCallback) throws IOException {
+        _parentProtocolCallback = protocolCallback;
         _childProtocol.initialize(transport, context, _protocolCallback);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -99,7 +99,7 @@ public class Aprs implements Protocol {
         return _childProtocol.receive();
     }
 
-    Callback _protocolCallback = new Callback() {
+    ProtocolCallback _protocolCallback = new ProtocolCallback() {
         @Override
         protected void onReceivePosition(Position position) {
             throw new UnsupportedOperationException();
@@ -108,7 +108,7 @@ public class Aprs implements Protocol {
         @Override
         protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
             String dstCallsign = new AprsCallsign(dst).isSoftware() ? "*" : dst;
-            _parentCallback.onReceivePcmAudio(src, dstCallsign, codec, pcmFrame);
+            _parentProtocolCallback.onReceivePcmAudio(src, dstCallsign, codec, pcmFrame);
         }
 
         @Override
@@ -122,52 +122,52 @@ public class Aprs implements Protocol {
             if (aprsData != null && aprsData.isValid()) {
                 Position position = aprsData.toPosition();
                 if (position != null) {
-                    _parentCallback.onReceivePosition(position);
+                    _parentProtocolCallback.onReceivePosition(position);
                     return;
                 }
             }
-            _parentCallback.onReceiveData(src, dst, data);
+            _parentProtocolCallback.onReceiveData(src, dst, data);
         }
 
         @Override
         protected void onReceiveSignalLevel(short rssi, short snr) {
-            _parentCallback.onReceiveSignalLevel(rssi, snr);
+            _parentProtocolCallback.onReceiveSignalLevel(rssi, snr);
         }
 
         @Override
         protected void onReceiveLog(String logData) {
-            _parentCallback.onReceiveLog(logData);
+            _parentProtocolCallback.onReceiveLog(logData);
         }
 
         @Override
         protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
             String dstCallsign = new AprsCallsign(dst).isSoftware() ? "*" : dst;
-            _parentCallback.onTransmitPcmAudio(src, dstCallsign, codec, frame);
+            _parentProtocolCallback.onTransmitPcmAudio(src, dstCallsign, codec, frame);
         }
 
         @Override
         protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
-            _parentCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
         }
 
         @Override
         protected void onTransmitData(String src, String dst, byte[] data) {
-            _parentCallback.onTransmitData(src, dst, data);
+            _parentProtocolCallback.onTransmitData(src, dst, data);
         }
 
         @Override
         protected void onTransmitLog(String logData) {
-            _parentCallback.onTransmitLog(logData);
+            _parentProtocolCallback.onTransmitLog(logData);
         }
 
         @Override
         protected void onProtocolRxError() {
-            _parentCallback.onProtocolRxError();
+            _parentProtocolCallback.onProtocolRxError();
         }
 
         @Override
         protected void onProtocolTxError() {
-            _parentCallback.onProtocolTxError();
+            _parentProtocolCallback.onProtocolTxError();
         }
     };
 

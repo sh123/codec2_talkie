@@ -39,7 +39,7 @@ public class KissParrot extends Kiss {
     }
 
     @Override
-    protected void receiveKissData(byte[] data, Callback callback) {
+    protected void receiveKissData(byte[] data, ProtocolCallback protocolCallback) {
         try {
             if (_playbackTimer != null) {
                 _playbackTimer.cancel();
@@ -51,7 +51,7 @@ public class KissParrot extends Kiss {
             synchronized(_buffer) {
                 _buffer.put(data);
             }
-            super.receiveKissData(data, callback);
+            super.receiveKissData(data, protocolCallback);
         } catch (BufferOverflowException e) {
             e.printStackTrace();
         }

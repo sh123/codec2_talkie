@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public interface Protocol {
     // init
-    void initialize(Transport transport, Context context, Callback callback) throws IOException;
+    void initialize(Transport transport, Context context, ProtocolCallback protocolCallback) throws IOException;
     // audio
     int getPcmAudioBufferSize();
     void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException;

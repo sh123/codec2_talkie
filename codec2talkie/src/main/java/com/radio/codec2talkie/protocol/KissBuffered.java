@@ -1,9 +1,5 @@
 package com.radio.codec2talkie.protocol;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
-
 import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -24,14 +20,14 @@ public class KissBuffered extends Kiss {
         _buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
     }
 
-    private void playBuffer(Callback callback) {
+    private void playBuffer(ProtocolCallback protocolCallback) {
         synchronized (_buffer) {
             if (_buffer.position() > 0) {
                 _buffer.flip();
                 try {
                     byte[] b = new byte[_buffer.remaining()];
                     _buffer.get(b);
-                    super.receiveKissData(b, callback);
+                    super.receiveKissData(b, protocolCallback);
                 } catch (BufferUnderflowException e) {
                     e.printStackTrace();
                 }
@@ -41,7 +37,7 @@ public class KissBuffered extends Kiss {
     }
 
     @Override
-    protected void receiveKissData(byte[] data, Callback callback) {
+    protected void receiveKissData(byte[] data, ProtocolCallback protocolCallback) {
         try {
             if (_playbackTimer != null) {
                 _playbackTimer.cancel();
@@ -60,7 +56,7 @@ public class KissBuffered extends Kiss {
         _playbackTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                playBuffer(callback);
+                playBuffer(protocolCallback);
             }
         }, GAP_TO_PLAY_MS);
     }

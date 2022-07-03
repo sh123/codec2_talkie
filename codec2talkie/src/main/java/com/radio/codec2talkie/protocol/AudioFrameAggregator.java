@@ -31,7 +31,7 @@ public class AudioFrameAggregator implements Protocol {
     private String _lastDst;
     private int _lastCodec2Mode;
 
-    private Callback _parentCallback;
+    private ProtocolCallback _parentProtocolCallback;
 
     public AudioFrameAggregator(Protocol childProtocol, int codec2ModeId) {
         _childProtocol = childProtocol;
@@ -40,8 +40,8 @@ public class AudioFrameAggregator implements Protocol {
     }
 
     @Override
-    public void initialize(Transport transport, Context context, Callback callback) throws IOException {
-        _parentCallback = callback;
+    public void initialize(Transport transport, Context context, ProtocolCallback protocolCallback) throws IOException {
+        _parentProtocolCallback = protocolCallback;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         _outputBufferSize = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.CODEC2_TX_FRAME_MAX_SIZE, "48"));
         _outputBuffer = new byte[_outputBufferSize];
@@ -89,7 +89,7 @@ public class AudioFrameAggregator implements Protocol {
         return _childProtocol.receive();
     }
 
-    Callback _protocolCallback = new Callback() {
+    ProtocolCallback _protocolCallback = new ProtocolCallback() {
         @Override
         protected void onReceivePosition(Position position) {
             throw new UnsupportedOperationException();
@@ -104,7 +104,7 @@ public class AudioFrameAggregator implements Protocol {
         protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
             if (audioFrames.length % _codec2FrameSize != 0) {
                 Log.e(TAG, "Ignoring audio frame of wrong size: " + audioFrames.length);
-                _parentCallback.onProtocolRxError();
+                _parentProtocolCallback.onProtocolRxError();
             } else {
                 // split by audio frame
                 byte[] audioFrame = new byte[_codec2FrameSize];
@@ -112,54 +112,54 @@ public class AudioFrameAggregator implements Protocol {
                     for (int j = 0; j < _codec2FrameSize && (j + i) < audioFrames.length; j++) {
                         audioFrame[j] = audioFrames[i + j];
                     }
-                    _parentCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrame);
+                    _parentProtocolCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrame);
                 }
             }
         }
 
         @Override
         protected void onReceiveData(String src, String dst, byte[] data) {
-            _parentCallback.onReceiveData(src, dst, data);
+            _parentProtocolCallback.onReceiveData(src, dst, data);
         }
 
         @Override
         protected void onReceiveSignalLevel(short rssi, short snr) {
-            _parentCallback.onReceiveSignalLevel(rssi, snr);
+            _parentProtocolCallback.onReceiveSignalLevel(rssi, snr);
         }
 
         @Override
         protected void onReceiveLog(String logData) {
-            _parentCallback.onReceiveLog(logData);
+            _parentProtocolCallback.onReceiveLog(logData);
         }
 
         @Override
         protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
-            _parentCallback.onTransmitPcmAudio(src, dst, codec, frame);
+            _parentProtocolCallback.onTransmitPcmAudio(src, dst, codec, frame);
         }
 
         @Override
         protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
-            _parentCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
         }
 
         @Override
         protected void onTransmitData(String src, String dst, byte[] data) {
-            _parentCallback.onTransmitData(src, dst, data);
+            _parentProtocolCallback.onTransmitData(src, dst, data);
         }
 
         @Override
         protected void onTransmitLog(String logData) {
-            _parentCallback.onTransmitLog(logData);
+            _parentProtocolCallback.onTransmitLog(logData);
         }
 
         @Override
         protected void onProtocolRxError() {
-            _parentCallback.onProtocolRxError();
+            _parentProtocolCallback.onProtocolRxError();
         }
 
         @Override
         protected void onProtocolTxError() {
-            _parentCallback.onProtocolTxError();
+            _parentProtocolCallback.onProtocolTxError();
         }
     };
 

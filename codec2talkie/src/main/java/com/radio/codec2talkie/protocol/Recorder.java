@@ -35,7 +35,7 @@ public class Recorder implements Protocol {
     private String _prevSrcCallsign;
     private String _prevDstCallsign;
 
-    private Callback _parentCallback;
+    private ProtocolCallback _parentProtocolCallback;
 
     public Recorder(Protocol childProtocol, int codec2ModeId) {
         _childProtocol = childProtocol;
@@ -46,8 +46,8 @@ public class Recorder implements Protocol {
     }
 
     @Override
-    public void initialize(Transport transport, Context context, Callback callback) throws IOException {
-        _parentCallback = callback;
+    public void initialize(Transport transport, Context context, ProtocolCallback protocolCallback) throws IOException {
+        _parentProtocolCallback = protocolCallback;
         _storage = StorageTools.getStorage(context);
         _childProtocol.initialize(transport, context, _protocolCallback);
     }
@@ -79,7 +79,7 @@ public class Recorder implements Protocol {
         return _childProtocol.receive();
     }
 
-    Callback _protocolCallback = new Callback() {
+    ProtocolCallback _protocolCallback = new ProtocolCallback() {
         @Override
         protected void onReceivePosition(Position position) {
             throw new UnsupportedOperationException();
@@ -93,53 +93,53 @@ public class Recorder implements Protocol {
         @Override
         protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
             rotateIfNewSrcOrDstCallsign(src, dst);
-            _parentCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
+            _parentProtocolCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
             writeToFile(src, dst, codec2Mode, audioFrames);
         }
 
         @Override
         protected void onReceiveData(String src, String dst, byte[] data) {
-            _parentCallback.onReceiveData(src, dst, data);
+            _parentProtocolCallback.onReceiveData(src, dst, data);
         }
 
         @Override
         protected void onReceiveSignalLevel(short rssi, short snr) {
-            _parentCallback.onReceiveSignalLevel(rssi, snr);
+            _parentProtocolCallback.onReceiveSignalLevel(rssi, snr);
         }
 
         @Override
         protected void onReceiveLog(String logData) {
-            _parentCallback.onReceiveLog(logData);
+            _parentProtocolCallback.onReceiveLog(logData);
         }
 
         @Override
         protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
-            _parentCallback.onTransmitPcmAudio(src, dst, codec, frame);
+            _parentProtocolCallback.onTransmitPcmAudio(src, dst, codec, frame);
         }
 
         @Override
         protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
-            _parentCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
         }
 
         @Override
         protected void onTransmitData(String src, String dst, byte[] data) {
-            _parentCallback.onTransmitData(src, dst, data);
+            _parentProtocolCallback.onTransmitData(src, dst, data);
         }
 
         @Override
         protected void onTransmitLog(String logData) {
-            _parentCallback.onTransmitLog(logData);
+            _parentProtocolCallback.onTransmitLog(logData);
         }
 
         @Override
         protected void onProtocolRxError() {
-            _parentCallback.onProtocolRxError();
+            _parentProtocolCallback.onProtocolRxError();
         }
 
         @Override
         protected void onProtocolTxError() {
-            _parentCallback.onProtocolTxError();
+            _parentProtocolCallback.onProtocolTxError();
         }
     };
 

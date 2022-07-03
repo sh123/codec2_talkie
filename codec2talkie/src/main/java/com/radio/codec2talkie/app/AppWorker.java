@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.radio.codec2talkie.protocol.Callback;
+import com.radio.codec2talkie.protocol.ProtocolCallback;
 import com.radio.codec2talkie.protocol.Protocol;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.protocol.position.Position;
@@ -215,7 +215,7 @@ public class AppWorker extends Thread {
         _protocol.sendPcmAudio(null, null, _codec2Mode, _recordAudioBuffer);
     }
 
-    private final Callback _protocolCallback = new Callback() {
+    private final ProtocolCallback _protocolCallback = new ProtocolCallback() {
         @Override
         protected void onReceivePosition(Position position) {
             throw new UnsupportedOperationException();

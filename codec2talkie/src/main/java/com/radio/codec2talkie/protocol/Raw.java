@@ -15,16 +15,16 @@ public class Raw implements Protocol {
     protected Transport _transport;
     protected final byte[] _rxDataBuffer;
 
-    private Callback _parentCallback;
+    private ProtocolCallback _parentProtocolCallback;
 
     public Raw() {
         _rxDataBuffer = new byte[RX_BUFFER_SIZE];
     }
 
     @Override
-    public void initialize(Transport transport, Context context, Callback callback) {
+    public void initialize(Transport transport, Context context, ProtocolCallback protocolCallback) {
         _transport = transport;
-        _parentCallback = callback;
+        _parentProtocolCallback = protocolCallback;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class Raw implements Protocol {
     public boolean receive() throws IOException {
         int bytesRead = _transport.read(_rxDataBuffer);
         if (bytesRead > 0) {
-            _parentCallback.onReceiveCompressedAudio(null, null, -1, Arrays.copyOf(_rxDataBuffer, bytesRead));
+            _parentProtocolCallback.onReceiveCompressedAudio(null, null, -1, Arrays.copyOf(_rxDataBuffer, bytesRead));
             return true;
         }
         return false;
