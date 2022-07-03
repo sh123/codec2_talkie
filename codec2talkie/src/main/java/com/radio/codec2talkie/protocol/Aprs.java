@@ -185,11 +185,18 @@ public class Aprs implements Protocol {
         position.extDigipathSsid = _miceDigipath;
         AprsData aprsData = AprsDataFactory.create(_positionDataType);
         if (aprsData != null) {
-            aprsData.fromPosition(position);
+            try {
+                aprsData.fromPosition(position);
+            } catch (Exception e) {
+                e.printStackTrace();
+                _parentProtocolCallback.onProtocolTxError();
+                return;
+            }
             if (aprsData.isValid()) {
                 sendData(position.srcCallsign, position.dstCallsign, aprsData.toBinary());
             } else {
-                Log.e(TAG, "Send position protocol error");
+                Log.e(TAG, "Invalid APRS data");
+                _parentProtocolCallback.onProtocolTxError();
             }
         }
     }

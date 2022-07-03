@@ -72,6 +72,7 @@ public class Ax25 implements Protocol {
 
     @Override
     public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
+        _parentProtocolCallback.onTransmitData(src, dst, dataPacket);
         AX25Packet ax25Packet = new AX25Packet();
         ax25Packet.src = src;
         ax25Packet.dst = dst;

@@ -175,9 +175,7 @@ public class AppWorker extends Thread {
     }
 
     private void sendStatusUpdate(int newStatus, String note) {
-        if (newStatus != PROCESSOR_LISTENING) {
-            restartListening();
-        }
+
         if (newStatus != _currentStatus) {
             _currentStatus = newStatus;
             Message msg = Message.obtain();
@@ -186,6 +184,9 @@ public class AppWorker extends Thread {
                 msg.obj = note;
             }
             _onPlayerStateChanged.sendMessage(msg);
+        }
+        if (newStatus != PROCESSOR_LISTENING) {
+            restartListening();
         }
     }
 
@@ -239,6 +240,8 @@ public class AppWorker extends Thread {
         protected void onReceiveData(String src, String dst, byte[] data) {
             // handle incoming messages
             Log.i(TAG, src + ">" + dst + ":" + DebugTools.bytesToDebugString(data));
+            String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
+            sendStatusUpdate(PROCESSOR_PLAYING, note);
         }
 
         @Override
@@ -265,6 +268,7 @@ public class AppWorker extends Thread {
 
         @Override
         protected void onTransmitData(String src, String dst, byte[] data) {
+            Log.i(TAG, src + ">" + dst + ":" + DebugTools.bytesToDebugString(data));
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
             sendStatusUpdate(PROCESSOR_TRANSMITTING, note);
         }
