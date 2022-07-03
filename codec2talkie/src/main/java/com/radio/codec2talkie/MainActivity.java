@@ -39,7 +39,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.radio.codec2talkie.audio.AudioProcessor;
+import com.radio.codec2talkie.app.AppWorker;
 import com.radio.codec2talkie.connect.BleConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothSocketHandler;
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.ACCESS_FINE_LOCATION
     };
 
-    private AudioProcessor _audioProcessor;
+    private AppWorker _appWorker;
 
     private SharedPreferences _sharedPreferences;
 
@@ -121,11 +121,11 @@ public class MainActivity extends AppCompatActivity {
         _textRssi = findViewById(R.id.textRssi);
 
         // UV bar
-        int barMaxValue = AudioProcessor.getAudioMaxLevel() - AudioProcessor.getAudioMinLevel();
+        int barMaxValue = AppWorker.getAudioMaxLevel() - AppWorker.getAudioMinLevel();
         _progressAudioLevel = findViewById(R.id.progressAudioLevel);
         _progressAudioLevel.setMax(barMaxValue);
         _progressAudioLevel.getProgressDrawable().setColorFilter(
-                new PorterDuffColorFilter(AudioTools.colorFromAudioLevel(AudioProcessor.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
+                new PorterDuffColorFilter(AudioTools.colorFromAudioLevel(AppWorker.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
 
         // S-meter
         _progressRssi = findViewById(R.id.progressRssi);
@@ -174,8 +174,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void stopRunning() {
-        if (_audioProcessor != null) {
-            _audioProcessor.stopRunning();
+        if (_appWorker != null) {
+            _appWorker.stopRunning();
         }
         finish();
     }
@@ -240,9 +240,9 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_audioProcessor != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
+        if (_appWorker != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
             Toast.makeText(MainActivity.this, R.string.bt_disconnected, Toast.LENGTH_LONG).show();
-            _audioProcessor.stopRunning();
+            _appWorker.stopRunning();
         }
         }
     };
@@ -250,9 +250,9 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onUsbDetached = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_audioProcessor != null && UsbPortHandler.getPort() != null && !_isTestMode) {
+        if (_appWorker != null && UsbPortHandler.getPort() != null && !_isTestMode) {
             Toast.makeText(MainActivity.this, R.string.usb_detached, Toast.LENGTH_LONG).show();
-            _audioProcessor.stopRunning();
+            _appWorker.stopRunning();
         }
         }
     };
@@ -286,8 +286,8 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         if (itemId == R.id.reconnect) {
-            if (_audioProcessor != null) {
-                _audioProcessor.stopRunning();
+            if (_appWorker != null) {
+                _appWorker.stopRunning();
             }
             return true;
         }
@@ -379,13 +379,13 @@ public class MainActivity extends AppCompatActivity {
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    if (_audioProcessor != null)
-                        _audioProcessor.startRecording();
+                    if (_appWorker != null)
+                        _appWorker.startRecording();
                     break;
                 case MotionEvent.ACTION_UP:
                     v.performClick();
-                    if (_audioProcessor != null)
-                        _audioProcessor.startPlayback();
+                    if (_appWorker != null)
+                        _appWorker.startPlayback();
                     break;
             }
             return false;
@@ -417,34 +417,34 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case AudioProcessor.PROCESSOR_CONNECTED:
+                case AppWorker.PROCESSOR_CONNECTED:
                     Toast.makeText(getBaseContext(), R.string.processor_connected, Toast.LENGTH_SHORT).show();
                     break;
-                case AudioProcessor.PROCESSOR_DISCONNECTED:
+                case AppWorker.PROCESSOR_DISCONNECTED:
                     _btnPtt.setText(R.string.main_status_stop);
                     Toast.makeText(getBaseContext(), R.string.processor_disconnected, Toast.LENGTH_SHORT).show();
                     startTransportConnection();
                     break;
-                case AudioProcessor.PROCESSOR_LISTENING:
+                case AppWorker.PROCESSOR_LISTENING:
                     _btnPtt.setText(R.string.push_to_talk);
                     _textStatus.setText("");
                     break;
-                case AudioProcessor.PROCESSOR_TRANSMITTING:
+                case AppWorker.PROCESSOR_TRANSMITTING:
                     if (msg.obj != null) {
                         _textStatus.setText((String) msg.obj);
                     }
                     _btnPtt.setText(R.string.main_status_tx);
                     break;
-                case AudioProcessor.PROCESSOR_RECEIVING:
+                case AppWorker.PROCESSOR_RECEIVING:
                     _btnPtt.setText(R.string.main_status_rx);
                     break;
-                case AudioProcessor.PROCESSOR_PLAYING:
+                case AppWorker.PROCESSOR_PLAYING:
                     if (msg.obj != null) {
                         _textStatus.setText((String) msg.obj);
                     }
                     _btnPtt.setText(R.string.main_status_play);
                     break;
-                case AudioProcessor.PROCESSOR_RX_RADIO_LEVEL:
+                case AppWorker.PROCESSOR_RX_RADIO_LEVEL:
                     if (msg.arg1 == 0) {
                         _textRssi.setText("");
                         _progressRssi.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN));
@@ -456,15 +456,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 // same progress bar is reused for rx and tx levels
-                case AudioProcessor.PROCESSOR_RX_LEVEL:
-                case AudioProcessor.PROCESSOR_TX_LEVEL:
+                case AppWorker.PROCESSOR_RX_LEVEL:
+                case AppWorker.PROCESSOR_TX_LEVEL:
                     _progressAudioLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(AudioTools.colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
-                    _progressAudioLevel.setProgress(msg.arg1 - AudioProcessor.getAudioMinLevel());
+                    _progressAudioLevel.setProgress(msg.arg1 - AppWorker.getAudioMinLevel());
                     break;
-                case AudioProcessor.PROCESSOR_RX_ERROR:
+                case AppWorker.PROCESSOR_RX_ERROR:
                     _btnPtt.setText(R.string.main_status_rx_error);
                     break;
-                case AudioProcessor.PROCESSOR_TX_ERROR:
+                case AppWorker.PROCESSOR_TX_ERROR:
                     _btnPtt.setText(R.string.main_status_tx_error);
                     break;
             }
@@ -502,12 +502,12 @@ public class MainActivity extends AppCompatActivity {
             String statusLine = getSpeedStatusText(codec2ModeName) + ", " + getFeatureStatusText(protocolType);
             _textCodecMode.setText(statusLine);
 
-            _audioProcessor = new AudioProcessor(transportType,
+            _appWorker = new AppWorker(transportType,
                     protocolType,
                     AudioTools.extractCodec2ModeId(codec2ModeName),
                     onAudioProcessorStateChanged,
                     getApplicationContext());
-            _audioProcessor.start();
+            _appWorker.start();
         } catch (IOException e) {
             e.printStackTrace();
             Toast.makeText(MainActivity.this, R.string.audio_failed_to_start_processing, Toast.LENGTH_LONG).show();

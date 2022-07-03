@@ -1,7 +1,8 @@
-package com.radio.codec2talkie.audio;
+package com.radio.codec2talkie.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -27,9 +28,9 @@ import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.radio.codec2talkie.transport.TransportFactory;
 
-public class AudioProcessor extends Thread {
+public class AppWorker extends Thread {
 
-    private static final String TAG = AudioProcessor.class.getSimpleName();
+    private static final String TAG = AppWorker.class.getSimpleName();
 
     public static final int PROCESSOR_DISCONNECTED = 1;
     public static final int PROCESSOR_CONNECTED = 2;
@@ -45,6 +46,7 @@ public class AudioProcessor extends Thread {
 
     public static final int PROCESSOR_PROCESS = 12;
     public static final int PROCESSOR_QUIT = 13;
+    public static final int PROCESSOR_SEND_LOCATION = 14;
 
     private static final int AUDIO_MIN_LEVEL = -70;
     private static final int AUDIO_MAX_LEVEL = 0;
@@ -79,8 +81,8 @@ public class AudioProcessor extends Thread {
     private final Context _context;
     private final SharedPreferences _sharedPreferences;
 
-    public AudioProcessor(TransportFactory.TransportType transportType, ProtocolFactory.ProtocolType protocolType, int codec2Mode,
-                          Handler onPlayerStateChanged, Context context) throws IOException {
+    public AppWorker(TransportFactory.TransportType transportType, ProtocolFactory.ProtocolType protocolType, int codec2Mode,
+                     Handler onPlayerStateChanged, Context context) throws IOException {
         _onPlayerStateChanged = onPlayerStateChanged;
 
         _context = context;
@@ -156,12 +158,19 @@ public class AudioProcessor extends Thread {
     }
 
     public void stopRunning() {
-        if (_currentStatus != PROCESSOR_DISCONNECTED) {
-            Log.i(TAG, "stopRunning()");
-            Message msg = new Message();
-            msg.what = PROCESSOR_QUIT;
-            _onMessageReceived.sendMessage(msg);
-        }
+        if (_currentStatus == PROCESSOR_DISCONNECTED) return;
+        Log.i(TAG, "stopRunning()");
+        Message msg = new Message();
+        msg.what = PROCESSOR_QUIT;
+        _onMessageReceived.sendMessage(msg);
+    }
+
+    private void sendLocation(Location location) {
+        if (_currentStatus == PROCESSOR_DISCONNECTED) return;
+        Message msg = new Message();
+        msg.what = PROCESSOR_SEND_LOCATION;
+        msg.obj = location;
+        _onMessageReceived.sendMessage(msg);
     }
 
     private void sendStatusUpdate(int newStatus, String note) {
@@ -383,6 +392,14 @@ public class AudioProcessor extends Thread {
                 break;
             case PROCESSOR_QUIT:
                 quitProcessing();
+                break;
+            case PROCESSOR_SEND_LOCATION:
+                try {
+                    _protocol.sendPosition(Position.fromLocation((Location) msg.obj));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    quitProcessing();
+                }
                 break;
             default:
                 break;

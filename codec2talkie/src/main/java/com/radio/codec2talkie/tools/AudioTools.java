@@ -1,12 +1,8 @@
 package com.radio.codec2talkie.tools;
 
-import android.content.SharedPreferences;
 import android.graphics.Color;
 
-import com.radio.codec2talkie.R;
-import com.radio.codec2talkie.audio.AudioProcessor;
-import com.radio.codec2talkie.protocol.ProtocolFactory;
-import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.app.AppWorker;
 
 public class AudioTools {
 
@@ -28,9 +24,9 @@ public class AudioTools {
 
     public static int colorFromAudioLevel(int audioLevel) {
         int color = Color.GREEN;
-        if (audioLevel > AudioProcessor.getAudioMaxLevel() + UV_METER_MAX_DELTA)
+        if (audioLevel > AppWorker.getAudioMaxLevel() + UV_METER_MAX_DELTA)
             color = Color.RED;
-        else if (audioLevel < AudioProcessor.getAudioMinLevel() + UV_METER_MIN_DELTA)
+        else if (audioLevel < AppWorker.getAudioMinLevel() + UV_METER_MIN_DELTA)
             color = Color.LTGRAY;
         return color;
     }

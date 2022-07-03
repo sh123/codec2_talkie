@@ -6,7 +6,6 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
-import com.radio.codec2talkie.audio.AudioProcessor;
 import com.radio.codec2talkie.protocol.aprs.AprsCallsign;
 import com.radio.codec2talkie.protocol.aprs.AprsData;
 import com.radio.codec2talkie.protocol.aprs.AprsDataFactory;
