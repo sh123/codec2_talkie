@@ -21,7 +21,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Typeface;
 import android.hardware.usb.UsbManager;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;

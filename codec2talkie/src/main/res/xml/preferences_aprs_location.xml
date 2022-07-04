@@ -92,4 +92,58 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        app:key="aprs_location_source_smart"
+        app:title="@string/aprs_location_source_smart_title">
+
+        <EditTextPreference
+            app:key="aprs_location_source_smart_fast_speed"
+            app:title="@string/aprs_location_source_smart_fast_speed_title"
+            app:summary="@string/aprs_location_source_smart_fast_speed_summary"
+            app:defaultValue="90">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="aprs_location_source_smart_fast_rate"
+            app:title="@string/aprs_location_source_smart_fast_rate_title"
+            app:summary="@string/aprs_location_source_smart_fast_rate_summary"
+            app:defaultValue="60">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="aprs_location_source_smart_slow_speed"
+            app:title="@string/aprs_location_source_smart_slow_speed_title"
+            app:summary="@string/aprs_location_source_smart_slow_speed_summary"
+            app:defaultValue="5">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="aprs_location_source_smart_slow_rate"
+            app:title="@string/aprs_location_source_smart_slow_rate_title"
+            app:summary="@string/aprs_location_source_smart_slow_rate_summary"
+            app:defaultValue="1200">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="aprs_location_source_smart_min_turn_time"
+            app:title="@string/aprs_location_source_smart_min_turn_time_title"
+            app:summary="@string/aprs_location_source_smart_min_turn_time_summary"
+            app:defaultValue="15">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="aprs_location_source_smart_min_turn_angle"
+            app:title="@string/aprs_location_source_smart_min_turn_angle_title"
+            app:summary="@string/aprs_location_source_smart_min_turn_angle_summary"
+            app:defaultValue="10">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="aprs_location_source_smart_turn_slope"
+            app:title="@string/aprs_location_source_smart_turn_slope_title"
+            app:summary="@string/aprs_location_source_smart_min_turn_slope_summary"
+            app:defaultValue="240">
+        </EditTextPreference>
+    </PreferenceCategory>
+
 </PreferenceScreen>

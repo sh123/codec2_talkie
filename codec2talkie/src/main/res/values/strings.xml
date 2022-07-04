@@ -101,6 +101,16 @@
     <string name="player_status_played_file">Played file: %1$s</string>
     <string name="recorder_menu_stop">Stop</string>
     <string name="recorder_remove_file_confirmation_message">Remove recording %1$s?</string>
+    <string name="bt_connect_failed">Bluetooth connect failed</string>
+    <string name="bt_socket_failed">Bluetooth socket failed</string>
+    <string name="bt_adapter_not_found">Bluetooth adapter is not found</string>
+    <string name="bt_connected">Connected</string>
+    <string name="bt_connecting_to">Connecting to %1$s</string>
+    <string name="bt_turned_on">Bluetooth turned on</string>
+    <string name="menu_reconnect">Reconnect to TNC</string>
+    <string name="bt_connecting">Connecting bluetooth…</string>
+    <string name="usb_connecting">Connecting USB…</string>
+
     <string name="ports_tcp_ip_enable_title">Enable TCP/IP</string>
     <string name="ports_tcp_ip_enable_summary">Data will be sent and received through TCP/IP as a client</string>
     <string name="port_tcp_ip_prefs_title">TCP/IP parameters</string>
@@ -111,24 +121,19 @@
     <string name="tcp_ip_basic_port_summary">Set server port number</string>
     <string name="tcp_ip_connection_failed">TCP/IP connection failed %1$s:%2$s</string>
     <string name="tcp_ip_connected">TCP/IP connected %1$s:%2$s</string>
-    <string name="bt_connect_failed">Bluetooth connect failed</string>
-    <string name="bt_socket_failed">Bluetooth socket failed</string>
-    <string name="bt_adapter_not_found">Bluetooth adapter is not found</string>
-    <string name="bt_connected">Connected</string>
-    <string name="bt_connecting_to">Connecting to %1$s</string>
-    <string name="bt_turned_on">Bluetooth turned on</string>
-    <string name="menu_reconnect">Reconnect to TNC</string>
     <string name="tcp_ip_connecting">Connecting to remote KISS server…</string>
-    <string name="bt_connecting">Connecting bluetooth…</string>
-    <string name="usb_connecting">Connecting USB…</string>
     <string name="tcp_ip_basic_retry_count_title">Connect retry count</string>
     <string name="tcp_ip_basic_retry_count_summary">Try to connect number of times when connecting for the first time or when connection is lost</string>
     <string name="tcp_ip_basic_retry_delay_title">Connect retry delay</string>
     <string name="tcp_ip_basic_retry_delay_summary">How many milliseconds to wait before trying to connect again</string>
-    <string name="kiss_enable_scrambler_title">(Experimental) Enable speech scrambling</string>
-    <string name="kiss_enable_scrambler_summary">Enable speech scrambling, you MUST understand what you are doing, might be illegal in your country</string>
+
+    <string name="kiss_enable_scrambler_title">(Experimental) Enable KISS packet scrambling</string>
+    <string name="kiss_enable_scrambler_summary">Enable experimental scrambling (NB! Only QRPP and only ISM bands where allowed by the band plan! Not allowed for Amateur Radio usage!)</string>
     <string name="kiss_scrambler_key_title">(Experimental) Set key for speech scrambling</string>
-    <string name="kiss_scrambler_key_summary">Set key for speech scrambling, should be the same on all devices</string>
+    <string name="kiss_scrambler_key_summary">Set key for scrambling, should be the same on all devices</string>
+    <string name="kiss_scrambler_iterations_title">(Experimental) Number of iterations performed</string>
+    <string name="kiss_scrambler_iterations_summary">Change to lower value on slow devices, >=1000 recommended, should match on all devices</string>
+
     <string name="permissions_granted">Permissions granted</string>
     <string name="permissions_denied">Permissions denied</string>
     <string name="usb_detached">USB detached</string>
@@ -141,8 +146,6 @@
     <string name="kiss_extension_reboot_title">Reboot modem</string>
     <string name="kiss_extension_reboot_summary">Click to send reboot command to the modem</string>
     <string name="kiss_toast_modem_reboot">Modem reboot requested</string>
-    <string name="kiss_scrambler_iterations_title">(Experimental) Number of iterations performed</string>
-    <string name="kiss_scrambler_iterations_summary">(Experimental) Change to lower value on slow devices, >1000 recommended, should match on all devices</string>
 
     <string name="codec2_tx_frame_max_size_title">Maximum super frame size (bytes)</string>
     <string name="codec2_tx_frame_max_size_summary">Multiple Codec2 samples are aggregated into super frame not larger than this value</string>
@@ -227,5 +230,20 @@
     <string name="voax25_label">&#9742;</string>
     <string name="menu_aprs_log">View log</string>
     <string name="aprs_location_emic_digipath_title">Mic-E digipath</string>
+    <string name="aprs_location_source_smart_title">Smartbeaconing&#8482; position</string>
+    <string name="aprs_location_source_smart_fast_speed_summary">Minimum speed for fast position updates</string>
+    <string name="aprs_location_source_smart_fast_speed_title">Fast speed [km/h]</string>
+    <string name="aprs_location_source_smart_fast_rate_title">Fast rate [s]</string>
+    <string name="aprs_location_source_smart_fast_rate_summary">Beacon rate ast fast speed</string>
+    <string name="aprs_location_source_smart_slow_speed_title">Slow speed [km/h]</string>
+    <string name="aprs_location_source_smart_slow_speed_summary">Maximum speed for slow position updates</string>
+    <string name="aprs_location_source_smart_slow_rate_title">Slow rate [s]</string>
+    <string name="aprs_location_source_smart_slow_rate_summary">Beacon rate at slow speed</string>
+    <string name="aprs_location_source_smart_min_turn_time_title">Min turn time [s]</string>
+    <string name="aprs_location_source_smart_min_turn_time_summary">Minimum beacon rate when changing direction</string>
+    <string name="aprs_location_source_smart_min_turn_angle_title">Min turn angle [&#176;]</string>
+    <string name="aprs_location_source_smart_min_turn_angle_summary">Minimum angle at high speed</string>
+    <string name="aprs_location_source_smart_turn_slope_title">Turn slope</string>
+    <string name="aprs_location_source_smart_min_turn_slope_summary">Influence of speed on the minimum angle</string>
 
 </resources>
