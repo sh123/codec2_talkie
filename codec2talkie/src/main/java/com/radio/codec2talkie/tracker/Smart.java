@@ -44,7 +44,7 @@ public class Smart implements Tracker {
         _slowSpeed = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_SLOW_SPEED, "5"));
         _slowRate = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_SLOW_RATE, "1200"));
         _minTurnTime = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_MIN_TURN_TIME, "15"));
-        _minTurnTime = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_MIN_TURN_ANGLE, "10"));
+        _minTurnAngle = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_MIN_TURN_ANGLE, "10"));
         _turnSlope = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_TURN_SLOPE, "240"));
     }
 
