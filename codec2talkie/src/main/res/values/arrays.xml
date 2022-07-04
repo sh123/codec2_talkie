@@ -258,4 +258,52 @@
         <item>/v</item>
         <item>/y</item>
     </string-array>
+
+    <string-array name="lora_power_entries">
+        <item>2 dBm</item>
+        <item>3 dBm</item>
+        <item>4 dBm</item>
+        <item>5 dBm</item>
+        <item>6 dBm</item>
+        <item>7 dBm</item>
+        <item>8 dBm</item>
+        <item>9 dBm</item>
+        <item>10 dBm</item>
+        <item>11 dBm</item>
+        <item>12 dBm</item>
+        <item>13 dBm</item>
+        <item>14 dBm</item>
+        <item>15 dBm</item>
+        <item>16 dBm</item>
+        <item>17 dBm</item>
+        <item>18 dBm</item>
+        <item>19 dBm</item>
+        <item>20 dBm</item>
+        <item>21 dBm</item>
+        <item>22 dBm</item>
+    </string-array>
+
+    <string-array name="lora_power_values">
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+        <item>21</item>
+        <item>22</item>
+    </string-array>
 </resources>

@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.ProtocolCallback;
 import com.radio.codec2talkie.protocol.Protocol;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
@@ -81,19 +82,20 @@ public class AppWorker extends Thread {
     private final Context _context;
     private final SharedPreferences _sharedPreferences;
 
-    public AppWorker(TransportFactory.TransportType transportType, ProtocolFactory.ProtocolType protocolType, int codec2Mode,
+    public AppWorker(TransportFactory.TransportType transportType,
                      Handler onPlayerStateChanged, Context context) throws IOException {
         _onPlayerStateChanged = onPlayerStateChanged;
 
         _context = context;
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
 
+        String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, _context.getResources().getStringArray(R.array.codec2_modes)[0]);
+        _codec2Mode = AudioTools.extractCodec2ModeId(codec2ModeName);
+
         _transport  = TransportFactory.create(transportType);
-        _protocol = ProtocolFactory.create(protocolType, codec2Mode, context);
+        _protocol = ProtocolFactory.create(_codec2Mode, context);
 
         _processPeriodicTimer = new Timer();
-
-        _codec2Mode = codec2Mode;
         _recordAudioBuffer = new short[_protocol.getPcmAudioBufferSize()];
 
         constructSystemAudioDevices();

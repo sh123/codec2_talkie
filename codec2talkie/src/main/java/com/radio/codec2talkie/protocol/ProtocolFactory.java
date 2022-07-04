@@ -27,9 +27,32 @@ public class ProtocolFactory {
         }
     }
 
-    public static Protocol create(ProtocolType protocolType, int codec2ModeId, Context context) {
+    public static ProtocolType getBaseProtocolType(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        ProtocolFactory.ProtocolType protocolType;
+
+        if (sharedPreferences.getBoolean(PreferenceKeys.KISS_ENABLED, true)) {
+            if (sharedPreferences.getBoolean(PreferenceKeys.KISS_PARROT, false)) {
+                protocolType = ProtocolFactory.ProtocolType.KISS_PARROT;
+            }
+            else if (sharedPreferences.getBoolean(PreferenceKeys.KISS_BUFFERED_ENABLED, false)) {
+                protocolType = ProtocolFactory.ProtocolType.KISS_BUFFERED;
+            }
+            else {
+                protocolType = ProtocolFactory.ProtocolType.KISS;
+            }
+        } else {
+            protocolType = ProtocolFactory.ProtocolType.RAW;
+        }
+        return protocolType;
+    }
+
+    public static Protocol create(int codec2ModeId, Context context) {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        ProtocolType protocolType = getBaseProtocolType(context);
 
         boolean recordingEnabled = sharedPreferences.getBoolean(PreferenceKeys.CODEC2_RECORDING_ENABLED, false);
         boolean scramblingEnabled = sharedPreferences.getBoolean(PreferenceKeys.KISS_SCRAMBLING_ENABLED, false);

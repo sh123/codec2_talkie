@@ -6,8 +6,6 @@
         app:title="@string/kiss_extensions_radio_control_title">
 
         <EditTextPreference
-            android:inputType="numberDecimal"
-            android:digits="0123456789"
             app:key="kiss_extension_radio_frequency"
             app:title="@string/kiss_extensions_radio_frequency_title"
             app:useSimpleSummaryProvider="true"
@@ -24,15 +22,14 @@
             app:summary="%s">
         </ListPreference>
 
-        <EditTextPreference
-            android:inputType="numberDecimal"
-            android:digits="0123456789"
+        <ListPreference
             app:key="kiss_extension_radio_power"
-            app:useSimpleSummaryProvider="true"
             app:title="@string/kiss_extensions_radio_power_title"
-            app:summary="@string/kiss_extensions_radio_power_summary"
+            app:entries="@array/lora_power_entries"
+            app:entryValues="@array/lora_power_values"
+            app:summary="%s"
             app:defaultValue="20">
-        </EditTextPreference>
+        </ListPreference>
 
         <ListPreference
             app:key="kiss_extension_radio_sf"
