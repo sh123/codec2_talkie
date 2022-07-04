@@ -81,13 +81,7 @@ public class Periodic implements Tracker {
     }
 
     private void sendLocation(Location location) {
-        Position position = new Position();
-        position.latitude = location.getLatitude();
-        position.longitude = location.getLongitude();
-        position.bearingDegrees = location.getBearing();
-        position.speedMetersPerSecond = location.getSpeed();
-        position.altitudeMeters = location.getAltitude();
-        _trackerCallback.onSendLocation(position);
+        _trackerCallback.onSendLocation(Position.fromLocation(location));
     }
 
     private final LocationListener _locationListener = new LocationListener() {

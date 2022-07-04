@@ -16,6 +16,7 @@ import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.UnitTools;
 
 public class Smart implements Tracker {
     private static final String TAG = Periodic.class.getSimpleName();
@@ -25,13 +26,15 @@ public class Smart implements Tracker {
     private Context _context;
     private LocationManager _locationManager;
 
-    private int _fastSpeed;
-    private int _fastRate;
-    private int _slowSpeed;
-    private int _slowRate;
-    private int _minTurnTime;
-    private int _minTurnAngle;
+    private int _fastSpeedKmph;
+    private int _fastRateSeconds;
+    private int _slowSpeedKmph;
+    private int _slowRateSeconds;
+    private int _minTurnTimeSeconds;
+    private int _minTurnAngleDegrees;
     private int _turnSlope;
+
+    private Position _oldPosition;
 
     @Override
     public void initialize(Context context, TrackerCallback trackerCallback) {
@@ -39,12 +42,12 @@ public class Smart implements Tracker {
         _trackerCallback  = trackerCallback;
         _locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        _fastSpeed = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_FAST_SPEED, "90"));
-        _fastRate = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_FAST_RATE, "60"));
-        _slowSpeed = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_SLOW_SPEED, "5"));
-        _slowRate = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_SLOW_RATE, "1200"));
-        _minTurnTime = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_MIN_TURN_TIME, "15"));
-        _minTurnAngle = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_MIN_TURN_ANGLE, "10"));
+        _fastSpeedKmph = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_FAST_SPEED, "90"));
+        _fastRateSeconds = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_FAST_RATE, "60"));
+        _slowSpeedKmph = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_SLOW_SPEED, "5"));
+        _slowRateSeconds = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_SLOW_RATE, "1200"));
+        _minTurnTimeSeconds = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_MIN_TURN_TIME, "15"));
+        _minTurnAngleDegrees = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_MIN_TURN_ANGLE, "10"));
         _turnSlope = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_SMART_TURN_SLOPE, "240"));
     }
 
@@ -71,8 +74,8 @@ public class Smart implements Tracker {
         }
         _locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                5000L,
-                5,
+                0,
+                0,
                 _locationListener
         );
         _isTracking = true;
@@ -90,17 +93,49 @@ public class Smart implements Tracker {
     }
 
     private void sendLocation(Location location) {
-        Position position = new Position();
-        position.latitude = location.getLatitude();
-        position.longitude = location.getLongitude();
-        position.bearingDegrees = location.getBearing();
-        position.speedMetersPerSecond = location.getSpeed();
-        position.altitudeMeters = location.getAltitude();
-        _trackerCallback.onSendLocation(position);
+        _trackerCallback.onSendLocation(Position.fromLocation(location));
+    }
+
+    private boolean isCornerPeggingTriggered(Position newPosition, Position oldPosition) {
+        long timeDifferenceSeconds = UnitTools.millisToSeconds(newPosition.timestampEpochMs - oldPosition.timestampEpochMs);
+
+        float turnAngleDegrees = Math.abs(newPosition.bearingDegrees - oldPosition.bearingDegrees) % 360;
+        turnAngleDegrees = turnAngleDegrees <= 180 ? turnAngleDegrees : 360 - turnAngleDegrees;
+
+        if (!newPosition.hasBearing || newPosition.speedMetersPerSecond == 0)
+            return false;
+        if (!oldPosition.hasBearing)
+            return timeDifferenceSeconds >= _minTurnTimeSeconds;
+
+        double thresholdDegrees = _minTurnAngleDegrees + _turnSlope / UnitTools.metersPerSecondToMilesPerHour(newPosition.speedMetersPerSecond);
+        return timeDifferenceSeconds >= _minTurnTimeSeconds && turnAngleDegrees > thresholdDegrees;
+    }
+
+    private boolean shouldSendPosition(Position newPosition, Position oldPosition) {
+        if (oldPosition == null) return true;
+        if (isCornerPeggingTriggered(newPosition, oldPosition)) return true;
+
+        double distanceMeters = oldPosition.distanceTo(newPosition);
+        long timeDifferenceSeconds = UnitTools.millisToSeconds(newPosition.timestampEpochMs - oldPosition.timestampEpochMs);
+        double maxSpeedMetersPerSecond = Math.max(Math.max(distanceMeters/timeDifferenceSeconds, newPosition.speedMetersPerSecond), oldPosition.speedMetersPerSecond);
+        double maxSpeedKilometersPerSecond = UnitTools.kilometersPerSecondToMetersPerSecond(maxSpeedMetersPerSecond);
+        double speedRateSeconds;
+        if (maxSpeedKilometersPerSecond <= _slowSpeedKmph)
+            speedRateSeconds = _slowRateSeconds;
+        else if (maxSpeedKilometersPerSecond >= _fastSpeedKmph)
+            speedRateSeconds = _fastRateSeconds;
+        else
+            speedRateSeconds = (_fastRateSeconds + (_slowRateSeconds - _fastRateSeconds) * (_fastSpeedKmph - maxSpeedKilometersPerSecond) / (_fastSpeedKmph - _slowSpeedKmph));
+
+        return timeDifferenceSeconds >= (long)speedRateSeconds;
     }
 
     private void processNewLocation(Location location) {
-        // TODO, add Smartbeaconing logic
+        Position newPosition = Position.fromLocation(location);
+        if (shouldSendPosition(newPosition, _oldPosition)) {
+            _trackerCallback.onSendLocation(newPosition);
+            _oldPosition = newPosition;
+        }
     }
 
     private final LocationListener _locationListener = new LocationListener() {
