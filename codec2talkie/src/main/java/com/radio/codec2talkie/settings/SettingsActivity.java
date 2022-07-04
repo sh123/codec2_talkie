@@ -2,20 +2,60 @@ package com.radio.codec2talkie.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.InputType;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.EditTextPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
-import androidx.preference.PreferenceScreen;
+import androidx.preference.PreferenceManager;
 
-import com.radio.codec2talkie.MainActivity;
 import com.radio.codec2talkie.R;
-
-import java.util.Objects;
 
 public class SettingsActivity extends AppCompatActivity
 {
+    private static final String[] _numberSettings = {
+            "codec2_tx_frame_max_size",
+            "kiss_extension_radio_frequency",
+            "aprs_location_source_gps_update_time",
+            "aprs_location_source_gps_update_distance",
+            "aprs_location_source_manual_update_time",
+            "aprs_location_source_smart_fast_speed",
+            "aprs_location_source_smart_fast_rate",
+            "aprs_location_source_smart_slow_speed",
+            "aprs_location_source_smart_slow_rate",
+            "aprs_location_source_smart_min_turn_time",
+            "aprs_location_source_smart_min_turn_angle",
+            "aprs_location_source_smart_turn_slope",
+            "kiss_basic_persistence",
+            "kiss_basic_slot_time",
+            "kiss_basic_tx_delay",
+            "kiss_basic_tx_tail",
+            "kiss_scrambler_iterations",
+            "ports_tcp_ip_port",
+            "ports_tcp_ip_retry_count",
+            "ports_tcp_ip_retry_delay"
+    };
+
+    private static final String[] _signedDecimalSettings = {
+            "aprs_location_source_manual_lat",
+            "aprs_location_source_manual_lon"
+    };
+
+    public static void setNumberInputType(PreferenceManager preferenceManager) {
+        for (String key : _numberSettings) {
+            EditTextPreference editTextPreference = preferenceManager.findPreference(key);
+            if (editTextPreference != null)
+                editTextPreference.setOnBindEditTextListener(editText -> editText.setInputType(InputType.TYPE_CLASS_NUMBER));
+        }
+        for (String key : _signedDecimalSettings) {
+            EditTextPreference editTextPreference = preferenceManager.findPreference(key);
+            if (editTextPreference != null)
+                editTextPreference.setOnBindEditTextListener(editText -> editText.setInputType(
+                        InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED));
+        }
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,9 +63,11 @@ public class SettingsActivity extends AppCompatActivity
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
+
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferences, rootKey);
+            setNumberInputType(getPreferenceManager());
         }
     }
 
@@ -34,6 +76,7 @@ public class SettingsActivity extends AppCompatActivity
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferences_radio, null);
+            setNumberInputType(getPreferenceManager());
 
             Preference rebootPreference = findPreference("kiss_extension_reboot");
             assert rebootPreference != null;
@@ -50,6 +93,7 @@ public class SettingsActivity extends AppCompatActivity
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferences_kiss, null);
+            setNumberInputType(getPreferenceManager());
         }
     }
 
@@ -58,6 +102,7 @@ public class SettingsActivity extends AppCompatActivity
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferences_tcpip, null);
+            setNumberInputType(getPreferenceManager());
         }
     }
 
@@ -66,6 +111,7 @@ public class SettingsActivity extends AppCompatActivity
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferences_usb, null);
+            setNumberInputType(getPreferenceManager());
         }
     }
 
@@ -74,6 +120,7 @@ public class SettingsActivity extends AppCompatActivity
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferences_aprs_location, null);
+            setNumberInputType(getPreferenceManager());
         }
     }
 
@@ -82,6 +129,7 @@ public class SettingsActivity extends AppCompatActivity
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferences_aprs_privacy, null);
+            setNumberInputType(getPreferenceManager());
         }
     }
 }

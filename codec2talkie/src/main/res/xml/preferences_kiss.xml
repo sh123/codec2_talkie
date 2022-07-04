@@ -6,8 +6,6 @@
         app:title="@string/kiss_basic_title">
 
         <EditTextPreference
-            android:inputType="numberDecimal"
-            android:digits="0123456789"
             app:key="kiss_basic_persistence"
             app:title="@string/kiss_basic_p_title"
             app:summary="@string/kiss_basic_p_summary"
@@ -15,8 +13,6 @@
         </EditTextPreference>
 s
         <EditTextPreference
-            android:inputType="numberDecimal"
-            android:digits="0123456789"
             app:key="kiss_basic_slot_time"
             app:title="@string/kiss_basic_slot_time_title"
             app:summary="@string/kiss_basic_slot_time_summary"
@@ -24,8 +20,6 @@ s
         </EditTextPreference>
 
         <EditTextPreference
-            android:inputType="numberDecimal"
-            android:digits="0123456789"
             app:key="kiss_basic_tx_delay"
             app:title="@string/kiss_basic_tx_delay_title"
             app:summary="@string/kiss_basic_tx_delay_summary"
@@ -33,8 +27,6 @@ s
         </EditTextPreference>
 
         <EditTextPreference
-            android:inputType="numberDecimal"
-            android:digits="0123456789"
             app:key="kiss_basic_tx_tail"
             app:title="@string/kiss_basic_tx_tail_title"
             app:summary="@string/kiss_basic_tx_tail_summary"
@@ -49,17 +41,17 @@ s
         </SwitchPreference>
 
         <EditTextPreference
-            android:key="kiss_scrambler_key"
-            android:title="@string/kiss_scrambler_key_title"
-            android:summary="@string/kiss_scrambler_key_summary"
+            app:key="kiss_scrambler_key"
+            app:title="@string/kiss_scrambler_key_title"
+            app:summary="@string/kiss_scrambler_key_summary"
             app:dependency="kiss_enable_scrambler"
             app:defaultValue="0">
         </EditTextPreference>
 
         <EditTextPreference
-            android:key="kiss_scrambler_iterations"
-            android:title="@string/kiss_scrambler_iterations_title"
-            android:summary="@string/kiss_scrambler_iterations_summary"
+            app:key="kiss_scrambler_iterations"
+            app:title="@string/kiss_scrambler_iterations_title"
+            app:summary="@string/kiss_scrambler_iterations_summary"
             app:dependency="kiss_enable_scrambler"
             app:defaultValue="1000">
         </EditTextPreference>
