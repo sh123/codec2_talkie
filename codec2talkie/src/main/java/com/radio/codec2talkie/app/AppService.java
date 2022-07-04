@@ -3,11 +3,11 @@ package com.radio.codec2talkie.app;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +26,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.MainActivity;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tracker.Tracker;
@@ -152,6 +153,12 @@ public class AppService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             channelId = createNotificationChannel(notificationManager);
 
+        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent intent = PendingIntent.getActivity(getApplicationContext(), 0,
+                notificationIntent, 0);
+
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(
                 this, channelId);
         Notification notification = notificationBuilder
@@ -162,6 +169,7 @@ public class AppService extends Service {
                 .setPriority(NotificationManagerCompat.IMPORTANCE_LOW)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setChannelId(channelId)
+                .setContentIntent(intent)
                 .build();
 
         startForeground(1, notification);
