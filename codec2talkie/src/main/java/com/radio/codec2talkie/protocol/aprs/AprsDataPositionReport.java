@@ -94,7 +94,7 @@ public class AprsDataPositionReport implements AprsData {
                     UnitTools.metersPerSecondToKnots(position.speedMetersPerSecond)).getBytes());
         }
         if (position.isAltitudeEnabled && position.altitudeMeters >= 0) {
-            buffer.put(String.format(Locale.US, "/A=%05d",
+            buffer.put(String.format(Locale.US, "/A=%06d",
                     UnitTools.metersToFeet(position.altitudeMeters)).getBytes());
         }
         buffer.put(position.comment.getBytes());
