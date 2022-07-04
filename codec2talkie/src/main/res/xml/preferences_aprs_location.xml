@@ -53,6 +53,7 @@
             app:key="aprs_location_source_gps_update_distance"
             app:title="@string/aprs_location_source_gps_update_distance_title"
             app:summary="@string/aprs_location_source_gps_update_distance_summary"
+            android:inputType="numberDecimal"
             app:defaultValue="1">
         </EditTextPreference>
 
