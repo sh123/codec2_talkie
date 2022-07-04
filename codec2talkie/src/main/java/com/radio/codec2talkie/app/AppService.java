@@ -158,6 +158,7 @@ public class AppService extends Service {
                 .setOngoing(true)
                 .setSmallIcon(R.drawable.ic_app_action)
                 .setContentTitle("Ready for PTT")
+                .setContentText("Touch me to open rig")
                 .setPriority(NotificationManagerCompat.IMPORTANCE_LOW)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setChannelId(channelId)

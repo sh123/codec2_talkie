@@ -189,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startTransportConnection() {
         if (_shouldSkipTransportReconnect) return;
+        Log.i(TAG, "Starting transport connection");
         if (_isTestMode) {
             _textConnInfo.setText(R.string.main_status_loopback_test);
             startAppService(TransportFactory.TransportType.LOOPBACK);
@@ -507,8 +508,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void bindAppService() {
         if (!bindService(new Intent(this, AppService.class), _appServiceConnection, Context.BIND_AUTO_CREATE)) {
-            Log.e(TAG, "Error: The requested service doesn't " +
-                    "exist, or this client isn't allowed access to it.");
+            Log.e(TAG, "Service does not exists or no access");
         }
     }
 
