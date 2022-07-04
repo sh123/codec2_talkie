@@ -68,4 +68,12 @@ public final class PreferenceKeys {
     public static String APRS_PRIVACY_POSITION_AMBIGUITY = "aprs_privacy_position_ambiguity";
     public static String APRS_PRIVACY_SPEED_ENABLED = "aprs_privacy_speed_enable";
     public static String APRS_PRIVACY_ALTITUDE_ENABLED = "aprs_privacy_altitude_enable";
+
+    public static String APRS_LOCATION_SOURCE_SMART_FAST_SPEED = "aprs_location_source_smart_fast_speed";
+    public static String APRS_LOCATION_SOURCE_SMART_FAST_RATE = "aprs_location_source_smart_fast_rate";
+    public static String APRS_LOCATION_SOURCE_SMART_SLOW_SPEED = "aprs_location_source_smart_slow_speed";
+    public static String APRS_LOCATION_SOURCE_SMART_SLOW_RATE = "aprs_location_source_smart_slow_rate";
+    public static String APRS_LOCATION_SOURCE_SMART_MIN_TURN_TIME = "aprs_location_source_smart_min_turn_time";
+    public static String APRS_LOCATION_SOURCE_SMART_MIN_TURN_ANGLE = "aprs_location_source_smart_min_turn_angle";
+    public static String APRS_LOCATION_SOURCE_SMART_TURN_SLOPE = "aprs_location_source_smart_turn_slope";
 }

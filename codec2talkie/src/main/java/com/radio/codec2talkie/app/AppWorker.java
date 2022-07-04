@@ -2,7 +2,6 @@ package com.radio.codec2talkie.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.location.Location;
 import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioRecord;

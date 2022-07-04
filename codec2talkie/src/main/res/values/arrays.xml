@@ -90,11 +90,13 @@
     </string-array>
 
     <string-array name="aprs_location_source">
+        <item>Smartbeaconing&#8482; position</item>
         <item>Periodic GPS position</item>
         <item>Manual position</item>
     </string-array>
 
     <string-array name="aprs_location_source_values">
+        <item>smart</item>
         <item>periodic</item>
         <item>manual</item>
     </string-array>

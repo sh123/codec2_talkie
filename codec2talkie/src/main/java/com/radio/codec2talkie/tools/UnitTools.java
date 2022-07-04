@@ -33,7 +33,17 @@ public class UnitTools {
         return (long)(metersPerSecond / 0.514444);
     }
 
+    public static double metersPerSecondToMilesPerHour(float metersPerSecond) {
+        return metersPerSecond * 2.23693629;
+    }
+
+    public static double kilometersPerSecondToMetersPerSecond(double kilometersPerHour) {
+        return kilometersPerHour * 0.2777777778;
+    }
+
     public static long minutesToMillis(long minutes ) {
         return minutes * 60L * 1000L;
     }
+
+    public static long millisToSeconds(long milliseconds) { return milliseconds / 1000L; }
 }
