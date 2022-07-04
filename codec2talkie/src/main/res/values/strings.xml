@@ -140,7 +140,7 @@
     <string name="bt_disconnected">Bluetooth disconnected</string>
     <string name="processor_connected">Connected</string>
     <string name="processor_disconnected">Disconnected</string>
-    <string name="audio_failed_to_start_processing">Failed to start audio processing</string>
+    <string name="worker_failed_to_start_processing">Failed to start application worker</string>
 
     <string name="kiss_scrambler_label">&#128274;</string>
     <string name="kiss_extension_reboot_title">Reboot modem</string>
