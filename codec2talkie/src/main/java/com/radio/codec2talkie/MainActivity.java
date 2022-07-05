@@ -188,7 +188,6 @@ public class MainActivity extends AppCompatActivity {
         if (_appService != null) {
             _appService.stopRunning();
         }
-        finish();
     }
 
     private void restartApplication() {
@@ -196,11 +195,9 @@ public class MainActivity extends AppCompatActivity {
         if (_appService != null) {
             _appService.stopRunning();
         }
-        finish();
     }
 
     private void startTransportConnection() {
-        if (_isAppExit) return;
         Log.i(TAG, "Starting transport connection");
         if (_isTestMode) {
             _textConnInfo.setText(R.string.main_status_loopback_test);
@@ -541,8 +538,14 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getBaseContext(), R.string.processor_disconnected, Toast.LENGTH_SHORT).show();
                     unbindAppService();
                     stopAppService();
+                    // finish and start ourselves on app exit
                     if (_isAppRestart) {
+                        finish();
                         startActivity(getIntent());
+                    // finish ourselves on app exist
+                    } else if (_isAppExit) {
+                        finish();
+                    // otherwise just restart app service with reconnect
                     } else {
                         startTransportConnection();
                     }
