@@ -479,12 +479,12 @@ public class MainActivity extends AppCompatActivity {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     if (_appService != null)
-                        _appService.startRecording();
+                        _appService.startTransmit();
                     break;
                 case MotionEvent.ACTION_UP:
                     v.performClick();
                     if (_appService != null)
-                        _appService.startPlayback();
+                        _appService.startReceive();
                     break;
             }
             return false;

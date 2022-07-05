@@ -39,9 +39,12 @@ public class AppService extends Service {
 
     private static final String TAG = AppService.class.getSimpleName();
 
+    private final int NOTIFICATION_ID = 1;
+
     private AppWorker _appWorker;
     private Messenger _callbackMessenger;
     private Tracker _tracker;
+    private NotificationManager _notificationManager;
 
     private final IBinder _binder  = new AppServiceBinder();
 
@@ -51,12 +54,12 @@ public class AppService extends Service {
         }
     }
 
-    public void startRecording() {
-        _appWorker.startRecording();
+    public void startTransmit() {
+        _appWorker.startTransmit();
     }
 
-    public void startPlayback() {
-        _appWorker.startPlayback();
+    public void startReceive() {
+        _appWorker.startReceive();
     }
 
     public void sendPosition() {
@@ -64,10 +67,12 @@ public class AppService extends Service {
     }
 
     public void startTracking() {
+        showNotification(R.string.app_service_notif_text_tracking);
         _tracker.startTracking();
     }
 
     public void stopTracking() {
+        showNotification(R.string.app_service_notif_text_ptt_ready);
         _tracker.stopTracking();
     }
 
@@ -89,6 +94,10 @@ public class AppService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i(TAG, "Staring app service");
+
+        _notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert _notificationManager != null;
         SharedPreferences _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         Bundle extras = intent.getExtras();
@@ -101,7 +110,9 @@ public class AppService extends Service {
         _callbackMessenger = (Messenger) extras.get("callback");
         startAppWorker(transportType);
 
-        showNotification();
+        Notification notification = buildNotification(getString(R.string.app_service_notif_text_ptt_ready));
+        startForeground(NOTIFICATION_ID, notification);
+
         return START_STICKY;
     }
 
@@ -134,24 +145,26 @@ public class AppService extends Service {
         }
     };
 
+    private void showNotification(int resId) {
+        String text = getString(resId);
+        _notificationManager.notify(NOTIFICATION_ID, buildNotification(text));
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
-    private String createNotificationChannel(NotificationManager notificationManager){
+    private String createNotificationChannel() {
         String channelId = "alpha";
         String channelName = "Service";
-        NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
-        channel.setImportance(NotificationManager.IMPORTANCE_NONE);
+        NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW);
+        channel.setImportance(NotificationManager.IMPORTANCE_LOW);
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
-        notificationManager.createNotificationChannel(channel);
+        _notificationManager.createNotificationChannel(channel);
         return channelId;
     }
 
-    private void showNotification() {
-        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        assert notificationManager != null;
-
+    private Notification buildNotification(String text) {
         String channelId = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            channelId = createNotificationChannel(notificationManager);
+            channelId = createNotificationChannel();
 
         Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -161,17 +174,16 @@ public class AppService extends Service {
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(
                 this, channelId);
-        Notification notification = notificationBuilder
+        return notificationBuilder
                 .setOngoing(true)
                 .setSmallIcon(R.drawable.ic_app_action)
-                .setContentTitle("Ready for PTT")
-                .setContentText("Touch me to open rig")
+                .setContentTitle(getString(R.string.app_service_notif_title))
+                .setContentText(text)
                 .setPriority(NotificationManagerCompat.IMPORTANCE_LOW)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .setChannelId(channelId)
                 .setContentIntent(intent)
+                .setOnlyAlertOnce(true)
                 .build();
-
-        startForeground(1, notification);
     }
 }
