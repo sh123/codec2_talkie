@@ -86,9 +86,23 @@ public class AppService extends Service {
         }
     }
 
+    @Override
+    public void onRebind(Intent intent) {
+        Log.i(TAG, "onRebind()");
+        super.onRebind(intent);
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.i(TAG, "onUnbind()");
+        _callbackMessenger = null;
+        return true;
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        Log.i(TAG, "onBind()");
         return _binder;
     }
 
@@ -115,6 +129,10 @@ public class AppService extends Service {
 
             Notification notification = buildNotification(getString(R.string.app_service_notif_text_ptt_ready));
             startForeground(NOTIFICATION_ID, notification);
+
+            Log.i(TAG, "App service started");
+        } else {
+            Log.i(TAG, "App service is already running");
         }
 
         return START_REDELIVER_INTENT;
@@ -141,9 +159,11 @@ public class AppService extends Service {
         public void handleMessage(Message msg) {
             try {
                 // redeliver to parent intent through messenger
-                Message sendMsg = new Message();
-                sendMsg.copyFrom(msg);
-                _callbackMessenger.send(sendMsg);
+                if (_callbackMessenger != null) {
+                    Message sendMsg = new Message();
+                    sendMsg.copyFrom(msg);
+                    _callbackMessenger.send(sendMsg);
+                }
 
                 // worker has gone
                 if (msg.what == AppWorker.PROCESSOR_DISCONNECTED)

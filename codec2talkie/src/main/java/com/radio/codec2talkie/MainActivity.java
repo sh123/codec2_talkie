@@ -517,11 +517,13 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.i(TAG, "Connected to app service");
             _appService = ((AppService.AppServiceBinder)service).getService();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName className) {
+            Log.i(TAG, "Disconnected from app service");
             _appService = null;
         }
     };
