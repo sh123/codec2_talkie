@@ -245,5 +245,8 @@
     <string name="aprs_location_source_smart_min_turn_angle_summary">Minimum angle at high speed</string>
     <string name="aprs_location_source_smart_turn_slope_title">Turn slope</string>
     <string name="aprs_location_source_smart_min_turn_slope_summary">Influence of speed on the minimum angle</string>
+    <string name="app_service_notif_title">Radio is running, touch to open</string>
+    <string name="app_service_notif_text_ptt_ready">Receiving and ready for PTT</string>
+    <string name="app_service_notif_text_tracking">APRS tracking is active</string>
 
 </resources>
