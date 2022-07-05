@@ -290,6 +290,7 @@ public class MainActivity extends AppCompatActivity {
             startForegroundService(serviceIntent);
         else
             startService(serviceIntent);
+        bindAppService();
     }
 
     private void stopAppService() {
@@ -531,7 +532,6 @@ public class MainActivity extends AppCompatActivity {
             switch (msg.what) {
                 case AppWorker.PROCESSOR_CONNECTED:
                     Toast.makeText(getBaseContext(), R.string.processor_connected, Toast.LENGTH_SHORT).show();
-                    bindAppService();
                     break;
                 case AppWorker.PROCESSOR_DISCONNECTED:
                     _btnPtt.setText(R.string.main_status_stop);

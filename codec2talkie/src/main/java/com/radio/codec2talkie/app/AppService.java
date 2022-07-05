@@ -96,24 +96,28 @@ public class AppService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "Staring app service");
 
-        _notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        assert _notificationManager != null;
-        SharedPreferences _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
+        // update callback from new intent
         Bundle extras = intent.getExtras();
-
-        String trackerName = _sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE, "manual");
-        _tracker = TrackerFactory.create(trackerName);
-        _tracker.initialize(getApplicationContext(), position -> _appWorker.sendPosition(position));
-
-        TransportFactory.TransportType transportType = (TransportFactory.TransportType)extras.get("transportType");
         _callbackMessenger = (Messenger) extras.get("callback");
-        startAppWorker(transportType);
 
-        Notification notification = buildNotification(getString(R.string.app_service_notif_text_ptt_ready));
-        startForeground(NOTIFICATION_ID, notification);
+        // create if not running
+        if (_appWorker == null) {
+            _notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            assert _notificationManager != null;
+            SharedPreferences _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        return START_STICKY;
+            String trackerName = _sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE, "manual");
+            _tracker = TrackerFactory.create(trackerName);
+            _tracker.initialize(getApplicationContext(), position -> _appWorker.sendPosition(position));
+
+            TransportFactory.TransportType transportType = (TransportFactory.TransportType) extras.get("transportType");
+            startAppWorker(transportType);
+
+            Notification notification = buildNotification(getString(R.string.app_service_notif_text_ptt_ready));
+            startForeground(NOTIFICATION_ID, notification);
+        }
+
+        return START_REDELIVER_INTENT;
     }
 
     private void startAppWorker(TransportFactory.TransportType transportType) {
@@ -132,13 +136,19 @@ public class AppService extends Service {
         }
     }
 
-    private final Handler onAudioProcessorStateChanged = new Handler(Looper.getMainLooper()) {
+    private final Handler onAudioProcessorStateChanged = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
             try {
+                // redeliver to parent intent through messenger
                 Message sendMsg = new Message();
                 sendMsg.copyFrom(msg);
                 _callbackMessenger.send(sendMsg);
+
+                // worker has gone
+                if (msg.what == AppWorker.PROCESSOR_DISCONNECTED)
+                    _appWorker = null;
+
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
