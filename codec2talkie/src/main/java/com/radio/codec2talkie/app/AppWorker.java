@@ -33,22 +33,6 @@ public class AppWorker extends Thread {
 
     private static final String TAG = AppWorker.class.getSimpleName();
 
-    public static final int PROCESSOR_DISCONNECTED = 1;
-    public static final int PROCESSOR_CONNECTED = 2;
-    public static final int PROCESSOR_LISTENING = 3;
-    public static final int PROCESSOR_TRANSMITTING = 4;
-    public static final int PROCESSOR_RECEIVING = 5;
-    public static final int PROCESSOR_PLAYING = 6;
-    public static final int PROCESSOR_RX_LEVEL = 7;
-    public static final int PROCESSOR_TX_LEVEL = 8;
-    public static final int PROCESSOR_RX_ERROR = 9;
-    public static final int PROCESSOR_TX_ERROR = 10;
-    public static final int PROCESSOR_RX_RADIO_LEVEL = 11;
-
-    public static final int PROCESSOR_PROCESS = 12;
-    public static final int PROCESSOR_QUIT = 13;
-    public static final int PROCESSOR_SEND_LOCATION = 14;
-
     private static final int AUDIO_MIN_LEVEL = -70;
     private static final int AUDIO_MAX_LEVEL = 0;
     private final int AUDIO_SAMPLE_SIZE = 8000;
@@ -57,7 +41,7 @@ public class AppWorker extends Thread {
     private final int LISTEN_AFTER_MS = 1500;
 
     private boolean _needsRecording = false;
-    private int _currentStatus = PROCESSOR_DISCONNECTED;
+    private AppMessage _currentStatus = AppMessage.EV_DISCONNECTED;
 
     private final Protocol _protocol;
     private final Transport _transport;
@@ -160,40 +144,40 @@ public class AppWorker extends Thread {
     }
 
     public void stopRunning() {
-        if (_currentStatus == PROCESSOR_DISCONNECTED) return;
+        if (_currentStatus == AppMessage.EV_DISCONNECTED) return;
         Log.i(TAG, "stopRunning()");
         Message msg = new Message();
-        msg.what = PROCESSOR_QUIT;
+        msg.what = AppMessage.CMD_QUIT.toInt();
         _onMessageReceived.sendMessage(msg);
     }
 
     public void sendPosition(Position position) {
-        if (_currentStatus == PROCESSOR_DISCONNECTED) return;
+        if (_currentStatus == AppMessage.EV_DISCONNECTED) return;
         Message msg = new Message();
-        msg.what = PROCESSOR_SEND_LOCATION;
+        msg.what = AppMessage.CMD_SEND_LOCATION.toInt();
         msg.obj = position;
         _onMessageReceived.sendMessage(msg);
     }
 
-    private void sendStatusUpdate(int newStatus, String note) {
+    private void sendStatusUpdate(AppMessage newStatus, String note) {
 
         if (newStatus != _currentStatus) {
             _currentStatus = newStatus;
             Message msg = Message.obtain();
-            msg.what = newStatus;
+            msg.what = newStatus.toInt();
             if (note != null) {
                 msg.obj = note;
             }
             _onPlayerStateChanged.sendMessage(msg);
         }
-        if (newStatus != PROCESSOR_LISTENING) {
+        if (newStatus != AppMessage.EV_LISTENING) {
             restartListening();
         }
     }
 
     private void sendRxRadioLevelUpdate(int rssi, int snr) {
         Message msg = Message.obtain();
-        msg.what = PROCESSOR_RX_RADIO_LEVEL;
+        msg.what = AppMessage.EV_RX_RADIO_LEVEL.toInt();
         msg.arg1 = rssi;
         msg.arg2 = snr;
         _onPlayerStateChanged.sendMessage(msg);
@@ -201,14 +185,14 @@ public class AppWorker extends Thread {
 
     private void sendRxAudioLevelUpdate(short [] pcmAudioSamples) {
         Message msg = Message.obtain();
-        msg.what = PROCESSOR_RX_LEVEL;
+        msg.what = AppMessage.EV_RX_LEVEL.toInt();
         msg.arg1 = AudioTools.getSampleLevelDb(pcmAudioSamples);
         _onPlayerStateChanged.sendMessage(msg);
     }
 
     private void sendTxAudioLevelUpdate(short [] pcmAudioSamples) {
         Message msg = Message.obtain();
-        msg.what = PROCESSOR_TX_LEVEL;
+        msg.what = AppMessage.EV_TX_LEVEL.toInt();
         msg.arg1 = AudioTools.getSampleLevelDb(pcmAudioSamples);
         _onPlayerStateChanged.sendMessage(msg);
     }
@@ -227,7 +211,7 @@ public class AppWorker extends Thread {
         @Override
         protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
-            sendStatusUpdate(PROCESSOR_PLAYING, note);
+            sendStatusUpdate(AppMessage.EV_PLAYING, note);
             sendRxAudioLevelUpdate(pcmFrame);
             _systemAudioPlayer.write(pcmFrame, 0, pcmFrame.length);
         }
@@ -242,7 +226,7 @@ public class AppWorker extends Thread {
             // handle incoming messages
             Log.i(TAG, src + ">" + dst + ":" + DebugTools.bytesToDebugString(data));
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
-            sendStatusUpdate(PROCESSOR_PLAYING, note);
+            sendStatusUpdate(AppMessage.EV_PLAYING, note);
         }
 
         @Override
@@ -258,7 +242,7 @@ public class AppWorker extends Thread {
         @Override
         protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
-            sendStatusUpdate(PROCESSOR_TRANSMITTING, note);
+            sendStatusUpdate(AppMessage.EV_TRANSMITTING, note);
             sendTxAudioLevelUpdate(frame);
         }
 
@@ -271,7 +255,7 @@ public class AppWorker extends Thread {
         protected void onTransmitData(String src, String dst, byte[] data) {
             Log.i(TAG, src + ">" + dst + ":" + DebugTools.bytesToDebugString(data));
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
-            sendStatusUpdate(PROCESSOR_TRANSMITTING, note);
+            sendStatusUpdate(AppMessage.EV_TRANSMITTING, note);
         }
 
         @Override
@@ -281,13 +265,13 @@ public class AppWorker extends Thread {
 
         @Override
         protected void onProtocolRxError() {
-            sendStatusUpdate(PROCESSOR_RX_ERROR, null);
+            sendStatusUpdate(AppMessage.EV_RX_ERROR, null);
             Log.e(TAG, "Protocol RX error");
         }
 
         @Override
         protected void onProtocolTxError() {
-            sendStatusUpdate(PROCESSOR_TX_ERROR, null);
+            sendStatusUpdate(AppMessage.EV_TX_ERROR, null);
             Log.e(TAG, "Protocol TX error");
         }
     };
@@ -298,7 +282,7 @@ public class AppWorker extends Thread {
     }
 
     private void startListening() {
-        if (_currentStatus == PROCESSOR_LISTENING) {
+        if (_currentStatus == AppMessage.EV_LISTENING) {
             return;
         }
         _listenTimer = new Timer();
@@ -325,7 +309,7 @@ public class AppWorker extends Thread {
         sendRxAudioLevelUpdate(null);
         sendTxAudioLevelUpdate(null);
         sendRxRadioLevelUpdate(0, 0);
-        sendStatusUpdate(PROCESSOR_LISTENING, null);
+        sendStatusUpdate(AppMessage.EV_LISTENING, null);
     }
 
     private void processRecordPlaybackToggle() throws IOException {
@@ -375,7 +359,7 @@ public class AppWorker extends Thread {
         } else {
             // playback
             if (_protocol.receive()) {
-                sendStatusUpdate(PROCESSOR_RECEIVING, null);
+                sendStatusUpdate(AppMessage.EV_RECEIVING, null);
             }
         }
     }
@@ -388,8 +372,8 @@ public class AppWorker extends Thread {
     }
 
     private void onProcessorIncomingMessage(Message msg) {
-        switch (msg.what) {
-            case PROCESSOR_PROCESS:
+        switch (AppMessage.values()[msg.what]) {
+            case CMD_PROCESS:
                 try {
                     processRxTx();
                 } catch (IOException e) {
@@ -397,10 +381,10 @@ public class AppWorker extends Thread {
                     quitProcessing();
                 }
                 break;
-            case PROCESSOR_QUIT:
+            case CMD_QUIT:
                 quitProcessing();
                 break;
-            case PROCESSOR_SEND_LOCATION:
+            case CMD_SEND_LOCATION:
                 try {
                     _protocol.sendPosition((Position)msg.obj);
                 } catch (IOException e) {
@@ -424,7 +408,7 @@ public class AppWorker extends Thread {
             @Override
             public void run() {
                 Message msg = new Message();
-                msg.what = PROCESSOR_PROCESS;
+                msg.what = AppMessage.CMD_PROCESS.toInt();
                 _onMessageReceived.sendMessage(msg);
             }
         }, 0, PROCESS_INTERVAL_MS);
@@ -436,7 +420,7 @@ public class AppWorker extends Thread {
         setPriority(Thread.MAX_PRIORITY);
         Looper.prepare();
 
-        sendStatusUpdate(PROCESSOR_CONNECTED, null);
+        sendStatusUpdate(AppMessage.EV_CONNECTED, null);
         _systemAudioPlayer.play();
 
         try {
@@ -448,7 +432,7 @@ public class AppWorker extends Thread {
         }
 
         cleanup();
-        sendStatusUpdate(PROCESSOR_DISCONNECTED, null);
+        sendStatusUpdate(AppMessage.EV_DISCONNECTED, null);
         Log.i(TAG, "Exiting message loop");
     }
 }

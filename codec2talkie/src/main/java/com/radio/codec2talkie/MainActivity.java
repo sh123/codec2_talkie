@@ -44,6 +44,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.radio.codec2talkie.app.AppMessage;
 import com.radio.codec2talkie.app.AppService;
 import com.radio.codec2talkie.app.AppWorker;
 import com.radio.codec2talkie.connect.BleConnectActivity;
@@ -531,11 +532,11 @@ public class MainActivity extends AppCompatActivity {
     private final Handler onAppServiceStateChanged = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case AppWorker.PROCESSOR_CONNECTED:
+            switch (AppMessage.values()[msg.what]) {
+                case EV_CONNECTED:
                     Toast.makeText(getBaseContext(), R.string.processor_connected, Toast.LENGTH_SHORT).show();
                     break;
-                case AppWorker.PROCESSOR_DISCONNECTED:
+                case EV_DISCONNECTED:
                     _btnPtt.setText(R.string.main_status_stop);
                     Toast.makeText(getBaseContext(), R.string.processor_disconnected, Toast.LENGTH_SHORT).show();
                     unbindAppService();
@@ -552,26 +553,26 @@ public class MainActivity extends AppCompatActivity {
                         startTransportConnection();
                     }
                     break;
-                case AppWorker.PROCESSOR_LISTENING:
+                case EV_LISTENING:
                     _btnPtt.setText(R.string.push_to_talk);
                     _textStatus.setText("");
                     break;
-                case AppWorker.PROCESSOR_TRANSMITTING:
+                case EV_TRANSMITTING:
                     if (msg.obj != null) {
                         _textStatus.setText((String) msg.obj);
                     }
                     _btnPtt.setText(R.string.main_status_tx);
                     break;
-                case AppWorker.PROCESSOR_RECEIVING:
+                case EV_RECEIVING:
                     _btnPtt.setText(R.string.main_status_rx);
                     break;
-                case AppWorker.PROCESSOR_PLAYING:
+                case EV_PLAYING:
                     if (msg.obj != null) {
                         _textStatus.setText((String) msg.obj);
                     }
                     _btnPtt.setText(R.string.main_status_play);
                     break;
-                case AppWorker.PROCESSOR_RX_RADIO_LEVEL:
+                case EV_RX_RADIO_LEVEL:
                     if (msg.arg1 == 0) {
                         _textRssi.setText("");
                         _progressRssi.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN));
@@ -583,15 +584,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 // same progress bar is reused for rx and tx levels
-                case AppWorker.PROCESSOR_RX_LEVEL:
-                case AppWorker.PROCESSOR_TX_LEVEL:
+                case EV_RX_LEVEL:
+                case EV_TX_LEVEL:
                     _progressAudioLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(AudioTools.colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
                     _progressAudioLevel.setProgress(msg.arg1 - AppWorker.getAudioMinLevel());
                     break;
-                case AppWorker.PROCESSOR_RX_ERROR:
+                case EV_RX_ERROR:
                     _btnPtt.setText(R.string.main_status_rx_error);
                     break;
-                case AppWorker.PROCESSOR_TX_ERROR:
+                case EV_TX_ERROR:
                     _btnPtt.setText(R.string.main_status_tx_error);
                     break;
             }

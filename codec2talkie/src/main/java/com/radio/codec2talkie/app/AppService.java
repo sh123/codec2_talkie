@@ -154,21 +154,27 @@ public class AppService extends Service {
         }
     }
 
+    private void deliverToParent(Message msg) throws RemoteException {
+        if (_callbackMessenger != null) {
+            Message sendMsg = new Message();
+            sendMsg.copyFrom(msg);
+            _callbackMessenger.send(sendMsg);
+        }
+    }
+
     private final Handler onAudioProcessorStateChanged = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
             try {
-                // redeliver to parent intent through messenger
-                if (_callbackMessenger != null) {
-                    Message sendMsg = new Message();
-                    sendMsg.copyFrom(msg);
-                    _callbackMessenger.send(sendMsg);
+                deliverToParent(msg);
+
+                switch (AppMessage.values()[msg.what]) {
+                    case EV_DISCONNECTED:
+                        _appWorker = null;
+                        break;
+                    default:
+                        break;
                 }
-
-                // worker has gone
-                if (msg.what == AppWorker.PROCESSOR_DISCONNECTED)
-                    _appWorker = null;
-
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
