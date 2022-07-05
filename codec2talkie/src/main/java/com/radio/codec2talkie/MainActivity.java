@@ -53,6 +53,7 @@ import com.radio.codec2talkie.connect.BleConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothSocketHandler;
 import com.radio.codec2talkie.connect.TcpIpConnectActivity;
+import com.radio.codec2talkie.log.LogItemActivity;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.recorder.RecorderActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
@@ -288,6 +289,13 @@ public class MainActivity extends AppCompatActivity {
         _recorderActivityLauncher.launch(new Intent(this, RecorderActivity.class));
     }
 
+    private final ActivityResultLauncher<Intent> _logViewActivityLauncher  = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> { });
+
+    protected void startLogViewActivity() {
+        _logViewActivityLauncher.launch(new Intent(this, LogItemActivity.class));
+    }
+
     private final ActivityResultLauncher<Intent> _settingsActivityLauncher  = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(), result -> restartApplication());
 
@@ -466,7 +474,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         else if (itemId == R.id.aprs_log) {
-            Toast.makeText(getBaseContext(), "Not implemented", Toast.LENGTH_SHORT).show();
+            startLogViewActivity();
             return true;
         }
         return super.onOptionsItemSelected(item);
