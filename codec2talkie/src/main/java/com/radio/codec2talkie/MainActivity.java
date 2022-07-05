@@ -1,5 +1,7 @@
 package com.radio.codec2talkie;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -69,12 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private final static int REQUEST_CONNECT_BT = 1;
-    private final static int REQUEST_CONNECT_USB = 2;
-    private final static int REQUEST_PERMISSIONS = 3;
-    private final static int REQUEST_SETTINGS = 4;
-    private final static int REQUEST_RECORDER = 5;
-    private final static int REQUEST_CONNECT_TCP_IP = 6;
+    private final static int REQUEST_PERMISSIONS = 1;
 
     // S9 level at -93 dBm as per VHF Managers Handbook
     private final static int S_METER_S0_VALUE_DB = -147;
@@ -212,10 +209,46 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private final ActivityResultLauncher<Intent> _usbActivityLauncher = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            Intent data = result.getData();
+            assert data != null;
+            int resultCode = result.getResultCode();
+            if (resultCode == RESULT_CANCELED) {
+                // fall back to bluetooth if usb failed
+                startBluetoothConnectActivity();
+            } else if (resultCode == RESULT_OK) {
+                _textConnInfo.setText(data.getStringExtra("name"));
+                startAppService(TransportFactory.TransportType.USB);
+            }
+        }
+    );
+
     protected void startUsbConnectActivity() {
-        Intent usbConnectIntent = new Intent(this, UsbConnectActivity.class);
-        startActivityForResult(usbConnectIntent, REQUEST_CONNECT_USB);
+        _usbActivityLauncher.launch(new Intent(this, UsbConnectActivity.class));
     }
+
+    private final ActivityResultLauncher<Intent> _bluetoothActivityLauncher = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            Intent data = result.getData();
+            assert data != null;
+            int resultCode = result.getResultCode();
+            if (resultCode == RESULT_CANCELED) {
+                // fall back to loopback if bluetooth failed
+                _textConnInfo.setText(R.string.main_status_loopback_test);
+                startAppService(TransportFactory.TransportType.LOOPBACK);
+            } else if (resultCode == RESULT_OK) {
+                _textConnInfo.setText(data.getStringExtra("name"));
+                if (_isBleEnabled) {
+                    startAppService(TransportFactory.TransportType.BLE);
+                } else {
+                    startAppService(TransportFactory.TransportType.BLUETOOTH);
+                }
+            }
+        }
+    );
 
     protected void startBluetoothConnectActivity() {
         Intent bluetoothConnectIntent;
@@ -224,17 +257,42 @@ public class MainActivity extends AppCompatActivity {
         } else {
             bluetoothConnectIntent = new Intent(this, BluetoothConnectActivity.class);
         }
-        startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_BT);
+        _bluetoothActivityLauncher.launch(bluetoothConnectIntent);
     }
+
+    private final ActivityResultLauncher<Intent> _tcpipActivityLauncher  = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            Intent data = result.getData();
+            assert data != null;
+            int resultCode = result.getResultCode();
+            if (resultCode == RESULT_CANCELED) {
+                // fall back to loopback if tcp/ip failed
+                _textConnInfo.setText(R.string.main_status_loopback_test);
+                startAppService(TransportFactory.TransportType.LOOPBACK);
+            } else if (resultCode == RESULT_OK) {
+                _textConnInfo.setText(data.getStringExtra("name"));
+                startAppService(TransportFactory.TransportType.TCP_IP);
+            }
+        }
+    );
 
     protected void startTcpIpConnectActivity() {
-        Intent tcpIpConnectIntent = new Intent(this, TcpIpConnectActivity.class);
-        startActivityForResult(tcpIpConnectIntent, REQUEST_CONNECT_TCP_IP);
+        _tcpipActivityLauncher.launch(new Intent(this, TcpIpConnectActivity.class));
     }
 
+    private final ActivityResultLauncher<Intent> _recorderActivityLauncher  = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> { });
+
     protected void startRecorderActivity() {
-        Intent recorderIntent = new Intent(this, RecorderActivity.class);
-        startActivityForResult(recorderIntent, REQUEST_RECORDER);
+        _recorderActivityLauncher.launch(new Intent(this, RecorderActivity.class));
+    }
+
+    private final ActivityResultLauncher<Intent> _settingsActivityLauncher  = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(), result -> restartApplication());
+
+    protected void startSettingsActivity() {
+        _settingsActivityLauncher.launch(new Intent(this, SettingsActivity.class));
     }
 
     protected boolean requestPermissions() {
@@ -372,8 +430,7 @@ public class MainActivity extends AppCompatActivity {
         int itemId = item.getItemId();
 
         if (itemId == R.id.preferences) {
-            Intent settingsIntent = new Intent(this, SettingsActivity.class);
-            startActivityForResult(settingsIntent, REQUEST_SETTINGS);
+            startSettingsActivity();
             return true;
         }
         if (itemId == R.id.recorder) {
@@ -598,46 +655,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
+    
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CONNECT_BT) {
-            if (resultCode == RESULT_CANCELED) {
-                // fall back to loopback if bluetooth failed
-                _textConnInfo.setText(R.string.main_status_loopback_test);
-                startAppService(TransportFactory.TransportType.LOOPBACK);
-            } else if (resultCode == RESULT_OK) {
-                _textConnInfo.setText(data.getStringExtra("name"));
-                if (_isBleEnabled) {
-                    startAppService(TransportFactory.TransportType.BLE);
-                } else {
-                    startAppService(TransportFactory.TransportType.BLUETOOTH);
-                }
-            }
-        }
-        else if (requestCode == REQUEST_CONNECT_TCP_IP) {
-            if (resultCode == RESULT_CANCELED) {
-                // fall back to loopback if tcp/ip failed
-                _textConnInfo.setText(R.string.main_status_loopback_test);
-                startAppService(TransportFactory.TransportType.LOOPBACK);
-            } else if (resultCode == RESULT_OK) {
-                _textConnInfo.setText(data.getStringExtra("name"));
-                startAppService(TransportFactory.TransportType.TCP_IP);
-            }
-        }
-        else if (requestCode == REQUEST_CONNECT_USB) {
-            if (resultCode == RESULT_CANCELED) {
-                // fall back to bluetooth if usb failed
-                startBluetoothConnectActivity();
-            } else if (resultCode == RESULT_OK) {
-                _textConnInfo.setText(data.getStringExtra("name"));
-                startAppService(TransportFactory.TransportType.USB);
-            }
-        }
-        else if (requestCode == REQUEST_SETTINGS) {
-            restartApplication();
-        }
     }
 }
