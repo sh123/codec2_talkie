@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.tools;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 
 import com.radio.codec2talkie.app.AppWorker;
@@ -41,4 +42,17 @@ public class AudioTools {
         String[] modeSpeed = codecNameCodecId[0].split("_");
         return modeSpeed[1];
     }
+
+    public static String getSpeedStatusText(String codec2ModeName, SharedPreferences sharedPreferences) {
+        // codec2 speed
+        String speedModeInfo = "C2: " + AudioTools.extractCodec2Speed(codec2ModeName);
+
+        // radio speed
+        int radioSpeedBps = RadioTools.getRadioSpeed(sharedPreferences);
+        if (radioSpeedBps > 0) {
+            speedModeInfo = "RF: " + radioSpeedBps + ", " + speedModeInfo;
+        }
+        return speedModeInfo;
+    }
+
 }

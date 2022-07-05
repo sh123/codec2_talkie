@@ -105,7 +105,9 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar _progressRssi;
     private Button _btnPtt;
 
-    private boolean _shouldSkipTransportReconnect = false;
+    private boolean _isAppExit = false;
+    private boolean _isAppRestart = false;
+
     private long _backPressedTimestamp;
 
     @SuppressLint("ClickableViewAccessibility")
@@ -169,6 +171,8 @@ public class MainActivity extends AppCompatActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
+        _isAppRestart = false;
+        _isAppExit = false;
         startTransportConnection();
     }
 
@@ -179,8 +183,16 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(onUsbDetached);
     }
 
-    private void stopRunning() {
-        _shouldSkipTransportReconnect = true;
+    private void exitApplication() {
+        _isAppExit = true;
+        if (_appService != null) {
+            _appService.stopRunning();
+        }
+        finish();
+    }
+
+    private void restartApplication() {
+        _isAppRestart = true;
         if (_appService != null) {
             _appService.stopRunning();
         }
@@ -188,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startTransportConnection() {
-        if (_shouldSkipTransportReconnect) return;
+        if (_isAppExit) return;
         Log.i(TAG, "Starting transport connection");
         if (_isTestMode) {
             _textConnInfo.setText(R.string.main_status_loopback_test);
@@ -250,23 +262,94 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private void bindAppService() {
+        if (!bindService(new Intent(this, AppService.class), _appServiceConnection, Context.BIND_AUTO_CREATE)) {
+            Log.e(TAG, "Service does not exists or no access");
+        }
+    }
+
+    private void unbindAppService() {
+        unbindService(_appServiceConnection);
+    }
+
+    private void startAppService(TransportFactory.TransportType transportType) {
+        Log.i(TAG, "Starting app service processing: " + transportType.toString());
+
+        String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
+
+        ProtocolFactory.ProtocolType protocolType = ProtocolFactory.getBaseProtocolType(getApplicationContext());
+        _btnPtt.setEnabled(protocolType != ProtocolFactory.ProtocolType.KISS_PARROT);
+
+        String statusLine = AudioTools.getSpeedStatusText(codec2ModeName, _sharedPreferences) +
+                ", " +
+                getFeatureStatusText(protocolType);
+        _textCodecMode.setText(statusLine);
+
+        Intent serviceIntent = new Intent(this, AppService.class);
+        serviceIntent.putExtra("transportType", transportType);
+        serviceIntent.putExtra("callback", new Messenger(onAppServiceStateChanged));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            startForegroundService(serviceIntent);
+        else
+            startService(serviceIntent);
+    }
+
+    private void stopAppService() {
+        stopService(new Intent(this, AppService.class));
+    }
+
+    private String getFeatureStatusText(ProtocolFactory.ProtocolType protocolType) {
+        // protocol
+        String status = "";
+
+        // recording
+        boolean recordingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_RECORDING_ENABLED, false);
+        if (recordingEnabled) {
+            status += getString(R.string.recorder_status_label);
+        }
+
+        // scrambling
+        boolean scramblingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.KISS_SCRAMBLING_ENABLED, false);
+        if (scramblingEnabled) {
+            status += getString(R.string.kiss_scrambler_label);
+        }
+
+        // aprs
+        boolean aprsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
+        if (aprsEnabled) {
+            status += getString(R.string.aprs_label);
+
+            // VoAX25
+            boolean voax25Enabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_VOAX25_ENABLE, false);
+            if (voax25Enabled) {
+                status += getString(R.string.voax25_label);
+            }
+        }
+
+        if (status.length() == 0) {
+            return protocolType.toString();
+        }
+        return protocolType.toString() + " " + status;
+    }
+
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (_appService != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
-                Toast.makeText(MainActivity.this, R.string.bt_disconnected, Toast.LENGTH_LONG).show();
-                _appService.stopRunning();
-            }
+        if (_appService != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
+            Toast.makeText(MainActivity.this, R.string.bt_disconnected, Toast.LENGTH_LONG).show();
+            _appService.stopRunning();
+        }
         }
     };
 
     private final BroadcastReceiver onUsbDetached = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (_appService != null && UsbPortHandler.getPort() != null && !_isTestMode) {
-                Toast.makeText(MainActivity.this, R.string.usb_detached, Toast.LENGTH_LONG).show();
-                _appService.stopRunning();
-            }
+        if (_appService != null && UsbPortHandler.getPort() != null && !_isTestMode) {
+            Toast.makeText(MainActivity.this, R.string.usb_detached, Toast.LENGTH_LONG).show();
+            _appService.stopRunning();
+        }
         }
     };
 
@@ -305,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         else if (itemId == R.id.exit) {
-            stopRunning();
+            exitApplication();
             return true;
         }
         else if (itemId == R.id.send_position) {
@@ -367,7 +450,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (_backPressedTimestamp + BACK_EXIT_MS_DELAY > System.currentTimeMillis()) {
             super.onBackPressed();
-            stopRunning();
+            exitApplication();
         } else {
             Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_SHORT).show();
         }
@@ -427,7 +510,7 @@ public class MainActivity extends AppCompatActivity {
                 startUsbConnectActivity();
             } else {
                 Toast.makeText(MainActivity.this, R.string.permissions_denied, Toast.LENGTH_SHORT).show();
-                stopRunning();
+                exitApplication();
             }
         }
     }
@@ -445,7 +528,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private final Handler onAudioProcessorStateChanged = new Handler(Looper.getMainLooper()) {
+    private final Handler onAppServiceStateChanged = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -458,7 +541,11 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getBaseContext(), R.string.processor_disconnected, Toast.LENGTH_SHORT).show();
                     unbindAppService();
                     stopAppService();
-                    startTransportConnection();
+                    if (_isAppRestart) {
+                        startActivity(getIntent());
+                    } else {
+                        startTransportConnection();
+                    }
                     break;
                 case AppWorker.PROCESSOR_LISTENING:
                     _btnPtt.setText(R.string.push_to_talk);
@@ -506,88 +593,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void bindAppService() {
-        if (!bindService(new Intent(this, AppService.class), _appServiceConnection, Context.BIND_AUTO_CREATE)) {
-            Log.e(TAG, "Service does not exists or no access");
-        }
-    }
-
-    private void unbindAppService() {
-        unbindService(_appServiceConnection);
-    }
-
-
-    private void startAppService(TransportFactory.TransportType transportType) {
-        Log.i(TAG, "Starting app service processing: " + transportType.toString());
-
-        String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
-
-        ProtocolFactory.ProtocolType protocolType = ProtocolFactory.getBaseProtocolType(getApplicationContext());
-        _btnPtt.setEnabled(protocolType != ProtocolFactory.ProtocolType.KISS_PARROT);
-
-        String statusLine = getSpeedStatusText(codec2ModeName) + ", " + getFeatureStatusText(protocolType);
-        _textCodecMode.setText(statusLine);
-
-        Intent serviceIntent = new Intent(this, AppService.class);
-        serviceIntent.putExtra("transportType", transportType);
-        serviceIntent.putExtra("callback", new Messenger(onAudioProcessorStateChanged));
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            startForegroundService(serviceIntent);
-        else
-            startService(serviceIntent);
-    }
-
-    private void stopAppService() {
-        stopService(new Intent(this, AppService.class));
-    }
-
-    private String getSpeedStatusText(String codec2ModeName) {
-        // codec2 speed
-        String speedModeInfo = "C2: " + AudioTools.extractCodec2Speed(codec2ModeName);
-
-        // radio speed
-        int radioSpeedBps = RadioTools.getRadioSpeed(_sharedPreferences);
-        if (radioSpeedBps > 0) {
-            speedModeInfo = "RF: " + radioSpeedBps + ", " + speedModeInfo;
-        }
-        return speedModeInfo;
-    }
-
-    private String getFeatureStatusText(ProtocolFactory.ProtocolType protocolType) {
-        // protocol
-        String status = "";
-
-        // recording
-        boolean recordingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_RECORDING_ENABLED, false);
-        if (recordingEnabled) {
-            status += getString(R.string.recorder_status_label);
-        }
-
-        // scrambling
-        boolean scramblingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.KISS_SCRAMBLING_ENABLED, false);
-        if (scramblingEnabled) {
-            status += getString(R.string.kiss_scrambler_label);
-        }
-
-        // aprs
-        boolean aprsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
-        if (aprsEnabled) {
-            status += getString(R.string.aprs_label);
-
-            // VoAX25
-            boolean voax25Enabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_VOAX25_ENABLE, false);
-            if (voax25Enabled) {
-                status += getString(R.string.voax25_label);
-            }
-        }
-
-        if (status.length() == 0) {
-            return protocolType.toString();
-        }
-        return protocolType.toString() + " " + status;
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -626,9 +631,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         else if (requestCode == REQUEST_SETTINGS) {
-            _shouldSkipTransportReconnect = true;
-            stopRunning();
-            startActivity(getIntent());
+            restartApplication();
         }
     }
 }
