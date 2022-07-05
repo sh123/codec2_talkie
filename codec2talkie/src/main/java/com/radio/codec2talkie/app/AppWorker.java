@@ -223,8 +223,7 @@ public class AppWorker extends Thread {
 
         @Override
         protected void onReceiveData(String src, String dst, byte[] data) {
-            // handle incoming messages
-            Log.i(TAG, src + ">" + dst + ":" + DebugTools.bytesToDebugString(data));
+            // TODO, handle incoming messages
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
             sendStatusUpdate(AppMessage.EV_PLAYING, note);
         }
@@ -236,7 +235,7 @@ public class AppWorker extends Thread {
 
         @Override
         protected void onReceiveLog(String logData) {
-            Log.i(TAG, logData);
+            Log.i(TAG, "RX: " + logData);
         }
 
         @Override
@@ -253,14 +252,13 @@ public class AppWorker extends Thread {
 
         @Override
         protected void onTransmitData(String src, String dst, byte[] data) {
-            Log.i(TAG, src + ">" + dst + ":" + DebugTools.bytesToDebugString(data));
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
             sendStatusUpdate(AppMessage.EV_TRANSMITTING, note);
         }
 
         @Override
         protected void onTransmitLog(String logData) {
-            Log.i(TAG, logData);
+            Log.i(TAG, "TX: " + logData);
         }
 
         @Override
