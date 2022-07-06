@@ -31,7 +31,7 @@ public class DebugTools {
             }
             else
             {
-                builder.append(String.format("<%x>", b));
+                builder.append(String.format("<0x%x>", b));
             }
         }
         return builder.toString();
