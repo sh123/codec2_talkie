@@ -1,11 +1,11 @@
 package com.radio.codec2talkie.log;
 
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.ListFragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,12 +37,22 @@ public class LogItemActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.log_view_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         int itemId = item.getItemId();
 
         if (itemId == android.R.id.home) {
             finish();
+            return true;
+        }
+        else if (itemId == R.id.log_view_menu_clear) {
+            _logItemViewModel.deleteAllLogItems();
             return true;
         }
         return super.onOptionsItemSelected(item);

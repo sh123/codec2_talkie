@@ -26,4 +26,8 @@ public class LogItemRepository {
             _logItemDao.insertLogItem(logItem);
         });
     }
+
+    public void deleteAllLogItems() {
+        LogItemDatabase.databaseWriteExecutor.execute(_logItemDao::deleteAllLogItems);
+    }
 }
