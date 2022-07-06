@@ -41,6 +41,9 @@
             android:name=".recorder.RecorderActivity"
             android:configChanges="orientation|screenSize" />
         <activity
+            android:name=".log.LogItemActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize">
             <intent-filter>

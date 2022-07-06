@@ -1,5 +1,7 @@
 package com.radio.codec2talkie.connect;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
@@ -30,11 +32,10 @@ import java.util.UUID;
 
 public class BluetoothConnectActivity extends AppCompatActivity {
 
-    private final static int BT_ENABLE = 1;
-    private final static int BT_CONNECT_SUCCESS = 2;
-    private final static int BT_CONNECT_FAILURE = 3;
-    private final static int BT_SOCKET_FAILURE = 4;
-    private final static int BT_ADAPTER_FAILURE = 5;
+    private final static int BT_CONNECT_SUCCESS = 1;
+    private final static int BT_CONNECT_FAILURE = 2;
+    private final static int BT_SOCKET_FAILURE = 3;
+    private final static int BT_ADAPTER_FAILURE = 4;
 
     private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
@@ -88,10 +89,24 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         }
         else {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, BT_ENABLE);
+            _enableBtLauncher.launch(enableBtIntent);
             Toast.makeText(getApplicationContext(), getString(R.string.bt_turned_on), Toast.LENGTH_SHORT).show();
         }
     }
+
+    private final ActivityResultLauncher<Intent> _enableBtLauncher = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            Intent data = result.getData();
+            assert data != null;
+            int resultCode = result.getResultCode();
+            if (resultCode == RESULT_OK) {
+                connectOrPopulateDevices();
+            } else if (resultCode == RESULT_CANCELED){
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+        });
 
     private void showDeviceList() {
         if (_btDevicesList.getVisibility() == View.INVISIBLE) {
@@ -195,16 +210,4 @@ public class BluetoothConnectActivity extends AppCompatActivity {
             connectToBluetoothClient(addressFromDisplayName(_btSelectedName));
         }
     };
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent Data) {
-        super.onActivityResult(requestCode, resultCode, Data);
-        if (requestCode == BT_ENABLE) {
-            if (resultCode == RESULT_OK) {
-                connectOrPopulateDevices();
-            } else if (resultCode == RESULT_CANCELED){
-                setResult(RESULT_CANCELED);
-                finish();
-            }
-        }
-    }
 }

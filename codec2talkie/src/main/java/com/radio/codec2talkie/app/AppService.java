@@ -86,9 +86,23 @@ public class AppService extends Service {
         }
     }
 
+    @Override
+    public void onRebind(Intent intent) {
+        Log.i(TAG, "onRebind()");
+        super.onRebind(intent);
+    }
+
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.i(TAG, "onUnbind()");
+        _callbackMessenger = null;
+        return true;
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        Log.i(TAG, "onBind()");
         return _binder;
     }
 
@@ -115,6 +129,10 @@ public class AppService extends Service {
 
             Notification notification = buildNotification(getString(R.string.app_service_notif_text_ptt_ready));
             startForeground(NOTIFICATION_ID, notification);
+
+            Log.i(TAG, "App service started");
+        } else {
+            Log.i(TAG, "App service is already running");
         }
 
         return START_REDELIVER_INTENT;
@@ -136,19 +154,27 @@ public class AppService extends Service {
         }
     }
 
+    private void deliverToParent(Message msg) throws RemoteException {
+        if (_callbackMessenger != null) {
+            Message sendMsg = new Message();
+            sendMsg.copyFrom(msg);
+            _callbackMessenger.send(sendMsg);
+        }
+    }
+
     private final Handler onAudioProcessorStateChanged = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
             try {
-                // redeliver to parent intent through messenger
-                Message sendMsg = new Message();
-                sendMsg.copyFrom(msg);
-                _callbackMessenger.send(sendMsg);
+                deliverToParent(msg);
 
-                // worker has gone
-                if (msg.what == AppWorker.PROCESSOR_DISCONNECTED)
-                    _appWorker = null;
-
+                switch (AppMessage.values()[msg.what]) {
+                    case EV_DISCONNECTED:
+                        _appWorker = null;
+                        break;
+                    default:
+                        break;
+                }
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -180,7 +206,7 @@ public class AppService extends Service {
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
                 | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent intent = PendingIntent.getActivity(getApplicationContext(), 0,
-                notificationIntent, 0);
+                notificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(
                 this, channelId);

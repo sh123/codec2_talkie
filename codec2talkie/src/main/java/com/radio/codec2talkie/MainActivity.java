@@ -1,5 +1,7 @@
 package com.radio.codec2talkie;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -44,12 +46,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.radio.codec2talkie.app.AppMessage;
 import com.radio.codec2talkie.app.AppService;
 import com.radio.codec2talkie.app.AppWorker;
 import com.radio.codec2talkie.connect.BleConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothSocketHandler;
 import com.radio.codec2talkie.connect.TcpIpConnectActivity;
+import com.radio.codec2talkie.log.LogItemActivity;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.recorder.RecorderActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
@@ -68,12 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private final static int REQUEST_CONNECT_BT = 1;
-    private final static int REQUEST_CONNECT_USB = 2;
-    private final static int REQUEST_PERMISSIONS = 3;
-    private final static int REQUEST_SETTINGS = 4;
-    private final static int REQUEST_RECORDER = 5;
-    private final static int REQUEST_CONNECT_TCP_IP = 6;
+    private final static int REQUEST_PERMISSIONS = 1;
 
     // S9 level at -93 dBm as per VHF Managers Handbook
     private final static int S_METER_S0_VALUE_DB = -147;
@@ -211,10 +210,46 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private final ActivityResultLauncher<Intent> _usbActivityLauncher = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            Intent data = result.getData();
+            assert data != null;
+            int resultCode = result.getResultCode();
+            if (resultCode == RESULT_CANCELED) {
+                // fall back to bluetooth if usb failed
+                startBluetoothConnectActivity();
+            } else if (resultCode == RESULT_OK) {
+                _textConnInfo.setText(data.getStringExtra("name"));
+                startAppService(TransportFactory.TransportType.USB);
+            }
+        }
+    );
+
     protected void startUsbConnectActivity() {
-        Intent usbConnectIntent = new Intent(this, UsbConnectActivity.class);
-        startActivityForResult(usbConnectIntent, REQUEST_CONNECT_USB);
+        _usbActivityLauncher.launch(new Intent(this, UsbConnectActivity.class));
     }
+
+    private final ActivityResultLauncher<Intent> _bluetoothActivityLauncher = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            Intent data = result.getData();
+            assert data != null;
+            int resultCode = result.getResultCode();
+            if (resultCode == RESULT_CANCELED) {
+                // fall back to loopback if bluetooth failed
+                _textConnInfo.setText(R.string.main_status_loopback_test);
+                startAppService(TransportFactory.TransportType.LOOPBACK);
+            } else if (resultCode == RESULT_OK) {
+                _textConnInfo.setText(data.getStringExtra("name"));
+                if (_isBleEnabled) {
+                    startAppService(TransportFactory.TransportType.BLE);
+                } else {
+                    startAppService(TransportFactory.TransportType.BLUETOOTH);
+                }
+            }
+        }
+    );
 
     protected void startBluetoothConnectActivity() {
         Intent bluetoothConnectIntent;
@@ -223,17 +258,49 @@ public class MainActivity extends AppCompatActivity {
         } else {
             bluetoothConnectIntent = new Intent(this, BluetoothConnectActivity.class);
         }
-        startActivityForResult(bluetoothConnectIntent, REQUEST_CONNECT_BT);
+        _bluetoothActivityLauncher.launch(bluetoothConnectIntent);
     }
+
+    private final ActivityResultLauncher<Intent> _tcpipActivityLauncher  = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            Intent data = result.getData();
+            assert data != null;
+            int resultCode = result.getResultCode();
+            if (resultCode == RESULT_CANCELED) {
+                // fall back to loopback if tcp/ip failed
+                _textConnInfo.setText(R.string.main_status_loopback_test);
+                startAppService(TransportFactory.TransportType.LOOPBACK);
+            } else if (resultCode == RESULT_OK) {
+                _textConnInfo.setText(data.getStringExtra("name"));
+                startAppService(TransportFactory.TransportType.TCP_IP);
+            }
+        }
+    );
 
     protected void startTcpIpConnectActivity() {
-        Intent tcpIpConnectIntent = new Intent(this, TcpIpConnectActivity.class);
-        startActivityForResult(tcpIpConnectIntent, REQUEST_CONNECT_TCP_IP);
+        _tcpipActivityLauncher.launch(new Intent(this, TcpIpConnectActivity.class));
     }
 
+    private final ActivityResultLauncher<Intent> _recorderActivityLauncher  = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> { });
+
     protected void startRecorderActivity() {
-        Intent recorderIntent = new Intent(this, RecorderActivity.class);
-        startActivityForResult(recorderIntent, REQUEST_RECORDER);
+        _recorderActivityLauncher.launch(new Intent(this, RecorderActivity.class));
+    }
+
+    private final ActivityResultLauncher<Intent> _logViewActivityLauncher  = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> { });
+
+    protected void startLogViewActivity() {
+        _logViewActivityLauncher.launch(new Intent(this, LogItemActivity.class));
+    }
+
+    private final ActivityResultLauncher<Intent> _settingsActivityLauncher  = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(), result -> restartApplication());
+
+    protected void startSettingsActivity() {
+        _settingsActivityLauncher.launch(new Intent(this, SettingsActivity.class));
     }
 
     protected boolean requestPermissions() {
@@ -371,8 +438,7 @@ public class MainActivity extends AppCompatActivity {
         int itemId = item.getItemId();
 
         if (itemId == R.id.preferences) {
-            Intent settingsIntent = new Intent(this, SettingsActivity.class);
-            startActivityForResult(settingsIntent, REQUEST_SETTINGS);
+            startSettingsActivity();
             return true;
         }
         if (itemId == R.id.recorder) {
@@ -408,7 +474,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         else if (itemId == R.id.aprs_log) {
-            Toast.makeText(getBaseContext(), "Not implemented", Toast.LENGTH_SHORT).show();
+            startLogViewActivity();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -517,11 +583,13 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.i(TAG, "Connected to app service");
             _appService = ((AppService.AppServiceBinder)service).getService();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName className) {
+            Log.i(TAG, "Disconnected from app service");
             _appService = null;
         }
     };
@@ -529,11 +597,11 @@ public class MainActivity extends AppCompatActivity {
     private final Handler onAppServiceStateChanged = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case AppWorker.PROCESSOR_CONNECTED:
+            switch (AppMessage.values()[msg.what]) {
+                case EV_CONNECTED:
                     Toast.makeText(getBaseContext(), R.string.processor_connected, Toast.LENGTH_SHORT).show();
                     break;
-                case AppWorker.PROCESSOR_DISCONNECTED:
+                case EV_DISCONNECTED:
                     _btnPtt.setText(R.string.main_status_stop);
                     Toast.makeText(getBaseContext(), R.string.processor_disconnected, Toast.LENGTH_SHORT).show();
                     unbindAppService();
@@ -550,26 +618,26 @@ public class MainActivity extends AppCompatActivity {
                         startTransportConnection();
                     }
                     break;
-                case AppWorker.PROCESSOR_LISTENING:
+                case EV_LISTENING:
                     _btnPtt.setText(R.string.push_to_talk);
                     _textStatus.setText("");
                     break;
-                case AppWorker.PROCESSOR_TRANSMITTING:
+                case EV_TRANSMITTING:
                     if (msg.obj != null) {
                         _textStatus.setText((String) msg.obj);
                     }
                     _btnPtt.setText(R.string.main_status_tx);
                     break;
-                case AppWorker.PROCESSOR_RECEIVING:
+                case EV_RECEIVING:
                     _btnPtt.setText(R.string.main_status_rx);
                     break;
-                case AppWorker.PROCESSOR_PLAYING:
+                case EV_PLAYING:
                     if (msg.obj != null) {
                         _textStatus.setText((String) msg.obj);
                     }
                     _btnPtt.setText(R.string.main_status_play);
                     break;
-                case AppWorker.PROCESSOR_RX_RADIO_LEVEL:
+                case EV_RX_RADIO_LEVEL:
                     if (msg.arg1 == 0) {
                         _textRssi.setText("");
                         _progressRssi.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN));
@@ -581,60 +649,18 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 // same progress bar is reused for rx and tx levels
-                case AppWorker.PROCESSOR_RX_LEVEL:
-                case AppWorker.PROCESSOR_TX_LEVEL:
+                case EV_RX_LEVEL:
+                case EV_TX_LEVEL:
                     _progressAudioLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(AudioTools.colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
                     _progressAudioLevel.setProgress(msg.arg1 - AppWorker.getAudioMinLevel());
                     break;
-                case AppWorker.PROCESSOR_RX_ERROR:
+                case EV_RX_ERROR:
                     _btnPtt.setText(R.string.main_status_rx_error);
                     break;
-                case AppWorker.PROCESSOR_TX_ERROR:
+                case EV_TX_ERROR:
                     _btnPtt.setText(R.string.main_status_tx_error);
                     break;
             }
         }
     };
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CONNECT_BT) {
-            if (resultCode == RESULT_CANCELED) {
-                // fall back to loopback if bluetooth failed
-                _textConnInfo.setText(R.string.main_status_loopback_test);
-                startAppService(TransportFactory.TransportType.LOOPBACK);
-            } else if (resultCode == RESULT_OK) {
-                _textConnInfo.setText(data.getStringExtra("name"));
-                if (_isBleEnabled) {
-                    startAppService(TransportFactory.TransportType.BLE);
-                } else {
-                    startAppService(TransportFactory.TransportType.BLUETOOTH);
-                }
-            }
-        }
-        else if (requestCode == REQUEST_CONNECT_TCP_IP) {
-            if (resultCode == RESULT_CANCELED) {
-                // fall back to loopback if tcp/ip failed
-                _textConnInfo.setText(R.string.main_status_loopback_test);
-                startAppService(TransportFactory.TransportType.LOOPBACK);
-            } else if (resultCode == RESULT_OK) {
-                _textConnInfo.setText(data.getStringExtra("name"));
-                startAppService(TransportFactory.TransportType.TCP_IP);
-            }
-        }
-        else if (requestCode == REQUEST_CONNECT_USB) {
-            if (resultCode == RESULT_CANCELED) {
-                // fall back to bluetooth if usb failed
-                startBluetoothConnectActivity();
-            } else if (resultCode == RESULT_OK) {
-                _textConnInfo.setText(data.getStringExtra("name"));
-                startAppService(TransportFactory.TransportType.USB);
-            }
-        }
-        else if (requestCode == REQUEST_SETTINGS) {
-            restartApplication();
-        }
-    }
 }

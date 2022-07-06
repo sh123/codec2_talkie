@@ -10,7 +10,6 @@ import android.location.LocationManager;
 import android.os.Looper;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 
@@ -84,10 +83,5 @@ public class Periodic implements Tracker {
         _trackerCallback.onSendLocation(Position.fromLocation(location));
     }
 
-    private final LocationListener _locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(@NonNull Location location) {
-            sendLocation(location);
-        }
-    };
+    private final LocationListener _locationListener = this::sendLocation;
 }
