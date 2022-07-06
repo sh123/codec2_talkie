@@ -66,7 +66,7 @@ public class AprsDataPositionReportMicE implements AprsData {
     @Override
     public void fromBinary(byte[] infoData) {
         _isValid = false;
-        // TODO, needs dst callsign
+        // TODO, implement fromBinary, needs dst callsign
         // ByteBuffer buffer = ByteBuffer.wrap(infoData);
         // read latitude
         // read symbol table

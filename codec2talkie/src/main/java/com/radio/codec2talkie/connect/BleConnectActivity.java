@@ -1,5 +1,7 @@
 package com.radio.codec2talkie.connect;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
@@ -36,14 +38,13 @@ public class BleConnectActivity extends AppCompatActivity {
 
     private final static int SCAN_PERIOD = 5000;
 
-    public final static int BT_ENABLE = 1;
-    public final static int BT_GATT_CONNECT_SUCCESS = 2;
-    public final static int BT_GATT_CONNECT_FAILURE = 3;
-    public final static int BT_ADAPTER_FAILURE = 5;
-    public final static int BT_SCAN_COMPLETED = 6;
-    public final static int BT_SERVICES_DISCOVERED = 7;
-    public final static int BT_SERVICES_DISCOVER_FAILURE = 8;
-    public final static int BT_UNSUPPORTED_CHARACTERISTICS = 9;
+    public final static int BT_GATT_CONNECT_SUCCESS = 1;
+    public final static int BT_GATT_CONNECT_FAILURE = 2;
+    public final static int BT_ADAPTER_FAILURE = 3;
+    public final static int BT_SCAN_COMPLETED = 4;
+    public final static int BT_SERVICES_DISCOVERED = 5;
+    public final static int BT_SERVICES_DISCOVER_FAILURE = 6;
+    public final static int BT_UNSUPPORTED_CHARACTERISTICS = 7;
 
     private static final int BtAddressLength = 17;
 
@@ -97,10 +98,24 @@ public class BleConnectActivity extends AppCompatActivity {
         }
         else {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, BT_ENABLE);
+            _enableBtLauncher.launch(enableBtIntent);
             Toast.makeText(getApplicationContext(), getString(R.string.bt_turned_on), Toast.LENGTH_SHORT).show();
         }
     }
+
+    private final ActivityResultLauncher<Intent> _enableBtLauncher = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            Intent data = result.getData();
+            assert data != null;
+            int resultCode = result.getResultCode();
+            if (resultCode == RESULT_OK) {
+                connectOrPopulateDevices();
+            } else if (resultCode == RESULT_CANCELED){
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+        });
 
     private void showDeviceList() {
         if (_btDevicesList.getVisibility() == View.INVISIBLE) {

@@ -35,7 +35,7 @@ public class AprsDataPositionReport implements AprsData {
     @Override
     public void fromBinary(byte[] infoData) {
         _isValid = false;
-        // TODO
+        // TODO, implement fromBinary
         // ByteBuffer buffer = ByteBuffer.wrap(infoData);
         // read latitude
         // read symbol table
