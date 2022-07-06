@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -43,6 +44,8 @@ public class RecorderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recorder);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         _dirAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item);
         _recordingList = findViewById(R.id.listRecorder);
@@ -202,7 +205,11 @@ public class RecorderActivity extends AppCompatActivity {
     {
         int itemId = item.getItemId();
 
-        if (itemId == R.id.recorder_play_all) {
+        if (itemId == android.R.id.home) {
+            finish();
+            return true;
+        }
+        else if (itemId == R.id.recorder_play_all) {
             playAll();
             return true;
         }
