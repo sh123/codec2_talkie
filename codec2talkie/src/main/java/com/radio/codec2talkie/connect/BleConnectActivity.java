@@ -225,16 +225,4 @@ public class BleConnectActivity extends AppCompatActivity {
             gattConnectToBluetoothClient(addressFromDisplayName(_btSelectedName));
         }
     };
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent Data) {
-        super.onActivityResult(requestCode, resultCode, Data);
-        if (requestCode == BT_ENABLE) {
-            if (resultCode == RESULT_OK) {
-                connectOrPopulateDevices();
-            } else if (resultCode == RESULT_CANCELED){
-                setResult(RESULT_CANCELED);
-                finish();
-            }
-        }
-    }
 }
