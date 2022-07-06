@@ -21,7 +21,7 @@ public class LogItemAdapter extends ListAdapter<LogItem, LogItemHolder> {
     @Override
     public void onBindViewHolder(LogItemHolder holder, int position) {
         LogItem current = getItem(position);
-        holder.bind(current.getLogLine());
+        holder.bind(current.getTimestampEpoch(), current.getSrcCallsign(), current.getLogLine(), current.getIsTransmit());
     }
 
     static class LogItemDiff extends DiffUtil.ItemCallback<LogItem> {

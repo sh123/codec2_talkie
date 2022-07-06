@@ -250,5 +250,4 @@
     <string name="app_service_notif_text_tracking">APRS tracking is active</string>
     <string name="aprs_log_view_title">APRS raw log</string>
     <string name="log_view_menu_clear">Clear log</string>
-
 </resources>

@@ -23,9 +23,5 @@ public class LogItemViewModel extends AndroidViewModel {
         return _logItemLiveData;
     }
 
-    public void insertLogItem(LogItem dataItem) {
-        _logItemRepository.insertLogItem(dataItem);
-    }
-
     public void deleteAllLogItems() { _logItemRepository.deleteAllLogItems(); }
 }

@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.tools.DateTools;
 
 public class LogItemHolder extends RecyclerView.ViewHolder {
     private final TextView logItemView;
@@ -17,8 +18,11 @@ public class LogItemHolder extends RecyclerView.ViewHolder {
         logItemView = itemView.findViewById(R.id.log_view_item);
     }
 
-    public void bind(String text) {
-        logItemView.setText(text);
+    public void bind(long timestamp, String srcCallsign, String text, boolean isTransmitting) {
+        logItemView.setText(String.format("%s %s\n%s",
+                DateTools.epochToIso8601(timestamp),
+                isTransmitting ? "TX" : "RX",
+                text));
     }
 
     static LogItemHolder create(ViewGroup parent) {
@@ -26,5 +30,4 @@ public class LogItemHolder extends RecyclerView.ViewHolder {
                 R.layout.activity_log_view_item, parent, false);
         return new LogItemHolder(view);
     }
-
 }

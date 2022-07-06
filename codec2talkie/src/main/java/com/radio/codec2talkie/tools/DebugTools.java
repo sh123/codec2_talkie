@@ -17,7 +17,7 @@ public class DebugTools {
 
     public static boolean isPrintableAscii(byte value)
     {
-        return (value > 32 ) && (value < 127);
+        return (value >= 32 ) && (value < 127);
     }
 
     public static String bytesToDebugString(byte[] buffer)
