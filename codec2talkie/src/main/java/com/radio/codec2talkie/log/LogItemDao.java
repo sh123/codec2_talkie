@@ -12,11 +12,11 @@ import java.util.List;
 public interface LogItemDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insertItem(LogItem logItem);
+    void insertLogItem(LogItem logItem);
 
     @Query("SELECT * FROM LogItem")
-    LiveData<List<LogItem>> getAllData();
+    LiveData<List<LogItem>> getAllLogItems();
 
     @Query("DELETE FROM LogItem")
-    void deleteAll();
+    void deleteAllLogItems();
 }

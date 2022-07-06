@@ -19,9 +19,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.log.LogItem;
+import com.radio.codec2talkie.log.LogItemDatabase;
 import com.radio.codec2talkie.protocol.ProtocolCallback;
 import com.radio.codec2talkie.protocol.Protocol;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
+import com.radio.codec2talkie.protocol.aprs.AprsCallsign;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.AudioTools;
@@ -236,6 +239,7 @@ public class AppWorker extends Thread {
         @Override
         protected void onReceiveLog(String logData) {
             Log.i(TAG, "RX: " + logData);
+            storeLogData(logData, false);
         }
 
         @Override
@@ -259,6 +263,7 @@ public class AppWorker extends Thread {
         @Override
         protected void onTransmitLog(String logData) {
             Log.i(TAG, "TX: " + logData);
+            storeLogData(logData, true);
         }
 
         @Override
@@ -273,6 +278,20 @@ public class AppWorker extends Thread {
             Log.e(TAG, "Protocol TX error");
         }
     };
+
+    void storeLogData(String logData, boolean isTransmit) {
+        // TODO, pass through aprs data
+        String[] callsignData = logData.split(">");
+        if (callsignData.length >= 2) {
+            LogItem logItem = new LogItem();
+            logItem.setTimestampEpoch(System.currentTimeMillis());
+            logItem.setSrcCallsign(callsignData[0]);
+            logItem.setLogLine(logData);
+            logItem.setIsTransmit(isTransmit);
+            Log.i(TAG, "Insert:" + logItem);
+            LogItemDatabase.getDatabase(_context).logItemDao().insertLogItem(logItem);
+        }
+    }
 
     private void restartListening() {
         cancelListening();

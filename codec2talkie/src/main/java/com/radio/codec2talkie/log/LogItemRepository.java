@@ -13,15 +13,17 @@ public class LogItemRepository {
 
     public LogItemRepository(Application application) {
         LogItemDatabase logItemDatabase = LogItemDatabase.getDatabase(application);
-        this._logItemDao = logItemDatabase.dataDAO();
-        this._logItemLiveData = _logItemDao.getAllData();
+        _logItemDao = logItemDatabase.logItemDao();
+        _logItemLiveData = _logItemDao.getAllLogItems();
     }
 
-    LiveData<List<LogItem>> getAllData() {
+    LiveData<List<LogItem>> getAllLogItems() {
         return _logItemLiveData;
     }
 
-    public void insert(LogItem logItem) {
-        _logItemDao.insertItem(logItem);
+    public void insertLogItem(LogItem logItem) {
+        LogItemDatabase.databaseWriteExecutor.execute(() -> {
+            _logItemDao.insertLogItem(logItem);
+        });
     }
 }

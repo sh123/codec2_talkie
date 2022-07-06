@@ -16,14 +16,14 @@ public class LogItemViewModel extends AndroidViewModel {
     public LogItemViewModel(@NonNull Application application) {
         super(application);
         _logItemRepository = new LogItemRepository(application);
-        _logItemLiveData = _logItemRepository.getAllData();
+        _logItemLiveData = _logItemRepository.getAllLogItems();
     }
 
     public LiveData<List<LogItem>> getAllData() {
         return _logItemLiveData;
     }
 
-    public void insertItem(LogItem dataItem) {
-        _logItemRepository.insert(dataItem);
+    public void insertLogItem(LogItem dataItem) {
+        _logItemRepository.insertLogItem(dataItem);
     }
 }

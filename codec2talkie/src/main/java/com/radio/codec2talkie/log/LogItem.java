@@ -10,6 +10,8 @@ public class LogItem {
     private long id;
     private long timestampEpoch;
     private String srcCallsign;
+    private String logLine;
+    private boolean isTransmit;
 
     public long getId() {
         return id;
@@ -23,6 +25,10 @@ public class LogItem {
         return srcCallsign;
     }
 
+    public String getLogLine() { return logLine; }
+
+    public boolean getIsTransmit() { return isTransmit; }
+
     public void setId(long id) {
         this.id = id;
     }
@@ -34,4 +40,8 @@ public class LogItem {
     public void setSrcCallsign(String srcCallsign) {
         this.srcCallsign = srcCallsign;
     }
+
+    public void setLogLine(String logLine) { this.logLine = logLine; }
+
+    public void setIsTransmit(boolean isTransmit) { this.isTransmit = isTransmit; }
 }
