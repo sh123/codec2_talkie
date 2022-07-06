@@ -175,7 +175,7 @@
             app:key="aprs_enable"
             app:title="@string/aprs_enable_title"
             app:summary="@string/aprs_enable_summary"
-            app:dependency="kiss_enable">
+            app:dependency="kiss_enable"
             app:defaultValue="true">
         </SwitchPreference>
 
@@ -183,7 +183,7 @@
             app:key="aprs_voax25_enable"
             app:title="@string/aprs_voax25_enable_title"
             app:summary="@string/aprs_voax25_enable_summary"
-            app:dependency="aprs_enable">
+            app:dependency="aprs_enable"
             app:defaultValue="true">
         </SwitchPreference>
 
