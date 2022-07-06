@@ -228,7 +228,7 @@
     <string name="menu_stop_tracking">Stop tracking</string>
     <string name="menu_send_position">Send position</string>
     <string name="voax25_label">&#9742;</string>
-    <string name="menu_aprs_log">View log</string>
+    <string name="menu_aprs_log">View raw log</string>
     <string name="aprs_location_emic_digipath_title">Mic-E digipath</string>
     <string name="aprs_location_source_smart_title">Smartbeaconing&#8482; position</string>
     <string name="aprs_location_source_smart_fast_speed_summary">Minimum speed for fast position updates</string>
@@ -248,5 +248,6 @@
     <string name="app_service_notif_title">Radio is running, touch to open</string>
     <string name="app_service_notif_text_ptt_ready">Receiving and ready for PTT</string>
     <string name="app_service_notif_text_tracking">APRS tracking is active</string>
+    <string name="aprs_log_view_title">APRS raw log</string>
 
 </resources>

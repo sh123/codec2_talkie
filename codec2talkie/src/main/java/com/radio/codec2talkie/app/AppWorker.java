@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.app;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioAttributes;
@@ -21,6 +22,7 @@ import java.util.TimerTask;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.log.LogItem;
 import com.radio.codec2talkie.log.LogItemDatabase;
+import com.radio.codec2talkie.log.LogItemRepository;
 import com.radio.codec2talkie.protocol.ProtocolCallback;
 import com.radio.codec2talkie.protocol.Protocol;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
@@ -66,6 +68,9 @@ public class AppWorker extends Thread {
     // listen timer
     private Timer _listenTimer;
 
+    // log integration
+    private final LogItemRepository _logItemRepository;
+
     private final Context _context;
     private final SharedPreferences _sharedPreferences;
 
@@ -84,6 +89,8 @@ public class AppWorker extends Thread {
 
         _processPeriodicTimer = new Timer();
         _recordAudioBuffer = new short[_protocol.getPcmAudioBufferSize()];
+
+        _logItemRepository = new LogItemRepository((Application)context);
 
         constructSystemAudioDevices();
     }
@@ -280,7 +287,7 @@ public class AppWorker extends Thread {
     };
 
     void storeLogData(String logData, boolean isTransmit) {
-        // TODO, pass through aprs data
+        // TODO, parse through aprs data
         String[] callsignData = logData.split(">");
         if (callsignData.length >= 2) {
             LogItem logItem = new LogItem();
@@ -289,7 +296,8 @@ public class AppWorker extends Thread {
             logItem.setLogLine(logData);
             logItem.setIsTransmit(isTransmit);
             Log.i(TAG, "Insert:" + logItem);
-            LogItemDatabase.getDatabase(_context).logItemDao().insertLogItem(logItem);
+            _logItemRepository.insertLogItem(logItem);
+            //LogItemDatabase.getDatabase(_context).logItemDao().insertLogItem(logItem);
         }
     }
 
