@@ -14,7 +14,7 @@ public class LogItemAdapter extends ListAdapter<LogItem, LogItemHolder> {
 
     @NonNull
     @Override
-    public LogItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public LogItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         return LogItemHolder.create(parent);
     }
 
