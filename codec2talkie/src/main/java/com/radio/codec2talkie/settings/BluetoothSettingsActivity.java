@@ -12,11 +12,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.ParcelUuid;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
@@ -54,6 +56,9 @@ public class BluetoothSettingsActivity extends AppCompatActivity {
 
         findViewById(R.id.progressBarBt).setVisibility(View.INVISIBLE);
         findViewById(R.id.textViewConnectingBt).setVisibility(View.INVISIBLE);
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         populateBondedDevices();
     }
@@ -101,4 +106,15 @@ public class BluetoothSettingsActivity extends AppCompatActivity {
             finish();
         }
     };
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

@@ -2,6 +2,7 @@ package com.radio.codec2talkie.connect;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
@@ -16,6 +17,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -56,6 +58,9 @@ public class BluetoothConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_connect);
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         _btDefaultName = sharedPreferences.getString(PreferenceKeys.PORTS_BT_CLIENT_NAME, null);
 
@@ -92,6 +97,17 @@ public class BluetoothConnectActivity extends AppCompatActivity {
             _enableBtLauncher.launch(enableBtIntent);
             Toast.makeText(getApplicationContext(), getString(R.string.bt_turned_on), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private final ActivityResultLauncher<Intent> _enableBtLauncher = registerForActivityResult(

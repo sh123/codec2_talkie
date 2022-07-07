@@ -11,10 +11,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
@@ -54,6 +56,9 @@ public class UsbConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_usb_connect);
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         _baudRate = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_USB_SERIAL_SPEED, String.valueOf(USB_BAUD_RATE_DEFAULT)));
         _dataBits = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_USB_DATA_BITS, String.valueOf(USB_DATA_BITS_DEFAULT)));
@@ -68,6 +73,17 @@ public class UsbConnectActivity extends AppCompatActivity {
                 .setDuration(300)
                 .start();
         connectUsb();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private UsbSerialProber getCustomProber() {

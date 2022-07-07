@@ -9,10 +9,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.view.KeyEvent;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
@@ -49,6 +51,9 @@ public class TcpIpConnectActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tcp_ip_connect);
 
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         _address = sharedPreferences.getString(PreferenceKeys.PORTS_TCP_IP_ADDRESS, DEFAULT_ADDRESS);
         _port = sharedPreferences.getString(PreferenceKeys.PORTS_TCP_IP_PORT, DEFAULT_PORT);
@@ -60,7 +65,19 @@ public class TcpIpConnectActivity extends AppCompatActivity {
         ObjectAnimator.ofInt(progressBarTcpIp, "progress", 10)
                 .setDuration(300)
                 .start();
+
         connectSocket();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void connectSocket() {
