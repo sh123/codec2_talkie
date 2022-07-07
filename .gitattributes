@@ -1,4 +1,2 @@
-*.c linguist-detectable=false
-*.h linguist-detectable=false
-*.m linguist-detectable=false
-Makefile linguist-generated=true
+*.* linguist-detectable=false
+*.java linguist-detectable=true
