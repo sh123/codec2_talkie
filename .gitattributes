@@ -1,2 +1,2 @@
-*.* linguist-detectable=false
-*.java linguist-detectable=true
+* linguist-vendored
+*.java linguist-vendored=false
