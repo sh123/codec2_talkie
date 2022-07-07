@@ -206,7 +206,7 @@ public class RecorderActivity extends AppCompatActivity {
         int itemId = item.getItemId();
 
         if (itemId == android.R.id.home) {
-            finish();
+            onBackPressed();
             return true;
         }
         else if (itemId == R.id.recorder_play_all) {
