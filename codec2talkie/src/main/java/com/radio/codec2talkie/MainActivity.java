@@ -603,7 +603,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case EV_DISCONNECTED:
                     _btnPtt.setText(R.string.main_status_stop);
-                    Toast.makeText(getBaseContext(), R.string.processor_disconnected, Toast.LENGTH_SHORT).show();
                     unbindAppService();
                     stopAppService();
                     // finish and start ourselves on app exit
@@ -615,6 +614,7 @@ public class MainActivity extends AppCompatActivity {
                         finish();
                     // otherwise just restart app service with reconnect
                     } else {
+                        Toast.makeText(getBaseContext(), R.string.processor_disconnected, Toast.LENGTH_SHORT).show();
                         startTransportConnection();
                     }
                     break;
