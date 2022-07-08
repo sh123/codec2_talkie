@@ -251,4 +251,5 @@
     <string name="app_service_notif_connection_lost">Disconnected from the TNC, click to reconnect</string>
     <string name="aprs_log_view_title">APRS raw log</string>
     <string name="log_view_menu_clear">Clear log</string>
+    <string name="tracking_label">&#8693;</string>
 </resources>

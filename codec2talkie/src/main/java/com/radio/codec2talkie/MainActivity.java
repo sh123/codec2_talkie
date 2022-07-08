@@ -13,7 +13,6 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
-import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -389,15 +388,10 @@ public class MainActivity extends AppCompatActivity {
     private void startAppService(TransportFactory.TransportType transportType) {
         Log.i(TAG, "Starting app service processing: " + transportType.toString());
 
-        String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
-
         ProtocolFactory.ProtocolType protocolType = ProtocolFactory.getBaseProtocolType(getApplicationContext());
         _btnPtt.setEnabled(protocolType != ProtocolFactory.ProtocolType.KISS_PARROT);
 
-        String statusLine = AudioTools.getSpeedStatusText(codec2ModeName, _sharedPreferences) +
-                ", " +
-                getFeatureStatusText(protocolType);
-        _textCodecMode.setText(statusLine);
+        updateStatusText(protocolType);
 
         Intent serviceIntent = new Intent(this, AppService.class);
         serviceIntent.putExtra("transportType", transportType);
@@ -415,7 +409,9 @@ public class MainActivity extends AppCompatActivity {
         stopService(new Intent(this, AppService.class));
     }
 
-    private String getFeatureStatusText(ProtocolFactory.ProtocolType protocolType) {
+    private void updateStatusText(ProtocolFactory.ProtocolType protocolType) {
+        String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
+
         // protocol
         String status = "";
 
@@ -443,29 +439,36 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if (status.length() == 0) {
-            return protocolType.toString();
+        if (_appService != null) {
+            boolean isTracking = _appService.isTracking();
+            if (isTracking) {
+                status += getString(R.string.tracking_label);
+            }
         }
-        return protocolType.toString() + " " + status;
+
+        status = status.length() == 0 ? protocolType.toString() : protocolType.toString() + " " + status;
+
+        String statusLine = AudioTools.getSpeedStatusText(codec2ModeName, _sharedPreferences) + ", " + status;
+        _textCodecMode.setText(statusLine);
     }
 
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_appService != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
-            Toast.makeText(MainActivity.this, R.string.bt_disconnected, Toast.LENGTH_LONG).show();
-            _appService.stopRunning();
-        }
+            if (_appService != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
+                Toast.makeText(MainActivity.this, R.string.bt_disconnected, Toast.LENGTH_LONG).show();
+                _appService.stopRunning();
+            }
         }
     };
 
     private final BroadcastReceiver onUsbDetached = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_appService != null && UsbPortHandler.getPort() != null && !_isTestMode) {
-            Toast.makeText(MainActivity.this, R.string.usb_detached, Toast.LENGTH_LONG).show();
-            _appService.stopRunning();
-        }
+            if (_appService != null && UsbPortHandler.getPort() != null && !_isTestMode) {
+                Toast.makeText(MainActivity.this, R.string.usb_detached, Toast.LENGTH_LONG).show();
+                _appService.stopRunning();
+            }
         }
     };
 
@@ -531,6 +534,7 @@ public class MainActivity extends AppCompatActivity {
                 _appService.startTracking();
                 item.setTitle(R.string.menu_stop_tracking);
             }
+            updateStatusText(ProtocolFactory.getBaseProtocolType(getApplicationContext()));
             return true;
         }
         else if (itemId == R.id.messages) {
