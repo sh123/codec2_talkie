@@ -45,8 +45,11 @@ public final class PreferenceKeys {
 
     public static String APP_VOLUME_PTT = "app_volume_ptt";
     public static String APP_KEEP_SCREEN_ON = "app_keep_screen_on";
+    public static String APP_NO_LOCK = "app_no_lock";
+    public static String APP_TURN_SCREEN_ON = "app_turn_screen_on";
     public static String APP_AUDIO_OUTPUT_SPEAKER = "app_audio_output_speaker";
     public static String APP_AUDIO_INPUT_VOICE_COMMUNICATION = "app_audio_input_voice_communication";
+    public static String APP_NOTIFICATIONS_VOICE = "app_notifications_voice";
 
     public static String APRS_ENABLED = "aprs_enable";
     public static String APRS_VOAX25_ENABLE = "aprs_voax25_enable";

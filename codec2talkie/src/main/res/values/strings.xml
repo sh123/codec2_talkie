@@ -245,11 +245,19 @@
     <string name="aprs_location_source_smart_min_turn_angle_summary">Minimum angle at high speed</string>
     <string name="aprs_location_source_smart_turn_slope_title">Turn slope</string>
     <string name="aprs_location_source_smart_min_turn_slope_summary">Influence of speed on the minimum angle</string>
-    <string name="app_service_notif_title">Running, touch to open</string>
+    <string name="app_service_notif_title">Codec2Talkie is running, touch to open</string>
     <string name="app_service_notif_text_ptt_ready">Connected to the TNC, ready for PTT</string>
     <string name="app_service_notif_text_tracking">APRS tracking is active</string>
     <string name="app_service_notif_connection_lost">Disconnected from the TNC, click to reconnect</string>
     <string name="aprs_log_view_title">APRS raw log</string>
     <string name="log_view_menu_clear">Clear log</string>
     <string name="tracking_label">&#8693;</string>
+    <string name="app_notifications_voice_enable_title">Enable incoming voice notifications</string>
+    <string name="app_notifications_voice_enable_summary">Show pop-up notification on incoming voice transmission when app is invisible</string>
+    <string name="app_notifications_voice_title">Incoming voice transmission</string>
+    <string name="app_notifications_voice_summary">Click to open and reply</string>
+    <string name="app_no_lock_title">Disable lock screen</string>
+    <string name="app_no_lock_summary">Run above the lock screen</string>
+    <string name="app_turn_screen_on_title">Turn screen ON automatically</string>
+    <string name="app_turn_screen_on_summary">Turn screen ON automatically on incoming transmissions</string>
 </resources>

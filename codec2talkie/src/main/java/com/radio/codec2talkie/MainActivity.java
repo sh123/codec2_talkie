@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
     private Button _btnPtt;
     private Menu _menu;
 
-    private boolean _isPaused = false;
+    public static boolean isPaused = false;
     private boolean _isConnecting = false;
     private boolean _isAppExit = false;
     private boolean _isAppRestart = false;
@@ -169,9 +169,15 @@ public class MainActivity extends AppCompatActivity {
             frameRssi.setVisibility(View.GONE);
         }
 
-        // screen always on
+        // screen always on / auto turn screen on / run above app lock
         if (_sharedPreferences.getBoolean(PreferenceKeys.APP_KEEP_SCREEN_ON, false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+        if (_sharedPreferences.getBoolean(PreferenceKeys.APP_TURN_SCREEN_ON, false)) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        }
+        if (_sharedPreferences.getBoolean(PreferenceKeys.APP_NO_LOCK, false)) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         }
 
         _isAppRestart = false;
@@ -210,14 +216,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         Log.i(TAG, "onPause()");
-        _isPaused = true;
+        isPaused = true;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Log.i(TAG, "onResume()");
-        _isPaused = false;
+        isPaused = false;
         if (!AppService.isRunning && !_isConnecting) {
             _btnPtt.setEnabled(false);
             startTransportConnection();
@@ -489,7 +495,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateMenuItems() {
-        if (AppService.isRunning & _menu != null) {
+        if (AppService.isRunning & _menu != null && _appService != null) {
             MenuItem item = _menu.findItem(R.id.start_tracking);
             if (_appService.isTracking()) {
                 item.setTitle(R.string.menu_stop_tracking);
@@ -694,7 +700,7 @@ public class MainActivity extends AppCompatActivity {
                         stopAppService();
                         finish();
                     // otherwise just reconnect if app is not on pause
-                    } else if (!_isPaused) {
+                    } else if (!isPaused) {
                         Toast.makeText(getBaseContext(), R.string.processor_disconnected, Toast.LENGTH_SHORT).show();
                         startTransportConnection();
                     }
