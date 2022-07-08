@@ -2,7 +2,7 @@
 ![APK](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.radio.codec2talkie)
 
 # Introduction
-**Turn your Android phone into real Amateur Radio VHF/UHF APRS enabled Codec2 DV (digital voice) handheld transceiver. Requires additional digital radio hardware or software (e.g. Direwolf) modem**
+**Turn your Android phone into real Amateur Radio VHF/UHF APRS enabled Codec2 DV (digital voice) handheld transceiver. Requires additional digital radio hardware or software (e.g. Direwolf) modem.**
 
 For more information visit project [Wiki](https://github.com/sh123/codec2_talkie/wiki)
 
