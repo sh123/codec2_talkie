@@ -252,10 +252,10 @@
     <string name="aprs_log_view_title">APRS raw log</string>
     <string name="log_view_menu_clear">Clear log</string>
     <string name="tracking_label">&#8693;</string>
-    <string name="app_notifications_voice_enable_title">Enable incoming voice notifications</string>
-    <string name="app_notifications_voice_enable_summary">Show pop-up notification on incoming voice transmission when app is invisible</string>
-    <string name="app_notifications_voice_title">Incoming voice transmission</string>
-    <string name="app_notifications_voice_summary">Click to open and reply</string>
+    <string name="app_notifications_voice_enable_title">Enable incoming notifications</string>
+    <string name="app_notifications_voice_enable_summary">Show pop-up notification on incoming transmission when app is invisible</string>
+    <string name="app_notifications_voice_title">Incoming transmission</string>
+    <string name="app_notifications_voice_summary">Click to open and react</string>
     <string name="app_no_lock_title">Disable lock screen</string>
     <string name="app_no_lock_summary">Run above the lock screen</string>
     <string name="app_turn_screen_on_title">Turn screen ON automatically</string>
