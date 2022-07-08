@@ -145,6 +145,10 @@ public class AppWorker extends Thread {
         return AUDIO_MAX_LEVEL;
     }
 
+    public String getTransportName() {
+        return _transport.name();
+    }
+
     public void startReceive() {
         _needsRecording = false;
     }
@@ -295,9 +299,7 @@ public class AppWorker extends Thread {
             logItem.setSrcCallsign(callsignData[0]);
             logItem.setLogLine(logData);
             logItem.setIsTransmit(isTransmit);
-            Log.i(TAG, "Insert:" + logItem);
             _logItemRepository.insertLogItem(logItem);
-            //LogItemDatabase.getDatabase(_context).logItemDao().insertLogItem(logItem);
         }
     }
 

@@ -13,15 +13,22 @@ public class TcpIp implements Transport {
     private final int RX_TIMEOUT = 10;
 
     private final Socket _socket;
+    private final String _name;
 
     private final InputStream _inputStream;
     private final OutputStream _outputStream;
 
-    public TcpIp(Socket socket) throws IOException {
+    public TcpIp(Socket socket, String name) throws IOException {
         _socket = socket;
         _socket.setSoTimeout(RX_TIMEOUT);
         _inputStream = _socket.getInputStream();
         _outputStream = _socket.getOutputStream();
+        _name = name;
+    }
+
+    @Override
+    public String name() {
+        return _name;
     }
 
     @Override

@@ -217,6 +217,7 @@ public class BleConnectActivity extends AppCompatActivity {
             } else {
                 toastMsg = getString(R.string.bt_le_services_discovered);
                 BleHandler.setGatt(_btGatt);
+                BleHandler.setName(_btSelectedName);
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("name", _btSelectedName);
                 setResult(Activity.RESULT_OK, resultIntent);

@@ -13,9 +13,16 @@ public class UsbSerial implements Transport {
     private final int TX_TIMEOUT = 2000;
 
     private final UsbSerialPort _usbPort;
+    private final String _name;
 
-    public UsbSerial(UsbSerialPort usbPort) {
+    public UsbSerial(UsbSerialPort usbPort, String name) {
         _usbPort = usbPort;
+        _name = name;
+    }
+
+    @Override
+    public String name() {
+        return _name;
     }
 
     @Override

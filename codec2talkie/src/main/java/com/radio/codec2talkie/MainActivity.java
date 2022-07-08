@@ -103,7 +103,10 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar _progressAudioLevel;
     private ProgressBar _progressRssi;
     private Button _btnPtt;
+    private Menu _menu;
 
+    public static boolean isPaused = false;
+    private boolean _isConnecting = false;
     private boolean _isAppExit = false;
     private boolean _isAppRestart = false;
 
@@ -112,8 +115,8 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate()");
 
         // title
         String appName = getResources().getString(R.string.app_name);
@@ -142,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
 
         // PTT button
         _btnPtt = findViewById(R.id.btnPtt);
+        _btnPtt.setEnabled(false);
         _btnPtt.setOnTouchListener(onBtnPttTouchListener);
 
         _textCodecMode = findViewById(R.id.codecMode);
@@ -165,24 +169,69 @@ public class MainActivity extends AppCompatActivity {
             frameRssi.setVisibility(View.GONE);
         }
 
-        // screen always on
+        // screen always on / auto turn screen on / run above app lock
         if (_sharedPreferences.getBoolean(PreferenceKeys.APP_KEEP_SCREEN_ON, false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+        if (_sharedPreferences.getBoolean(PreferenceKeys.APP_TURN_SCREEN_ON, false)) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+        }
+        if (_sharedPreferences.getBoolean(PreferenceKeys.APP_NO_LOCK, false)) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         }
 
         _isAppRestart = false;
         _isAppExit = false;
+
         startTransportConnection();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i(TAG, "onStart()");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i(TAG, "onStop()");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.i(TAG, "onRestart()");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.i(TAG, "onDestroy()");
         unregisterReceiver(onBluetoothDisconnected);
         unregisterReceiver(onUsbDetached);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause()");
+        isPaused = true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume()");
+        isPaused = false;
+        if (!AppService.isRunning && !_isConnecting) {
+            _btnPtt.setEnabled(false);
+            startTransportConnection();
+        }
+    }
+
     private void exitApplication() {
+        Log.i(TAG, "exitApplication()");
         _isAppExit = true;
         if (_appService != null) {
             _appService.stopRunning();
@@ -190,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void restartApplication() {
+        Log.i(TAG, "restartApplication()");
         _isAppRestart = true;
         if (_appService != null) {
             _appService.stopRunning();
@@ -197,8 +247,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startTransportConnection() {
-        Log.i(TAG, "Starting transport connection");
-        if (_isTestMode) {
+        Log.i(TAG, "startTransportConnection()");
+        if (AppService.isRunning) {
+            startAppService(AppService.transportType);
+        } else if (_isTestMode) {
             _textConnInfo.setText(R.string.main_status_loopback_test);
             startAppService(TransportFactory.TransportType.LOOPBACK);
         } else if (requestPermissions()) {
@@ -227,6 +279,7 @@ public class MainActivity extends AppCompatActivity {
     );
 
     protected void startUsbConnectActivity() {
+        _isConnecting = true;
         _usbActivityLauncher.launch(new Intent(this, UsbConnectActivity.class));
     }
 
@@ -252,6 +305,7 @@ public class MainActivity extends AppCompatActivity {
     );
 
     protected void startBluetoothConnectActivity() {
+        _isConnecting = true;
         Intent bluetoothConnectIntent;
         if (_isBleEnabled) {
             bluetoothConnectIntent = new Intent(this, BleConnectActivity.class);
@@ -279,6 +333,7 @@ public class MainActivity extends AppCompatActivity {
     );
 
     protected void startTcpIpConnectActivity() {
+        _isConnecting = true;
         _tcpipActivityLauncher.launch(new Intent(this, TcpIpConnectActivity.class));
     }
 
@@ -339,15 +394,10 @@ public class MainActivity extends AppCompatActivity {
     private void startAppService(TransportFactory.TransportType transportType) {
         Log.i(TAG, "Starting app service processing: " + transportType.toString());
 
-        String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
-
         ProtocolFactory.ProtocolType protocolType = ProtocolFactory.getBaseProtocolType(getApplicationContext());
         _btnPtt.setEnabled(protocolType != ProtocolFactory.ProtocolType.KISS_PARROT);
 
-        String statusLine = AudioTools.getSpeedStatusText(codec2ModeName, _sharedPreferences) +
-                ", " +
-                getFeatureStatusText(protocolType);
-        _textCodecMode.setText(statusLine);
+        updateStatusText(protocolType);
 
         Intent serviceIntent = new Intent(this, AppService.class);
         serviceIntent.putExtra("transportType", transportType);
@@ -357,6 +407,7 @@ public class MainActivity extends AppCompatActivity {
             startForegroundService(serviceIntent);
         else
             startService(serviceIntent);
+
         bindAppService();
     }
 
@@ -364,7 +415,9 @@ public class MainActivity extends AppCompatActivity {
         stopService(new Intent(this, AppService.class));
     }
 
-    private String getFeatureStatusText(ProtocolFactory.ProtocolType protocolType) {
+    private void updateStatusText(ProtocolFactory.ProtocolType protocolType) {
+        String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
+
         // protocol
         String status = "";
 
@@ -392,29 +445,36 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if (status.length() == 0) {
-            return protocolType.toString();
+        if (_appService != null) {
+            boolean isTracking = _appService.isTracking();
+            if (isTracking) {
+                status += getString(R.string.tracking_label);
+            }
         }
-        return protocolType.toString() + " " + status;
+
+        status = status.length() == 0 ? protocolType.toString() : protocolType.toString() + " " + status;
+
+        String statusLine = AudioTools.getSpeedStatusText(codec2ModeName, _sharedPreferences) + ", " + status;
+        _textCodecMode.setText(statusLine);
     }
 
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_appService != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
-            Toast.makeText(MainActivity.this, R.string.bt_disconnected, Toast.LENGTH_LONG).show();
-            _appService.stopRunning();
-        }
+            if (_appService != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
+                Toast.makeText(MainActivity.this, R.string.bt_disconnected, Toast.LENGTH_LONG).show();
+                _appService.stopRunning();
+            }
         }
     };
 
     private final BroadcastReceiver onUsbDetached = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_appService != null && UsbPortHandler.getPort() != null && !_isTestMode) {
-            Toast.makeText(MainActivity.this, R.string.usb_detached, Toast.LENGTH_LONG).show();
-            _appService.stopRunning();
-        }
+            if (_appService != null && UsbPortHandler.getPort() != null && !_isTestMode) {
+                Toast.makeText(MainActivity.this, R.string.usb_detached, Toast.LENGTH_LONG).show();
+                _appService.stopRunning();
+            }
         }
     };
 
@@ -429,7 +489,20 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuCompat.setGroupDividerEnabled(menu, true);
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        _menu = menu;
+        updateMenuItems();
         return true;
+    }
+
+    private void updateMenuItems() {
+        if (AppService.isRunning & _menu != null && _appService != null) {
+            MenuItem item = _menu.findItem(R.id.start_tracking);
+            if (_appService.isTracking()) {
+                item.setTitle(R.string.menu_stop_tracking);
+            } else {
+                item.setTitle(R.string.menu_start_tracking);
+            }
+        }
     }
 
     @Override
@@ -467,6 +540,7 @@ public class MainActivity extends AppCompatActivity {
                 _appService.startTracking();
                 item.setTitle(R.string.menu_stop_tracking);
             }
+            updateStatusText(ProtocolFactory.getBaseProtocolType(getApplicationContext()));
             return true;
         }
         else if (itemId == R.id.messages) {
@@ -585,6 +659,10 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName className, IBinder service) {
             Log.i(TAG, "Connected to app service");
             _appService = ((AppService.AppServiceBinder)service).getService();
+            if (AppService.isRunning) {
+                _textConnInfo.setText(_appService.getTransportName());
+                updateMenuItems();
+            }
         }
 
         @Override
@@ -599,21 +677,30 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (AppMessage.values()[msg.what]) {
                 case EV_CONNECTED:
+                    Log.i(TAG, "EV_CONNECTED");
+                    updateMenuItems();
+                    _isConnecting = false;
+                    _btnPtt.setEnabled(true);
                     Toast.makeText(getBaseContext(), R.string.processor_connected, Toast.LENGTH_SHORT).show();
                     break;
                 case EV_DISCONNECTED:
+                    Log.i(TAG, "EV_DISCONNECTED");
+                    updateMenuItems();
                     _btnPtt.setText(R.string.main_status_stop);
-                    unbindAppService();
-                    stopAppService();
-                    // finish and start ourselves on app exit
+                    _btnPtt.setEnabled(false);
+                    // app restart, stop app service and restart ourselves
                     if (_isAppRestart) {
+                        unbindAppService();
+                        stopAppService();
                         finish();
                         startActivity(getIntent());
-                    // finish ourselves on app exist
+                    // app exit, stop app service and finish
                     } else if (_isAppExit) {
+                        unbindAppService();
+                        stopAppService();
                         finish();
-                    // otherwise just restart app service with reconnect
-                    } else {
+                    // otherwise just reconnect if app is not on pause
+                    } else if (!isPaused) {
                         Toast.makeText(getBaseContext(), R.string.processor_disconnected, Toast.LENGTH_SHORT).show();
                         startTransportConnection();
                     }

@@ -19,6 +19,11 @@ public class Loopback implements Transport {
     }
 
     @Override
+    public String name() {
+        return "ECHO TEST";
+    }
+
+    @Override
     public int read(byte[] data) {
         if (!_isReading) {
             _isReading = true;

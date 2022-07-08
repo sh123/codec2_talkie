@@ -20,6 +20,21 @@
         </SwitchPreference>
 
         <SwitchPreference
+            app:key="app_no_lock"
+            app:title="@string/app_no_lock_title"
+            app:summary="@string/app_no_lock_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <SwitchPreference
+            app:key="app_turn_screen_on"
+            app:title="@string/app_turn_screen_on_title"
+            app:summary="@string/app_turn_screen_on_summary"
+            app:dependency="app_no_lock"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <SwitchPreference
             app:key="app_audio_output_speaker"
             app:title="@string/app_audio_output_speaker_title"
             app:summary="@string/app_audio_output_speaker_summary"
@@ -30,6 +45,13 @@
             app:key="app_audio_input_voice_communication"
             app:title="@string/app_audio_input_voice_communication_title"
             app:summary="@string/app_audio_input_voice_communication_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <SwitchPreference
+            app:key="app_notifications_voice"
+            app:title="@string/app_notifications_voice_enable_title"
+            app:summary="@string/app_notifications_voice_enable_summary"
             app:defaultValue="false">
         </SwitchPreference>
     </PreferenceCategory>

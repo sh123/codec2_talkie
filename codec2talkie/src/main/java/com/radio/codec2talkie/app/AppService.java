@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
@@ -37,14 +38,20 @@ import java.io.IOException;
 
 public class AppService extends Service {
 
+    public static TransportFactory.TransportType transportType;
+    public static boolean isRunning = false;
+
     private static final String TAG = AppService.class.getSimpleName();
 
-    private final int NOTIFICATION_ID = 1;
+    private final int SERVICE_NOTIFICATION_ID = 1;
+    private final int VOICE_NOTIFICATION_ID = 2;
 
     private AppWorker _appWorker;
     private Messenger _callbackMessenger;
     private Tracker _tracker;
     private NotificationManager _notificationManager;
+
+    private boolean _voiceNotificationsEnabled = false;
 
     private final IBinder _binder  = new AppServiceBinder();
 
@@ -54,12 +61,22 @@ public class AppService extends Service {
         }
     }
 
+    public String getTransportName() {
+        if (_appWorker != null) {
+            return _appWorker.getTransportName();
+        } else {
+            return "";
+        }
+    }
+
     public void startTransmit() {
-        _appWorker.startTransmit();
+        if (_appWorker != null)
+            _appWorker.startTransmit();
     }
 
     public void startReceive() {
-        _appWorker.startReceive();
+        if (_appWorker != null)
+            _appWorker.startReceive();
     }
 
     public void sendPosition() {
@@ -67,23 +84,23 @@ public class AppService extends Service {
     }
 
     public void startTracking() {
-        showNotification(R.string.app_service_notif_text_tracking);
+        showServiceNotification(R.string.app_service_notif_text_tracking, R.drawable.ic_app_action);
         _tracker.startTracking();
     }
 
     public void stopTracking() {
-        showNotification(R.string.app_service_notif_text_ptt_ready);
+        showServiceNotification(R.string.app_service_notif_text_ptt_ready, R.drawable.ic_app_action);
         _tracker.stopTracking();
     }
 
     public boolean isTracking() {
+        if (_tracker == null) return false;
         return _tracker.isTracking();
     }
 
     public void stopRunning() {
-        if (_appWorker != null) {
+        if (_appWorker != null)
             _appWorker.stopRunning();
-        }
     }
 
     @Override
@@ -108,31 +125,35 @@ public class AppService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "Staring app service");
+        Log.i(TAG, "onStartCommand()");
 
         // update callback from new intent
         Bundle extras = intent.getExtras();
         _callbackMessenger = (Messenger) extras.get("callback");
 
         // create if not running
-        if (_appWorker == null) {
+        if (isRunning) {
+            Log.i(TAG, "Not starting app service, already running");
+        } else {
             _notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             assert _notificationManager != null;
             SharedPreferences _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+            _voiceNotificationsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APP_NOTIFICATIONS_VOICE, false);
+
             String trackerName = _sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE, "manual");
             _tracker = TrackerFactory.create(trackerName);
-            _tracker.initialize(getApplicationContext(), position -> _appWorker.sendPosition(position));
+            _tracker.initialize(getApplicationContext(), position -> { if (_appWorker != null) _appWorker.sendPosition(position); });
 
-            TransportFactory.TransportType transportType = (TransportFactory.TransportType) extras.get("transportType");
+            transportType = (TransportFactory.TransportType) extras.get("transportType");
             startAppWorker(transportType);
 
-            Notification notification = buildNotification(getString(R.string.app_service_notif_text_ptt_ready));
-            startForeground(NOTIFICATION_ID, notification);
+            Notification notification = buildNotification(getString(R.string.app_service_notif_text_ptt_ready), R.drawable.ic_app_action);
+            startForeground(SERVICE_NOTIFICATION_ID, notification);
+
+            isRunning = true;
 
             Log.i(TAG, "App service started");
-        } else {
-            Log.i(TAG, "App service is already running");
         }
 
         return START_REDELIVER_INTENT;
@@ -170,7 +191,17 @@ public class AppService extends Service {
 
                 switch (AppMessage.values()[msg.what]) {
                     case EV_DISCONNECTED:
+                        isRunning = false;
                         _appWorker = null;
+                        _tracker.stopTracking();
+                        showServiceNotification(R.string.app_service_notif_connection_lost, R.drawable.ic_app_action_disconnected);
+                        break;
+                    case EV_PLAYING:
+                    case EV_RECEIVING:
+                        showVoiceNotification(R.string.app_notifications_voice_title, R.string.app_notifications_voice_summary);
+                        break;
+                    case EV_LISTENING:
+                        hideVoiceNotification();
                         break;
                     default:
                         break;
@@ -181,38 +212,45 @@ public class AppService extends Service {
         }
     };
 
-    private void showNotification(int resId) {
+    private void showServiceNotification(int resId, int iconResId) {
         String text = getString(resId);
-        _notificationManager.notify(NOTIFICATION_ID, buildNotification(text));
+        _notificationManager.notify(SERVICE_NOTIFICATION_ID, buildNotification(text, iconResId));
+    }
+
+    private void showVoiceNotification(int titleResId, int textResId) {
+        if (!MainActivity.isPaused || !_voiceNotificationsEnabled) return;
+        String title = getString(titleResId);
+        String text = getString(textResId);
+        _notificationManager.notify(VOICE_NOTIFICATION_ID, buildFullScreenNotification(title, text));
+    }
+
+    private void hideVoiceNotification() {
+        if (!_voiceNotificationsEnabled) return;
+        _notificationManager.cancel(VOICE_NOTIFICATION_ID);
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private String createNotificationChannel() {
-        String channelId = "alpha";
-        String channelName = "Service";
+    private String createNotificationChannel(String channelId, String channelName, int importance) {
         NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW);
-        channel.setImportance(NotificationManager.IMPORTANCE_LOW);
+        channel.setImportance(importance);
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         _notificationManager.createNotificationChannel(channel);
         return channelId;
     }
 
-    private Notification buildNotification(String text) {
+    private Notification buildNotification(String text, int iconResId) {
         String channelId = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            channelId = createNotificationChannel();
+            channelId = createNotificationChannel("alpha", "Service", NotificationManager.IMPORTANCE_LOW);
 
         Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent intent = PendingIntent.getActivity(getApplicationContext(), 0,
                 notificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(
-                this, channelId);
-        return notificationBuilder
+        return new NotificationCompat.Builder(this, channelId)
                 .setOngoing(true)
-                .setSmallIcon(R.drawable.ic_app_action)
+                .setSmallIcon(iconResId)
                 .setContentTitle(getString(R.string.app_service_notif_title))
                 .setContentText(text)
                 .setPriority(NotificationManagerCompat.IMPORTANCE_LOW)
@@ -220,6 +258,27 @@ public class AppService extends Service {
                 .setChannelId(channelId)
                 .setContentIntent(intent)
                 .setOnlyAlertOnce(true)
+                .build();
+    }
+
+    private Notification buildFullScreenNotification(String title, String text) {
+        String channelId = "";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            channelId = createNotificationChannel("beta", "Voice", NotificationManager.IMPORTANCE_HIGH);
+
+        Intent fullScreenIntent = new Intent(this, MainActivity.class);
+        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
+                fullScreenIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+        return new NotificationCompat.Builder(this, channelId)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setSmallIcon(R.drawable.ic_app_action)
+                .setChannelId(channelId)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_CALL)
+                .setFullScreenIntent(fullScreenPendingIntent, true)
+                .setAutoCancel(true)
                 .build();
     }
 }
