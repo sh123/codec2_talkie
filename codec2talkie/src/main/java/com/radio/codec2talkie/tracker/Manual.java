@@ -48,16 +48,20 @@ public class Manual implements Tracker {
     @Override
     public void startTracking() {
         sendPosition();
+        restartTracking();
+        _isTracking = true;
+    }
+
+    private void restartTracking() {
         _sendTimer = new Timer();
         _sendTimer.schedule(new TimerTask() {
             @Override
             public void run() {
                 if (_autoSendEnabled)
                     sendPosition();
-                startTracking();
+                restartTracking();
             }
         }, UnitTools.minutesToMillis(_updateIntervalMinutes));
-        _isTracking = true;
     }
 
     @Override

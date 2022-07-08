@@ -91,6 +91,7 @@ public class AppService extends Service {
     }
 
     public boolean isTracking() {
+        Log.i(TAG, "Tracking:" + _tracker.isTracking());
         return _tracker.isTracking();
     }
 
@@ -185,8 +186,9 @@ public class AppService extends Service {
 
                 switch (AppMessage.values()[msg.what]) {
                     case EV_DISCONNECTED:
-                        _appWorker = null;
                         isRunning = false;
+                        _appWorker = null;
+                        _tracker.stopTracking();
                         showNotification(R.string.app_service_notif_connection_lost, R.drawable.ic_app_action_disconnected);
                         break;
                     default:

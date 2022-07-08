@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar _progressAudioLevel;
     private ProgressBar _progressRssi;
     private Button _btnPtt;
+    private Menu _menu;
 
     private boolean _isPaused = false;
     private boolean _isConnecting = false;
@@ -479,15 +480,20 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuCompat.setGroupDividerEnabled(menu, true);
         getMenuInflater().inflate(R.menu.main_menu, menu);
-        if (AppService.isRunning) {
-            MenuItem item = menu.findItem(R.id.start_tracking);
+        _menu = menu;
+        updateMenuItems();
+        return true;
+    }
+
+    private void updateMenuItems() {
+        if (AppService.isRunning & _menu != null) {
+            MenuItem item = _menu.findItem(R.id.start_tracking);
             if (_appService.isTracking()) {
                 item.setTitle(R.string.menu_stop_tracking);
             } else {
                 item.setTitle(R.string.menu_start_tracking);
             }
         }
-        return true;
     }
 
     @Override
@@ -645,6 +651,7 @@ public class MainActivity extends AppCompatActivity {
             _appService = ((AppService.AppServiceBinder)service).getService();
             if (AppService.isRunning) {
                 _textConnInfo.setText(_appService.getTransportName());
+                updateMenuItems();
             }
         }
 
@@ -660,11 +667,15 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (AppMessage.values()[msg.what]) {
                 case EV_CONNECTED:
+                    Log.i(TAG, "EV_CONNECTED");
+                    updateMenuItems();
                     _isConnecting = false;
                     _btnPtt.setEnabled(true);
                     Toast.makeText(getBaseContext(), R.string.processor_connected, Toast.LENGTH_SHORT).show();
                     break;
                 case EV_DISCONNECTED:
+                    Log.i(TAG, "EV_DISCONNECTED");
+                    updateMenuItems();
                     _btnPtt.setText(R.string.main_status_stop);
                     _btnPtt.setEnabled(false);
                     // app restart, stop app service and restart ourselves
