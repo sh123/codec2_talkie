@@ -58,14 +58,22 @@ public class AppService extends Service {
         }
     }
 
-    public String getTransportName() { return _appWorker.getTransportName(); }
+    public String getTransportName() {
+        if (_appWorker != null) {
+            return _appWorker.getTransportName();
+        } else {
+            return "";
+        }
+    }
 
     public void startTransmit() {
-        _appWorker.startTransmit();
+        if (_appWorker != null)
+            _appWorker.startTransmit();
     }
 
     public void startReceive() {
-        _appWorker.startReceive();
+        if (_appWorker != null)
+            _appWorker.startReceive();
     }
 
     public void sendPosition() {
@@ -87,9 +95,8 @@ public class AppService extends Service {
     }
 
     public void stopRunning() {
-        if (_appWorker != null) {
+        if (_appWorker != null)
             _appWorker.stopRunning();
-        }
     }
 
     @Override
@@ -130,7 +137,7 @@ public class AppService extends Service {
 
             String trackerName = _sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE, "manual");
             _tracker = TrackerFactory.create(trackerName);
-            _tracker.initialize(getApplicationContext(), position -> _appWorker.sendPosition(position));
+            _tracker.initialize(getApplicationContext(), position -> { if (_appWorker != null) _appWorker.sendPosition(position); });
 
             transportType = (TransportFactory.TransportType) extras.get("transportType");
             startAppWorker(transportType);
