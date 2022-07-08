@@ -202,6 +202,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
             } else {
                 toastMsg = getString(R.string.bt_connected);
                 BluetoothSocketHandler.setSocket(_btSocket);
+                BluetoothSocketHandler.setName(_btSelectedName);
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("name", _btSelectedName);
                 setResult(Activity.RESULT_OK, resultIntent);

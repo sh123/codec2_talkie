@@ -151,6 +151,7 @@ public class UsbConnectActivity extends AppCompatActivity {
             String toastMsg;
             if (msg.what == USB_CONNECTED) {
                 UsbPortHandler.setPort(_usbPort);
+                UsbPortHandler.setName(_usbDeviceName);
 
                 toastMsg = String.format("USB connected %s", _usbDeviceName);
                 Toast.makeText(getBaseContext(), toastMsg, Toast.LENGTH_SHORT).show();

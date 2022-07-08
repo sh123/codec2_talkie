@@ -109,6 +109,7 @@ public class TcpIpConnectActivity extends AppCompatActivity {
                 }
                 if (_socket.isConnected()) {
                     TcpIpSocketHandler.setSocket(_socket);
+                    TcpIpSocketHandler.setName(String.format("%s:%s", _address, _port));
                     resultMsg.what = TCP_IP_CONNECTED;
                 } else {
                     resultMsg.what = TCP_IP_FAILED;

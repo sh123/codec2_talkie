@@ -37,9 +37,13 @@ import java.io.IOException;
 
 public class AppService extends Service {
 
+    public static TransportFactory.TransportType transportType;
+    public static boolean isRunning = false;
+
     private static final String TAG = AppService.class.getSimpleName();
 
-    private final int NOTIFICATION_ID = 1;
+    private final int BASE_NOTIFICATION_ID = 1;
+    private final int RX_NOTIFICATION_ID = 2;
 
     private AppWorker _appWorker;
     private Messenger _callbackMessenger;
@@ -54,6 +58,8 @@ public class AppService extends Service {
         }
     }
 
+    public String getTransportName() { return _appWorker.getTransportName(); }
+
     public void startTransmit() {
         _appWorker.startTransmit();
     }
@@ -67,12 +73,12 @@ public class AppService extends Service {
     }
 
     public void startTracking() {
-        showNotification(R.string.app_service_notif_text_tracking);
+        showNotification(R.string.app_service_notif_text_tracking, R.drawable.ic_app_action);
         _tracker.startTracking();
     }
 
     public void stopTracking() {
-        showNotification(R.string.app_service_notif_text_ptt_ready);
+        showNotification(R.string.app_service_notif_text_ptt_ready, R.drawable.ic_app_action);
         _tracker.stopTracking();
     }
 
@@ -108,14 +114,16 @@ public class AppService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "Staring app service");
+        Log.i(TAG, "onStartCommand()");
 
         // update callback from new intent
         Bundle extras = intent.getExtras();
         _callbackMessenger = (Messenger) extras.get("callback");
 
         // create if not running
-        if (_appWorker == null) {
+        if (isRunning) {
+            Log.i(TAG, "Not starting app service, already running");
+        } else {
             _notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             assert _notificationManager != null;
             SharedPreferences _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -124,15 +132,15 @@ public class AppService extends Service {
             _tracker = TrackerFactory.create(trackerName);
             _tracker.initialize(getApplicationContext(), position -> _appWorker.sendPosition(position));
 
-            TransportFactory.TransportType transportType = (TransportFactory.TransportType) extras.get("transportType");
+            transportType = (TransportFactory.TransportType) extras.get("transportType");
             startAppWorker(transportType);
 
-            Notification notification = buildNotification(getString(R.string.app_service_notif_text_ptt_ready));
-            startForeground(NOTIFICATION_ID, notification);
+            Notification notification = buildNotification(getString(R.string.app_service_notif_text_ptt_ready), R.drawable.ic_app_action);
+            startForeground(BASE_NOTIFICATION_ID, notification);
+
+            isRunning = true;
 
             Log.i(TAG, "App service started");
-        } else {
-            Log.i(TAG, "App service is already running");
         }
 
         return START_REDELIVER_INTENT;
@@ -171,6 +179,8 @@ public class AppService extends Service {
                 switch (AppMessage.values()[msg.what]) {
                     case EV_DISCONNECTED:
                         _appWorker = null;
+                        isRunning = false;
+                        showNotification(R.string.app_service_notif_connection_lost, R.drawable.ic_app_action_disconnected);
                         break;
                     default:
                         break;
@@ -181,15 +191,13 @@ public class AppService extends Service {
         }
     };
 
-    private void showNotification(int resId) {
+    private void showNotification(int resId, int iconResId) {
         String text = getString(resId);
-        _notificationManager.notify(NOTIFICATION_ID, buildNotification(text));
+        _notificationManager.notify(BASE_NOTIFICATION_ID, buildNotification(text, iconResId));
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private String createNotificationChannel() {
-        String channelId = "alpha";
-        String channelName = "Service";
+    private String createNotificationChannel(String channelId, String channelName) {
         NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW);
         channel.setImportance(NotificationManager.IMPORTANCE_LOW);
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
@@ -197,22 +205,19 @@ public class AppService extends Service {
         return channelId;
     }
 
-    private Notification buildNotification(String text) {
+    private Notification buildNotification(String text, int iconResId) {
         String channelId = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            channelId = createNotificationChannel();
+            channelId = createNotificationChannel("alpha", "Service");
 
         Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent intent = PendingIntent.getActivity(getApplicationContext(), 0,
                 notificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(
-                this, channelId);
-        return notificationBuilder
+        return new NotificationCompat.Builder(this, channelId)
                 .setOngoing(true)
-                .setSmallIcon(R.drawable.ic_app_action)
+                .setSmallIcon(iconResId)
                 .setContentTitle(getString(R.string.app_service_notif_title))
                 .setContentText(text)
                 .setPriority(NotificationManagerCompat.IMPORTANCE_LOW)
@@ -220,6 +225,26 @@ public class AppService extends Service {
                 .setChannelId(channelId)
                 .setContentIntent(intent)
                 .setOnlyAlertOnce(true)
+                .build();
+    }
+
+    private Notification buildFullScreenNotification(String text) {
+        String channelId = "";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            channelId = createNotificationChannel("beta", "VoiceRx");
+
+        Intent fullScreenIntent = new Intent(this, MainActivity.class);
+        PendingIntent fullScreenPendingIntent = PendingIntent.getActivity(this, 0,
+                fullScreenIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        return new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.ic_app_action)
+                .setContentTitle("Incoming transmission")
+                .setContentText(text)
+                .setChannelId(channelId)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_CALL)
+                .setFullScreenIntent(fullScreenPendingIntent, true)
                 .build();
     }
 }

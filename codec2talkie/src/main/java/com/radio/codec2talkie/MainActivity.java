@@ -104,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar _progressRssi;
     private Button _btnPtt;
 
+    private boolean _isPaused = false;
+    private boolean _isConnecting = false;
     private boolean _isAppExit = false;
     private boolean _isAppRestart = false;
 
@@ -112,8 +114,8 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate()");
 
         // title
         String appName = getResources().getString(R.string.app_name);
@@ -142,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
         // PTT button
         _btnPtt = findViewById(R.id.btnPtt);
+        _btnPtt.setEnabled(false);
         _btnPtt.setOnTouchListener(onBtnPttTouchListener);
 
         _textCodecMode = findViewById(R.id.codecMode);
@@ -172,17 +175,56 @@ public class MainActivity extends AppCompatActivity {
 
         _isAppRestart = false;
         _isAppExit = false;
+
         startTransportConnection();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.i(TAG, "onStart()");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i(TAG, "onStop()");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.i(TAG, "onRestart()");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Log.i(TAG, "onDestroy()");
         unregisterReceiver(onBluetoothDisconnected);
         unregisterReceiver(onUsbDetached);
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i(TAG, "onPause()");
+        _isPaused = true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, "onResume()");
+        _isPaused = false;
+        if (!AppService.isRunning && !_isConnecting) {
+            _btnPtt.setEnabled(false);
+            startTransportConnection();
+        }
+    }
+
     private void exitApplication() {
+        Log.i(TAG, "exitApplication()");
         _isAppExit = true;
         if (_appService != null) {
             _appService.stopRunning();
@@ -190,6 +232,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void restartApplication() {
+        Log.i(TAG, "restartApplication()");
         _isAppRestart = true;
         if (_appService != null) {
             _appService.stopRunning();
@@ -197,8 +240,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startTransportConnection() {
-        Log.i(TAG, "Starting transport connection");
-        if (_isTestMode) {
+        Log.i(TAG, "startTransportConnection()");
+        if (AppService.isRunning) {
+            startAppService(AppService.transportType);
+        } else if (_isTestMode) {
             _textConnInfo.setText(R.string.main_status_loopback_test);
             startAppService(TransportFactory.TransportType.LOOPBACK);
         } else if (requestPermissions()) {
@@ -227,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
     );
 
     protected void startUsbConnectActivity() {
+        _isConnecting = true;
         _usbActivityLauncher.launch(new Intent(this, UsbConnectActivity.class));
     }
 
@@ -252,6 +298,7 @@ public class MainActivity extends AppCompatActivity {
     );
 
     protected void startBluetoothConnectActivity() {
+        _isConnecting = true;
         Intent bluetoothConnectIntent;
         if (_isBleEnabled) {
             bluetoothConnectIntent = new Intent(this, BleConnectActivity.class);
@@ -279,6 +326,7 @@ public class MainActivity extends AppCompatActivity {
     );
 
     protected void startTcpIpConnectActivity() {
+        _isConnecting = true;
         _tcpipActivityLauncher.launch(new Intent(this, TcpIpConnectActivity.class));
     }
 
@@ -357,6 +405,7 @@ public class MainActivity extends AppCompatActivity {
             startForegroundService(serviceIntent);
         else
             startService(serviceIntent);
+
         bindAppService();
     }
 
@@ -585,6 +634,8 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName className, IBinder service) {
             Log.i(TAG, "Connected to app service");
             _appService = ((AppService.AppServiceBinder)service).getService();
+            if (AppService.isRunning)
+                _textConnInfo.setText(_appService.getTransportName());
         }
 
         @Override
@@ -599,21 +650,26 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (AppMessage.values()[msg.what]) {
                 case EV_CONNECTED:
+                    _isConnecting = false;
+                    _btnPtt.setEnabled(true);
                     Toast.makeText(getBaseContext(), R.string.processor_connected, Toast.LENGTH_SHORT).show();
                     break;
                 case EV_DISCONNECTED:
                     _btnPtt.setText(R.string.main_status_stop);
-                    unbindAppService();
-                    stopAppService();
-                    // finish and start ourselves on app exit
+                    _btnPtt.setEnabled(false);
+                    // app restart, stop app service and restart ourselves
                     if (_isAppRestart) {
+                        unbindAppService();
+                        stopAppService();
                         finish();
                         startActivity(getIntent());
-                    // finish ourselves on app exist
+                    // app exit, stop app service and finish
                     } else if (_isAppExit) {
+                        unbindAppService();
+                        stopAppService();
                         finish();
-                    // otherwise just restart app service with reconnect
-                    } else {
+                    // otherwise just reconnect if app is not on pause
+                    } else if (!_isPaused) {
                         Toast.makeText(getBaseContext(), R.string.processor_disconnected, Toast.LENGTH_SHORT).show();
                         startTransportConnection();
                     }

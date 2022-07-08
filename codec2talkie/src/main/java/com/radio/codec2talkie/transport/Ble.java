@@ -6,9 +6,16 @@ import java.io.IOException;
 public class Ble implements Transport {
 
     private final BleGattWrapper _gattWrapper;
+    private final String _name;
 
-    public Ble(BleGattWrapper gattWrapper) {
+    public Ble(BleGattWrapper gattWrapper, String name) {
         _gattWrapper = gattWrapper;
+        _name = name;
+    }
+
+    @Override
+    public String name() {
+        return _name;
     }
 
     @Override

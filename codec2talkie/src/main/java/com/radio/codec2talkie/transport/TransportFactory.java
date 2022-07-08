@@ -20,13 +20,13 @@ public class TransportFactory {
     public static Transport create(TransportType transportType) throws IOException {
         switch (transportType) {
             case USB:
-                return new UsbSerial(UsbPortHandler.getPort());
+                return new UsbSerial(UsbPortHandler.getPort(), UsbPortHandler.getName());
             case BLUETOOTH:
-                return new Bluetooth(BluetoothSocketHandler.getSocket());
+                return new Bluetooth(BluetoothSocketHandler.getSocket(), BluetoothSocketHandler.getName());
             case TCP_IP:
-                return new TcpIp(TcpIpSocketHandler.getSocket());
+                return new TcpIp(TcpIpSocketHandler.getSocket(), TcpIpSocketHandler.getName());
             case BLE:
-                return new Ble(BleHandler.getGatt());
+                return new Ble(BleHandler.getGatt(), BleHandler.getName());
             case LOOPBACK:
             default:
                 return new Loopback();

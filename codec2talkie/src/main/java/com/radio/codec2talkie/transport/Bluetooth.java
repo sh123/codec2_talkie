@@ -11,11 +11,18 @@ public class Bluetooth implements Transport {
     private final BluetoothSocket _btSocket;
     private final OutputStream _btOutputStream;
     private final InputStream _btInputStream;
+    private final String _name;
 
-    public Bluetooth(BluetoothSocket btSocket) throws IOException {
+    public Bluetooth(BluetoothSocket btSocket, String name) throws IOException {
         _btSocket = btSocket;
         _btInputStream = btSocket.getInputStream();
         _btOutputStream = btSocket.getOutputStream();
+        _name = name;
+    }
+
+    @Override
+    public String name() {
+        return _name;
     }
 
     @Override
