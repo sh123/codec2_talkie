@@ -13,6 +13,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -478,6 +479,14 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuCompat.setGroupDividerEnabled(menu, true);
         getMenuInflater().inflate(R.menu.main_menu, menu);
+        if (AppService.isRunning) {
+            MenuItem item = menu.findItem(R.id.start_tracking);
+            if (_appService.isTracking()) {
+                item.setTitle(R.string.menu_stop_tracking);
+            } else {
+                item.setTitle(R.string.menu_start_tracking);
+            }
+        }
         return true;
     }
 
@@ -634,8 +643,9 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName className, IBinder service) {
             Log.i(TAG, "Connected to app service");
             _appService = ((AppService.AppServiceBinder)service).getService();
-            if (AppService.isRunning)
+            if (AppService.isRunning) {
                 _textConnInfo.setText(_appService.getTransportName());
+            }
         }
 
         @Override
