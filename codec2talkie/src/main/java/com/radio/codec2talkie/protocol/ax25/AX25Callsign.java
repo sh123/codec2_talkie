@@ -1,5 +1,7 @@
 package com.radio.codec2talkie.protocol.ax25;
 
+import android.telecom.Call;
+
 import androidx.annotation.NonNull;
 
 import java.nio.ByteBuffer;
@@ -16,8 +18,10 @@ public class AX25Callsign {
         return String.format("%s-%s", callsign, ssid);
     }
 
-    public void fromString(String callsignWithSsid) {
+    public void fromString(String inputCallsignWithSsid) {
         isValid = false;
+        // WIDE1*
+        String callsignWithSsid = inputCallsignWithSsid.replace("*", "");
         // ABCDEF-XX
         if (callsignWithSsid == null) return;
         if (callsignWithSsid.length() > CallsignMaxSize + 2 || callsignWithSsid.length() == 0) return;
@@ -68,8 +72,11 @@ public class AX25Callsign {
     @NonNull
     public String toString() {
         String callsignPlusSsid = callsign;
-        if (ssid != 0)
+        if (ssid == 0 && isWide()) {
+            callsignPlusSsid += "*";
+        } else {
             callsignPlusSsid += "-" + ssid;
+        }
         return callsignPlusSsid;
     }
 
@@ -116,9 +123,6 @@ public class AX25Callsign {
         if (isPath()) {
             if (ssid > 0) {
                 ssid -= 1;
-                if (ssid == 0) {
-                    callsign += "*";
-                }
                 return true;
             }
         }
