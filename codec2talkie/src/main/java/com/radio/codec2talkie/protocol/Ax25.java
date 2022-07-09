@@ -85,7 +85,7 @@ public class Ax25 implements Protocol {
             _parentProtocolCallback.onProtocolTxError();
         } else {
             _childProtocol.sendData(src, dst, ax25Frame);
-            _parentProtocolCallback.onTransmitLog(toDebugLogLine(ax25Packet));
+            _parentProtocolCallback.onTransmitLog(ax25Packet.toString());
         }
     }
 
@@ -114,7 +114,7 @@ public class Ax25 implements Protocol {
                     _parentProtocolCallback.onReceiveCompressedAudio(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, ax25Data.rawData);
                 } else {
                     _parentProtocolCallback.onReceiveData(ax25Data.src, ax25Data.dst, ax25Data.rawData);
-                    _parentProtocolCallback.onReceiveLog(toDebugLogLine(ax25Data));
+                    _parentProtocolCallback.onReceiveLog(ax25Data.toString());
                 }
             } else {
                 // fallback to raw audio if ax25 frame is invalid
@@ -181,13 +181,5 @@ public class Ax25 implements Protocol {
     @Override
     public void close() {
         _childProtocol.close();
-    }
-
-    private String toDebugLogLine(AX25Packet ax25Packet) {
-        String path = ax25Packet.digipath == null ? "" : ax25Packet.digipath;
-        if (!path.isEmpty())
-            path = "," + path;
-        return String.format("%s>%s%s:%s", ax25Packet.src, ax25Packet.dst,
-                path, DebugTools.bytesToDebugString(ax25Packet.rawData));
     }
 }

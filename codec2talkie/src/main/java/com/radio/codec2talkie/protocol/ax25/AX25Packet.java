@@ -2,6 +2,10 @@ package com.radio.codec2talkie.protocol.ax25;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.radio.codec2talkie.tools.DebugTools;
+
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
@@ -118,5 +122,13 @@ public class AX25Packet {
         byte[] b = new byte[buffer.remaining()];
         buffer.get(b);
         return b;
+    }
+
+    @NonNull
+    public String toString() {
+        String path = digipath == null ? "" : digipath;
+        if (!path.isEmpty())
+            path = "," + path;
+        return String.format("%s>%s%s:%s", src, dst, path, DebugTools.bytesToDebugString(rawData));
     }
 }
