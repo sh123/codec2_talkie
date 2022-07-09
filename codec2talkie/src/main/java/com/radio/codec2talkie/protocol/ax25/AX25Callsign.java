@@ -95,4 +95,33 @@ public class AX25Callsign {
         buffer.get(b);
         return b;
     }
+
+    public boolean isWide() {
+        return callsign.toUpperCase().startsWith("WIDE");
+    }
+
+    public boolean isTrace() {
+        return callsign.toUpperCase().startsWith("TRACE");
+    }
+
+    public boolean isSoftware() {
+        return callsign.toUpperCase().matches("^(AP)[A-Z]{1,4}$");
+    }
+
+    public boolean isPath() {
+        return isWide();
+    }
+
+    public boolean digiRepeat() {
+        if (isPath()) {
+            if (ssid > 0) {
+                ssid -= 1;
+                if (ssid == 0) {
+                    callsign += "*";
+                }
+                return true;
+            }
+        }
+        return false;
+    }
 }

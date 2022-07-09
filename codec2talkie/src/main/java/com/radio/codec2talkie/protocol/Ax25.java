@@ -9,7 +9,6 @@ import androidx.preference.PreferenceManager;
 import com.radio.codec2talkie.protocol.ax25.AX25Packet;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
-import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -21,6 +20,7 @@ public class Ax25 implements Protocol {
     final Protocol _childProtocol;
     private String _digipath;
     private boolean _isVoax25Enabled;
+    private boolean _isDigiRepeaterEnabled;
 
     private ProtocolCallback _parentProtocolCallback;
 
@@ -36,6 +36,7 @@ public class Ax25 implements Protocol {
         // NOTE, may need to pass through sendData/sendAudio
         _digipath = sharedPreferences.getString(PreferenceKeys.APRS_DIGIPATH, "");
         _isVoax25Enabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_VOAX25_ENABLE, false);
+        _isDigiRepeaterEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_DIGIREPEATER_ENABLED, false);
     }
 
     @Override
@@ -55,7 +56,7 @@ public class Ax25 implements Protocol {
             ax25Packet.rawData = frame;
             byte[] ax25Frame = ax25Packet.toBinary();
             if (ax25Frame == null) {
-                Log.e(TAG, "Invalid source data for AX.25");
+                Log.e(TAG, "Cannot convert AX.25 voice packet to binary");
                 _parentProtocolCallback.onProtocolTxError();
             } else {
                 _childProtocol.sendCompressedAudio(src, dst, codec2Mode, ax25Frame);
@@ -81,7 +82,7 @@ public class Ax25 implements Protocol {
         ax25Packet.rawData = dataPacket;
         byte[] ax25Frame = ax25Packet.toBinary();
         if (ax25Frame == null) {
-            Log.e(TAG, "Invalid source data for AX.25");
+            Log.e(TAG, "Cannot convert AX.25 data packet to binary");
             _parentProtocolCallback.onProtocolTxError();
         } else {
             _childProtocol.sendData(src, dst, ax25Frame);
@@ -106,7 +107,7 @@ public class Ax25 implements Protocol {
         }
 
         @Override
-        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
+        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames)  {
             AX25Packet ax25Data = new AX25Packet();
             ax25Data.fromBinary(audioFrames);
             if (ax25Data.isValid) {
@@ -115,6 +116,7 @@ public class Ax25 implements Protocol {
                 } else {
                     _parentProtocolCallback.onReceiveData(ax25Data.src, ax25Data.dst, ax25Data.rawData);
                     _parentProtocolCallback.onReceiveLog(ax25Data.toString());
+                    if (_isDigiRepeaterEnabled) digiRepeat(ax25Data);
                 }
             } else {
                 // fallback to raw audio if ax25 frame is invalid
@@ -181,5 +183,24 @@ public class Ax25 implements Protocol {
     @Override
     public void close() {
         _childProtocol.close();
+    }
+
+    private void digiRepeat(AX25Packet ax25Packet) {
+        if (!ax25Packet.digiRepeat()) return;
+        byte[] ax25Frame = ax25Packet.toBinary();
+        if (ax25Frame == null) {
+            Log.e(TAG, "Cannot convert AX.25 digi repeated packet to binary");
+            _parentProtocolCallback.onProtocolTxError();
+        } else {
+            try {
+                _childProtocol.sendData(ax25Packet.src, ax25Packet.dst, ax25Frame);
+            } catch (IOException e) {
+                Log.e(TAG, "Cannot send AX.25 digi repeated packet");
+                e.printStackTrace();
+                _parentProtocolCallback.onProtocolTxError();
+                return;
+            }
+            _parentProtocolCallback.onTransmitLog(ax25Packet.toString());
+        }
     }
 }
