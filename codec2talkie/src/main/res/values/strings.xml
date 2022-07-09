@@ -251,7 +251,7 @@
     <string name="app_service_notif_connection_lost">Disconnected from the TNC, click to reconnect</string>
     <string name="aprs_log_view_title">APRS raw log</string>
     <string name="log_view_menu_clear">Clear log</string>
-    <string name="tracking_label">&#8693;</string>
+    <string name="tracking_label">&#127937;</string>
     <string name="app_notifications_voice_enable_title">Enable incoming notifications</string>
     <string name="app_notifications_voice_enable_summary">Show pop-up notification on incoming transmission when app is invisible</string>
     <string name="app_notifications_voice_title">Incoming transmission</string>
