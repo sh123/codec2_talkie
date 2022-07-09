@@ -70,8 +70,9 @@ public class AX25Callsign {
     @NonNull
     public String toString() {
         String callsignPlusSsid = callsign;
-        if (ssid == 0 && isWide()) {
-            callsignPlusSsid += "*";
+        if (ssid == 0) {
+             if (isWide())
+                callsignPlusSsid += "*";
         } else {
             callsignPlusSsid += "-" + ssid;
         }
