@@ -540,7 +540,6 @@ public class MainActivity extends AppCompatActivity {
                 _appService.startTracking();
                 item.setTitle(R.string.menu_stop_tracking);
             }
-            updateStatusText(ProtocolFactory.getBaseProtocolType(getApplicationContext()));
             return true;
         }
         else if (itemId == R.id.messages) {
@@ -746,6 +745,10 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case EV_TX_ERROR:
                     _btnPtt.setText(R.string.main_status_tx_error);
+                    break;
+                case EV_STARTED_TRACKING:
+                case EV_STOPPED_TRACKING:
+                    updateStatusText(ProtocolFactory.getBaseProtocolType(getApplicationContext()));
                     break;
             }
         }

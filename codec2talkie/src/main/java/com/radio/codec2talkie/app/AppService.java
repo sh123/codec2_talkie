@@ -16,7 +16,6 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.PowerManager;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
@@ -80,17 +79,21 @@ public class AppService extends Service {
     }
 
     public void sendPosition() {
-        _tracker.sendPosition();
+        Message msg = Message.obtain();
+        msg.what = AppMessage.CMD_SEND_LOCATION.toInt();
+        _onProcess.sendMessage(msg);
     }
 
     public void startTracking() {
-        showServiceNotification(R.string.app_service_notif_text_tracking, R.drawable.ic_app_action);
-        _tracker.startTracking();
+        Message msg = Message.obtain();
+        msg.what = AppMessage.CMD_START_TRACKING.toInt();
+        _onProcess.sendMessage(msg);
     }
 
     public void stopTracking() {
-        showServiceNotification(R.string.app_service_notif_text_ptt_ready, R.drawable.ic_app_action);
-        _tracker.stopTracking();
+        Message msg = Message.obtain();
+        msg.what = AppMessage.CMD_STOP_TRACKING.toInt();
+        _onProcess.sendMessage(msg);
     }
 
     public boolean isTracking() {
@@ -165,7 +168,7 @@ public class AppService extends Service {
             Log.i(TAG, "Started app worker: " + transportType.toString());
 
             _appWorker = new AppWorker(transportType,
-                    onAudioProcessorStateChanged,
+                    _onProcess,
                     getApplicationContext());
             _appWorker.start();
 
@@ -183,7 +186,7 @@ public class AppService extends Service {
         }
     }
 
-    private final Handler onAudioProcessorStateChanged = new Handler(Looper.myLooper()) {
+    private final Handler _onProcess = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
             try {
@@ -202,6 +205,23 @@ public class AppService extends Service {
                         break;
                     case EV_LISTENING:
                         hideVoiceNotification();
+                        break;
+                    case CMD_SEND_LOCATION:
+                        _tracker.sendPosition();
+                        break;
+                    case CMD_START_TRACKING:
+                        showServiceNotification(R.string.app_service_notif_text_tracking, R.drawable.ic_app_action);
+                        _tracker.startTracking();
+                        Message startedTrackingMessage = Message.obtain();
+                        startedTrackingMessage.what = AppMessage.EV_STARTED_TRACKING.toInt();
+                        deliverToParent(startedTrackingMessage);
+                        break;
+                    case CMD_STOP_TRACKING:
+                        showServiceNotification(R.string.app_service_notif_text_ptt_ready, R.drawable.ic_app_action);
+                        _tracker.stopTracking();
+                        Message stoppedTrackingMessage = Message.obtain();
+                        stoppedTrackingMessage.what = AppMessage.EV_STOPPED_TRACKING.toInt();
+                        deliverToParent(stoppedTrackingMessage);
                         break;
                     default:
                         break;
