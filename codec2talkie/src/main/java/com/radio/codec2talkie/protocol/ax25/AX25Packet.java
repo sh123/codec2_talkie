@@ -1,7 +1,5 @@
 package com.radio.codec2talkie.protocol.ax25;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import com.radio.codec2talkie.tools.DebugTools;
