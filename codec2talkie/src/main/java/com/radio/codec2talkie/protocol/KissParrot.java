@@ -9,9 +9,8 @@ import java.util.TimerTask;
 
 public class KissParrot extends Kiss {
 
-    private final int BUFFER_SIZE = 3200 * 60 * 5;  // 5 min at 3200 bps
-
-    private final int PLAYBACK_DELAY_MS = 1000;
+    private static final int BUFFER_SIZE = 3200 * 60 * 5;  // 5 min at 3200 bps
+    private static final int PLAYBACK_DELAY_MS = 1000;
 
     private final ByteBuffer _buffer;
 

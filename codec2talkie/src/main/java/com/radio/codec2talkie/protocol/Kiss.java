@@ -24,35 +24,35 @@ public class Kiss implements Protocol {
 
     private static final String TAG = Kiss.class.getSimpleName();
 
-    private final int TRANSPORT_OUTPUT_BUFFER_SIZE = 1024;
-    private final int TRANSPORT_INPUT_BUFFER_SIZE = 1024;
-    private final int FRAME_OUTPUT_BUFFER_SIZE = 1024;
-    private final int KISS_CMD_BUFFER_SIZE = 128;
+    private static final int TRANSPORT_OUTPUT_BUFFER_SIZE = 1024;
+    private static final int TRANSPORT_INPUT_BUFFER_SIZE = 1024;
+    private static final int FRAME_OUTPUT_BUFFER_SIZE = 1024;
+    private static final int KISS_CMD_BUFFER_SIZE = 128;
 
-    private final int KISS_RADIO_CONTROL_COMMAND_SIZE = 17;
+    private static final int KISS_RADIO_CONTROL_COMMAND_SIZE = 17;
 
-    private final byte KISS_FEND = (byte)0xc0;
-    private final byte KISS_FESC = (byte)0xdb;
-    private final byte KISS_TFEND = (byte)0xdc;
-    private final byte KISS_TFESC = (byte)0xdd;
+    private static final byte KISS_FEND = (byte)0xc0;
+    private static final byte KISS_FESC = (byte)0xdb;
+    private static final byte KISS_TFEND = (byte)0xdc;
+    private static final byte KISS_TFESC = (byte)0xdd;
 
     // only port 0 is supported
-    private final byte KISS_CMD_DATA = (byte)0x00;
-    private final byte KISS_CMD_TX_DELAY = (byte)0x01;
-    private final byte KISS_CMD_P = (byte)0x02;
-    private final byte KISS_CMD_SLOT_TIME = (byte)0x03;
-    private final byte KISS_CMD_TX_TAIL = (byte)0x04;
-    private final byte KISS_CMD_SET_HARDWARE = (byte)0x06;
-    private final byte KISS_CMD_SIGNAL_REPORT = (byte)0x07;
-    private final byte KISS_CMD_REBOOT = (byte)0x08;
-    private final byte KISS_CMD_NOCMD = (byte)0x80;
+    private static final byte KISS_CMD_DATA = (byte)0x00;
+    private static final byte KISS_CMD_TX_DELAY = (byte)0x01;
+    private static final byte KISS_CMD_P = (byte)0x02;
+    private static final byte KISS_CMD_SLOT_TIME = (byte)0x03;
+    private static final byte KISS_CMD_TX_TAIL = (byte)0x04;
+    private static final byte KISS_CMD_SET_HARDWARE = (byte)0x06;
+    private static final byte KISS_CMD_SIGNAL_REPORT = (byte)0x07;
+    private static final byte KISS_CMD_REBOOT = (byte)0x08;
+    private static final byte KISS_CMD_NOCMD = (byte)0x80;
 
-    private final byte CSMA_PERSISTENCE = (byte)0xff;
-    private final byte CSMA_SLOT_TIME = (byte)0x00;
-    private final byte TX_DELAY_10MS_UNITS = (byte)(250 / 10);
-    private final byte TX_TAIL_10MS_UNITS = (byte)(500 / 10);
+    private static final byte CSMA_PERSISTENCE = (byte)0xff;
+    private static final byte CSMA_SLOT_TIME = (byte)0x00;
+    private static final byte TX_DELAY_10MS_UNITS = (byte)(250 / 10);
+    private static final byte TX_TAIL_10MS_UNITS = (byte)(500 / 10);
 
-    private final int SIGNAL_LEVEL_EVENT_SIZE = 4;
+    private static final int SIGNAL_LEVEL_EVENT_SIZE = 4;
 
     private enum State {
         GET_START,

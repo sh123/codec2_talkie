@@ -16,11 +16,12 @@ public enum AppMessage {
     EV_STARTED_TRACKING(11),
     EV_STOPPED_TRACKING(12),
     // commands
-    CMD_SEND_LOCATION(13),
+    CMD_SEND_LOCATION_TO_TNC(13),
     CMD_PROCESS(14),
     CMD_QUIT(15),
     CMD_START_TRACKING(16),
-    CMD_STOP_TRACKING(17);
+    CMD_STOP_TRACKING(17),
+    CMD_SEND_SINGLE_TRACKING(18);
 
     private final int _value;
 

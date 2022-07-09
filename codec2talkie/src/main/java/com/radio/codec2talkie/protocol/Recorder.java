@@ -23,7 +23,7 @@ public class Recorder implements Protocol {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private final int ROTATION_DELAY_MS = 5000;
+    private static final int ROTATION_DELAY_MS = 5000;
 
     private File _storage;
     private FileOutputStream _activeStream;
