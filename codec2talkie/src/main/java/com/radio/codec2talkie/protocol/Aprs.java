@@ -51,7 +51,7 @@ public class Aprs implements Protocol {
         _isVoax25Enabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_VOAX25_ENABLE, false);
 
         _srcCallsign = AX25Callsign.formatCallsign(
-                sharedPreferences.getString(PreferenceKeys.APRS_CALLSIGN, "NOCALL"),
+                sharedPreferences.getString(PreferenceKeys.APRS_CALLSIGN, "NOCALL").toUpperCase(),
                 sharedPreferences.getString(PreferenceKeys.APRS_SSID, "0"));
         _dstCallsign = "APZMDM";
 

@@ -34,7 +34,7 @@ public class Ax25 implements Protocol {
         _childProtocol.initialize(transport, context, _protocolCallback);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         // NOTE, may need to pass through sendData/sendAudio
-        _digipath = sharedPreferences.getString(PreferenceKeys.APRS_DIGIPATH, "");
+        _digipath = sharedPreferences.getString(PreferenceKeys.APRS_DIGIPATH, "").toUpperCase();
         _isVoax25Enabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_VOAX25_ENABLE, false);
         _isDigiRepeaterEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_DIGIREPEATER_ENABLED, false);
     }
