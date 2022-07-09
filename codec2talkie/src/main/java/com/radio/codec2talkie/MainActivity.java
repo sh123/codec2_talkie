@@ -490,11 +490,11 @@ public class MainActivity extends AppCompatActivity {
         MenuCompat.setGroupDividerEnabled(menu, true);
         getMenuInflater().inflate(R.menu.main_menu, menu);
         _menu = menu;
-        updateMenuItems();
+        updateMenuItemsAndStatusText();
         return true;
     }
 
-    private void updateMenuItems() {
+    private void updateMenuItemsAndStatusText() {
         if (AppService.isRunning & _menu != null && _appService != null) {
             MenuItem item = _menu.findItem(R.id.start_tracking);
             if (_appService.isTracking()) {
@@ -502,6 +502,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 item.setTitle(R.string.menu_start_tracking);
             }
+            updateStatusText(ProtocolFactory.getBaseProtocolType(getApplicationContext()));
         }
     }
 
@@ -660,7 +661,7 @@ public class MainActivity extends AppCompatActivity {
             _appService = ((AppService.AppServiceBinder)service).getService();
             if (AppService.isRunning) {
                 _textConnInfo.setText(_appService.getTransportName());
-                updateMenuItems();
+                updateMenuItemsAndStatusText();
             }
         }
 
@@ -677,14 +678,14 @@ public class MainActivity extends AppCompatActivity {
             switch (AppMessage.values()[msg.what]) {
                 case EV_CONNECTED:
                     Log.i(TAG, "EV_CONNECTED");
-                    updateMenuItems();
+                    updateMenuItemsAndStatusText();
                     _isConnecting = false;
                     _btnPtt.setEnabled(true);
                     Toast.makeText(getBaseContext(), R.string.processor_connected, Toast.LENGTH_SHORT).show();
                     break;
                 case EV_DISCONNECTED:
                     Log.i(TAG, "EV_DISCONNECTED");
-                    updateMenuItems();
+                    updateMenuItemsAndStatusText();
                     _btnPtt.setText(R.string.main_status_stop);
                     _btnPtt.setEnabled(false);
                     // app restart, stop app service and restart ourselves
