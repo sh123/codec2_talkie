@@ -8,8 +8,8 @@ import java.util.TimerTask;
 
 public class KissBuffered extends Kiss {
 
-    private final int BUFFER_SIZE = 3200 * 60 * 10; // 10 min at 3200 bps
-    private final int GAP_TO_PLAY_MS = 1000;
+    private static final int BUFFER_SIZE = 3200 * 60 * 10; // 10 min at 3200 bps
+    private static final int GAP_TO_PLAY_MS = 1000;
 
     private final ByteBuffer _buffer;
 

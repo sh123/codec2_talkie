@@ -443,6 +443,12 @@ public class MainActivity extends AppCompatActivity {
             if (voax25Enabled) {
                 status += getString(R.string.voax25_label);
             }
+
+            // Digirepeater
+            boolean isDigirepeaterEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_DIGIREPEATER_ENABLED, false);
+            if (isDigirepeaterEnabled) {
+                status += getString(R.string.digirepeater_label);
+            }
         }
 
         if (_appService != null) {

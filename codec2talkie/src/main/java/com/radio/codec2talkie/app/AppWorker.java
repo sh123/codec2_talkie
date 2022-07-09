@@ -21,16 +21,13 @@ import java.util.TimerTask;
 
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.log.LogItem;
-import com.radio.codec2talkie.log.LogItemDatabase;
 import com.radio.codec2talkie.log.LogItemRepository;
 import com.radio.codec2talkie.protocol.ProtocolCallback;
 import com.radio.codec2talkie.protocol.Protocol;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
-import com.radio.codec2talkie.protocol.aprs.AprsCallsign;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.AudioTools;
-import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.radio.codec2talkie.transport.TransportFactory;
 
@@ -40,12 +37,12 @@ public class AppWorker extends Thread {
 
     private static final int AUDIO_MIN_LEVEL = -70;
     private static final int AUDIO_MAX_LEVEL = 0;
-    private final int AUDIO_SAMPLE_SIZE = 8000;
+    private static final int AUDIO_SAMPLE_SIZE = 8000;
 
-    private final int PROCESS_INTERVAL_MS = 20;
-    private final int LISTEN_AFTER_MS = 1500;
+    private static final int PROCESS_INTERVAL_MS = 20;
+    private static final int LISTEN_AFTER_MS = 1500;
 
-    private boolean _needsRecording = false;
+    private boolean _needTransmission = false;
     private AppMessage _currentStatus = AppMessage.EV_DISCONNECTED;
 
     private final Protocol _protocol;
@@ -150,11 +147,11 @@ public class AppWorker extends Thread {
     }
 
     public void startReceive() {
-        _needsRecording = false;
+        _needTransmission = false;
     }
 
     public void startTransmit() {
-        _needsRecording = true;
+        _needTransmission = true;
     }
 
     public void stopRunning() {
@@ -165,10 +162,10 @@ public class AppWorker extends Thread {
         _onMessageReceived.sendMessage(msg);
     }
 
-    public void sendPosition(Position position) {
+    public void sendPositionToTnc(Position position) {
         if (_currentStatus == AppMessage.EV_DISCONNECTED) return;
         Message msg = new Message();
-        msg.what = AppMessage.CMD_SEND_LOCATION.toInt();
+        msg.what = AppMessage.CMD_SEND_LOCATION_TO_TNC.toInt();
         msg.obj = position;
         _onMessageReceived.sendMessage(msg);
     }
@@ -341,13 +338,13 @@ public class AppWorker extends Thread {
 
     private void processRecordPlaybackToggle() throws IOException {
         // playback -> recording
-        if (_needsRecording && _systemAudioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
+        if (_needTransmission && _systemAudioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
             _systemAudioPlayer.stop();
             _systemAudioRecorder.startRecording();
             sendRxAudioLevelUpdate(null);
         }
         // recording -> playback
-        if (!_needsRecording && _systemAudioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
+        if (!_needTransmission && _systemAudioRecorder.getRecordingState() == AudioRecord.RECORDSTATE_RECORDING) {
             _protocol.flush();
             _systemAudioRecorder.stop();
             _systemAudioPlayer.play();
@@ -398,7 +395,7 @@ public class AppWorker extends Thread {
         Looper.myLooper().quitSafely();
     }
 
-    private void onProcessorIncomingMessage(Message msg) {
+    private void onWorkerIncomingMessage(Message msg) {
         switch (AppMessage.values()[msg.what]) {
             case CMD_PROCESS:
                 try {
@@ -411,7 +408,7 @@ public class AppWorker extends Thread {
             case CMD_QUIT:
                 quitProcessing();
                 break;
-            case CMD_SEND_LOCATION:
+            case CMD_SEND_LOCATION_TO_TNC:
                 try {
                     _protocol.sendPosition((Position)msg.obj);
                 } catch (IOException e) {
@@ -424,11 +421,11 @@ public class AppWorker extends Thread {
         }
     }
 
-    private void startProcessorMessageHandler() {
+    private void startWorkerMessageHandler() {
         _onMessageReceived = new Handler(Looper.myLooper()) {
             @Override
             public void handleMessage(Message msg) {
-                onProcessorIncomingMessage(msg);
+                onWorkerIncomingMessage(msg);
             }
         };
         _processPeriodicTimer.schedule(new TimerTask() {
@@ -452,7 +449,7 @@ public class AppWorker extends Thread {
 
         try {
             _protocol.initialize(_transport, _context, _protocolCallback);
-            startProcessorMessageHandler();
+            startWorkerMessageHandler();
             Looper.loop();
         } catch (IOException e) {
             e.printStackTrace();

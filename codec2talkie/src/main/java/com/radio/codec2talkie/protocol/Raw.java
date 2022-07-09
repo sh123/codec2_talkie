@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 public class Raw implements Protocol {
 
-    private final int RX_BUFFER_SIZE = 8192;
+    private static final int RX_BUFFER_SIZE = 8192;
 
     protected Transport _transport;
     protected final byte[] _rxDataBuffer;

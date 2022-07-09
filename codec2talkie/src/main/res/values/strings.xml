@@ -260,4 +260,7 @@
     <string name="app_no_lock_summary">Run above the lock screen</string>
     <string name="app_turn_screen_on_title">Turn screen ON automatically</string>
     <string name="app_turn_screen_on_summary">Turn screen ON automatically on incoming transmissions</string>
+    <string name="aprs_digirepeater_enable_title">Enable digirepeater</string>
+    <string name="aprs_digirepeater_enable_summary">Incoming APRS packets will received and digirepeated</string>
+    <string name="digirepeater_label">&#128257;</string>
 </resources>

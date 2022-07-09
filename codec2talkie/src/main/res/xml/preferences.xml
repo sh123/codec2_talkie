@@ -269,6 +269,14 @@
             app:dependency="aprs_enable">
         </Preference>
 
+        <SwitchPreference
+            app:key="aprs_digirepeater_enable"
+            app:title="@string/aprs_digirepeater_enable_title"
+            app:summary="@string/aprs_digirepeater_enable_summary"
+            app:dependency="aprs_enable"
+            app:defaultValue="false">
+        </SwitchPreference>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

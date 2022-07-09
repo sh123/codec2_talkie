@@ -80,7 +80,7 @@ public class AppService extends Service {
 
     public void sendPosition() {
         Message msg = Message.obtain();
-        msg.what = AppMessage.CMD_SEND_LOCATION.toInt();
+        msg.what = AppMessage.CMD_SEND_SINGLE_TRACKING.toInt();
         _onProcess.sendMessage(msg);
     }
 
@@ -146,7 +146,7 @@ public class AppService extends Service {
 
             String trackerName = _sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE, "manual");
             _tracker = TrackerFactory.create(trackerName);
-            _tracker.initialize(getApplicationContext(), position -> { if (_appWorker != null) _appWorker.sendPosition(position); });
+            _tracker.initialize(getApplicationContext(), position -> { if (_appWorker != null) _appWorker.sendPositionToTnc(position); });
 
             transportType = (TransportFactory.TransportType) extras.get("transportType");
             startAppWorker(transportType);
@@ -206,7 +206,7 @@ public class AppService extends Service {
                     case EV_LISTENING:
                         hideVoiceNotification();
                         break;
-                    case CMD_SEND_LOCATION:
+                    case CMD_SEND_SINGLE_TRACKING:
                         _tracker.sendPosition();
                         break;
                     case CMD_START_TRACKING:

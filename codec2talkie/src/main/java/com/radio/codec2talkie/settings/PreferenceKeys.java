@@ -71,6 +71,7 @@ public final class PreferenceKeys {
     public static String APRS_PRIVACY_POSITION_AMBIGUITY = "aprs_privacy_position_ambiguity";
     public static String APRS_PRIVACY_SPEED_ENABLED = "aprs_privacy_speed_enable";
     public static String APRS_PRIVACY_ALTITUDE_ENABLED = "aprs_privacy_altitude_enable";
+    public static String APRS_DIGIREPEATER_ENABLED = "aprs_digirepeater_enable";
 
     public static String APRS_LOCATION_SOURCE_SMART_FAST_SPEED = "aprs_location_source_smart_fast_speed";
     public static String APRS_LOCATION_SOURCE_SMART_FAST_RATE = "aprs_location_source_smart_fast_rate";
