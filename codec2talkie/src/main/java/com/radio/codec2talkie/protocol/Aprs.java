@@ -102,6 +102,7 @@ public class Aprs implements Protocol {
     ProtocolCallback _protocolCallback = new ProtocolCallback() {
         @Override
         protected void onReceivePosition(Position position) {
+            // TODO, process incoming position, stored to db, show on map
             throw new UnsupportedOperationException();
         }
 
@@ -119,6 +120,7 @@ public class Aprs implements Protocol {
         @Override
         protected void onReceiveData(String src, String dst, byte[] data) {
             AprsData aprsData = AprsDataFactory.fromBinary(data);
+            // TODO, always invalid, needs fromBinary implementation
             if (aprsData != null && aprsData.isValid()) {
                 Position position = aprsData.toPosition();
                 if (position != null) {
