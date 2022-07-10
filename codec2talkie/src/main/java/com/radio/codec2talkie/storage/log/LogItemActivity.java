@@ -1,4 +1,4 @@
-package com.radio.codec2talkie.log;
+package com.radio.codec2talkie.storage.log;
 
 import android.os.Bundle;
 import android.view.Menu;

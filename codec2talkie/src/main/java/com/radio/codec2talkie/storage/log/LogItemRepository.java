@@ -1,8 +1,10 @@
-package com.radio.codec2talkie.log;
+package com.radio.codec2talkie.storage.log;
 
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
+
+import com.radio.codec2talkie.storage.AppDatabase;
 
 import java.util.List;
 
@@ -12,8 +14,8 @@ public class LogItemRepository {
     private final LiveData<List<LogItem>> _logItemLiveData;
 
     public LogItemRepository(Application application) {
-        LogItemDatabase logItemDatabase = LogItemDatabase.getDatabase(application);
-        _logItemDao = logItemDatabase.logItemDao();
+        AppDatabase appDatabase = AppDatabase.getDatabase(application);
+        _logItemDao = appDatabase.logItemDao();
         _logItemLiveData = _logItemDao.getAllLogItems();
     }
 
@@ -22,12 +24,12 @@ public class LogItemRepository {
     }
 
     public void insertLogItem(LogItem logItem) {
-        LogItemDatabase.databaseWriteExecutor.execute(() -> {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
             _logItemDao.insertLogItem(logItem);
         });
     }
 
     public void deleteAllLogItems() {
-        LogItemDatabase.databaseWriteExecutor.execute(_logItemDao::deleteAllLogItems);
+        AppDatabase.databaseWriteExecutor.execute(_logItemDao::deleteAllLogItems);
     }
 }

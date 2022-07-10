@@ -42,7 +42,7 @@
             android:name=".recorder.RecorderActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:name=".log.LogItemActivity"
+            android:name=".storage.log.LogItemActivity"
             android:configChanges="orientation|screenSize" />
         <activity
             android:name=".MainActivity"

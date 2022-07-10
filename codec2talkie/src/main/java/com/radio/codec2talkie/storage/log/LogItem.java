@@ -1,4 +1,4 @@
-package com.radio.codec2talkie.log;
+package com.radio.codec2talkie.storage.log;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

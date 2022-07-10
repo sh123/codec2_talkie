@@ -20,8 +20,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.radio.codec2talkie.R;
-import com.radio.codec2talkie.log.LogItem;
-import com.radio.codec2talkie.log.LogItemRepository;
+import com.radio.codec2talkie.storage.log.LogItem;
+import com.radio.codec2talkie.storage.log.LogItemRepository;
 import com.radio.codec2talkie.protocol.ProtocolCallback;
 import com.radio.codec2talkie.protocol.Protocol;
 import com.radio.codec2talkie.protocol.ProtocolFactory;

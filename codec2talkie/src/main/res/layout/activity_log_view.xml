@@ -5,7 +5,7 @@
     android:id="@+id/activity_log_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".log.LogItemActivity">
+    tools:context=".storage.log.LogItemActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/log_item_recyclerview"

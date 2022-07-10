@@ -1,4 +1,4 @@
-package com.radio.codec2talkie.log;
+package com.radio.codec2talkie.storage.log;
 
 import android.view.LayoutInflater;
 import android.view.View;
