@@ -118,12 +118,17 @@ public class AX25Callsign {
         return isWide();
     }
 
+    public boolean digiRepeatCallsign() {
+        if (ssid > 0) {
+            ssid -= 1;
+            return true;
+        }
+        return false;
+    }
+
     public boolean digiRepeat() {
         if (isPath()) {
-            if (ssid > 0) {
-                ssid -= 1;
-                return true;
-            }
+            return digiRepeatCallsign();
         }
         return false;
     }

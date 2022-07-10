@@ -82,8 +82,11 @@ public class AX25Packet {
 
     public byte[] toBinary() {
         ByteBuffer buffer = ByteBuffer.allocate(MaximumSize);
-        String[] rptCallsigns = digipath.replaceAll(" ", "").split(",");
-        boolean hasRtpCallsigns = !(rptCallsigns.length == 1 && rptCallsigns[0].length() == 0);
+        String[] rptCallsigns = new String[] {};
+        if (digipath != null)
+            rptCallsigns = digipath.replaceAll(" ", "").split(",");
+        boolean hasRtpCallsigns = rptCallsigns.length > 0 &&
+                !(rptCallsigns.length == 1 && rptCallsigns[0].length() == 0);
         // dst
         AX25Callsign dstCallsign = new AX25Callsign();
         dstCallsign.fromString(dst);
@@ -124,8 +127,10 @@ public class AX25Packet {
 
     public boolean digiRepeat() {
         boolean isDigiRepeated = false;
-        if (digipath == null) return false;
+        if (!isValid) return false;
+        if (digipath == null) return digiRepeatMicE();
         String[] digiPaths = digipath.split(",");
+        if (digiPaths.length == 0) return digiRepeatMicE();
         StringBuilder buf = new StringBuilder();
         for (int i = 0; i < digiPaths.length; i++) {
             AX25Callsign rptCallsign = new AX25Callsign();
@@ -152,5 +157,26 @@ public class AX25Packet {
         if (!path.isEmpty())
             path = "," + path;
         return String.format("%s>%s%s:%s", src, dst, path, DebugTools.bytesToDebugString(rawData));
+    }
+
+    private boolean digiRepeatMicE() {
+        if (!isMicE()) return false;
+        AX25Callsign dstRptCallsign = new AX25Callsign();
+        dstRptCallsign.fromString(dst);
+        if (dstRptCallsign.isValid) {
+            boolean isSuccess = dstRptCallsign.digiRepeatCallsign();
+            if (isSuccess) {
+                dst = dstRptCallsign.toString();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isMicE() {
+        return !isAudio &&
+                rawData != null &&
+                rawData.length > 0 &&
+                rawData[0] == (byte)'`';
     }
 }
