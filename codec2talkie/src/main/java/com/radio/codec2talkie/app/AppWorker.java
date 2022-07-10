@@ -222,7 +222,7 @@ public class AppWorker extends Thread {
         @Override
         protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
-            sendStatusUpdate(AppMessage.EV_PLAYING, note);
+            sendStatusUpdate(AppMessage.EV_VOICE_RECEIVED, note);
             sendRxAudioLevelUpdate(pcmFrame);
             _systemAudioPlayer.write(pcmFrame, 0, pcmFrame.length);
         }
@@ -236,7 +236,7 @@ public class AppWorker extends Thread {
         protected void onReceiveData(String src, String dst, byte[] data) {
             // TODO, handle incoming messages
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
-            sendStatusUpdate(AppMessage.EV_PLAYING, note);
+            sendStatusUpdate(AppMessage.EV_DATA_RECEIVED, note);
         }
 
         @Override
@@ -253,7 +253,7 @@ public class AppWorker extends Thread {
         @Override
         protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
-            sendStatusUpdate(AppMessage.EV_TRANSMITTING, note);
+            sendStatusUpdate(AppMessage.EV_TRANSMITTED_VOICE, note);
             sendTxAudioLevelUpdate(frame);
         }
 
@@ -265,7 +265,7 @@ public class AppWorker extends Thread {
         @Override
         protected void onTransmitData(String src, String dst, byte[] data) {
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
-            sendStatusUpdate(AppMessage.EV_TRANSMITTING, note);
+            sendStatusUpdate(AppMessage.EV_TRANSMITTED_VOICE, note);
         }
 
         @Override

@@ -199,8 +199,7 @@ public class AppService extends Service {
                         _tracker.stopTracking();
                         showServiceNotification(R.string.app_service_notif_connection_lost, R.drawable.ic_app_action_disconnected);
                         break;
-                    case EV_PLAYING:
-                    case EV_RECEIVING:
+                    case EV_VOICE_RECEIVED:
                         showVoiceNotification(R.string.app_notifications_voice_title, R.string.app_notifications_voice_summary);
                         break;
                     case EV_LISTENING:

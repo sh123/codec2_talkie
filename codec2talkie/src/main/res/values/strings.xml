@@ -23,7 +23,7 @@
     <string name="main_status_stop">STOPPED</string>
     <string name="main_status_tx">TRANSMITTING</string>
     <string name="main_status_rx">RECEIVING</string>
-    <string name="main_status_play">PLAYING</string>
+    <string name="main_status_voice_received">PLAYING</string>
     <string name="main_status_rx_error">RECEIVING\nERROR</string>
     <string name="main_status_tx_error">TRANSMITTING\nERROR</string>
 
@@ -254,7 +254,7 @@
     <string name="tracking_label">&#127937;</string>
     <string name="app_notifications_voice_enable_title">Enable incoming notifications</string>
     <string name="app_notifications_voice_enable_summary">Show pop-up notification on incoming transmission when app is invisible</string>
-    <string name="app_notifications_voice_title">Incoming transmission</string>
+    <string name="app_notifications_voice_title">Incoming voice transmission</string>
     <string name="app_notifications_voice_summary">Click to open and react</string>
     <string name="app_no_lock_title">Disable lock screen</string>
     <string name="app_no_lock_summary">Run above the lock screen</string>
@@ -263,4 +263,5 @@
     <string name="aprs_digirepeater_enable_title">Enable digirepeater</string>
     <string name="aprs_digirepeater_enable_summary">Incoming APRS packets will received and digirepeated</string>
     <string name="digirepeater_label">&#128257;</string>
+    <string name="main_status_data_received">PROCESSING</string>
 </resources>

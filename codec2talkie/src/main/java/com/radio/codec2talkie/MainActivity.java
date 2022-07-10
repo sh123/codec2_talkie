@@ -715,7 +715,7 @@ public class MainActivity extends AppCompatActivity {
                     _btnPtt.setText(R.string.push_to_talk);
                     _textStatus.setText("");
                     break;
-                case EV_TRANSMITTING:
+                case EV_TRANSMITTED_VOICE:
                     if (msg.obj != null) {
                         _textStatus.setText((String) msg.obj);
                     }
@@ -724,11 +724,17 @@ public class MainActivity extends AppCompatActivity {
                 case EV_RECEIVING:
                     _btnPtt.setText(R.string.main_status_rx);
                     break;
-                case EV_PLAYING:
+                case EV_DATA_RECEIVED:
                     if (msg.obj != null) {
                         _textStatus.setText((String) msg.obj);
                     }
-                    _btnPtt.setText(R.string.main_status_play);
+                    _btnPtt.setText(R.string.main_status_data_received);
+                    break;
+                case EV_VOICE_RECEIVED:
+                    if (msg.obj != null) {
+                        _textStatus.setText((String) msg.obj);
+                    }
+                    _btnPtt.setText(R.string.main_status_voice_received);
                     break;
                 case EV_RX_RADIO_LEVEL:
                     if (msg.arg1 == 0) {
