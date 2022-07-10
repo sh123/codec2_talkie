@@ -39,6 +39,7 @@ public class RecorderActivity extends AppCompatActivity {
     private ListView _recordingList;
     private TextView _textPlaybackStatus;
     private AudioPlayer _audioPlayer;
+    private Menu _menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,12 +134,16 @@ public class RecorderActivity extends AppCompatActivity {
             _dirAdapter.add(dirElement);
         }
         _recordingList.setVisibility(View.VISIBLE);
+        updateMenu();
     }
 
     private void deleteAll(File directory) {
         File[] fileList = directory.listFiles();
         if (fileList != null) {
             for (File file : fileList) {
+                if (file.isDirectory()) {
+                    deleteAll(file);
+                }
                 if (!file.delete()) {
                     Log.e(TAG, file.getName() + " cannot be deleted");
                 }
@@ -167,7 +172,7 @@ public class RecorderActivity extends AppCompatActivity {
         if (_audioPlayer != null) {
             _audioPlayer.stopPlayback();
         }
-        if (!_root.getAbsolutePath().equals(_currentDirectory.getAbsolutePath())) {
+        if (!isRootDirectory()) {
             _currentDirectory = _currentDirectory.getParentFile();
             if (_currentDirectory != null) {
                 loadFiles(_currentDirectory);
@@ -175,6 +180,10 @@ public class RecorderActivity extends AppCompatActivity {
             }
         }
         return false;
+    }
+
+    private boolean isRootDirectory() {
+        return _root.getAbsolutePath().equals(_currentDirectory.getAbsolutePath());
     }
 
     private void runDeleteFromDirectoryConfirmation(File directory) {
@@ -191,7 +200,10 @@ public class RecorderActivity extends AppCompatActivity {
         alertBuilder.setMessage(getString(R.string.recorder_remove_file_confirmation_message, file.getName()))
                 .setTitle(R.string.recorder_remove_all_confirmation_title)
                 .setPositiveButton(R.string.ok, (dialog, id) ->  {
-                    if (file.delete()) {
+                    if (file.isDirectory()) {
+                        deleteAll(file);
+                    }
+                    else if (file.delete()) {
                         loadFiles(_currentDirectory);
                     }
                 })
@@ -199,9 +211,20 @@ public class RecorderActivity extends AppCompatActivity {
                 .show();
     }
 
+    private void updateMenu() {
+        if (_menu == null) return;
+        boolean isRoot = isRootDirectory();
+        MenuItem playAllItem = _menu.findItem(R.id.recorder_play_all);
+        playAllItem.setVisible(!isRoot);
+        MenuItem stopItem = _menu.findItem(R.id.recorder_stop);
+        stopItem.setVisible(!isRoot);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.recorder_menu, menu);
+        _menu = menu;
+        updateMenu();
         return true;
     }
 
