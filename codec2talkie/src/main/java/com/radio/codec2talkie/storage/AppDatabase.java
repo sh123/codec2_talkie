@@ -16,10 +16,19 @@ public abstract class AppDatabase extends RoomDatabase {
 
     private static final int NUMBER_OF_THREADS = 4;
 
-    public static final ExecutorService databaseWriteExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
     public abstract LogItemDao logItemDao();
 
     private static AppDatabase _db;
+    private static ExecutorService _executor;
+
+    public static ExecutorService getDatabaseExecutor() {
+        if (_executor == null) {
+            synchronized (AppDatabase.class) {
+                 _executor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+            }
+        }
+        return _executor;
+    }
 
     public static AppDatabase getDatabase(Context context) {
         if (_db == null) {

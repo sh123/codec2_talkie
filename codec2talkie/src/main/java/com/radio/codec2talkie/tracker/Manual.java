@@ -1,7 +1,11 @@
 package com.radio.codec2talkie.tracker;
 
+import static android.content.Context.POWER_SERVICE;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.PowerManager;
 
 import androidx.preference.PreferenceManager;
 
@@ -24,14 +28,20 @@ public class Manual implements Tracker {
     private int _updateIntervalMinutes;
     private boolean _autoSendEnabled;
 
+    PowerManager.WakeLock _serviceWakeLock;
+
     @Override
     public void initialize(Context context, TrackerCallback trackerCallback) {
         _trackerCallback  = trackerCallback;
+
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         _latitude = Double.parseDouble(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_MANUAL_LAT, "0.0"));
         _longitude = Double.parseDouble(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_MANUAL_LON, "0.0"));
         _updateIntervalMinutes = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_MANUAL_UPDATE_INTERVAL_MINUTES, "5"));
         _autoSendEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_LOCATION_SOURCE_MANUAL_AUTO_SEND, true);
+
+        PowerManager powerManager = (PowerManager) context.getSystemService(POWER_SERVICE);
+        _serviceWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "App::Tracker");
     }
 
     @Override
@@ -45,8 +55,10 @@ public class Manual implements Tracker {
         _trackerCallback.onSendLocation(position);
     }
 
+    @SuppressLint("WakelockTimeout")
     @Override
     public void startTracking() {
+        _serviceWakeLock.acquire();
         sendPosition();
         restartTracking();
         _isTracking = true;
@@ -66,6 +78,10 @@ public class Manual implements Tracker {
 
     @Override
     public void stopTracking() {
+        if (!isTracking()) return;
+        if (_serviceWakeLock != null)
+            _serviceWakeLock.release();
+        _serviceWakeLock = null;
         if (_sendTimer != null) {
             _sendTimer.cancel();
             _sendTimer.purge();

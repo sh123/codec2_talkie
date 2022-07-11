@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.app;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -16,6 +17,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
@@ -49,6 +51,7 @@ public class AppService extends Service {
     private Messenger _callbackMessenger;
     private Tracker _tracker;
     private NotificationManager _notificationManager;
+    PowerManager.WakeLock _serviceWakeLock;
 
     private boolean _voiceNotificationsEnabled = false;
 
@@ -126,6 +129,7 @@ public class AppService extends Service {
         return _binder;
     }
 
+    @SuppressLint("WakelockTimeout")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "onStartCommand()");
@@ -153,6 +157,13 @@ public class AppService extends Service {
 
             Notification notification = buildNotification(getString(R.string.app_service_notif_text_ptt_ready), R.drawable.ic_app_action);
             startForeground(SERVICE_NOTIFICATION_ID, notification);
+            PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
+
+            boolean noCpuSleep = _sharedPreferences.getBoolean(PreferenceKeys.APP_NO_CPU_SLEEP, false);
+            if (noCpuSleep) {
+                _serviceWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "App::Service");
+                _serviceWakeLock.acquire();
+            }
 
             isRunning = true;
 
@@ -197,6 +208,7 @@ public class AppService extends Service {
                         isRunning = false;
                         _appWorker = null;
                         _tracker.stopTracking();
+                        if (_serviceWakeLock != null) _serviceWakeLock.release();
                         showServiceNotification(R.string.app_service_notif_connection_lost, R.drawable.ic_app_action_disconnected);
                         break;
                     case EV_VOICE_RECEIVED:

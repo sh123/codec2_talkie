@@ -264,4 +264,6 @@
     <string name="aprs_digirepeater_enable_summary">Incoming APRS packets will received and digirepeated</string>
     <string name="digirepeater_label">&#128257;</string>
     <string name="main_status_data_received">PROCESSING</string>
+    <string name="app_no_cpu_sleep_title">Do not allow CPU sleep</string>
+    <string name="app_no_cpu_sleep_summary">Prevent CPU from sleeping, hold global wake lock</string>
 </resources>

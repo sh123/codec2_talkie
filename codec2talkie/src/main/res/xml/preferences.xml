@@ -35,6 +35,13 @@
         </SwitchPreference>
 
         <SwitchPreference
+            app:key="app_no_cpu_sleep"
+            app:title="@string/app_no_cpu_sleep_title"
+            app:summary="@string/app_no_cpu_sleep_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <SwitchPreference
             app:key="app_audio_output_speaker"
             app:title="@string/app_audio_output_speaker_title"
             app:summary="@string/app_audio_output_speaker_summary"

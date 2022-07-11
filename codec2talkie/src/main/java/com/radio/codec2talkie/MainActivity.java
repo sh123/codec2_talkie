@@ -518,6 +518,8 @@ public class MainActivity extends AppCompatActivity {
         int itemId = item.getItemId();
 
         if (itemId == R.id.preferences) {
+            if (_appService != null && _appService.isTracking())
+                _appService.stopTracking();
             startSettingsActivity();
             return true;
         }

@@ -24,12 +24,12 @@ public class LogItemRepository {
     }
 
     public void insertLogItem(LogItem logItem) {
-        AppDatabase.databaseWriteExecutor.execute(() -> {
+        AppDatabase.getDatabaseExecutor().execute(() -> {
             _logItemDao.insertLogItem(logItem);
         });
     }
 
     public void deleteAllLogItems() {
-        AppDatabase.databaseWriteExecutor.execute(_logItemDao::deleteAllLogItems);
+        AppDatabase.getDatabaseExecutor().execute(_logItemDao::deleteAllLogItems);
     }
 }
