@@ -58,6 +58,7 @@ import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.recorder.RecorderActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
+import com.radio.codec2talkie.storage.message.group.MessageGroupActivity;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.tools.RadioTools;
 import com.radio.codec2talkie.transport.TransportFactory;
@@ -358,6 +359,13 @@ public class MainActivity extends AppCompatActivity {
         _settingsActivityLauncher.launch(new Intent(this, SettingsActivity.class));
     }
 
+    private final ActivityResultLauncher<Intent> _messagesActivityLauncher  = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {});
+
+    protected void startMessagesActivity() {
+        _messagesActivityLauncher.launch(new Intent(this, MessageGroupActivity.class));
+    }
+
     protected boolean requestPermissions() {
         List<String> permissionsToRequest = new LinkedList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -552,7 +560,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         else if (itemId == R.id.messages) {
-            Toast.makeText(getBaseContext(), "Not implemented", Toast.LENGTH_SHORT).show();
+            startMessagesActivity();
             return true;
         }
         else if (itemId == R.id.aprs_log) {

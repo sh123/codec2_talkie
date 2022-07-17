@@ -11,17 +11,16 @@ import java.util.List;
 public class MessageItemViewModel extends AndroidViewModel {
 
     private final MessageItemRepository _messageItemRepository;
-    private final LiveData<List<MessageItem>> _messageItemLiveData;
+    private LiveData<List<MessageItem>> _messages;
 
     public MessageItemViewModel(@NonNull Application application) {
         super(application);
         _messageItemRepository = new MessageItemRepository(application);
-        _messageItemLiveData = _messageItemRepository.getAllMessageItems();
     }
 
-    public LiveData<List<MessageItem>> getAllData() {
-        return _messageItemLiveData;
+    public LiveData<List<MessageItem>> getMessages(String groupName) {
+        if (_messages == null)
+            _messages = _messageItemRepository.getMessages(groupName);
+        return _messages;
     }
-
-    public void deleteAllMessageItems() { _messageItemRepository.deleteAllMessageItems(); }
 }

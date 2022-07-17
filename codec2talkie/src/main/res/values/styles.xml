@@ -16,4 +16,20 @@
         <item name="android:textColor">@color/grey</item>
         <item name="android:textAppearance">@android:style/TextAppearance.DeviceDefault.Small</item>
     </style>
+    <style name="message_groups_item_name">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:background">@android:color/white</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textAppearance">@android:style/TextAppearance.DeviceDefault.Medium</item>
+    </style>
+    <style name="message_groups_item_info">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:paddingLeft">4dp</item>
+        <item name="android:background">@android:color/white</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textAppearance">@android:style/TextAppearance.DeviceDefault.Small</item>
+    </style>
 </resources>

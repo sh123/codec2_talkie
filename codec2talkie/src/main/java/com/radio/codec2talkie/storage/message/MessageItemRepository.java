@@ -11,16 +11,23 @@ import java.util.List;
 public class MessageItemRepository {
 
     private final MessageItemDao _messageItemDao;
-    private final LiveData<List<MessageItem>> _messageItemLiveData;
+    private LiveData<List<MessageItem>> _messages;
+    private final LiveData<List<String>> _messageGroups;
 
     public MessageItemRepository(Application application) {
         AppDatabase appDatabase = AppDatabase.getDatabase(application);
         _messageItemDao = appDatabase.messageItemDao();
-        _messageItemLiveData = _messageItemDao.getAllMessageItems();
+        _messageGroups = _messageItemDao.getGroups();
     }
 
-    LiveData<List<MessageItem>> getAllMessageItems() {
-        return _messageItemLiveData;
+    public LiveData<List<String>> getGroups() {
+        return _messageGroups;
+    }
+
+    public LiveData<List<MessageItem>> getMessages(String groupName) {
+        if (_messages == null)
+            _messages = _messageItemDao.getMessageItems(groupName);
+        return _messages;
     }
 
     public void insertMessageItem(MessageItem messageItem) {
