@@ -2,6 +2,7 @@ package com.radio.codec2talkie.storage;
 
 import android.content.Context;
 
+import androidx.room.AutoMigration;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
@@ -13,7 +14,11 @@ import com.radio.codec2talkie.storage.message.MessageItemDao;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@androidx.room.Database(entities = {LogItem.class, MessageItem.class}, version = 1, exportSchema = false)
+@androidx.room.Database(
+    version = 2,
+    entities = {LogItem.class, MessageItem.class},
+    exportSchema = false
+)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static final int NUMBER_OF_THREADS = 4;
@@ -38,6 +43,7 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class) {
                 _db = Room.databaseBuilder(context.getApplicationContext(),
                         AppDatabase.class, AppDatabase.class.getName())
+                        .fallbackToDestructiveMigration()
                         .build();
             }
         }

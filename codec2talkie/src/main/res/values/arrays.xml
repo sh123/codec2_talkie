@@ -137,6 +137,14 @@
         <item>Committed</item>
         <item>Special</item>
         <item>Priority</item>
+        <item>Custom 0</item>
+        <item>Custom 1</item>
+        <item>Custom 2</item>
+        <item>Custom 3</item>
+        <item>Custom 4</item>
+        <item>Custom 5</item>
+        <item>Custom 6</item>
+        <item>Emergency</item>
     </string-array>
 
     <string-array name="aprs_location_mice_message_type_values">
@@ -147,6 +155,14 @@
         <item>committed</item>
         <item>special</item>
         <item>priority</item>
+        <item>custom_0</item>
+        <item>custom_1</item>
+        <item>custom_2</item>
+        <item>custom_3</item>
+        <item>custom_4</item>
+        <item>custom_5</item>
+        <item>custom_6</item>
+        <item>emergency</item>
     </string-array>
 
     <string-array name="aprs_location_mice_digipath_labels">
@@ -193,7 +209,7 @@
         <item>2: Generic additional station</item>
         <item>3: Generic additional station</item>
         <item>4: Generic additional station</item>
-        <item>5: Other network (D-Star, DMR, ...)</item>
+        <item>5: Other network (D-Star, DMR, …)</item>
         <item>6: Satellite</item>
         <item>7: Handheld radio</item>
         <item>8: Boat/ship</item>
