@@ -268,4 +268,5 @@
     <string name="app_no_cpu_sleep_summary">Prevent CPU from sleeping, hold global wake lock</string>
     <string name="message_groups_send_to_btn_title">Send message to…</string>
     <string name="messages_group_view_title">Messages</string>
+    <string name="message_send_btn_title">Send</string>
 </resources>
