@@ -17,7 +17,7 @@ public class MessageItemActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_view);
-        setTitle(R.string.messages_group_view_title);
+        setTitle(R.string.messages_view_title);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
     }

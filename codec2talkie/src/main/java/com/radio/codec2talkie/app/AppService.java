@@ -221,6 +221,9 @@ public class AppService extends Service {
                     case EV_VOICE_RECEIVED:
                         showVoiceNotification(R.string.app_notifications_voice_title, R.string.app_notifications_voice_summary);
                         break;
+                    case EV_TEXT_MESSAGE_RECEIVED:
+                        showVoiceNotification(R.string.app_notifications_text_title, R.string.app_notifications_text_summary);
+                        break;
                     case EV_LISTENING:
                         hideVoiceNotification();
                         break;

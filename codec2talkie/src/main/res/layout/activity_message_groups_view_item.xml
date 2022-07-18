@@ -20,7 +20,7 @@
         style="@style/message_groups_item_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:lines="3"
+        android:lines="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/message_groups_view_item_name" />
 

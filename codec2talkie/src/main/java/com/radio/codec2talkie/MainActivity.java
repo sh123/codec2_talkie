@@ -734,6 +734,7 @@ public class MainActivity extends AppCompatActivity {
                 case EV_RECEIVING:
                     _btnPtt.setText(R.string.main_status_rx);
                     break;
+                case EV_TEXT_MESSAGE_RECEIVED:
                 case EV_DATA_RECEIVED:
                     if (msg.obj != null) {
                         _textStatus.setText((String) msg.obj);

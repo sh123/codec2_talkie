@@ -21,7 +21,7 @@ public class MessageGroupHolder extends RecyclerView.ViewHolder {
     }
 
     public void bind(String text) {
-        messageGroupsViewItemMessage.setText(text);
+        messageGroupsViewItemName.setText(text);
     }
 
     static MessageGroupHolder create(ViewGroup parent) {
