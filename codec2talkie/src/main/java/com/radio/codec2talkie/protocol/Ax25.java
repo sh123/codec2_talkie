@@ -7,6 +7,7 @@ import android.util.Log;
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.protocol.ax25.AX25Packet;
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.transport.Transport;
@@ -64,6 +65,11 @@ public class Ax25 implements Protocol {
         } else {
             _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
         }
+    }
+
+    @Override
+    public void sendTextMessage(TextMessage textMessage) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     @Override

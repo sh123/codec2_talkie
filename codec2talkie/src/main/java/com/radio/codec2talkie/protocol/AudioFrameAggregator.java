@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.transport.Transport;
@@ -72,6 +73,11 @@ public class AudioFrameAggregator implements Protocol {
         }
         System.arraycopy(frame, 0, _outputBuffer, _outputBufferPos, frame.length);
         _outputBufferPos += frame.length;
+    }
+
+    @Override
+    public void sendTextMessage(TextMessage textMessage) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     @Override

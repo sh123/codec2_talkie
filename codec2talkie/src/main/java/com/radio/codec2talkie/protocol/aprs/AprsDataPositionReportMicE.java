@@ -1,6 +1,7 @@
 package com.radio.codec2talkie.protocol.aprs;
 
 import com.radio.codec2talkie.protocol.aprs.tools.AprsTools;
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.tools.UnitTools;
 
@@ -69,8 +70,18 @@ public class AprsDataPositionReportMicE implements AprsData {
     }
 
     @Override
+    public void fromTextMessage(TextMessage textMessage) {
+        _isValid = false;
+    }
+
+    @Override
     public Position toPosition() {
         return _position;
+    }
+
+    @Override
+    public TextMessage toTextMessage() {
+        return null;
     }
 
     @Override

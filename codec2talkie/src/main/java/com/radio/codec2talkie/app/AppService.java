@@ -20,6 +20,7 @@ import android.os.Messenger;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -30,6 +31,7 @@ import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.MainActivity;
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tracker.Tracker;
 import com.radio.codec2talkie.tracker.TrackerFactory;
@@ -51,7 +53,7 @@ public class AppService extends Service {
     private Messenger _callbackMessenger;
     private Tracker _tracker;
     private NotificationManager _notificationManager;
-    PowerManager.WakeLock _serviceWakeLock;
+    private PowerManager.WakeLock _serviceWakeLock;
 
     private boolean _voiceNotificationsEnabled = false;
 
@@ -97,6 +99,11 @@ public class AppService extends Service {
         Message msg = Message.obtain();
         msg.what = AppMessage.CMD_STOP_TRACKING.toInt();
         _onProcess.sendMessage(msg);
+    }
+
+    public void sendTextMessage(TextMessage textMessage) {
+        if (_appWorker != null)
+            _appWorker.sendTextMessage(textMessage);
     }
 
     public boolean isTracking() {

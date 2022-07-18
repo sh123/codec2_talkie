@@ -10,6 +10,7 @@ import com.radio.codec2talkie.protocol.aprs.AprsCallsign;
 import com.radio.codec2talkie.protocol.aprs.AprsData;
 import com.radio.codec2talkie.protocol.aprs.AprsDataFactory;
 import com.radio.codec2talkie.protocol.aprs.AprsDataType;
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.protocol.ax25.AX25Callsign;
 import com.radio.codec2talkie.settings.PreferenceKeys;
@@ -78,6 +79,20 @@ public class Aprs implements Protocol {
     @Override
     public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void sendTextMessage(TextMessage textMessage) throws IOException {
+        AprsDataType aprsDataType = new AprsDataType(AprsDataType.DataType.MESSAGE);
+        AprsData aprsData = AprsDataFactory.create(aprsDataType);
+        assert aprsData != null;
+        aprsData.fromTextMessage(textMessage);
+        if (aprsData.isValid()) {
+            sendData(null, null, aprsData.toBinary());
+        } else {
+            Log.e(TAG, "Invalid APRS message");
+            _parentProtocolCallback.onProtocolTxError();
+        }
     }
 
     @Override

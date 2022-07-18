@@ -475,20 +475,20 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (_appService != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
-                Toast.makeText(MainActivity.this, R.string.bt_disconnected, Toast.LENGTH_LONG).show();
-                _appService.stopRunning();
-            }
+        if (_appService != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
+            Toast.makeText(MainActivity.this, R.string.bt_disconnected, Toast.LENGTH_LONG).show();
+            _appService.stopRunning();
+        }
         }
     };
 
     private final BroadcastReceiver onUsbDetached = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (_appService != null && UsbPortHandler.getPort() != null && !_isTestMode) {
-                Toast.makeText(MainActivity.this, R.string.usb_detached, Toast.LENGTH_LONG).show();
-                _appService.stopRunning();
-            }
+        if (_appService != null && UsbPortHandler.getPort() != null && !_isTestMode) {
+            Toast.makeText(MainActivity.this, R.string.usb_detached, Toast.LENGTH_LONG).show();
+            _appService.stopRunning();
+        }
         }
     };
 

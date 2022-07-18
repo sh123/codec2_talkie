@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.util.Pair;
 
 import androidx.preference.PreferenceManager;
 
@@ -20,6 +21,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.storage.log.LogItem;
 import com.radio.codec2talkie.storage.log.LogItemRepository;
 import com.radio.codec2talkie.protocol.ProtocolCallback;
@@ -167,6 +169,13 @@ public class AppWorker extends Thread {
         Message msg = new Message();
         msg.what = AppMessage.CMD_SEND_LOCATION_TO_TNC.toInt();
         msg.obj = position;
+        _onMessageReceived.sendMessage(msg);
+    }
+
+    public void sendTextMessage(TextMessage textMessage) {
+        Message msg = Message.obtain();
+        msg.what = AppMessage.CMD_SEND_MESSAGE.toInt();
+        msg.obj = textMessage;
         _onMessageReceived.sendMessage(msg);
     }
 
@@ -411,6 +420,15 @@ public class AppWorker extends Thread {
             case CMD_SEND_LOCATION_TO_TNC:
                 try {
                     _protocol.sendPosition((Position)msg.obj);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    quitProcessing();
+                }
+                break;
+            case CMD_SEND_MESSAGE:
+                TextMessage textMessage = (TextMessage) msg.obj;
+                try {
+                    _protocol.sendTextMessage(textMessage);
                 } catch (IOException e) {
                     e.printStackTrace();
                     quitProcessing();

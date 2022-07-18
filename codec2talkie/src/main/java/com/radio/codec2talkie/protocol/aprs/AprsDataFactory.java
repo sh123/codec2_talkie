@@ -6,7 +6,6 @@ public class AprsDataFactory {
     public static AprsData create(AprsDataType aprsDataType) {
         switch (aprsDataType.getDataType()) {
             case UNKNOWN:
-            case MESSAGE:
             case POSITION_WITH_TIMESTAMP_MSG:
             case POSITION_WITH_TIMESTAMP_NO_MSG:
             case POSITION_WITHOUT_TIMESTAMP_NO_MSG:
@@ -15,6 +14,8 @@ public class AprsDataFactory {
                 return new AprsDataPositionReportMicE();
             case POSITION_WITHOUT_TIMESTAMP_MSG:
                 return new AprsDataPositionReport();
+            case MESSAGE:
+                return new AprsDataTextMessage();
         }
         return null;
     }

@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.radio.codec2talkie.MainActivity;
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.tools.StorageTools;
 import com.radio.codec2talkie.transport.Transport;
@@ -62,6 +63,11 @@ public class Recorder implements Protocol {
         rotateIfNewSrcOrDstCallsign(src, dst);
         writeToFile(src, dst, codec2Mode, frame);
         _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
+    }
+
+    @Override
+    public void sendTextMessage(TextMessage textMessage) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     @Override

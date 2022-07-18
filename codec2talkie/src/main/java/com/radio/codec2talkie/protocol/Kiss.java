@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.DebugTools;
@@ -206,6 +207,11 @@ public class Kiss implements Protocol {
     public void sendCompressedAudio(String src, String dst, int codec, byte[] frame) throws IOException {
         // NOTE, KISS does not distinguish between audio and data packet, upper layer should decide
         send(frame);
+    }
+
+    @Override
+    public void sendTextMessage(TextMessage textMessage) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     @Override

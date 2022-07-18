@@ -2,6 +2,7 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.transport.Transport;
 
@@ -35,6 +36,11 @@ public class Raw implements Protocol {
     @Override
     public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
         _transport.write(Arrays.copyOf(frame, frame.length));
+    }
+
+    @Override
+    public void sendTextMessage(TextMessage textMessage) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     @Override

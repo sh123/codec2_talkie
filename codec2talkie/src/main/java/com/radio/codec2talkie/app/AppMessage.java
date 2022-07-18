@@ -23,7 +23,8 @@ public enum AppMessage {
     CMD_QUIT(17),
     CMD_START_TRACKING(18),
     CMD_STOP_TRACKING(19),
-    CMD_SEND_SINGLE_TRACKING(20);
+    CMD_SEND_SINGLE_TRACKING(20),
+    CMD_SEND_MESSAGE(21);
 
     private final int _value;
 
