@@ -37,7 +37,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Send"
+        android:text="@string/send_message_to_btn_ok_text"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toStartOf="@+id/send_message_to_btn_cancel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/send_message_to_message_edit" />
@@ -48,7 +49,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
-        android:text="Cancel"
+        android:text="@string/send_message_to_btn_cancel_text"
+        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/send_message_to_btn_ok"
         app:layout_constraintTop_toBottomOf="@+id/send_message_to_message_edit" />
