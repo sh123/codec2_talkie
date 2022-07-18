@@ -21,7 +21,7 @@
         tools:listitem="@layout/activity_message_groups_view_item" />
 
     <androidx.appcompat.widget.AppCompatEditText
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@+id/messages_send"
         app:layout_constraintStart_toStartOf="parent"
