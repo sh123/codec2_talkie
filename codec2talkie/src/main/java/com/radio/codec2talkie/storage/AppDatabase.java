@@ -15,7 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @androidx.room.Database(
-    version = 2,
+    version = 3,
     entities = {LogItem.class, MessageItem.class},
     exportSchema = false
 )

@@ -1,5 +1,7 @@
 package com.radio.codec2talkie.protocol.aprs;
 
+import android.provider.ContactsContract;
+
 public class AprsDataType {
 
     public enum DataType {
@@ -39,6 +41,10 @@ public class AprsDataType {
                 _dataType == DataType.POSITION_WITHOUT_TIMESTAMP_MSG ||
                 _dataType == DataType.POSITION_WITH_TIMESTAMP_NO_MSG ||
                 _dataType == DataType.POSITION_WITHOUT_TIMESTAMP_NO_MSG);
+    }
+
+    public boolean isTextMessage() {
+        return _dataType == DataType.MESSAGE;
     }
 
     private DataType getDataTypeFromIdent(char ident) {

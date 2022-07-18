@@ -14,6 +14,7 @@ public class MessageItem {
     private String message;
     private boolean needsAck;
     private int ackNum;
+    private boolean isTransmit;
 
     public long getId() {
         return id;
@@ -35,6 +36,8 @@ public class MessageItem {
 
     public int getAckNum() { return ackNum; }
 
+    public boolean getIsTransmit() { return isTransmit; }
+
     public void setId(long id) {
         this.id = id;
     }
@@ -54,5 +57,7 @@ public class MessageItem {
     public void setNeedsAck(boolean needsAck) { this.needsAck = needsAck; }
 
     public void setAckNum(int ackNum) { this.ackNum = ackNum; }
+
+    public void setIsTransmit(boolean isTransmit) { this.isTransmit = isTransmit; }
 }
 

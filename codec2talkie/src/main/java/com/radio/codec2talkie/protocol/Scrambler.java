@@ -108,6 +108,11 @@ public class Scrambler implements Protocol {
         }
 
         @Override
+        protected void onReceiveTextMessage(TextMessage textMessage) {
+            _parentProtocolCallback.onReceiveTextMessage(textMessage);
+        }
+
+        @Override
         protected void onReceiveData(String src, String dst, byte[] scrambledData) {
             byte[] data = unscramble(scrambledData);
             if (data == null) {
@@ -135,6 +140,11 @@ public class Scrambler implements Protocol {
         @Override
         protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
             _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        }
+
+        @Override
+        protected void onTransmitTextMessage(TextMessage textMessage) {
+            _parentProtocolCallback.onTransmitTextMessage(textMessage);
         }
 
         @Override

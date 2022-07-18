@@ -3,6 +3,9 @@ package com.radio.codec2talkie.protocol.aprs;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 
+import java.nio.ByteBuffer;
+import java.util.Arrays;
+
 public class AprsDataTextMessage implements AprsData {
 
     public String dstCallsign;
@@ -37,8 +40,21 @@ public class AprsDataTextMessage implements AprsData {
 
     @Override
     public void fromBinary(byte[] infoData) {
-        // TODO, implement
         _isValid = false;
+        if (infoData.length < 10) return;
+        ByteBuffer buffer = ByteBuffer.wrap(infoData);
+        // callsign, trim ending spaces
+        byte[] callsign = new byte[9];
+        buffer.get(callsign);
+        dstCallsign = Arrays.toString(callsign).replaceAll("\\s+$", "");
+        // ':' separator
+        byte b = buffer.get();
+        if (b != ':') return;
+        // message
+        byte[] message = new byte[buffer.remaining()];
+        buffer.get(message);
+        // TODO, message id: {xxxxx
+        _isValid = true;
     }
 
     @Override
