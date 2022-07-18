@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.storage.message.group;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
 
-public class MessageGroupHolder extends RecyclerView.ViewHolder {
+public class MessageGroupHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     private final TextView messageGroupsViewItemName;
     private final TextView messageGroupsViewItemMessage;
@@ -18,6 +19,7 @@ public class MessageGroupHolder extends RecyclerView.ViewHolder {
         super(itemView);
         messageGroupsViewItemName = itemView.findViewById(R.id.message_groups_view_item_name);
         messageGroupsViewItemMessage = itemView.findViewById(R.id.message_groups_item_message);
+        itemView.setOnClickListener(this);
     }
 
     public void bind(String text) {
@@ -28,5 +30,10 @@ public class MessageGroupHolder extends RecyclerView.ViewHolder {
         View view = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.activity_message_groups_view_item, parent, false);
         return new MessageGroupHolder(view);
+    }
+
+    @Override
+    public void onClick(View v) {
+        Log.i("---", "onClick:" + messageGroupsViewItemName.getText());
     }
 }
