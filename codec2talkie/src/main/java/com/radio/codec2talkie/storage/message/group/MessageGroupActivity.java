@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
@@ -18,7 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.ui.AppCompatActivityWithServiceConnection;
 
-public class MessageGroupActivity extends AppCompatActivityWithServiceConnection implements View.OnClickListener {
+public class MessageGroupActivity extends AppCompatActivityWithServiceConnection {
 
     private static final String TAG = MessageGroupActivity.class.getSimpleName();
 
@@ -35,12 +36,22 @@ public class MessageGroupActivity extends AppCompatActivityWithServiceConnection
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         Button sendToButton = findViewById(R.id.messages_send_to);
-        sendToButton.setOnClickListener(this);
+        sendToButton.setOnClickListener(v -> {
+            MessageGroupDialogSendTo dialogSendTo = new MessageGroupDialogSendTo(MessageGroupActivity.this, getService());
+            dialogSendTo.show();
+        });
 
         RecyclerView recyclerView = findViewById(R.id.message_groups_recyclerview);
         recyclerView.setHasFixedSize(true);
+
         final MessageGroupAdapter adapter = new MessageGroupAdapter(new MessageGroupAdapter.MessageGroupDiff());
+        adapter.setLongClickListener(v -> {
+            TextView itemView = v.findViewById(R.id.message_groups_view_item_name);
+            deleteGroup(itemView.getText().toString());
+            return true;
+        });
         recyclerView.setAdapter(adapter);
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
@@ -69,22 +80,30 @@ public class MessageGroupActivity extends AppCompatActivityWithServiceConnection
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onClick(View v) {
-        MessageGroupDialogSendTo dialogSendTo = new MessageGroupDialogSendTo(MessageGroupActivity.this, getService());
-        dialogSendTo.show();
-    }
-
     private void deleteAll() {
+        DialogInterface.OnClickListener deleteAllDialogClickListener = (dialog, which) -> {
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                _messageGroupViewModel.deleteAll();
+            }
+        };
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getString(R.string.messages_group_activity_delete_all_confirmation_title))
-                .setPositiveButton(getString(R.string.yes), _deleteAllDialogClickListener)
-                .setNegativeButton(getString(R.string.no), _deleteAllDialogClickListener).show();
+                .setPositiveButton(getString(R.string.yes), deleteAllDialogClickListener)
+                .setNegativeButton(getString(R.string.no), deleteAllDialogClickListener).show();
     }
 
-    private final DialogInterface.OnClickListener _deleteAllDialogClickListener = (dialog, which) -> {
-        if (which == DialogInterface.BUTTON_POSITIVE) {
-            _messageGroupViewModel.deleteAll();
-        }
-    };
+    private void deleteGroup(String groupName) {
+        DialogInterface.OnClickListener deleteGroupDialogClickListener = (dialog, which) -> {
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                _messageGroupViewModel.deleteGroup(groupName);
+            }
+        };
+        String message = getString(R.string.messages_group_activity_delete_group_confirmation_title);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(String.format(message, groupName))
+                .setPositiveButton(getString(R.string.yes), deleteGroupDialogClickListener)
+                .setNegativeButton(getString(R.string.no), deleteGroupDialogClickListener).show();
+    }
 }

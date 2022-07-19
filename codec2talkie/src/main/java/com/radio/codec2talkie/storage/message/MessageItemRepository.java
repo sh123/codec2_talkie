@@ -39,4 +39,8 @@ public class MessageItemRepository {
     public void deleteAllMessageItems() {
         AppDatabase.getDatabaseExecutor().execute(_messageItemDao::deleteAllMessageItems);
     }
+
+    public void deleteGroup(String groupName) {
+        AppDatabase.getDatabaseExecutor().execute(() -> _messageItemDao.deleteMessageItems(groupName));
+    }
 }

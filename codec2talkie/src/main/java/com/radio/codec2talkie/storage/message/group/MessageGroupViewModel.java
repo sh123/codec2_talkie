@@ -28,4 +28,8 @@ public class MessageGroupViewModel extends AndroidViewModel {
     public void deleteAll() {
         _messageItemRepository.deleteAllMessageItems();
     }
+
+    public void deleteGroup(String groupName) {
+        _messageItemRepository.deleteGroup(groupName);
+    }
 }
