@@ -22,9 +22,10 @@ public class MessageItemHolder extends RecyclerView.ViewHolder {
         messageItemViewMessage = itemView.findViewById(R.id.message_item_message);
     }
 
-    public void bind(long timestamp, String srcCallsign, String text) {
-        messageItemViewTitle.setText(String.format("%s %s",
+    public void bind(long timestamp, String srcCallsign, String text, boolean isTransmitting) {
+        messageItemViewTitle.setText(String.format("%s %s %s",
                 DateTools.epochToIso8601(timestamp),
+                isTransmitting ? "→" : "←",
                 srcCallsign));
         messageItemViewMessage.setText(text);
     }
