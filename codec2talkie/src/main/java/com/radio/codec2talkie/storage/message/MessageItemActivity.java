@@ -34,7 +34,9 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
         recyclerView.setHasFixedSize(true);
         final MessageItemAdapter adapter = new MessageItemAdapter(new MessageItemAdapter.MessageItemDiff());
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
         _groupName = (String) getIntent().getExtras().get("groupName");
