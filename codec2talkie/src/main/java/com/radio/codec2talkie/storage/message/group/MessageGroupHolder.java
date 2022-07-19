@@ -1,6 +1,6 @@
 package com.radio.codec2talkie.storage.message.group;
 
-import android.util.Log;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.storage.message.MessageItemActivity;
 
 public class MessageGroupHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
@@ -34,6 +35,9 @@ public class MessageGroupHolder extends RecyclerView.ViewHolder implements View.
 
     @Override
     public void onClick(View v) {
-        Log.i("---", "onClick:" + messageGroupsViewItemName.getText());
+        String groupName = messageGroupsViewItemName.getText().toString();
+        Intent messagesIntent = new Intent(v.getContext(), MessageItemActivity.class);
+        messagesIntent.putExtra("groupName", groupName);
+        v.getContext().startActivity(messagesIntent);
     }
 }

@@ -18,18 +18,20 @@ public class MessageItemHolder extends RecyclerView.ViewHolder {
 
     private MessageItemHolder(View itemView) {
         super(itemView);
-        messageItemViewTitle = itemView.findViewById(R.id.log_view_item_title);
-        messageItemViewMessage = itemView.findViewById(R.id.log_view_item_message);
+        messageItemViewTitle = itemView.findViewById(R.id.message_view_item_name);
+        messageItemViewMessage = itemView.findViewById(R.id.message_item_message);
     }
 
     public void bind(long timestamp, String srcCallsign, String text) {
-        messageItemViewTitle.setText("");
-        messageItemViewMessage.setText("");
+        messageItemViewTitle.setText(String.format("%s %s",
+                DateTools.epochToIso8601(timestamp),
+                srcCallsign));
+        messageItemViewMessage.setText(text);
     }
 
     static MessageItemHolder create(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext()).inflate(
-                R.layout.activity_log_view_item, parent, false);
+                R.layout.activity_message_view_item, parent, false);
         return new MessageItemHolder(view);
     }
 }

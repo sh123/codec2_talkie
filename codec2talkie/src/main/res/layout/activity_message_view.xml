@@ -7,7 +7,7 @@
     tools:context=".storage.message.MessageItemActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/message_groups_recyclerview"
+        android:id="@+id/message_recyclerview"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:padding="8dp"
@@ -18,14 +18,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="1.0"
-        tools:listitem="@layout/activity_message_groups_view_item" />
+        tools:listitem="@layout/activity_message_view_item" />
 
     <androidx.appcompat.widget.AppCompatEditText
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toStartOf="@+id/messages_send"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/message_groups_recyclerview" />
+        app:layout_constraintTop_toBottomOf="@+id/message_recyclerview" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/messages_send"

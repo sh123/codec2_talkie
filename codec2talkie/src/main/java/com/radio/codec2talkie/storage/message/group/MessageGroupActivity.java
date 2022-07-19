@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.storage.message.group;
 
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -21,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.app.AppService;
 
-public class MessageGroupActivity extends AppCompatActivity {
+public class MessageGroupActivity extends AppCompatActivity implements ServiceConnection, View.OnClickListener {
 
     private static final String TAG = MessageGroupActivity.class.getSimpleName();
 
@@ -33,13 +34,15 @@ public class MessageGroupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate()");
+        bindAppService();
+
         setContentView(R.layout.activity_message_groups_view);
         setTitle(R.string.messages_group_view_title);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         Button sendToButton = findViewById(R.id.messages_send_to);
-        sendToButton.setOnClickListener(_onSendToButtonListener);
+        sendToButton.setOnClickListener(this);
 
         RecyclerView recyclerView = findViewById(R.id.message_groups_recyclerview);
         recyclerView.setHasFixedSize(true);
@@ -50,8 +53,6 @@ public class MessageGroupActivity extends AppCompatActivity {
 
         _messageGroupViewModel = new ViewModelProvider(this).get(MessageGroupViewModel.class);
         _messageGroupViewModel.getGroups().observe(this, adapter::submitList);
-
-        bindAppService();
     }
 
     @Override
@@ -60,11 +61,6 @@ public class MessageGroupActivity extends AppCompatActivity {
         Log.i(TAG, "onDestroy()");
         unbindAppService();
     }
-
-    private final View.OnClickListener _onSendToButtonListener = v -> {
-        MessageGroupDialogSendTo dialogSendTo = new MessageGroupDialogSendTo(MessageGroupActivity.this, _appService);
-        dialogSendTo.show();
-    };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -79,27 +75,30 @@ public class MessageGroupActivity extends AppCompatActivity {
     }
 
     private void bindAppService() {
-        if (!bindService(new Intent(this, AppService.class), _appServiceConnection, Context.BIND_AUTO_CREATE)) {
+        if (!bindService(new Intent(this, AppService.class), this, Context.BIND_AUTO_CREATE)) {
             Log.e(TAG, "Service does not exists or no access");
         }
     }
 
     private void unbindAppService() {
-        unbindService(_appServiceConnection);
+        unbindService(this);
     }
 
-    private final ServiceConnection _appServiceConnection = new ServiceConnection() {
+    @Override
+    public void onServiceConnected(ComponentName className, IBinder service) {
+        Log.i(TAG, "Connected to app service");
+        _appService = ((AppService.AppServiceBinder)service).getService();
+    }
 
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.i(TAG, "Connected to app service");
-            _appService = ((AppService.AppServiceBinder)service).getService();
-        }
+    @Override
+    public void onServiceDisconnected(ComponentName className) {
+        Log.i(TAG, "Disconnected from app service");
+        _appService = null;
+    }
 
-        @Override
-        public void onServiceDisconnected(ComponentName className) {
-            Log.i(TAG, "Disconnected from app service");
-            _appService = null;
-        }
-    };
+    @Override
+    public void onClick(View v) {
+        MessageGroupDialogSendTo dialogSendTo = new MessageGroupDialogSendTo(MessageGroupActivity.this, _appService);
+        dialogSendTo.show();
+    }
 }
