@@ -1,7 +1,5 @@
 package com.radio.codec2talkie.protocol.aprs;
 
-import android.util.Log;
-
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 

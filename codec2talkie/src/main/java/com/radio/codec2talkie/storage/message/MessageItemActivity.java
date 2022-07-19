@@ -1,45 +1,30 @@
 package com.radio.codec2talkie.storage.message;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
-import com.radio.codec2talkie.app.AppService;
 import com.radio.codec2talkie.protocol.message.TextMessage;
-import com.radio.codec2talkie.storage.message.group.MessageGroupActivity;
-import com.radio.codec2talkie.storage.message.group.MessageGroupAdapter;
-import com.radio.codec2talkie.storage.message.group.MessageGroupViewModel;
+import com.radio.codec2talkie.ui.AppCompatActivityWithServiceConnection;
 
-public class MessageItemActivity extends AppCompatActivity implements ServiceConnection, View.OnClickListener {
-
-    private static final String TAG = MessageItemActivity.class.getSimpleName();
+public class MessageItemActivity extends AppCompatActivityWithServiceConnection implements View.OnClickListener {
 
     private MessageItemViewModel _messageViewModel;
 
     private String _groupName;
 
-    private AppService _appService;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        bindAppService();
 
         setContentView(R.layout.activity_message_view);
         ActionBar actionBar = getSupportActionBar();
@@ -64,35 +49,6 @@ public class MessageItemActivity extends AppCompatActivity implements ServiceCon
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.i(TAG, "onDestroy()");
-        unbindAppService();
-    }
-
-    private void bindAppService() {
-        if (!bindService(new Intent(this, AppService.class), this, Context.BIND_AUTO_CREATE)) {
-            Log.e(TAG, "Service does not exists or no access");
-        }
-    }
-
-    private void unbindAppService() {
-        unbindService(this);
-    }
-
-    @Override
-    public void onServiceConnected(ComponentName className, IBinder service) {
-        Log.i(TAG, "Connected to app service");
-        _appService = ((AppService.AppServiceBinder)service).getService();
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName className) {
-        Log.i(TAG, "Disconnected from app service");
-        _appService = null;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         int itemId = item.getItemId();
@@ -113,7 +69,7 @@ public class MessageItemActivity extends AppCompatActivity implements ServiceCon
             TextMessage textMessage = new TextMessage();
             textMessage.dst = _groupName;
             textMessage.text = messageEdit.getText().toString();
-            _appService.sendTextMessage(textMessage);
+            getService().sendTextMessage(textMessage);
             messageEdit.setText("");
         }
     }

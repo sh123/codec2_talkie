@@ -1,31 +1,23 @@
 package com.radio.codec2talkie.storage.message.group;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
-import com.radio.codec2talkie.app.AppService;
+import com.radio.codec2talkie.ui.AppCompatActivityWithServiceConnection;
 
-public class MessageGroupActivity extends AppCompatActivity implements ServiceConnection, View.OnClickListener {
+public class MessageGroupActivity extends AppCompatActivityWithServiceConnection implements View.OnClickListener {
 
     private static final String TAG = MessageGroupActivity.class.getSimpleName();
-
-    private AppService _appService;
 
     private MessageGroupViewModel _messageGroupViewModel;
 
@@ -33,7 +25,6 @@ public class MessageGroupActivity extends AppCompatActivity implements ServiceCo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate()");
-        bindAppService();
 
         setContentView(R.layout.activity_message_groups_view);
         setTitle(R.string.messages_group_view_title);
@@ -55,13 +46,6 @@ public class MessageGroupActivity extends AppCompatActivity implements ServiceCo
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Log.i(TAG, "onDestroy()");
-        unbindAppService();
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         int itemId = item.getItemId();
@@ -73,31 +57,9 @@ public class MessageGroupActivity extends AppCompatActivity implements ServiceCo
         return super.onOptionsItemSelected(item);
     }
 
-    private void bindAppService() {
-        if (!bindService(new Intent(this, AppService.class), this, Context.BIND_AUTO_CREATE)) {
-            Log.e(TAG, "Service does not exists or no access");
-        }
-    }
-
-    private void unbindAppService() {
-        unbindService(this);
-    }
-
-    @Override
-    public void onServiceConnected(ComponentName className, IBinder service) {
-        Log.i(TAG, "Connected to app service");
-        _appService = ((AppService.AppServiceBinder)service).getService();
-    }
-
-    @Override
-    public void onServiceDisconnected(ComponentName className) {
-        Log.i(TAG, "Disconnected from app service");
-        _appService = null;
-    }
-
     @Override
     public void onClick(View v) {
-        MessageGroupDialogSendTo dialogSendTo = new MessageGroupDialogSendTo(MessageGroupActivity.this, _appService);
+        MessageGroupDialogSendTo dialogSendTo = new MessageGroupDialogSendTo(MessageGroupActivity.this, getService());
         dialogSendTo.show();
     }
 }

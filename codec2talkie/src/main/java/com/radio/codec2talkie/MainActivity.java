@@ -69,7 +69,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ServiceConnection {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -390,13 +390,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void bindAppService() {
-        if (!bindService(new Intent(this, AppService.class), _appServiceConnection, Context.BIND_AUTO_CREATE)) {
+        if (!bindService(new Intent(this, AppService.class), this, Context.BIND_AUTO_CREATE)) {
             Log.e(TAG, "Service does not exists or no access");
         }
     }
 
     private void unbindAppService() {
-        unbindService(_appServiceConnection);
+        unbindService(this);
     }
 
     private void startAppService(TransportFactory.TransportType transportType) {
@@ -475,20 +475,20 @@ public class MainActivity extends AppCompatActivity {
     private final BroadcastReceiver onBluetoothDisconnected = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_appService != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
-            Toast.makeText(MainActivity.this, R.string.bt_disconnected, Toast.LENGTH_LONG).show();
-            _appService.stopRunning();
-        }
+            if (_appService != null && BluetoothSocketHandler.getSocket() != null && !_isTestMode) {
+                Toast.makeText(MainActivity.this, R.string.bt_disconnected, Toast.LENGTH_LONG).show();
+                _appService.stopRunning();
+            }
         }
     };
 
     private final BroadcastReceiver onUsbDetached = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        if (_appService != null && UsbPortHandler.getPort() != null && !_isTestMode) {
-            Toast.makeText(MainActivity.this, R.string.usb_detached, Toast.LENGTH_LONG).show();
-            _appService.stopRunning();
-        }
+            if (_appService != null && UsbPortHandler.getPort() != null && !_isTestMode) {
+                Toast.makeText(MainActivity.this, R.string.usb_detached, Toast.LENGTH_LONG).show();
+                _appService.stopRunning();
+            }
         }
     };
 
@@ -669,24 +669,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private final ServiceConnection _appServiceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.i(TAG, "Connected to app service");
-            _appService = ((AppService.AppServiceBinder)service).getService();
-            if (AppService.isRunning) {
-                _textConnInfo.setText(_appService.getTransportName());
-                updateMenuItemsAndStatusText();
-            }
+    @Override
+    public void onServiceConnected(ComponentName className, IBinder service) {
+        Log.i(TAG, "Connected to app service");
+        _appService = ((AppService.AppServiceBinder)service).getService();
+        if (AppService.isRunning) {
+            _textConnInfo.setText(_appService.getTransportName());
+            updateMenuItemsAndStatusText();
         }
+    }
 
-        @Override
-        public void onServiceDisconnected(ComponentName className) {
-            Log.i(TAG, "Disconnected from app service");
-            _appService = null;
-        }
-    };
+    @Override
+    public void onServiceDisconnected(ComponentName className) {
+        Log.i(TAG, "Disconnected from app service");
+        _appService = null;
+    }
 
     private final Handler onAppServiceStateChanged = new Handler(Looper.getMainLooper()) {
         @Override
