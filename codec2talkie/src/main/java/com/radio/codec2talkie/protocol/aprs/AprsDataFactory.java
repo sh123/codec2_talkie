@@ -1,5 +1,7 @@
 package com.radio.codec2talkie.protocol.aprs;
 
+import android.util.Log;
+
 import java.nio.ByteBuffer;
 
 public class AprsDataFactory {
@@ -22,7 +24,7 @@ public class AprsDataFactory {
 
     public static AprsData fromBinary(byte[] infoData) {
         ByteBuffer buffer = ByteBuffer.wrap(infoData);
-        AprsDataType dataType = new AprsDataType(buffer.getChar());
+        AprsDataType dataType = new AprsDataType((char)buffer.get());
         AprsData aprsData = create(dataType);
         if (aprsData == null) return null;
         byte[] data = new byte[buffer.remaining()];

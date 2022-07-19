@@ -144,11 +144,12 @@ public class Aprs implements Protocol {
         @Override
         protected void onReceiveData(String src, String dst, byte[] data) {
             if (data.length == 0) return;
-            AprsDataType dataType = new AprsDataType((char) data[0]);
+            AprsDataType dataType = new AprsDataType((char)data[0]);
             AprsData aprsData = AprsDataFactory.fromBinary(data);
             if (aprsData != null && aprsData.isValid()) {
                 if (dataType.isTextMessage()) {
                     TextMessage textMessage = aprsData.toTextMessage();
+                    textMessage.src = src;
                     _parentProtocolCallback.onReceiveTextMessage(textMessage);
                     return;
                 } else if (dataType.isPositionReport()) {

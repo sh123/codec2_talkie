@@ -260,6 +260,7 @@ public class AppWorker extends Thread {
             messageItem.setMessage(textMessage.text);
 
             _messageItemRepository.insertMessageItem(messageItem);
+            Log.i(TAG, "message received: " + textMessage.text);
         }
 
         @Override
