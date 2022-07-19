@@ -277,4 +277,9 @@
     <string name="messages_view_title">Messages</string>
     <string name="app_notifications_text_title">Incoming text message</string>
     <string name="app_notifications_text_summary">Click to open and read message</string>
+    <string name="messages_group_menu_clear_title">Delete all</string>
+    <string name="messages_group_activity_delete_all_confirmation_title">This will remove all messages. Are you sure?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="log_item_activity_delete_all_title">This will remove everything from the log. Are you sure?</string>
 </resources>

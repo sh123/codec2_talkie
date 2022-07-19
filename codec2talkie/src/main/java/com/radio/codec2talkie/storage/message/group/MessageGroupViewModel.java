@@ -24,4 +24,8 @@ public class MessageGroupViewModel extends AndroidViewModel {
     public LiveData<List<String>> getGroups() {
         return _messageGroups;
     }
+
+    public void deleteAll() {
+        _messageItemRepository.deleteAllMessageItems();
+    }
 }

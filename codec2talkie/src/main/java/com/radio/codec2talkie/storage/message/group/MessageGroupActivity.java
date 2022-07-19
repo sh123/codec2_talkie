@@ -1,12 +1,15 @@
 package com.radio.codec2talkie.storage.message.group;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -46,12 +49,21 @@ public class MessageGroupActivity extends AppCompatActivityWithServiceConnection
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.messages_group_menu, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         int itemId = item.getItemId();
 
         if (itemId == android.R.id.home) {
             finish();
+            return true;
+        } else if (itemId == R.id.messages_group_menu_clear) {
+            deleteAll();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -62,4 +74,17 @@ public class MessageGroupActivity extends AppCompatActivityWithServiceConnection
         MessageGroupDialogSendTo dialogSendTo = new MessageGroupDialogSendTo(MessageGroupActivity.this, getService());
         dialogSendTo.show();
     }
+
+    private void deleteAll() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.messages_group_activity_delete_all_confirmation_title))
+                .setPositiveButton(getString(R.string.yes), _deleteAllDialogClickListener)
+                .setNegativeButton(getString(R.string.no), _deleteAllDialogClickListener).show();
+    }
+
+    private final DialogInterface.OnClickListener _deleteAllDialogClickListener = (dialog, which) -> {
+        if (which == DialogInterface.BUTTON_POSITIVE) {
+            _messageGroupViewModel.deleteAll();
+        }
+    };
 }
