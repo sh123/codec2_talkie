@@ -58,6 +58,7 @@ import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.recorder.RecorderActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
+import com.radio.codec2talkie.storage.message.group.MessageGroupActivity;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.tools.RadioTools;
 import com.radio.codec2talkie.transport.TransportFactory;
@@ -68,7 +69,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ServiceConnection {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -358,6 +359,13 @@ public class MainActivity extends AppCompatActivity {
         _settingsActivityLauncher.launch(new Intent(this, SettingsActivity.class));
     }
 
+    private final ActivityResultLauncher<Intent> _messagesActivityLauncher  = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(), result -> {});
+
+    protected void startMessagesActivity() {
+        _messagesActivityLauncher.launch(new Intent(this, MessageGroupActivity.class));
+    }
+
     protected boolean requestPermissions() {
         List<String> permissionsToRequest = new LinkedList<>();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -382,13 +390,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void bindAppService() {
-        if (!bindService(new Intent(this, AppService.class), _appServiceConnection, Context.BIND_AUTO_CREATE)) {
+        if (!bindService(new Intent(this, AppService.class), this, Context.BIND_AUTO_CREATE)) {
             Log.e(TAG, "Service does not exists or no access");
         }
     }
 
     private void unbindAppService() {
-        unbindService(_appServiceConnection);
+        unbindService(this);
     }
 
     private void startAppService(TransportFactory.TransportType transportType) {
@@ -552,7 +560,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
         else if (itemId == R.id.messages) {
-            Toast.makeText(getBaseContext(), "Not implemented", Toast.LENGTH_SHORT).show();
+            startMessagesActivity();
             return true;
         }
         else if (itemId == R.id.aprs_log) {
@@ -661,24 +669,21 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private final ServiceConnection _appServiceConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.i(TAG, "Connected to app service");
-            _appService = ((AppService.AppServiceBinder)service).getService();
-            if (AppService.isRunning) {
-                _textConnInfo.setText(_appService.getTransportName());
-                updateMenuItemsAndStatusText();
-            }
+    @Override
+    public void onServiceConnected(ComponentName className, IBinder service) {
+        Log.i(TAG, "Connected to app service");
+        _appService = ((AppService.AppServiceBinder)service).getService();
+        if (AppService.isRunning) {
+            _textConnInfo.setText(_appService.getTransportName());
+            updateMenuItemsAndStatusText();
         }
+    }
 
-        @Override
-        public void onServiceDisconnected(ComponentName className) {
-            Log.i(TAG, "Disconnected from app service");
-            _appService = null;
-        }
-    };
+    @Override
+    public void onServiceDisconnected(ComponentName className) {
+        Log.i(TAG, "Disconnected from app service");
+        _appService = null;
+    }
 
     private final Handler onAppServiceStateChanged = new Handler(Looper.getMainLooper()) {
         @Override
@@ -726,9 +731,11 @@ public class MainActivity extends AppCompatActivity {
                 case EV_RECEIVING:
                     _btnPtt.setText(R.string.main_status_rx);
                     break;
+                case EV_TEXT_MESSAGE_RECEIVED:
                 case EV_DATA_RECEIVED:
                     if (msg.obj != null) {
-                        _textStatus.setText((String) msg.obj);
+                        String note = (String)msg.obj;
+                        _textStatus.setText(note.split(":")[0]);
                     }
                     _btnPtt.setText(R.string.main_status_data_received);
                     break;

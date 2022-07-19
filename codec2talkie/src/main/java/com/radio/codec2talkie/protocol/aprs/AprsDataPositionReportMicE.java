@@ -1,6 +1,7 @@
 package com.radio.codec2talkie.protocol.aprs;
 
 import com.radio.codec2talkie.protocol.aprs.tools.AprsTools;
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.tools.UnitTools;
 
@@ -16,6 +17,7 @@ public class AprsDataPositionReportMicE implements AprsData {
     private boolean _isValid;
 
     private final Map<String, Integer> _miceMessageTypeMap = new HashMap<String, Integer>() {{
+        // standard
         put("off_duty", 0b111);
         put("en_route", 0b110);
         put("in_service", 0b101);
@@ -23,6 +25,15 @@ public class AprsDataPositionReportMicE implements AprsData {
         put("committed", 0b011);
         put("special", 0b010);
         put("priority", 0b001);
+        // custom
+        put("custom_0", 0b111);
+        put("custom_1", 0b110);
+        put("custom_2", 0b101);
+        put("custom_3", 0b100);
+        put("custom_4", 0b011);
+        put("custom_5", 0b010);
+        put("custom_6", 0b001);
+        // emergency
         put("emergency", 0b000);
     }};
 
@@ -59,8 +70,18 @@ public class AprsDataPositionReportMicE implements AprsData {
     }
 
     @Override
+    public void fromTextMessage(TextMessage textMessage) {
+        _isValid = false;
+    }
+
+    @Override
     public Position toPosition() {
         return _position;
+    }
+
+    @Override
+    public TextMessage toTextMessage() {
+        return null;
     }
 
     @Override
@@ -97,6 +118,7 @@ public class AprsDataPositionReportMicE implements AprsData {
         byte[] longitude = UnitTools.decimalToNmea(position.longitude, false).getBytes();
 
         // get Mic-E status bit mapping
+        boolean isCustom = position.status.startsWith("custom");
         Integer miceMessageTypeEncoding = _miceMessageTypeMap.get(position.status);
         miceMessageTypeEncoding = miceMessageTypeEncoding == null
                 ? 0b111
@@ -108,20 +130,26 @@ public class AprsDataPositionReportMicE implements AprsData {
 
         // generate Mic-E position and flags into the destination callsign, add N, W indicators
         ByteBuffer buffer = ByteBuffer.allocate(16);
-        buffer.put((byte)(latitude[0] + 32 * ((miceMessageTypeEncoding >> 2) & 1)));
-        buffer.put((byte)(latitude[1] + 32 * ((miceMessageTypeEncoding >> 1) & 1)));
+        // 0, mic-e status
+        buffer.put((byte)(latitude[0] + (isCustom ? 17 : 32) * ((miceMessageTypeEncoding >> 2) & 1)));
+        // 1, mic-e status
+        buffer.put((byte)(latitude[1] + (isCustom ? 17 : 32) * ((miceMessageTypeEncoding >> 1) & 1)));
+        // 2, mic-e status
         if (latitude[2] == (byte)' ')
-            buffer.put((miceMessageTypeEncoding & 1) == 1 ? (byte)'Z' : (byte)'L');
+            buffer.put((miceMessageTypeEncoding & 1) == 1 ? isCustom ? (byte)'K' : (byte)'Z' : (byte)'L');
         else
-            buffer.put((byte)(latitude[2] + 32 * ((miceMessageTypeEncoding) & 1)));
+            buffer.put((byte)(latitude[2] + (isCustom ? 17 : 32) * ((miceMessageTypeEncoding) & 1)));
+        // 3, north/south
         if (latitude[3] == (byte)' ')
             buffer.put(latitude[6] == 'N' ? (byte)'Z' : (byte)'L');
         else
             buffer.put((byte)(latitude[3] + 32 * (latitude[6] == 'N' ? 1 : 0)));
+        // 4, long offset
         if (latitude[4] == (byte)' ')
             buffer.put((longOffset & 1) == 1 ? (byte)'Z' : (byte)'L');
         else
             buffer.put((byte)(latitude[4] + 32 * (longOffset & 1)));
+        // 5, west/east
         if (latitude[5] == (byte)' ')
             buffer.put(longitude[7] == 'W' ? (byte)'Z' : (byte)'L');
         else

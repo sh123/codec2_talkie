@@ -10,10 +10,13 @@ import com.radio.codec2talkie.protocol.aprs.AprsCallsign;
 import com.radio.codec2talkie.protocol.aprs.AprsData;
 import com.radio.codec2talkie.protocol.aprs.AprsDataFactory;
 import com.radio.codec2talkie.protocol.aprs.AprsDataType;
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.protocol.ax25.AX25Callsign;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.transport.Transport;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 
@@ -81,6 +84,22 @@ public class Aprs implements Protocol {
     }
 
     @Override
+    public void sendTextMessage(TextMessage textMessage) throws IOException {
+        AprsDataType aprsDataType = new AprsDataType(AprsDataType.DataType.MESSAGE);
+        AprsData aprsData = AprsDataFactory.create(aprsDataType);
+        assert aprsData != null;
+        aprsData.fromTextMessage(textMessage);
+        if (aprsData.isValid()) {
+            textMessage.src = _srcCallsign;
+            sendData(_srcCallsign, _dstCallsign, aprsData.toBinary());
+            _parentProtocolCallback.onTransmitTextMessage(textMessage);
+        } else {
+            Log.e(TAG, "Invalid APRS message");
+            _parentProtocolCallback.onProtocolTxError();
+        }
+    }
+
+    @Override
     public void sendPcmAudio(String src, String dst, int codec2Mode, short[] pcmFrame) throws IOException {
         if (_isVoax25Enabled) {
             _childProtocol.sendPcmAudio(src == null ? _srcCallsign : src, dst == null ? _dstCallsign : dst, codec2Mode, pcmFrame);
@@ -118,14 +137,27 @@ public class Aprs implements Protocol {
         }
 
         @Override
+        protected void onReceiveTextMessage(TextMessage textMessage) {
+            _parentProtocolCallback.onReceiveTextMessage(textMessage);
+        }
+
+        @Override
         protected void onReceiveData(String src, String dst, byte[] data) {
+            if (data.length == 0) return;
+            AprsDataType dataType = new AprsDataType((char)data[0]);
             AprsData aprsData = AprsDataFactory.fromBinary(data);
-            // TODO, always invalid, needs fromBinary implementation
             if (aprsData != null && aprsData.isValid()) {
-                Position position = aprsData.toPosition();
-                if (position != null) {
-                    _parentProtocolCallback.onReceivePosition(position);
+                if (dataType.isTextMessage()) {
+                    TextMessage textMessage = aprsData.toTextMessage();
+                    textMessage.src = src;
+                    _parentProtocolCallback.onReceiveTextMessage(textMessage);
                     return;
+                } else if (dataType.isPositionReport()) {
+                    Position position = aprsData.toPosition();
+                    if (position != null) {
+                        _parentProtocolCallback.onReceivePosition(position);
+                        return;
+                    }
                 }
             }
             _parentProtocolCallback.onReceiveData(src, dst, data);
@@ -150,6 +182,11 @@ public class Aprs implements Protocol {
         @Override
         protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
             _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        }
+
+        @Override
+        protected void onTransmitTextMessage(TextMessage textMessage) {
+            _parentProtocolCallback.onTransmitTextMessage(textMessage);
         }
 
         @Override

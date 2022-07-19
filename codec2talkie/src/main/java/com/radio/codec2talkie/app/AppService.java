@@ -30,7 +30,9 @@ import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.MainActivity;
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.storage.message.MessageItemActivity;
 import com.radio.codec2talkie.tracker.Tracker;
 import com.radio.codec2talkie.tracker.TrackerFactory;
 import com.radio.codec2talkie.transport.TransportFactory;
@@ -46,12 +48,13 @@ public class AppService extends Service {
 
     private final int SERVICE_NOTIFICATION_ID = 1;
     private final int VOICE_NOTIFICATION_ID = 2;
+    private final int MESSAGE_NOTIFICATION_ID = 3;
 
     private AppWorker _appWorker;
     private Messenger _callbackMessenger;
     private Tracker _tracker;
     private NotificationManager _notificationManager;
-    PowerManager.WakeLock _serviceWakeLock;
+    private PowerManager.WakeLock _serviceWakeLock;
 
     private boolean _voiceNotificationsEnabled = false;
 
@@ -97,6 +100,11 @@ public class AppService extends Service {
         Message msg = Message.obtain();
         msg.what = AppMessage.CMD_STOP_TRACKING.toInt();
         _onProcess.sendMessage(msg);
+    }
+
+    public void sendTextMessage(TextMessage textMessage) {
+        if (_appWorker != null)
+            _appWorker.sendTextMessage(textMessage);
     }
 
     public boolean isTracking() {
@@ -155,7 +163,7 @@ public class AppService extends Service {
             transportType = (TransportFactory.TransportType) extras.get("transportType");
             startAppWorker(transportType);
 
-            Notification notification = buildNotification(getString(R.string.app_service_notif_text_ptt_ready), R.drawable.ic_app_action);
+            Notification notification = buildServiceNotification(getString(R.string.app_service_notif_text_ptt_ready), R.drawable.ic_app_action);
             startForeground(SERVICE_NOTIFICATION_ID, notification);
             PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
 
@@ -214,6 +222,9 @@ public class AppService extends Service {
                     case EV_VOICE_RECEIVED:
                         showVoiceNotification(R.string.app_notifications_voice_title, R.string.app_notifications_voice_summary);
                         break;
+                    case EV_TEXT_MESSAGE_RECEIVED:
+                        showMessageNotification(R.string.app_notifications_text_title, (String)msg.obj);
+                        break;
                     case EV_LISTENING:
                         hideVoiceNotification();
                         break;
@@ -245,7 +256,7 @@ public class AppService extends Service {
 
     private void showServiceNotification(int resId, int iconResId) {
         String text = getString(resId);
-        _notificationManager.notify(SERVICE_NOTIFICATION_ID, buildNotification(text, iconResId));
+        _notificationManager.notify(SERVICE_NOTIFICATION_ID, buildServiceNotification(text, iconResId));
     }
 
     private void showVoiceNotification(int titleResId, int textResId) {
@@ -253,6 +264,12 @@ public class AppService extends Service {
         String title = getString(titleResId);
         String text = getString(textResId);
         _notificationManager.notify(VOICE_NOTIFICATION_ID, buildFullScreenNotification(title, text));
+    }
+
+    private void showMessageNotification(int titleResId, String note) {
+        if (!MessageItemActivity.isPaused || !_voiceNotificationsEnabled) return;
+        String title = getString(titleResId);
+        _notificationManager.notify(MESSAGE_NOTIFICATION_ID, buildMessageNotification(title, note));
     }
 
     private void hideVoiceNotification() {
@@ -269,7 +286,7 @@ public class AppService extends Service {
         return channelId;
     }
 
-    private Notification buildNotification(String text, int iconResId) {
+    private Notification buildServiceNotification(String text, int iconResId) {
         String channelId = "";
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             channelId = createNotificationChannel("alpha", "Service", NotificationManager.IMPORTANCE_LOW);
@@ -309,6 +326,33 @@ public class AppService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_CALL)
                 .setFullScreenIntent(fullScreenPendingIntent, true)
+                .setAutoCancel(true)
+                .build();
+    }
+
+    private Notification buildMessageNotification(String title, String text) {
+        String channelId = "";
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            channelId = createNotificationChannel("gamma", "Message", NotificationManager.IMPORTANCE_HIGH);
+
+        // extract group name from the note
+        String[] srcDstText = text.split(": ");
+        String groupName = srcDstText[0].split("→")[1];
+
+        Intent notificationIntent = new Intent(this, MessageItemActivity.class);
+        notificationIntent.putExtra("groupName", groupName);
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+                notificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+        return new NotificationCompat.Builder(this, channelId)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setSmallIcon(R.drawable.ic_app_action)
+                .setChannelId(channelId)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .build();
     }

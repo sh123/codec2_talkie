@@ -2,6 +2,7 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.transport.Transport;
 import com.ustadmobile.codec2.Codec2;
@@ -40,6 +41,11 @@ public class AudioCodec2 implements Protocol {
 
     @Override
     public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void sendTextMessage(TextMessage textMessage) {
         throw new UnsupportedOperationException();
     }
 
@@ -85,6 +91,11 @@ public class AudioCodec2 implements Protocol {
         }
 
         @Override
+        protected void onReceiveTextMessage(TextMessage textMessage) {
+            _parentProtocolCallback.onReceiveTextMessage(textMessage);
+        }
+
+        @Override
         protected void onReceiveData(String src, String dst, byte[] data) {
             _parentProtocolCallback.onReceiveData(src, dst, data);
         }
@@ -107,6 +118,11 @@ public class AudioCodec2 implements Protocol {
         @Override
         protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
             _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        }
+
+        @Override
+        protected void onTransmitTextMessage(TextMessage textMessage) {
+            _parentProtocolCallback.onTransmitTextMessage(textMessage);
         }
 
         @Override

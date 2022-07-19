@@ -5,6 +5,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.radio.codec2talkie.MainActivity;
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.tools.StorageTools;
 import com.radio.codec2talkie.transport.Transport;
@@ -65,6 +66,11 @@ public class Recorder implements Protocol {
     }
 
     @Override
+    public void sendTextMessage(TextMessage textMessage) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
         throw new UnsupportedOperationException();
     }
@@ -98,6 +104,11 @@ public class Recorder implements Protocol {
         }
 
         @Override
+        protected void onReceiveTextMessage(TextMessage textMessage) {
+            _parentProtocolCallback.onReceiveTextMessage(textMessage);
+        }
+
+        @Override
         protected void onReceiveData(String src, String dst, byte[] data) {
             _parentProtocolCallback.onReceiveData(src, dst, data);
         }
@@ -120,6 +131,11 @@ public class Recorder implements Protocol {
         @Override
         protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
             _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        }
+
+        @Override
+        protected void onTransmitTextMessage(TextMessage textMessage) {
+            _parentProtocolCallback.onTransmitTextMessage(textMessage);
         }
 
         @Override

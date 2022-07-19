@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.ScramblingTools;
@@ -60,6 +61,11 @@ public class Scrambler implements Protocol {
     }
 
     @Override
+    public void sendTextMessage(TextMessage textMessage) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
         throw new UnsupportedOperationException();
     }
@@ -102,6 +108,11 @@ public class Scrambler implements Protocol {
         }
 
         @Override
+        protected void onReceiveTextMessage(TextMessage textMessage) {
+            _parentProtocolCallback.onReceiveTextMessage(textMessage);
+        }
+
+        @Override
         protected void onReceiveData(String src, String dst, byte[] scrambledData) {
             byte[] data = unscramble(scrambledData);
             if (data == null) {
@@ -129,6 +140,11 @@ public class Scrambler implements Protocol {
         @Override
         protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
             _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        }
+
+        @Override
+        protected void onTransmitTextMessage(TextMessage textMessage) {
+            _parentProtocolCallback.onTransmitTextMessage(textMessage);
         }
 
         @Override
