@@ -734,7 +734,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 case EV_TEXT_MESSAGE_RECEIVED:
                 case EV_DATA_RECEIVED:
                     if (msg.obj != null) {
-                        _textStatus.setText((String) msg.obj);
+                        String note = (String)msg.obj;
+                        _textStatus.setText(note.split(":")[0]);
                     }
                     _btnPtt.setText(R.string.main_status_data_received);
                     break;

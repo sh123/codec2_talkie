@@ -249,7 +249,7 @@ public class AppWorker extends Thread {
         protected void onReceiveTextMessage(TextMessage textMessage) {
             String note = (textMessage.src == null ? "UNK" : textMessage.src) + "→" +
                     (textMessage.dst == null ? "UNK" : textMessage.dst);
-            sendStatusUpdate(AppMessage.EV_TEXT_MESSAGE_RECEIVED, note);
+            sendStatusUpdate(AppMessage.EV_TEXT_MESSAGE_RECEIVED, note + ": " + textMessage.text);
 
             MessageItem messageItem = new MessageItem();
             messageItem.setTimestampEpoch(System.currentTimeMillis());
