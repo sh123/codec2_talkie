@@ -1,6 +1,7 @@
 package com.radio.codec2talkie.storage.message;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.app.AppService;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.ui.AppCompatActivityWithServiceConnection;
 
@@ -21,6 +23,8 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
     private MessageItemViewModel _messageViewModel;
 
     private String _groupName;
+
+    public static boolean isPaused = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,5 +78,17 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
             getService().sendTextMessage(textMessage);
             messageEdit.setText("");
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isPaused = true;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        isPaused = false;
     }
 }

@@ -33,7 +33,6 @@ import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.storage.message.MessageItemActivity;
-import com.radio.codec2talkie.storage.message.group.MessageGroupActivity;
 import com.radio.codec2talkie.tracker.Tracker;
 import com.radio.codec2talkie.tracker.TrackerFactory;
 import com.radio.codec2talkie.transport.TransportFactory;
@@ -268,6 +267,7 @@ public class AppService extends Service {
     }
 
     private void showMessageNotification(int titleResId, String note) {
+        if (!MessageItemActivity.isPaused || !_voiceNotificationsEnabled) return;
         String title = getString(titleResId);
         _notificationManager.notify(MESSAGE_NOTIFICATION_ID, buildMessageNotification(title, note));
     }
@@ -335,8 +335,12 @@ public class AppService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             channelId = createNotificationChannel("gamma", "Message", NotificationManager.IMPORTANCE_HIGH);
 
+        // extract group name from the note
+        String[] srcDstText = text.split(": ");
+        String groupName = srcDstText[0].split("→")[1];
+
         Intent notificationIntent = new Intent(this, MessageItemActivity.class);
-        notificationIntent.putExtra("groupName", text.split(":")[0].split("→")[1]);
+        notificationIntent.putExtra("groupName", groupName);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 notificationIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
