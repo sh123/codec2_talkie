@@ -17,25 +17,39 @@ import com.radio.codec2talkie.R;
 
 public class LogItemActivity extends AppCompatActivity {
 
+    private String _groupName;
     private LogItemViewModel _logItemViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_view);
-        setTitle(R.string.aprs_log_view_title);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         RecyclerView recyclerView = findViewById(R.id.log_item_recyclerview);
         recyclerView.setHasFixedSize(true);
+
         final LogItemAdapter adapter = new LogItemAdapter(new LogItemAdapter.LogItemDiff());
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
-        _logItemViewModel.getAllData().observe(this, adapter::submitList);
+
+        // launch with filter if group name is provided
+        Bundle bundle = getIntent().getExtras();
+        _groupName = null;
+        if (bundle != null) {
+            _groupName = (String)bundle.get("groupName");
+        }
+        if (_groupName == null) {
+            _logItemViewModel.getAllData().observe(this, adapter::submitList);
+            setTitle(R.string.aprs_log_view_title);
+        } else {
+            _logItemViewModel.getData(_groupName).observe(this, adapter::submitList);
+            setTitle(_groupName);
+        }
     }
 
     @Override
@@ -61,15 +75,23 @@ public class LogItemActivity extends AppCompatActivity {
     }
 
     private void deleteAll() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getString(R.string.log_item_activity_delete_all_title))
-                .setPositiveButton(getString(R.string.yes), _deleteAllDialogClickListener)
-                .setNegativeButton(getString(R.string.no), _deleteAllDialogClickListener).show();
-    }
-
-    private final DialogInterface.OnClickListener _deleteAllDialogClickListener = (dialog, which) -> {
-        if (which == DialogInterface.BUTTON_POSITIVE) {
-            _logItemViewModel.deleteAllLogItems();
+        DialogInterface.OnClickListener deleteAllDialogClickListener = (dialog, which) -> {
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                if (_groupName == null) {
+                    _logItemViewModel.deleteAllLogItems();
+                } else {
+                    _logItemViewModel.deleteLogItems(_groupName);
+                }
+            }
+        };
+        String alertMessage = getString(R.string.log_item_activity_delete_all_title);
+        if (_groupName != null) {
+            alertMessage = getString(R.string.log_item_activity_delete_group_title);
+            alertMessage = String.format(alertMessage, _groupName);
         }
-    };
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(alertMessage)
+                .setPositiveButton(getString(R.string.yes), deleteAllDialogClickListener)
+                .setNegativeButton(getString(R.string.no), deleteAllDialogClickListener).show();
+    }
 }

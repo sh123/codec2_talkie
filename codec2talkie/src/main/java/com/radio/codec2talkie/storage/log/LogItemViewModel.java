@@ -6,12 +6,15 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.radio.codec2talkie.storage.message.MessageItem;
+
 import java.util.List;
 
 public class LogItemViewModel extends AndroidViewModel {
 
     private final LogItemRepository _logItemRepository;
     private final LiveData<List<LogItem>> _logItemLiveData;
+    private LiveData<List<LogItem>> _logItemGroupLiveData;
 
     public LogItemViewModel(@NonNull Application application) {
         super(application);
@@ -23,5 +26,15 @@ public class LogItemViewModel extends AndroidViewModel {
         return _logItemLiveData;
     }
 
+    public LiveData<List<LogItem>> getData(String groupName) {
+        if (_logItemGroupLiveData == null)
+            _logItemGroupLiveData = _logItemRepository.getLogItems(groupName);
+        return _logItemGroupLiveData;
+    }
+
     public void deleteAllLogItems() { _logItemRepository.deleteAllLogItems(); }
+
+    public void deleteLogItems(String groupName) {
+        _logItemRepository.deleteLogItems(groupName);
+    }
 }
