@@ -228,7 +228,7 @@
     <string name="menu_stop_tracking">Stop tracking</string>
     <string name="menu_send_position">Send position</string>
     <string name="voax25_label">&#9742;</string>
-    <string name="menu_aprs_log">View raw log</string>
+    <string name="menu_aprs_log">View log</string>
     <string name="aprs_location_emic_digipath_title">Mic-E digipath</string>
     <string name="aprs_location_source_smart_title">Smartbeaconing&#8482; position</string>
     <string name="aprs_location_source_smart_fast_speed_summary">Minimum speed for fast position updates</string>
@@ -282,5 +282,6 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="log_item_activity_delete_all_title">This will remove everything from the log. Are you sure?</string>
+    <string name="log_item_activity_delete_group_title">This will remove log for %s. Are you sure?</string>
     <string name="messages_group_activity_delete_group_confirmation_title">This will remove all messages from %s. Are you sure?</string>
 </resources>

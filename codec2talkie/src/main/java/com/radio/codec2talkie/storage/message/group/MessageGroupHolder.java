@@ -13,18 +13,18 @@ import com.radio.codec2talkie.storage.message.MessageItemActivity;
 
 public class MessageGroupHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-    private final TextView messageGroupsViewItemName;
-    private final TextView messageGroupsViewItemMessage;
+    private final TextView _messageGroupsViewItemName;
+    private final TextView _messageGroupsViewItemMessage;
 
     private MessageGroupHolder(View itemView) {
         super(itemView);
-        messageGroupsViewItemName = itemView.findViewById(R.id.message_groups_view_item_name);
-        messageGroupsViewItemMessage = itemView.findViewById(R.id.message_groups_item_message);
+        _messageGroupsViewItemName = itemView.findViewById(R.id.message_groups_view_item_name);
+        _messageGroupsViewItemMessage = itemView.findViewById(R.id.message_groups_item_message);
         itemView.setOnClickListener(this);
     }
 
     public void bind(String text) {
-        messageGroupsViewItemName.setText(text);
+        _messageGroupsViewItemName.setText(text);
     }
 
     static MessageGroupHolder create(ViewGroup parent) {
@@ -35,7 +35,7 @@ public class MessageGroupHolder extends RecyclerView.ViewHolder implements View.
 
     @Override
     public void onClick(View v) {
-        String groupName = messageGroupsViewItemName.getText().toString();
+        String groupName = _messageGroupsViewItemName.getText().toString();
         Intent messagesIntent = new Intent(v.getContext(), MessageItemActivity.class);
         messagesIntent.putExtra("groupName", groupName);
         v.getContext().startActivity(messagesIntent);
