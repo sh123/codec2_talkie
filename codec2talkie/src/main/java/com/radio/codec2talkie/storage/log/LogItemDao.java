@@ -19,7 +19,7 @@ public interface LogItemDao {
     @Query("SELECT srcCallsign from LogItem GROUP BY srcCallsign")
     LiveData<List<String>> getGroups();
 
-    @Query("SELECT * FROM LogItem ORDER by timestampEpoch DESC")
+    @Query("SELECT * FROM LogItem ORDER by timestampEpoch ASC")
     LiveData<List<LogItem>> getAllLogItems();
 
     @Query("SELECT * FROM LogItem WHERE srcCallsign = :srcCallsign ORDER BY timestampEpoch ASC")

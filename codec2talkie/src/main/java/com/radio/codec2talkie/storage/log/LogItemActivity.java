@@ -32,7 +32,9 @@ public class LogItemActivity extends AppCompatActivity {
 
         final LogItemAdapter adapter = new LogItemAdapter(new LogItemAdapter.LogItemDiff());
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
