@@ -2,8 +2,11 @@ package com.radio.codec2talkie.storage.log;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
@@ -27,17 +30,35 @@ public class LogItemActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
-        RecyclerView recyclerView = findViewById(R.id.log_item_recyclerview);
-        recyclerView.setHasFixedSize(true);
+        _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
+
+        // log items
+        RecyclerView logItemRecyclerView = findViewById(R.id.log_item_recyclerview);
+        logItemRecyclerView.setHasFixedSize(true);
 
         final LogItemAdapter adapter = new LogItemAdapter(new LogItemAdapter.LogItemDiff());
-        recyclerView.setAdapter(adapter);
+        logItemRecyclerView.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setStackFromEnd(true);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
+        logItemRecyclerView.setLayoutManager(linearLayoutManager);
+        logItemRecyclerView.addItemDecoration(new DividerItemDecoration(logItemRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
-        _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
+        // log groups
+        RecyclerView logItemGroupRecyclerView = findViewById(R.id.log_item_group_recyclerview);
+        logItemGroupRecyclerView.setHasFixedSize(true);
+
+        final LogItemGroupAdapter adapterGroup = new LogItemGroupAdapter(new LogItemGroupAdapter.LogItemGroupDiff());
+        adapterGroup.setClickListener(v -> {
+            TextView itemView = v.findViewById(R.id.log_view_group_item_title);
+            _groupName = itemView.getText().toString();
+            _logItemViewModel.getData(_groupName).observe(this, adapter::submitList);
+            setTitle(_groupName);
+        });
+        logItemGroupRecyclerView.setAdapter(adapterGroup);
+        LinearLayoutManager linearLayoutManagerGroup = new LinearLayoutManager(this);
+        logItemGroupRecyclerView.setLayoutManager(linearLayoutManagerGroup);
+        logItemGroupRecyclerView.addItemDecoration(new DividerItemDecoration(logItemGroupRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
+
+        _logItemViewModel.getGroups().observe(this, adapterGroup::submitList);
 
         // launch with filter if group name is provided
         Bundle bundle = getIntent().getExtras();
@@ -46,6 +67,7 @@ public class LogItemActivity extends AppCompatActivity {
             _groupName = (String)bundle.get("groupName");
         }
         if (_groupName == null) {
+            logItemGroupRecyclerView.setVisibility(View.GONE);
             _logItemViewModel.getAllData().observe(this, adapter::submitList);
             setTitle(R.string.aprs_log_view_title);
         } else {

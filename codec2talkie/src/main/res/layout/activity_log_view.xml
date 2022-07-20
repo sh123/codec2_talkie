@@ -8,15 +8,23 @@
     tools:context=".storage.log.LogItemActivity">
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/log_item_group_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="5dp"
+        android:scrollbars="vertical"
+        app:layout_constraintHeight_percent="0.33"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:listitem="@layout/activity_log_view_group_item" />
+
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/log_item_recyclerview"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:padding="5dp"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/log_item_group_recyclerview"
         tools:listitem="@layout/activity_log_view_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

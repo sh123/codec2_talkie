@@ -29,10 +29,7 @@ public class LogItemRepository {
     public LiveData<List<String>> getGroups() { return _logItemGroups; }
 
     public LiveData<List<LogItem>> getLogItems(String groupName) {
-        if (_logItemGroupLiveData == null) {
-            _logItemGroupLiveData = _logItemDao.getLogItems(groupName);
-        }
-        return _logItemGroupLiveData;
+        return _logItemDao.getLogItems(groupName);
     }
 
     public void insertLogItem(LogItem logItem) {
