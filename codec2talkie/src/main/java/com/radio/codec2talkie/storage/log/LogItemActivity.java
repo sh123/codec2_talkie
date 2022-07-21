@@ -2,7 +2,6 @@ package com.radio.codec2talkie.storage.log;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -68,6 +67,8 @@ public class LogItemActivity extends AppCompatActivity {
         }
         if (_groupName == null) {
             logItemGroupRecyclerView.setVisibility(View.GONE);
+            findViewById(R.id.log_item_textview).setVisibility(View.GONE);
+            findViewById(R.id.log_item_group_textview).setVisibility(View.GONE);
             _logItemViewModel.getAllData().observe(this, adapter::submitList);
             setTitle(R.string.aprs_log_view_title);
         } else {

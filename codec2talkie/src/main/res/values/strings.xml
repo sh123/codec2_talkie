@@ -284,4 +284,6 @@
     <string name="log_item_activity_delete_all_title">This will remove everything from the log. Are you sure?</string>
     <string name="log_item_activity_delete_group_title">This will remove log for %s. Are you sure?</string>
     <string name="messages_group_activity_delete_group_confirmation_title">This will remove all messages from %s. Are you sure?</string>
+    <string name="log_item_textview_title">Station history</string>
+    <string name="log_item_group_textview_title">Station SSIDS</string>
 </resources>

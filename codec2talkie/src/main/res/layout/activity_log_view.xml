@@ -7,24 +7,41 @@
     android:layout_height="match_parent"
     tools:context=".storage.log.LogItemActivity">
 
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/log_item_group_textview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/log_item_group_textview_title"
+        android:padding="4dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/log_item_group_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="5dp"
+        android:padding="4dp"
         android:scrollbars="vertical"
-        app:layout_constraintHeight_percent="0.33"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHeight_percent="0.5"
+        app:layout_constraintTop_toBottomOf="@+id/log_item_group_textview"
         tools:listitem="@layout/activity_log_view_group_item" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/log_item_textview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="4dp"
+        android:text="@string/log_item_textview_title"
+        app:layout_constraintTop_toBottomOf="@+id/log_item_group_recyclerview"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/log_item_recyclerview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="5dp"
+        android:padding="4dp"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/log_item_group_recyclerview"
+        app:layout_constraintTop_toBottomOf="@+id/log_item_textview"
         tools:listitem="@layout/activity_log_view_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
