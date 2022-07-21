@@ -249,7 +249,7 @@
     <string name="app_service_notif_text_ptt_ready">Connected to the TNC, ready for PTT</string>
     <string name="app_service_notif_text_tracking">APRS tracking is active</string>
     <string name="app_service_notif_connection_lost">Disconnected from the TNC, click to reconnect</string>
-    <string name="aprs_log_view_title">APRS raw log</string>
+    <string name="aprs_log_view_title">APRS log</string>
     <string name="log_view_menu_clear">Clear log</string>
     <string name="tracking_label">&#127937;</string>
     <string name="app_notifications_voice_enable_title">Enable incoming notifications</string>
@@ -284,4 +284,8 @@
     <string name="log_item_activity_delete_all_title">This will remove everything from the log. Are you sure?</string>
     <string name="log_item_activity_delete_group_title">This will remove log for %s. Are you sure?</string>
     <string name="messages_group_activity_delete_group_confirmation_title">This will remove all messages from %s. Are you sure?</string>
+    <string name="log_item_textview_title">Station history</string>
+    <string name="log_item_group_textview_title">Station SSIDS</string>
+    <string name="log_view_menu_stations">View stations</string>
+    <string name="log_view_station_history">Station history</string>
 </resources>

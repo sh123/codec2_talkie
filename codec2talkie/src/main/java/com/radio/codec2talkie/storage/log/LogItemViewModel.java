@@ -15,11 +15,13 @@ public class LogItemViewModel extends AndroidViewModel {
     private final LogItemRepository _logItemRepository;
     private final LiveData<List<LogItem>> _logItemLiveData;
     private LiveData<List<LogItem>> _logItemGroupLiveData;
+    private final LiveData<List<String>> _logItemGroups;
 
     public LogItemViewModel(@NonNull Application application) {
         super(application);
         _logItemRepository = new LogItemRepository(application);
         _logItemLiveData = _logItemRepository.getAllLogItems();
+        _logItemGroups = _logItemRepository.getGroups();
     }
 
     public LiveData<List<LogItem>> getAllData() {
@@ -27,10 +29,10 @@ public class LogItemViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<LogItem>> getData(String groupName) {
-        if (_logItemGroupLiveData == null)
-            _logItemGroupLiveData = _logItemRepository.getLogItems(groupName);
-        return _logItemGroupLiveData;
+        return _logItemRepository.getLogItems(groupName);
     }
+
+    public LiveData<List<String>> getGroups() { return _logItemGroups; }
 
     public void deleteAllLogItems() { _logItemRepository.deleteAllLogItems(); }
 

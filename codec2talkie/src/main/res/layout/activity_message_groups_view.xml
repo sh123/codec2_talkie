@@ -11,7 +11,7 @@
         android:id="@+id/message_groups_recyclerview"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="8dp"
+        android:padding="4dp"
         android:scrollbars="vertical"
         app:layout_constraintBottom_toTopOf="@+id/messages_send_to"
         app:layout_constraintEnd_toEndOf="parent"
