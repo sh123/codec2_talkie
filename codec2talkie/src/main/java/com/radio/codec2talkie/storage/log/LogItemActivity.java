@@ -1,6 +1,7 @@
 package com.radio.codec2talkie.storage.log;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -84,6 +85,14 @@ public class LogItemActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (_groupName != null) {
+            menu.findItem(R.id.log_view_menu_stations).setVisible(false);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         int itemId = item.getItemId();
@@ -94,6 +103,11 @@ public class LogItemActivity extends AppCompatActivity {
         }
         else if (itemId == R.id.log_view_menu_clear) {
             deleteAll();
+            return true;
+        } else if (itemId == R.id.log_view_menu_stations) {
+            Intent logItemIntent = new Intent(this, LogItemActivity.class);
+            logItemIntent.putExtra("groupName", getString(R.string.log_view_station_history));
+            startActivity(logItemIntent);
             return true;
         }
         return super.onOptionsItemSelected(item);
