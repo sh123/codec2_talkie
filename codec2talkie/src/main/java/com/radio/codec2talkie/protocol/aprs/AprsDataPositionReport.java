@@ -1,11 +1,8 @@
 package com.radio.codec2talkie.protocol.aprs;
 
-import android.util.Log;
-
 import com.radio.codec2talkie.protocol.aprs.tools.AprsTools;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
-import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.tools.MathTools;
 import com.radio.codec2talkie.tools.UnitTools;
 
@@ -49,7 +46,11 @@ public class AprsDataPositionReport implements AprsData {
     public void fromBinary(byte[] infoData) {
         _isValid = false;
         _position = new Position();
-        if (fromUncompressedBinary(infoData)) {
+        if ((infoData[0] == '/' || infoData[0] == '\\') && fromCompressedBinary(infoData)) {
+            _position.isCompressed = true;
+            _isValid = true;
+
+        } else if (fromUncompressedBinary(infoData)) {
             _position.isCompressed = false;
             _isValid = true;
         }
@@ -124,6 +125,75 @@ public class AprsDataPositionReport implements AprsData {
         return String.format(Locale.US, "%s%c%s%c", latitude, symbol[0], longitude, symbol[1]);
     }
 
+    private boolean fromCompressedBinary(byte[] infoData) {
+        ByteBuffer buffer = ByteBuffer.wrap(infoData);
+
+        byte[] tail = new byte[buffer.remaining()];
+        buffer.get(tail);
+        String strTail = new String(tail);
+        Pattern latLonPattern = Pattern.compile("^(\\\\|/)(\\S{4})(\\S{4})(\\S)(.\\S)(\\S)(.*)$");
+        Matcher latLonMatcher = latLonPattern.matcher(strTail);
+        if (!latLonMatcher.matches()) return false;
+
+        String table = latLonMatcher.group(1);
+        String latitude = latLonMatcher.group(2);
+        String longitude = latLonMatcher.group(3);
+        String symbol = latLonMatcher.group(4);
+        String altSpeed = latLonMatcher.group(5);
+        String tValue = latLonMatcher.group(6);
+        String comment = latLonMatcher.group(7);
+
+        _position.symbolCode = String.format("%s%s", table, symbol);
+        if (latitude == null) return false;
+        _position.latitude = getUncompressedCoordinate(latitude.getBytes(), true);
+        if (longitude == null) return false;
+        _position.longitude = getUncompressedCoordinate(longitude.getBytes(), false);
+        if (comment == null)
+            _position.comment = "";
+        else
+            _position.comment = comment;
+
+        if (altSpeed == null) return false;
+        if (tValue == null) return false;
+
+        byte tByte = (byte) ((byte)tValue.charAt(0) - 33);
+        int tByteNmeaSource = ((tByte >> 3) & 0x3);
+        byte cByte = (byte)altSpeed.charAt(0);
+        byte sByte = (byte)altSpeed.charAt(1);
+
+        _position.hasSpeed = false;
+        _position.hasBearing = false;
+        _position.isSpeedBearingEnabled = false;
+        _position.hasAltitude = false;
+        _position.isAltitudeEnabled = false;
+
+        // no course/speed
+        if (cByte == ' ') return true;
+
+        // altitude
+        int NMEA_SRC_GGA = 0x02;
+        int NMEA_SRC_RMC = 0x03;
+        if (tByteNmeaSource == NMEA_SRC_RMC) {
+            _position.altitudeMeters = UnitTools.feetToMeters((long) Math.pow(1.002, (cByte - 33) * 91 + (sByte - 33)));
+            _position.hasAltitude = true;
+            _position.isAltitudeEnabled = true;
+        }
+        // compressed course/speed
+        else if (tByteNmeaSource == NMEA_SRC_GGA && cByte >= '!' && cByte <= 'z') {
+            _position.bearingDegrees = 4.0f * (cByte - 33);
+            _position.speedMetersPerSecond = (float)Math.pow(1.08, sByte - 33) - 1.0f;
+            _position.hasSpeed = true;
+            _position.hasBearing = true;
+            _position.isSpeedBearingEnabled = true;
+        }
+        // radio range
+        else if (cByte == '{') {
+            // TODO, implement
+            double rangeMiles = 2 * Math.pow(1.08, sByte);
+        }
+        return true;
+    }
+
     private boolean fromUncompressedBinary(byte[] infoData) {
         ByteBuffer buffer = ByteBuffer.wrap(infoData);
 
@@ -137,10 +207,12 @@ public class AprsDataPositionReport implements AprsData {
 
         String lat = latLonMatcher.group(1);
         String latSuffix = latLonMatcher.group(2);
+        if (lat == null || latSuffix == null) return false;
         _position.latitude = UnitTools.nmeaToDecimal(lat, latSuffix);
         String table = latLonMatcher.group(3);
         String lon = latLonMatcher.group(4);
         String lonSuffix = latLonMatcher.group(5);
+        if (lon == null || lonSuffix == null) return false;
         _position.longitude = UnitTools.nmeaToDecimal(lon, lonSuffix);
         String symbol = latLonMatcher.group(6);
         _position.symbolCode = String.format("%s%s", table, symbol);
@@ -182,6 +254,16 @@ public class AprsDataPositionReport implements AprsData {
         // read comment until the end
         _position.comment = strTail;
         return true;
+    }
+
+    private double getUncompressedCoordinate(byte[] data, boolean isLatitude) {
+        double v = (data[0] - 33) * 91 * 91 * 91 +
+                (data[1] - 33) * 91 * 91 +
+                (data[2] - 33) * 91 +
+                (data[2] - 33);
+        if (isLatitude)
+            return 90 - v / 380926.0;
+        return -180 + v / 190463.0;
     }
 
     private byte[] getCompressedNmeaCoordinate(Position position) {
