@@ -173,6 +173,9 @@ public class AppWorker extends Thread {
         Message msg = new Message();
         msg.what = AppMessage.CMD_SEND_LOCATION_TO_TNC.toInt();
         msg.obj = position;
+        Log.i(TAG, String.format("Position sent: %f %f %f %f %f",
+                position.latitude, position.longitude,
+                position.bearingDegrees, position.speedMetersPerSecond, position.altitudeMeters));
         _onMessageReceived.sendMessage(msg);
     }
 
@@ -229,7 +232,7 @@ public class AppWorker extends Thread {
     private final ProtocolCallback _protocolCallback = new ProtocolCallback() {
         @Override
         protected void onReceivePosition(Position position) {
-            Log.i(TAG, String.format("Position: %f %f %f %f %f",
+            Log.i(TAG, String.format("Position received: %f %f %f %f %f",
                     position.latitude, position.longitude,
                     position.bearingDegrees, position.speedMetersPerSecond, position.altitudeMeters));
             // TODO, store to database
