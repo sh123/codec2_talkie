@@ -67,7 +67,7 @@ public class AprsDataPositionReport implements AprsData {
 
     private byte[] generateCompressedInfo(Position position) {
         ByteBuffer buffer = ByteBuffer.allocate(256);
-        buffer.put((byte)'!');
+        buffer.put((byte)'=');
         buffer.put(getCompressedNmeaCoordinate(position));
         // compressed can hold either speed and bearing or altitude
         if (position.isSpeedBearingEnabled) {
@@ -93,7 +93,7 @@ public class AprsDataPositionReport implements AprsData {
 
     private byte[] generateUncompressedInfo(Position position) {
         ByteBuffer buffer = ByteBuffer.allocate(256);
-        buffer.put((byte)'!');
+        buffer.put((byte)'=');
         buffer.put(getUncompressedNmeaCoordinate(position).getBytes());
         // put course altitude
         if (position.isSpeedBearingEnabled) {
@@ -137,11 +137,11 @@ public class AprsDataPositionReport implements AprsData {
 
         String lat = latLonMatcher.group(1);
         String latSuffix = latLonMatcher.group(2);
-        _position.latitude = UnitTools.nmeaToDecimal(lat, latSuffix, true);
+        _position.latitude = UnitTools.nmeaToDecimal(lat, latSuffix);
         String table = latLonMatcher.group(3);
         String lon = latLonMatcher.group(4);
         String lonSuffix = latLonMatcher.group(5);
-        _position.longitude = UnitTools.nmeaToDecimal(lon, lonSuffix, false);
+        _position.longitude = UnitTools.nmeaToDecimal(lon, lonSuffix);
         String symbol = latLonMatcher.group(6);
         _position.symbolCode = String.format("%s%s", table, symbol);
         strTail = latLonMatcher.group(7);

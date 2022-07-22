@@ -17,8 +17,15 @@ public class UnitTools {
                 isLatitude ? (degrees > 0 ? 'N' : 'S') : (degrees > 0 ? 'E' : 'W'));
     }
 
-    public static double nmeaToDecimal(String degrees, String dir, boolean isLatitude) {
-        return 0.0;
+    public static double nmeaToDecimal(String degrees, String dir) {
+        // ddmm.mm / dddmm.mm
+        int digitCount = degrees.charAt(4) == '.' ? 2 : 3;
+        String integerPart = degrees.substring(0, digitCount);
+        String fractionalPart = degrees.substring(digitCount);
+        double v = Double.parseDouble(integerPart) + Double.parseDouble(fractionalPart) / 60.0;
+        if (dir.equals("W") || dir.equals("S"))
+            v = -v;
+        return v;
     }
 
     public static String decimalToDecimalNmea(double degrees, boolean isLatitude) {

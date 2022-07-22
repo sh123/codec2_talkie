@@ -8,12 +8,12 @@ public class AprsDataFactory {
     public static AprsData create(AprsDataType aprsDataType) {
         switch (aprsDataType.getDataType()) {
             case UNKNOWN:
-            case POSITION_WITH_TIMESTAMP_MSG:
-            case POSITION_WITH_TIMESTAMP_NO_MSG:
-            case POSITION_WITHOUT_TIMESTAMP_NO_MSG:
                 break;
             case MIC_E:
                 return new AprsDataPositionReportMicE();
+            case POSITION_WITH_TIMESTAMP_MSG:
+            case POSITION_WITH_TIMESTAMP_NO_MSG:
+            case POSITION_WITHOUT_TIMESTAMP_NO_MSG:
             case POSITION_WITHOUT_TIMESTAMP_MSG:
                 return new AprsDataPositionReport();
             case MESSAGE:

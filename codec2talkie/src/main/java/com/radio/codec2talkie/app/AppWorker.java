@@ -229,7 +229,10 @@ public class AppWorker extends Thread {
     private final ProtocolCallback _protocolCallback = new ProtocolCallback() {
         @Override
         protected void onReceivePosition(Position position) {
-            throw new UnsupportedOperationException();
+            Log.i(TAG, String.format("Position: %f %f %f %f %f",
+                    position.latitude, position.longitude,
+                    position.bearingDegrees, position.speedMetersPerSecond, position.altitudeMeters));
+            // TODO, store to database
         }
 
         @Override
