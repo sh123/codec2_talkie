@@ -11,6 +11,8 @@ import com.radio.codec2talkie.tools.UnitTools;
 
 import java.nio.ByteBuffer;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AprsDataPositionReport implements AprsData {
 
@@ -46,16 +48,11 @@ public class AprsDataPositionReport implements AprsData {
     @Override
     public void fromBinary(byte[] infoData) {
         _isValid = false;
-        // TODO, implement fromBinary
-        // ByteBuffer buffer = ByteBuffer.wrap(infoData);
-        // read latitude
-        // read symbol table
-        // read longitude
-        // read symbol
-        // read course/speed
-        // read altitude (could be anywhere inside the comment)
-        // read comment until the end
-        // _isValid = true;
+        _position = new Position();
+        if (fromUncompressedBinary(infoData)) {
+            _position.isCompressed = false;
+            _isValid = true;
+        }
     }
 
     @Override
@@ -125,6 +122,66 @@ public class AprsDataPositionReport implements AprsData {
                 position.privacyLevel);
         byte[] symbol = position.symbolCode.getBytes();
         return String.format(Locale.US, "%s%c%s%c", latitude, symbol[0], longitude, symbol[1]);
+    }
+
+    private boolean fromUncompressedBinary(byte[] infoData) {
+        ByteBuffer buffer = ByteBuffer.wrap(infoData);
+
+        // read latitude/symbol_table/longitude/symbol
+        byte[] tail = new byte[buffer.remaining()];
+        buffer.get(tail);
+        String strTail = new String(tail);
+        Pattern latLonPattern = Pattern.compile("^(\\d{4}[.]\\d{2})(N|S)([/\\\\])(\\d{5}[.]\\d{2})(E|W)(\\S)(.+)$");
+        Matcher latLonMatcher = latLonPattern.matcher(strTail);
+        if (!latLonMatcher.matches()) return false;
+
+        String lat = latLonMatcher.group(1);
+        String latSuffix = latLonMatcher.group(2);
+        _position.latitude = UnitTools.nmeaToDecimal(lat, latSuffix, true);
+        String table = latLonMatcher.group(3);
+        String lon = latLonMatcher.group(4);
+        String lonSuffix = latLonMatcher.group(5);
+        _position.longitude = UnitTools.nmeaToDecimal(lon, lonSuffix, false);
+        String symbol = latLonMatcher.group(6);
+        _position.symbolCode = String.format("%s%s", table, symbol);
+        strTail = latLonMatcher.group(7);
+        if (strTail == null) return false;
+
+        // read course/speed
+        Pattern courseSpeedPattern = Pattern.compile("^(\\d{3})/(\\d{3})(.+)$");
+        Matcher courseSpeedMatcher = courseSpeedPattern.matcher(strTail);
+        if (courseSpeedMatcher.matches()) {
+            String course = courseSpeedMatcher.group(1);
+            String speed = courseSpeedMatcher.group(2);
+            strTail = courseSpeedMatcher.group(3);
+            if (strTail == null || speed == null || course == null) return false;
+            _position.bearingDegrees = Float.parseFloat(course);
+            _position.speedMetersPerSecond = UnitTools.knotsToMetersPerSecond(Long.parseLong(speed));
+            _position.isSpeedBearingEnabled = true;
+            _position.hasBearing = true;
+            _position.hasSpeed = true;
+        } else {
+            _position.isSpeedBearingEnabled = false;
+            _position.hasBearing = false;
+            _position.hasSpeed = false;
+        }
+        // read altitude (could be anywhere inside the comment)
+        Pattern altitudePattern = Pattern.compile("/A=(\\d{6})");
+        Matcher altitudeMatcher = altitudePattern.matcher(strTail);
+        if (altitudeMatcher.matches()) {
+            String altitude = altitudeMatcher.group(1);
+            if (altitude == null) return false;
+            strTail = altitudeMatcher.replaceAll("");
+            _position.altitudeMeters = UnitTools.feetToMeters(Long.parseLong(altitude));
+            _position.isAltitudeEnabled = true;
+            _position.hasAltitude = true;
+        } else {
+            _position.isAltitudeEnabled = false;
+            _position.hasAltitude = false;
+        }
+        // read comment until the end
+        _position.comment = strTail;
+        return true;
     }
 
     private byte[] getCompressedNmeaCoordinate(Position position) {

@@ -17,6 +17,10 @@ public class UnitTools {
                 isLatitude ? (degrees > 0 ? 'N' : 'S') : (degrees > 0 ? 'E' : 'W'));
     }
 
+    public static double nmeaToDecimal(String degrees, String dir, boolean isLatitude) {
+        return 0.0;
+    }
+
     public static String decimalToDecimalNmea(double degrees, boolean isLatitude) {
         String value = decimalToNmea(degrees, isLatitude);
         return value.substring(0, isLatitude ? 4 : 5) +
@@ -29,8 +33,16 @@ public class UnitTools {
         return (long)(meters * 3.2808);
     }
 
+    public static double feetToMeters(long feet) {
+        return feet * 0.3048;
+    }
+
     public static long metersPerSecondToKnots(float metersPerSecond) {
         return (long)(metersPerSecond / 0.514444);
+    }
+
+    public static float knotsToMetersPerSecond(long knots) {
+        return (float) (knots * 0.5144444);
     }
 
     public static double metersPerSecondToMilesPerHour(float metersPerSecond) {
