@@ -80,7 +80,7 @@ public class AprsDataPositionReport implements AprsData {
             double compressedAltitude = MathTools.log(1.002, UnitTools.metersToFeet(position.altitudeMeters));
             buffer.put((byte)(33 + (byte)(compressedAltitude / 100)));
             buffer.put((byte)(33 + (byte)(compressedAltitude % 100)));
-            buffer.put((byte)'T');
+            buffer.put((byte)'S');
         } else {
             buffer.put(" sT".getBytes());
         }
@@ -173,13 +173,13 @@ public class AprsDataPositionReport implements AprsData {
         // altitude
         int NMEA_SRC_GGA = 0x02;
         int NMEA_SRC_RMC = 0x03;
-        if (tByteNmeaSource == NMEA_SRC_RMC) {
+        if (tByteNmeaSource == NMEA_SRC_GGA) {
             _position.altitudeMeters = UnitTools.feetToMeters((long) Math.pow(1.002, (cByte - 33) * 91 + (sByte - 33)));
             _position.hasAltitude = true;
             _position.isAltitudeEnabled = true;
         }
         // compressed course/speed
-        else if (tByteNmeaSource == NMEA_SRC_GGA && cByte >= '!' && cByte <= 'z') {
+        else if (tByteNmeaSource == NMEA_SRC_RMC && cByte >= '!' && cByte <= 'z') {
             _position.bearingDegrees = 4.0f * (cByte - 33);
             _position.speedMetersPerSecond = (float)Math.pow(1.08, sByte - 33) - 1.0f;
             _position.hasSpeed = true;
