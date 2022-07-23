@@ -6,7 +6,9 @@ import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.tools.UnitTools;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class AprsDataPositionReportMicE implements AprsData {
@@ -35,6 +37,28 @@ public class AprsDataPositionReportMicE implements AprsData {
         put("custom_6", 0b001);
         // emergency
         put("emergency", 0b000);
+    }};
+
+    private final Map<Integer, String> _miceMessageReverseTypeMapStd = new HashMap<Integer, String>() {{
+        put(0b000, "emergency");
+        put(0b111, "off_duty");
+        put(0b110, "en_route");
+        put(0b101, "in_service");
+        put(0b100, "returning");
+        put(0b011, "committed");
+        put(0b010, "special");
+        put(0b001, "priority");
+    }};
+
+    private final Map<Integer, String> _miceMessageReverseTypeMapCustom = new HashMap<Integer, String>() {{
+        put(0b000, "emergency");
+        put(0b111, "custom_0");
+        put(0b110, "custom_1");
+        put(0b101, "custom_2");
+        put(0b100, "custom_3");
+        put(0b011, "custom_4");
+        put(0b010, "custom_5");
+        put(0b001, "custom_6");
     }};
 
     @Override
@@ -91,25 +115,86 @@ public class AprsDataPositionReportMicE implements AprsData {
         _position.srcCallsign = srcCallsign;
         _position.dstCallsign = dstCallsign;
 
+        if (srcCallsign == null || dstCallsign == null) return;
+        if (dstCallsign.length() < 6 || infoData.length < 8) return;
+
         // read latitude
-        // _position.latitude =
+        boolean isCustom = false;
+        char ns = 'S';
+        char we = 'E';
+        int longOffset = 0;
+        int messageId = 0;
+        byte[] dstCallsignBuf = dstCallsign.getBytes();
+        StringBuilder latitude = new StringBuilder();
 
-        // read mic-e message type
-        // _position.status =
+        for (int i = 0; i < 6; i++) {
+            char c = (char) dstCallsignBuf[i];
+            if (c >= 'A' && c <= 'L') {
+                if (i < 3) {
+                    isCustom = true;
+                    if (c != 'L') messageId |= 1;
+                }
+                c = (c == 'K' || c == 'L') ? ' ' : (char) (c - 17);
+            } else if (c >= 'P' && c <= 'Z') {
+                if (i < 3) {
+                    messageId |= 1;
+                } else if (i == 3) {
+                    ns = 'N';
+                } else if (i == 4) {
+                    longOffset = 100;
+                } else {
+                    we = 'W';
+                }
+                c = (c == 'Z') ? ' ' : (char) (c - 32);
+            }
+            messageId <<= 1;
+            if (i == 3) latitude.append('.');
+            latitude.append(c);
+        }
 
-        ByteBuffer buffer = ByteBuffer.wrap(infoData);
+        _position.latitude = UnitTools.nmeaToDecimal(latitude.toString(), Character.toString(ns));
+        _position.status = isCustom
+                ? _miceMessageReverseTypeMapCustom.get(messageId)
+                : _miceMessageReverseTypeMapStd.get(messageId);
 
         // read longitude
-        // _position.longitude =
+        int d = (infoData[0] - 28) + longOffset;
+        if (d >= 180 && d <= 189) d -= 80;
+        else if (d >= 190 && d <= 199) d -= 190;
+
+        int m = (infoData[1] - 28);
+        if (m >= 6) m -= 60;
+
+        int h = (infoData[2] - 28);
+
+        String longitude = String.format(Locale.US, "%03d%d.%d", d, m, h);
+        _position.longitude = UnitTools.nmeaToDecimal(longitude, Character.toString(we));
 
         // read course/speed
-        // read altitude (could be anywhere inside the comment)
+        int sp = 10 * (infoData[3] - 28);
+        int dcSp = (infoData[4] - 28) / 10;
+        int dcSe =(infoData[4] - 28) % 10;
+        int se = infoData[5] - 28;
 
-        // read symbol table
-        // read symbol
+        int speed = sp + dcSp;
+        if (speed >= 800) speed -= 800;
+
+        int course = dcSe + se;
+        if (course >= 400) course -= 400;
+
+        _position.hasBearing = true;
+        _position.bearingDegrees = course;
+
+        _position.hasSpeed = true;
+        _position.speedMetersPerSecond = UnitTools.knotsToMetersPerSecond(speed);
+
+        // read symbol table + symbol code
+        _position.symbolCode = String.format(Locale.US, "%c%c", infoData[7], infoData[6]);
 
         // read comment until the end
-        // _isValid = true;
+        _position.comment = new String(Arrays.copyOfRange(infoData, 8, infoData.length - 1));
+
+        _isValid = true;
     }
 
     @Override
