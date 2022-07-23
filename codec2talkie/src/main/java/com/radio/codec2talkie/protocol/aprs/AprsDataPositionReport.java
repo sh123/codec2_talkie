@@ -43,9 +43,11 @@ public class AprsDataPositionReport implements AprsData {
     }
 
     @Override
-    public void fromBinary(String dstCallsign, byte[] infoData) {
+    public void fromBinary(String srcCallsign, String dstCallsign, byte[] infoData) {
         _isValid = false;
         _position = new Position();
+        _position.srcCallsign = srcCallsign;
+        _position.dstCallsign = dstCallsign;
         if ((infoData[0] == '/' || infoData[0] == '\\') && fromCompressedBinary(infoData)) {
             _position.isCompressed = true;
             _isValid = true;

@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 
 public class AprsDataTextMessage implements AprsData {
 
+    public String srcCallsign;
     public String dstCallsign;
     public String textMessage;
 
@@ -32,20 +33,22 @@ public class AprsDataTextMessage implements AprsData {
     @Override
     public TextMessage toTextMessage() {
         TextMessage textMessage = new TextMessage();
+        textMessage.src = this.srcCallsign;
         textMessage.dst = this.dstCallsign;
         textMessage.text = this.textMessage;
         return textMessage;
     }
 
     @Override
-    public void fromBinary(String dstCallsign, byte[] infoData) {
+    public void fromBinary(String srcCallsign, String dstCallsign, byte[] infoData) {
         _isValid = false;
         if (infoData.length < 10) return;
+        this.srcCallsign = srcCallsign;
         ByteBuffer buffer = ByteBuffer.wrap(infoData);
         // callsign, trim ending spaces
         byte[] callsign = new byte[9];
         buffer.get(callsign);
-        dstCallsign = new String(callsign).replaceAll("\\s+$", "");
+        this.dstCallsign = new String(callsign).replaceAll("\\s+$", "");
         // ':' separator
         byte b = buffer.get();
         if (b != ':') return;

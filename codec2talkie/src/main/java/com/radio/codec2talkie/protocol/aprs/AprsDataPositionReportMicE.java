@@ -85,16 +85,29 @@ public class AprsDataPositionReportMicE implements AprsData {
     }
 
     @Override
-    public void fromBinary(String dstCallsign, byte[] infoData) {
+    public void fromBinary(String srcCallsign, String dstCallsign, byte[] infoData) {
         _isValid = false;
-        // TODO, implement fromBinary, needs dst callsign
-        // ByteBuffer buffer = ByteBuffer.wrap(infoData);
+        _position = new Position();
+        _position.srcCallsign = srcCallsign;
+        _position.dstCallsign = dstCallsign;
+
         // read latitude
-        // read symbol table
+        // _position.latitude =
+
+        // read mic-e message type
+        // _position.status =
+
+        ByteBuffer buffer = ByteBuffer.wrap(infoData);
+
         // read longitude
-        // read symbol
+        // _position.longitude =
+
         // read course/speed
         // read altitude (could be anywhere inside the comment)
+
+        // read symbol table
+        // read symbol
+
         // read comment until the end
         // _isValid = true;
     }
