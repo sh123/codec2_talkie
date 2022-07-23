@@ -49,6 +49,7 @@ public class AprsDataPositionReport implements AprsData {
         _position = new Position();
         _position.srcCallsign = srcCallsign;
         _position.dstCallsign = dstCallsign;
+        _position.status = "";
         _position.privacyLevel = 0;
         if ((infoData[0] == '/' || infoData[0] == '\\') && fromCompressedBinary(infoData)) {
             _position.isCompressed = true;

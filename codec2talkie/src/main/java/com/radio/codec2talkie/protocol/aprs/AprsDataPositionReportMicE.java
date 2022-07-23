@@ -116,6 +116,8 @@ public class AprsDataPositionReportMicE implements AprsData {
         _position.srcCallsign = srcCallsign;
         _position.dstCallsign = dstCallsign;
         _position.privacyLevel = 0;
+        _position.status = "";
+        _position.comment = "";
 
         if (srcCallsign == null || dstCallsign == null) return;
         if (dstCallsign.length() < 6 || infoData.length < 8) return;
