@@ -17,11 +17,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.storage.position.PositionItemViewModel;
 
 public class LogItemActivity extends AppCompatActivity {
 
     private String _groupName;
     private LogItemViewModel _logItemViewModel;
+    private PositionItemViewModel _positionItemViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,7 @@ public class LogItemActivity extends AppCompatActivity {
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
+        _positionItemViewModel = new ViewModelProvider(this).get(PositionItemViewModel.class);
 
         // log items
         RecyclerView logItemRecyclerView = findViewById(R.id.log_item_recyclerview);
@@ -118,8 +121,10 @@ public class LogItemActivity extends AppCompatActivity {
             if (which == DialogInterface.BUTTON_POSITIVE) {
                 if (_groupName == null) {
                     _logItemViewModel.deleteAllLogItems();
+                    _positionItemViewModel.deleteAllPositionItems();
                 } else {
                     _logItemViewModel.deleteLogItems(_groupName);
+                    _positionItemViewModel.deletePositionItems(_groupName);
                 }
             }
         };
