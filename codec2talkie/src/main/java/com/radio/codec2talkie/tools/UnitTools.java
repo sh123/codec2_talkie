@@ -37,11 +37,11 @@ public class UnitTools {
     }
 
     public static long metersToFeet(double meters) {
-        return (long)(meters * 3.2808);
+        return (long)(meters * 3.28084);
     }
 
     public static double feetToMeters(long feet) {
-        return feet * 0.3048;
+        return feet / 3.28084;
     }
 
     public static long metersPerSecondToKnots(double metersPerSecond) {

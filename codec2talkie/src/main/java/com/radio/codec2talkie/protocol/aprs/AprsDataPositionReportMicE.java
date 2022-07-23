@@ -115,6 +115,7 @@ public class AprsDataPositionReportMicE implements AprsData {
         _dstCallsign = dstCallsign;
         _position.srcCallsign = srcCallsign;
         _position.dstCallsign = dstCallsign;
+        _position.privacyLevel = 0;
 
         if (srcCallsign == null || dstCallsign == null) return;
         if (dstCallsign.length() < 6 || infoData.length < 8) return;
@@ -135,7 +136,12 @@ public class AprsDataPositionReportMicE implements AprsData {
                     isCustom = true;
                     if (c != 'L') messageId |= 1;
                 }
-                c = (c == 'K' || c == 'L') ? ' ' : (char) (c - 17);
+                if (c == 'K' || c == 'L') {
+                    // NOTE, using 0 instead of ' ' for position ambiguity
+                    c = '0';
+                    _position.privacyLevel += 1;
+                } else
+                    c = (char) (c - 17);
             } else if (c >= 'P' && c <= 'Z') {
                 if (i < 3) {
                     messageId |= 1;
@@ -146,7 +152,12 @@ public class AprsDataPositionReportMicE implements AprsData {
                 } else {
                     we = 'W';
                 }
-                c = (c == 'Z') ? ' ' : (char) (c - 32);
+                if (c == 'Z') {
+                    // NOTE, using 0 instead of ' ' for position ambiguity
+                    c = '0';
+                    _position.privacyLevel += 1;
+                } else
+                    c = (char) (c - 32);
             }
             if (i < 2) messageId <<= 1;
             if (i == 4) latitude.append('.');

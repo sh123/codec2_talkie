@@ -4,6 +4,7 @@ import com.radio.codec2talkie.protocol.aprs.tools.AprsTools;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.tools.MathTools;
+import com.radio.codec2talkie.tools.TextTools;
 import com.radio.codec2talkie.tools.UnitTools;
 
 import java.nio.ByteBuffer;
@@ -48,6 +49,7 @@ public class AprsDataPositionReport implements AprsData {
         _position = new Position();
         _position.srcCallsign = srcCallsign;
         _position.dstCallsign = dstCallsign;
+        _position.privacyLevel = 0;
         if ((infoData[0] == '/' || infoData[0] == '\\') && fromCompressedBinary(infoData)) {
             _position.isCompressed = true;
             _isValid = true;
@@ -203,18 +205,23 @@ public class AprsDataPositionReport implements AprsData {
         byte[] tail = new byte[buffer.remaining()];
         buffer.get(tail);
         String strTail = new String(tail);
-        Pattern latLonPattern = Pattern.compile("^(\\d{4}[.]\\d{2})(N|S)([/\\\\])(\\d{5}[.]\\d{2})(E|W)(\\S)(.+)$");
+        Pattern latLonPattern = Pattern.compile("^([\\d ]{4}[.][\\d ]{2})(N|S)([/\\\\])([\\d ]{5}[.][\\d ]{2})(E|W)(\\S)(.+)$");
         Matcher latLonMatcher = latLonPattern.matcher(strTail);
         if (!latLonMatcher.matches()) return false;
 
         String lat = latLonMatcher.group(1);
         String latSuffix = latLonMatcher.group(2);
         if (lat == null || latSuffix == null) return false;
+        _position.privacyLevel = TextTools.countChars(lat, ' ');
+        // NOTE, ambiguity, replace with 0
+        lat = lat.replace(' ', '0');
         _position.latitude = UnitTools.nmeaToDecimal(lat, latSuffix);
         String table = latLonMatcher.group(3);
         String lon = latLonMatcher.group(4);
         String lonSuffix = latLonMatcher.group(5);
         if (lon == null || lonSuffix == null) return false;
+        // NOTE, ambiguity, replace with 0
+        lon = lon.replace(' ', '0');
         _position.longitude = UnitTools.nmeaToDecimal(lon, lonSuffix);
         String symbol = latLonMatcher.group(6);
         _position.symbolCode = String.format("%s%s", table, symbol);
