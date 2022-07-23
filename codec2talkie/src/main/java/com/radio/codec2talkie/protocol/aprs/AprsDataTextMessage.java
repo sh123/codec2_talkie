@@ -38,7 +38,7 @@ public class AprsDataTextMessage implements AprsData {
     }
 
     @Override
-    public void fromBinary(byte[] infoData) {
+    public void fromBinary(String dstCallsign, byte[] infoData) {
         _isValid = false;
         if (infoData.length < 10) return;
         ByteBuffer buffer = ByteBuffer.wrap(infoData);

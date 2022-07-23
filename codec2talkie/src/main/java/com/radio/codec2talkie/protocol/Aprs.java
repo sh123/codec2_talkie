@@ -145,7 +145,7 @@ public class Aprs implements Protocol {
         protected void onReceiveData(String src, String dst, byte[] data) {
             if (data.length == 0) return;
             AprsDataType dataType = new AprsDataType((char)data[0]);
-            AprsData aprsData = AprsDataFactory.fromBinary(data);
+            AprsData aprsData = AprsDataFactory.fromBinary(dst, data);
             if (aprsData != null && aprsData.isValid()) {
                 if (dataType.isTextMessage()) {
                     TextMessage textMessage = aprsData.toTextMessage();

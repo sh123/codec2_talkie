@@ -22,14 +22,14 @@ public class AprsDataFactory {
         return null;
     }
 
-    public static AprsData fromBinary(byte[] infoData) {
+    public static AprsData fromBinary(String dstCallsign, byte[] infoData) {
         ByteBuffer buffer = ByteBuffer.wrap(infoData);
         AprsDataType dataType = new AprsDataType((char)buffer.get());
         AprsData aprsData = create(dataType);
         if (aprsData == null) return null;
         byte[] data = new byte[buffer.remaining()];
         buffer.get(data);
-        aprsData.fromBinary(data);
+        aprsData.fromBinary(dstCallsign, data);
         return aprsData;
     }
 }
