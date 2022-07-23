@@ -59,6 +59,8 @@ public class AprsDataPositionReport implements AprsData {
             _position.isCompressed = false;
             _isValid = true;
         }
+        if (_isValid)
+            _position.maidenHead = UnitTools.decimalToMaidenhead(_position.latitude, _position.longitude);
     }
 
     @Override

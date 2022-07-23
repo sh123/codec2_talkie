@@ -2,12 +2,15 @@ package com.radio.codec2talkie.protocol.position;
 
 import android.location.Location;
 
+import com.radio.codec2talkie.tools.UnitTools;
+
 public class Position {
     public long timestampEpochMs;
     public String srcCallsign;
     public String dstCallsign;
     public double latitude;
     public double longitude;
+    public String maidenHead;
     public double altitudeMeters;
     public double bearingDegrees;
     public double speedMetersPerSecond;
@@ -34,6 +37,7 @@ public class Position {
         position.hasBearing = location.hasBearing();
         position.hasAltitude = location.hasAltitude();
         position.hasSpeed = location.hasSpeed();
+        position.maidenHead = UnitTools.decimalToMaidenhead(position.latitude, position.longitude);
         return position;
     }
 

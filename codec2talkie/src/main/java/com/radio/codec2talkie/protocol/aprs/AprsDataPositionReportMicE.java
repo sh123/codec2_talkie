@@ -208,6 +208,7 @@ public class AprsDataPositionReportMicE implements AprsData {
         // read comment until the end
         _position.comment = new String(Arrays.copyOfRange(infoData, 8, infoData.length));
 
+        _position.maidenHead = UnitTools.decimalToMaidenhead(_position.latitude, _position.longitude);
         _isValid = true;
     }
 

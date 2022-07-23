@@ -28,6 +28,18 @@ public class UnitTools {
         return v;
     }
 
+    public static String decimalToMaidenhead(double latitude, double longitude) {
+        double lat = latitude + 90.0;
+        double lon = longitude + 180.0;
+        return String.format("%c%c%c%c%c%c",
+                (char)('A' + (char)(lon / 20.0)),
+                (char)('A' + (char)(lat / 10.0)),
+                (char)('0' + (char)((lon % 20) / 2.0)),
+                (char)('0' + (char)(lat % 10)),
+                (char)('A' + (char)((lon - ((int)(lon / 2.0) * 2)) / (5.0 / 60.0))),
+                (char)('A' + (char)((lat - ((int)(lat / 1.0) * 1)) / (2.5 / 60.0))));
+    }
+
     public static String decimalToDecimalNmea(double degrees, boolean isLatitude) {
         String value = decimalToNmea(degrees, isLatitude);
         return value.substring(0, isLatitude ? 4 : 5) +
