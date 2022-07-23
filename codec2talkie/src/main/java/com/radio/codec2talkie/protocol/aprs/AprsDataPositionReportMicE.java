@@ -112,6 +112,7 @@ public class AprsDataPositionReportMicE implements AprsData {
     public void fromBinary(String srcCallsign, String dstCallsign, byte[] infoData) {
         _isValid = false;
         _position = new Position();
+        _dstCallsign = dstCallsign;
         _position.srcCallsign = srcCallsign;
         _position.dstCallsign = dstCallsign;
 
@@ -147,8 +148,8 @@ public class AprsDataPositionReportMicE implements AprsData {
                 }
                 c = (c == 'Z') ? ' ' : (char) (c - 32);
             }
-            messageId <<= 1;
-            if (i == 3) latitude.append('.');
+            if (i < 2) messageId <<= 1;
+            if (i == 4) latitude.append('.');
             latitude.append(c);
         }
 
@@ -158,23 +159,23 @@ public class AprsDataPositionReportMicE implements AprsData {
                 : _miceMessageReverseTypeMapStd.get(messageId);
 
         // read longitude
-        int d = (infoData[0] - 28) + longOffset;
+        int d = ((int)infoData[0] - 28) + longOffset;
         if (d >= 180 && d <= 189) d -= 80;
-        else if (d >= 190 && d <= 199) d -= 190;
+        else if (d >= 190) d -= 190;
 
-        int m = (infoData[1] - 28);
-        if (m >= 6) m -= 60;
+        int m = ((int)infoData[1] - 28);
+        if (m >= 60) m -= 60;
 
-        int h = (infoData[2] - 28);
+        int h = ((int)infoData[2] - 28);
 
         String longitude = String.format(Locale.US, "%03d%d.%d", d, m, h);
         _position.longitude = UnitTools.nmeaToDecimal(longitude, Character.toString(we));
 
         // read course/speed
-        int sp = 10 * (infoData[3] - 28);
-        int dcSp = (infoData[4] - 28) / 10;
-        int dcSe =(infoData[4] - 28) % 10;
-        int se = infoData[5] - 28;
+        int sp = 10 * ((int)infoData[3] - 28);
+        int dcSp = ((int)infoData[4] - 28) / 10;
+        int dcSe = (((int)infoData[4] - 28) % 10) * 100;
+        int se = (int)infoData[5] - 28;
 
         int speed = sp + dcSp;
         if (speed >= 800) speed -= 800;
@@ -192,7 +193,7 @@ public class AprsDataPositionReportMicE implements AprsData {
         _position.symbolCode = String.format(Locale.US, "%c%c", infoData[7], infoData[6]);
 
         // read comment until the end
-        _position.comment = new String(Arrays.copyOfRange(infoData, 8, infoData.length - 1));
+        _position.comment = new String(Arrays.copyOfRange(infoData, 8, infoData.length));
 
         _isValid = true;
     }
@@ -289,7 +290,7 @@ public class AprsDataPositionReportMicE implements AprsData {
         lonMinHun += 28;
         buffer.put(lonMinHun);
 
-        // encode speed/cou8rse
+        // encode speed/course
         long speed = UnitTools.metersPerSecondToKnots(position.speedMetersPerSecond);
         byte speedHun = (byte)((speed / 10) + 28);
         buffer.put(speedHun);

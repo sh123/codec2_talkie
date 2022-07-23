@@ -9,7 +9,7 @@ public class UnitTools {
         double degreesIntegral = Math.abs(degrees) - degreesFractional;
         degreesFractional *= 60;
         degreesIntegral *= 100;
-        long nmeaDouble = (long)Math.round((degreesIntegral + degreesFractional) * 100.0);
+        long nmeaDouble = Math.round((degreesIntegral + degreesFractional) * 100.0);
         return String.format(
                 Locale.US,
                 isLatitude ? "%06d%c" : "%07d%c",
@@ -44,15 +44,15 @@ public class UnitTools {
         return feet * 0.3048;
     }
 
-    public static long metersPerSecondToKnots(float metersPerSecond) {
+    public static long metersPerSecondToKnots(double metersPerSecond) {
         return (long)(metersPerSecond / 0.514444);
     }
 
-    public static float knotsToMetersPerSecond(long knots) {
-        return (float) (knots * 0.5144444);
+    public static double knotsToMetersPerSecond(long knots) {
+        return knots * 0.5144444;
     }
 
-    public static double metersPerSecondToMilesPerHour(float metersPerSecond) {
+    public static double metersPerSecondToMilesPerHour(double metersPerSecond) {
         return metersPerSecond * 2.23693629;
     }
 

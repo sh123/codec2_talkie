@@ -99,7 +99,7 @@ public class Smart implements Tracker {
     private boolean isCornerPeggingTriggered(Position newPosition, Position oldPosition) {
         long timeDifferenceSeconds = UnitTools.millisToSeconds(newPosition.timestampEpochMs - oldPosition.timestampEpochMs);
 
-        float turnAngleDegrees = Math.abs(newPosition.bearingDegrees - oldPosition.bearingDegrees) % 360;
+        double turnAngleDegrees = Math.abs(newPosition.bearingDegrees - oldPosition.bearingDegrees) % 360;
         turnAngleDegrees = turnAngleDegrees <= 180 ? turnAngleDegrees : 360 - turnAngleDegrees;
 
         if (!newPosition.hasBearing || newPosition.speedMetersPerSecond == 0)

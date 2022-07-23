@@ -9,8 +9,8 @@ public class Position {
     public double latitude;
     public double longitude;
     public double altitudeMeters;
-    public float bearingDegrees;
-    public float speedMetersPerSecond;
+    public double bearingDegrees;
+    public double speedMetersPerSecond;
     public String status;
     public String comment;
     public String symbolCode;

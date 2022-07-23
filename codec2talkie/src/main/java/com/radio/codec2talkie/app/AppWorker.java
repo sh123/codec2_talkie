@@ -232,9 +232,10 @@ public class AppWorker extends Thread {
     private final ProtocolCallback _protocolCallback = new ProtocolCallback() {
         @Override
         protected void onReceivePosition(Position position) {
-            Log.i(TAG, String.format("Position received: %f %f %f %f %f",
+            Log.i(TAG, String.format("Position received: %f %f %f %f %f %s %s %s",
                     position.latitude, position.longitude,
-                    position.bearingDegrees, position.speedMetersPerSecond, position.altitudeMeters));
+                    position.bearingDegrees, position.speedMetersPerSecond, position.altitudeMeters,
+                    position.symbolCode, position.status, position.comment));
             // TODO, store to database
         }
 
