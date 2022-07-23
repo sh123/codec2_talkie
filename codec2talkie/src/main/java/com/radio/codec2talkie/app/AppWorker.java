@@ -30,6 +30,7 @@ import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.storage.message.MessageItem;
 import com.radio.codec2talkie.storage.message.MessageItemRepository;
+import com.radio.codec2talkie.storage.position.PositionItemRepository;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.radio.codec2talkie.transport.TransportFactory;
@@ -71,6 +72,7 @@ public class AppWorker extends Thread {
     // storage integration
     private final LogItemRepository _logItemRepository;
     private final MessageItemRepository _messageItemRepository;
+    private final PositionItemRepository _positionItemRepository;
 
     private final Context _context;
     private final SharedPreferences _sharedPreferences;
@@ -93,6 +95,7 @@ public class AppWorker extends Thread {
 
         _logItemRepository = new LogItemRepository((Application)context);
         _messageItemRepository = new MessageItemRepository((Application)context);
+        _positionItemRepository = new PositionItemRepository((Application)context);
 
         constructSystemAudioDevices();
     }
@@ -235,7 +238,7 @@ public class AppWorker extends Thread {
                     position.maidenHead, position.latitude, position.longitude,
                     position.bearingDegrees, position.speedMetersPerSecond, position.altitudeMeters,
                     position.symbolCode, position.status, position.comment));
-            // TODO, store to database
+            _positionItemRepository.insertPositionItem(position.toPositionItem(false));
         }
 
         @Override
@@ -256,16 +259,7 @@ public class AppWorker extends Thread {
             String note = (textMessage.src == null ? "UNK" : textMessage.src) + "→" +
                     (textMessage.dst == null ? "UNK" : textMessage.dst);
             sendStatusUpdate(AppMessage.EV_TEXT_MESSAGE_RECEIVED, note + ": " + textMessage.text);
-
-            MessageItem messageItem = new MessageItem();
-            messageItem.setTimestampEpoch(System.currentTimeMillis());
-            messageItem.setNeedsAck(false); // TODO
-            messageItem.setIsTransmit(false);
-            messageItem.setSrcCallsign(textMessage.src);
-            messageItem.setDstCallsign(textMessage.dst);
-            messageItem.setMessage(textMessage.text);
-
-            _messageItemRepository.insertMessageItem(messageItem);
+            _messageItemRepository.insertMessageItem(textMessage.toMessageItem(false));
             Log.i(TAG, "message received: " + textMessage.text);
         }
 
@@ -303,16 +297,7 @@ public class AppWorker extends Thread {
             String note = (textMessage.src == null ? "UNK" : textMessage.src) + "→" +
                     (textMessage.dst == null ? "UNK" : textMessage.dst);
             sendStatusUpdate(AppMessage.EV_TEXT_MESSAGE_TRANSMITTED, note);
-
-            MessageItem messageItem = new MessageItem();
-            messageItem.setTimestampEpoch(System.currentTimeMillis());
-            messageItem.setNeedsAck(false); // TODO
-            messageItem.setIsTransmit(true);
-            messageItem.setSrcCallsign(textMessage.src);
-            messageItem.setDstCallsign(textMessage.dst);
-            messageItem.setMessage(textMessage.text);
-
-            _messageItemRepository.insertMessageItem(messageItem);
+            _messageItemRepository.insertMessageItem(textMessage.toMessageItem(true));
         }
 
         @Override

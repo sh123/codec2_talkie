@@ -2,6 +2,7 @@ package com.radio.codec2talkie.protocol.position;
 
 import android.location.Location;
 
+import com.radio.codec2talkie.storage.position.PositionItem;
 import com.radio.codec2talkie.tools.UnitTools;
 
 public class Position {
@@ -57,5 +58,24 @@ public class Position {
         distance = Math.pow(distance, 2) + Math.pow(height, 2);
 
         return Math.sqrt(distance);
+    }
+
+    public PositionItem toPositionItem(boolean isTransmit) {
+        PositionItem positionItem = new PositionItem();
+        positionItem.setTimestampEpoch(System.currentTimeMillis());
+        positionItem.setIsTransmit(isTransmit);
+        positionItem.setSrcCallsign(srcCallsign);
+        positionItem.setDstCallsign(dstCallsign);
+        positionItem.setLatitude(latitude);
+        positionItem.setLongitude(longitude);
+        positionItem.setMaidenHead(maidenHead);
+        positionItem.setAltitudeMeters(altitudeMeters);
+        positionItem.setBearingDegrees(bearingDegrees);
+        positionItem.setSpeedMetersPerSecond(speedMetersPerSecond);
+        positionItem.setStatus(status);
+        positionItem.setComment(comment);
+        positionItem.setSymbolCode(symbolCode);
+        positionItem.setPrivacyLevel(privacyLevel);
+        return positionItem;
     }
 }
