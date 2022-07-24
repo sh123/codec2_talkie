@@ -60,6 +60,31 @@ public class Position {
         return Math.sqrt(distance);
     }
 
+    public static double distanceTo(double lat1, double lon1, double alt1, double lat2, double lon2, double alt2) {
+        Position pos1 = new Position();
+        pos1.latitude = lat1;
+        pos1.longitude = lon1;
+        pos1.altitudeMeters = alt1;
+
+        Position pos2 = new Position();
+        pos2.latitude = lat2;
+        pos2.longitude = lon2;
+        pos2.altitudeMeters = alt2;
+
+        return pos1.distanceTo(pos2);
+    }
+
+    public static String bearing(double lat1, double lon1, double lat2, double lon2) {
+        double radians = Math.atan2(lat2 - lat1, lon2 - lon1);
+        double degrees = radians * (180.0 / Math.PI);
+        String[] dirNames = {"N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"};
+        int dirIndex = (int) Math.round(degrees / 45);
+        if (dirIndex < 0) {
+            dirIndex = dirIndex + 8;
+        };
+        return dirNames[dirIndex];
+    }
+
     public PositionItem toPositionItem(boolean isTransmit) {
         PositionItem positionItem = new PositionItem();
         positionItem.setTimestampEpoch(System.currentTimeMillis());

@@ -13,6 +13,7 @@
         <item name="android:layout_marginBottom">4dp</item>
         <item name="android:paddingLeft">4dp</item>
         <item name="android:background">@android:color/white</item>
+        <item name="android:fontFamily">monospace</item>
         <item name="android:textColor">@color/grey</item>
         <item name="android:textAppearance">@android:style/TextAppearance.DeviceDefault.Small</item>
     </style>

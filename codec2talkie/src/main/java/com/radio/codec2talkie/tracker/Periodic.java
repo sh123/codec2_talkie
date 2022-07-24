@@ -45,7 +45,6 @@ public class Periodic implements Tracker {
             Log.e(TAG, "No permissions for location access");
             return;
         }
-
         _locationManager.requestSingleUpdate(
                 LocationManager.GPS_PROVIDER,
                 this::sendLocation,

@@ -41,6 +41,15 @@ public class LogItemActivity extends AppCompatActivity {
         logItemRecyclerView.setHasFixedSize(true);
 
         final LogItemAdapter adapter = new LogItemAdapter(new LogItemAdapter.LogItemDiff());
+        adapter.setClickListener(v -> {
+            if (_groupName == null) {
+                TextView itemView = v.findViewById(R.id.log_view_item_title);
+                _groupName = itemView.getText().toString();
+                Intent logItemIntent = new Intent(v.getContext(), LogItemActivity.class);
+                logItemIntent.putExtra("groupName", _groupName);
+                v.getContext().startActivity(logItemIntent);
+            }
+        });
         logItemRecyclerView.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         logItemRecyclerView.setLayoutManager(linearLayoutManager);
