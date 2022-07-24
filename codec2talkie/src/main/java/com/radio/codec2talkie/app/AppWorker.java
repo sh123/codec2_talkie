@@ -239,6 +239,10 @@ public class AppWorker extends Thread {
                     position.bearingDegrees, position.speedMetersPerSecond, position.altitudeMeters,
                     position.symbolCode, position.status, position.comment));
             _positionItemRepository.insertPositionItem(position.toPositionItem(false));
+
+            String note = (position.srcCallsign == null ? "UNK" : position.srcCallsign) + "→" +
+                    (position.dstCallsign == null ? "UNK" : position.dstCallsign);
+            sendStatusUpdate(AppMessage.EV_POSITION_RECEIVED, note);
         }
 
         @Override

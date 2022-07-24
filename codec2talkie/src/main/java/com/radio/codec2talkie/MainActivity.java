@@ -733,6 +733,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     break;
                 case EV_TEXT_MESSAGE_RECEIVED:
                 case EV_DATA_RECEIVED:
+                case EV_POSITION_RECEIVED:
                     if (msg.obj != null) {
                         String note = (String)msg.obj;
                         _textStatus.setText(note.split(":")[0]);

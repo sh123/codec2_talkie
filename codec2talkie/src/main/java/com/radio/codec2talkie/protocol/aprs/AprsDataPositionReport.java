@@ -139,7 +139,7 @@ public class AprsDataPositionReport implements AprsData {
         byte[] tail = new byte[buffer.remaining()];
         buffer.get(tail);
         String strTail = new String(tail);
-        Pattern latLonPattern = Pattern.compile("^(\\\\|/)(\\S{4})(\\S{4})(\\S)(.\\S)(\\S)(.*)$");
+        Pattern latLonPattern = Pattern.compile("^([\\\\/])(\\S{4})(\\S{4})(\\S)(.\\S)(\\S)(.*)$", Pattern.DOTALL);
         Matcher latLonMatcher = latLonPattern.matcher(strTail);
         if (!latLonMatcher.matches()) return false;
 
@@ -156,9 +156,7 @@ public class AprsDataPositionReport implements AprsData {
         _position.latitude = getUncompressedCoordinate(latitude.getBytes(), true);
         if (longitude == null) return false;
         _position.longitude = getUncompressedCoordinate(longitude.getBytes(), false);
-        if (comment == null)
-            _position.comment = "";
-        else
+        if (comment != null)
             _position.comment = comment;
 
         if (altSpeed == null) return false;
@@ -216,7 +214,8 @@ public class AprsDataPositionReport implements AprsData {
                 "([\\S])" +                         // symbol table
                 "([\\d ]{5}[.][\\d ]{2})(E|W)" +    // longitude
                 "(\\S)(.+)?" +                      // tail (speed/bearing/altitude/comment)
-                "$");
+                "$", Pattern.DOTALL);
+
         Matcher latLonMatcher = latLonPattern.matcher(strTail);
         if (!latLonMatcher.matches()) return false;
 
@@ -240,7 +239,7 @@ public class AprsDataPositionReport implements AprsData {
         if (strTail == null) return true;
 
         // read course/speed
-        Pattern courseSpeedPattern = Pattern.compile("^(\\d{3})/(\\d{3})(.*)?$");
+        Pattern courseSpeedPattern = Pattern.compile("^(\\d{3})/(\\d{3})(.*)?$", Pattern.DOTALL);
         Matcher courseSpeedMatcher = courseSpeedPattern.matcher(strTail);
         if (courseSpeedMatcher.matches()) {
             String course = courseSpeedMatcher.group(1);
