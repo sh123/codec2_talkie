@@ -40,7 +40,7 @@ public class LogItemGroupHolder extends RecyclerView.ViewHolder {
         _logItemViewTitle.setText(String.format(Locale.US, "%s",
                 group.getSrcCallsign()));
         _logItemViewDistance.setText(String.format(Locale.US, "%s %.1f km", bearing, distanceKm));
-        _logItemViewMessage.setText(String.format(Locale.US, "%s %s %.4f %.4f %03d° %03dkm/h %04dm %s %s",
+        _logItemViewMessage.setText(String.format(Locale.US, "%s %s %f %f %03d° %03dkm/h %04dm %s %s",
                 group.getSymbolCode(),
                 group.getMaidenHead(),
                 group.getLatitude(),

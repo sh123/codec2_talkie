@@ -17,7 +17,7 @@ public interface LogItemDao {
     void insertLogItem(LogItem logItem);
 
     @Query("SELECT pos.timestampEpoch AS timestampEpoch, " +
-            "pos.srcCallsign AS srcCallsign, " +
+            "log.srcCallsign AS srcCallsign, " +
             "pos.dstCallsign AS dstCallsign, " +
             "pos.latitude AS latitude, " +
             "pos.longitude AS longitude, " +

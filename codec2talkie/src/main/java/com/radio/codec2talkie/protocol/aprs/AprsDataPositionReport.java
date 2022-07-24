@@ -50,6 +50,7 @@ public class AprsDataPositionReport implements AprsData {
         _position.srcCallsign = srcCallsign;
         _position.dstCallsign = dstCallsign;
         _position.status = "";
+        _position.comment = "";
         _position.privacyLevel = 0;
         if ((infoData[0] == '/' || infoData[0] == '\\') && fromCompressedBinary(infoData)) {
             _position.isCompressed = true;
@@ -208,7 +209,14 @@ public class AprsDataPositionReport implements AprsData {
         byte[] tail = new byte[buffer.remaining()];
         buffer.get(tail);
         String strTail = new String(tail);
-        Pattern latLonPattern = Pattern.compile("^([\\d ]{4}[.][\\d ]{2})(N|S)([/\\\\])([\\d ]{5}[.][\\d ]{2})(E|W)(\\S)(.+)$");
+        Pattern latLonPattern = Pattern.compile(
+                "^" +
+                "(?:\\d{6}z*)?" +                   // optional timestamp
+                "([\\d ]{4}[.][\\d ]{2})(N|S)" +    // latitude "
+                "([\\S])" +                         // symbol table
+                "([\\d ]{5}[.][\\d ]{2})(E|W)" +    // longitude
+                "(\\S)(.+)?" +                      // tail (speed/bearing/altitude/comment)
+                "$");
         Matcher latLonMatcher = latLonPattern.matcher(strTail);
         if (!latLonMatcher.matches()) return false;
 
@@ -229,36 +237,40 @@ public class AprsDataPositionReport implements AprsData {
         String symbol = latLonMatcher.group(6);
         _position.symbolCode = String.format("%s%s", table, symbol);
         strTail = latLonMatcher.group(7);
-        if (strTail == null) return false;
+        if (strTail == null) return true;
 
         // read course/speed
-        Pattern courseSpeedPattern = Pattern.compile("^(\\d{3})/(\\d{3})(.+)$");
+        Pattern courseSpeedPattern = Pattern.compile("^(\\d{3})/(\\d{3})(.*)?$");
         Matcher courseSpeedMatcher = courseSpeedPattern.matcher(strTail);
         if (courseSpeedMatcher.matches()) {
             String course = courseSpeedMatcher.group(1);
             String speed = courseSpeedMatcher.group(2);
             strTail = courseSpeedMatcher.group(3);
-            if (strTail == null || speed == null || course == null) return false;
-            _position.bearingDegrees = Float.parseFloat(course);
-            _position.speedMetersPerSecond = UnitTools.knotsToMetersPerSecond(Long.parseLong(speed));
-            _position.isSpeedBearingEnabled = true;
-            _position.hasBearing = true;
-            _position.hasSpeed = true;
+            if (speed != null && course != null) {
+                _position.bearingDegrees = Float.parseFloat(course);
+                _position.speedMetersPerSecond = UnitTools.knotsToMetersPerSecond(Long.parseLong(speed));
+                _position.isSpeedBearingEnabled = true;
+                _position.hasBearing = true;
+                _position.hasSpeed = true;
+            }
         } else {
             _position.isSpeedBearingEnabled = false;
             _position.hasBearing = false;
             _position.hasSpeed = false;
         }
+        if (strTail == null) return true;
+
         // read altitude (could be anywhere inside the comment)
         Pattern altitudePattern = Pattern.compile("/A=(\\d{6})");
         Matcher altitudeMatcher = altitudePattern.matcher(strTail);
         if (altitudeMatcher.matches()) {
             String altitude = altitudeMatcher.group(1);
-            if (altitude == null) return false;
-            strTail = altitudeMatcher.replaceAll("");
-            _position.altitudeMeters = UnitTools.feetToMeters(Long.parseLong(altitude));
-            _position.isAltitudeEnabled = true;
-            _position.hasAltitude = true;
+            if (altitude != null) {
+                strTail = altitudeMatcher.replaceAll("");
+                _position.altitudeMeters = UnitTools.feetToMeters(Long.parseLong(altitude));
+                _position.isAltitudeEnabled = true;
+                _position.hasAltitude = true;
+            }
         } else {
             _position.isAltitudeEnabled = false;
             _position.hasAltitude = false;

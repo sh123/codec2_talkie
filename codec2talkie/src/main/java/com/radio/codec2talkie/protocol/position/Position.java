@@ -75,7 +75,7 @@ public class Position {
     }
 
     public static String bearing(double lat1, double lon1, double lat2, double lon2) {
-        double radians = Math.atan2(lat2 - lat1, lon2 - lon1);
+        double radians = Math.atan2(lon2 - lon1, lat2 - lat1);
         double degrees = radians * (180.0 / Math.PI);
         String[] dirNames = {"N", "NE", "E", "SE", "S", "SW", "W", "NW", "N"};
         int dirIndex = (int) Math.round(degrees / 45);
