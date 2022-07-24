@@ -16,7 +16,23 @@ public interface LogItemDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertLogItem(LogItem logItem);
 
-    @Query("SELECT srcCallsign FROM LogItem GROUP BY srcCallsign")
+    @Query("SELECT pos.timestampEpoch AS timestampEpoch, " +
+            "pos.srcCallsign AS srcCallsign, " +
+            "pos.dstCallsign AS dstCallsign, " +
+            "pos.latitude AS latitude, " +
+            "pos.longitude AS longitude, " +
+            "pos.maidenHead AS maidenHead, " +
+            "pos.altitudeMeters AS altitudeMeters, " +
+            "pos.bearingDegrees AS bearingDegrees, " +
+            "pos.speedMetersPerSecond AS speedMetersPerSecond, " +
+            "pos.status AS status, " +
+            "pos.comment AS comment, " +
+            "pos.symbolCode AS symbolCode, " +
+            "pos.privacyLevel AS privacyLevel, " +
+            "MAX(pos.timestampEpoch)" +
+            "FROM LogItem log " +
+            "LEFT OUTER JOIN PositionItem pos ON (log.srcCallsign = pos.srcCallsign)" +
+            "GROUP BY log.srcCallsign")
     LiveData<List<LogItemGroup>> getGroups();
 
     @Query("SELECT * FROM LogItem ORDER by timestampEpoch DESC")

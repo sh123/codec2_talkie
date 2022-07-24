@@ -20,7 +20,7 @@
         style="@style/log_item_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:lines="1"
+        android:lines="2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/log_view_group_item_title" />
 

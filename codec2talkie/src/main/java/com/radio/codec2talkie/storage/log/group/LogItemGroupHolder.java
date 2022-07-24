@@ -8,6 +8,9 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.tools.UnitTools;
+
+import java.util.Locale;
 
 public class LogItemGroupHolder extends RecyclerView.ViewHolder {
 
@@ -20,8 +23,19 @@ public class LogItemGroupHolder extends RecyclerView.ViewHolder {
         _logItemViewMessage = itemView.findViewById(R.id.log_view_group_item_message);
     }
 
-    public void bind(LogItemGroup groupName) {
-        _logItemViewTitle.setText(groupName.getSrcCallsign());
+    public void bind(LogItemGroup group) {
+        _logItemViewTitle.setText(String.format(Locale.US, "%s",
+                group.getSrcCallsign()));
+        _logItemViewMessage.setText(String.format(Locale.US, "%s %s %.4f %.4f %d° %dkm/h %dm %s %s",
+                group.getSymbolCode(),
+                group.getMaidenHead(),
+                group.getLatitude(),
+                group.getLongitude(),
+                (int)group.getBearingDegrees(),
+                UnitTools.metersPerSecondToKilometersPerHour((int)group.getSpeedMetersPerSecond()),
+                (int)group.getAltitudeMeters(),
+                group.getStatus(),
+                group.getComment()));
     }
 
     static LogItemGroupHolder create(ViewGroup parent) {

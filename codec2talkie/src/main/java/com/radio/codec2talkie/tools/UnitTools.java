@@ -77,4 +77,8 @@ public class UnitTools {
     }
 
     public static long millisToSeconds(long milliseconds) { return milliseconds / 1000L; }
+
+    public static int metersPerSecondToKilometersPerHour(int speedMetersPerSecond) {
+        return (int) (speedMetersPerSecond * 3.6);
+    }
 }

@@ -69,7 +69,7 @@ public class PositionItem {
 
     public void setIsTransmit(boolean isTransmit) { this.isTransmit = isTransmit; }
 
-    public void  setSrcCallsign(String srcCallsign) { this.srcCallsign = srcCallsign; }
+    public void setSrcCallsign(String srcCallsign) { this.srcCallsign = srcCallsign; }
 
     public void setDstCallsign(String dstCallsign) { this.dstCallsign = dstCallsign; }
 
