@@ -34,12 +34,16 @@ public class LogItemGroupHolder extends RecyclerView.ViewHolder {
 
     public void bind(LogItemGroup group) {
         @SuppressLint("MissingPermission") Location loc = _locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        double distanceKm = Position.distanceTo(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(),
-                group.getLatitude(), group.getLongitude(), group.getAltitudeMeters()) / 1000.0;
-        String bearing = Position.bearing(loc.getLatitude(), loc.getLongitude(), group.getLatitude(), group.getLongitude());
+        if (loc == null) {
+            _logItemViewDistance.setText(R.string.log_item_group_holder_unknown_km);
+        } else {
+            double distanceKm = Position.distanceTo(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(),
+                    group.getLatitude(), group.getLongitude(), group.getAltitudeMeters()) / 1000.0;
+            String bearing = Position.bearing(loc.getLatitude(), loc.getLongitude(), group.getLatitude(), group.getLongitude());
+            _logItemViewDistance.setText(String.format(Locale.US, "%s %.1f km", bearing, distanceKm));
+        }
         _logItemViewTitle.setText(String.format(Locale.US, "%s",
                 group.getSrcCallsign()));
-        _logItemViewDistance.setText(String.format(Locale.US, "%s %.1f km", bearing, distanceKm));
         _logItemViewMessage.setText(String.format(Locale.US, "%s %s %f %f %03d° %03dkm/h %04dm %s %s",
                 group.getSymbolCode(),
                 group.getMaidenHead(),

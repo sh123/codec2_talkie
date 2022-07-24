@@ -288,4 +288,5 @@
     <string name="log_item_group_textview_title">Station SSIDS</string>
     <string name="log_view_menu_stations">View stations</string>
     <string name="log_view_station_history">Station history</string>
+    <string name="log_item_group_holder_unknown_km">\? km</string>
 </resources>
