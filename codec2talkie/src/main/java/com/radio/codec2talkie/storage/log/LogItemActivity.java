@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.storage.log.group.LogItemGroupAdapter;
 import com.radio.codec2talkie.storage.position.PositionItemViewModel;
 
 public class LogItemActivity extends AppCompatActivity {

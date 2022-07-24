@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.lifecycle.LiveData;
 
 import com.radio.codec2talkie.storage.AppDatabase;
+import com.radio.codec2talkie.storage.log.group.LogItemGroup;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ public class LogItemRepository {
     private final LogItemDao _logItemDao;
     private final LiveData<List<LogItem>> _logItemLiveData;
     private LiveData<List<LogItem>> _logItemGroupLiveData;
-    private final LiveData<List<String>> _logItemGroups;
+    private final LiveData<List<LogItemGroup>> _logItemGroups;
 
     public LogItemRepository(Application application) {
         AppDatabase appDatabase = AppDatabase.getDatabase(application);
@@ -26,7 +27,7 @@ public class LogItemRepository {
         return _logItemLiveData;
     }
 
-    public LiveData<List<String>> getGroups() { return _logItemGroups; }
+    public LiveData<List<LogItemGroup>> getGroups() { return _logItemGroups; }
 
     public LiveData<List<LogItem>> getLogItems(String groupName) {
         return _logItemDao.getLogItems(groupName);

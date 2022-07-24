@@ -1,6 +1,5 @@
-package com.radio.codec2talkie.storage.log;
+package com.radio.codec2talkie.storage.log.group;
 
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +20,8 @@ public class LogItemGroupHolder extends RecyclerView.ViewHolder {
         _logItemViewMessage = itemView.findViewById(R.id.log_view_group_item_message);
     }
 
-    public void bind(String groupName) {
-        _logItemViewTitle.setText(groupName);
+    public void bind(LogItemGroup groupName) {
+        _logItemViewTitle.setText(groupName.getSrcCallsign());
     }
 
     static LogItemGroupHolder create(ViewGroup parent) {

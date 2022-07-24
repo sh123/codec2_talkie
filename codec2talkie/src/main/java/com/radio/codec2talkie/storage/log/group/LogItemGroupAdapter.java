@@ -1,4 +1,4 @@
-package com.radio.codec2talkie.storage.log;
+package com.radio.codec2talkie.storage.log.group;
 
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,11 +7,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
-public class LogItemGroupAdapter extends ListAdapter<String, LogItemGroupHolder> {
+public class LogItemGroupAdapter extends ListAdapter<LogItemGroup, LogItemGroupHolder> {
 
     private View.OnClickListener _clickListener;
 
-    public LogItemGroupAdapter(@NonNull DiffUtil.ItemCallback<String> diffCallback) {
+    public LogItemGroupAdapter(@NonNull DiffUtil.ItemCallback<LogItemGroup> diffCallback) {
         super(diffCallback);
     }
 
@@ -27,21 +27,21 @@ public class LogItemGroupAdapter extends ListAdapter<String, LogItemGroupHolder>
 
     @Override
     public void onBindViewHolder(LogItemGroupHolder holder, int position) {
-        String current = getItem(position);
+        LogItemGroup current = getItem(position);
         holder.itemView.setOnClickListener(_clickListener);
         holder.bind(current);
     }
 
-    static class LogItemGroupDiff extends DiffUtil.ItemCallback<String> {
+    public static class LogItemGroupDiff extends DiffUtil.ItemCallback<LogItemGroup> {
 
         @Override
-        public boolean areItemsTheSame(@NonNull String oldItem, @NonNull String newItem) {
-            return oldItem.equals(newItem);
+        public boolean areItemsTheSame(@NonNull LogItemGroup oldItem, @NonNull LogItemGroup newItem) {
+            return oldItem == newItem;
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull String oldItem, @NonNull String newItem) {
-            return oldItem.equals(newItem);
+        public boolean areContentsTheSame(@NonNull LogItemGroup oldItem, @NonNull LogItemGroup newItem) {
+            return oldItem.getSrcCallsign().equals(newItem.getSrcCallsign());
         }
     }
 }
