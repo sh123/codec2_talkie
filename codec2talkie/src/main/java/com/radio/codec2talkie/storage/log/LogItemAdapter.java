@@ -1,6 +1,5 @@
 package com.radio.codec2talkie.storage.log;
 
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -9,26 +8,22 @@ import androidx.recyclerview.widget.ListAdapter;
 
 public class LogItemAdapter extends ListAdapter<LogItem, LogItemHolder> {
 
-    private View.OnClickListener _clickListener;
+    private final boolean _isClickable;
 
-    public LogItemAdapter(@NonNull DiffUtil.ItemCallback<LogItem> diffCallback) {
+    public LogItemAdapter(@NonNull DiffUtil.ItemCallback<LogItem> diffCallback, boolean isClickable) {
         super(diffCallback);
-    }
-
-    public void setClickListener(View.OnClickListener clickListener) {
-        _clickListener = clickListener;
+        _isClickable = isClickable;
     }
 
     @NonNull
     @Override
     public LogItemHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return LogItemHolder.create(parent);
+        return LogItemHolder.create(parent, _isClickable);
     }
 
     @Override
     public void onBindViewHolder(LogItemHolder holder, int position) {
         LogItem current = getItem(position);
-        holder.itemView.setOnClickListener(_clickListener);
         holder.bind(current.getTimestampEpoch(), current.getSrcCallsign(), current.getLogLine(), current.getIsTransmit());
     }
 
