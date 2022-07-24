@@ -1,5 +1,7 @@
 package com.radio.codec2talkie.protocol.aprs;
 
+import android.util.Log;
+
 import com.radio.codec2talkie.protocol.aprs.tools.AprsTools;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
@@ -181,7 +183,7 @@ public class AprsDataPositionReportMicE implements AprsData {
 
         int h = ((int)infoData[2] - 28);
 
-        String longitude = String.format(Locale.US, "%03d%d.%d", d, m, h);
+        String longitude = String.format(Locale.US, "%03d%02d.%02d", d, m, h);
         _position.longitude = UnitTools.nmeaToDecimal(longitude, Character.toString(we));
 
         // read course/speed
