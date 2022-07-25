@@ -92,6 +92,8 @@ public class UsbConnectActivity extends AppCompatActivity {
         customTable.addProduct(0x1b4f, 0x9204, CdcAcmSerialDriver.class);
         // Arduino Due
         customTable.addProduct(0x2341, 0x003d, CdcAcmSerialDriver.class);
+        // STM
+        customTable.addProduct(0x0483, 0x5732, CdcAcmSerialDriver.class);
         return new UsbSerialProber(customTable);
     }
 

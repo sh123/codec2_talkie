@@ -26,5 +26,9 @@
     <usb-device vendor-id="7855" product-id="4"    /> <!-- 0x1eaf / 0x0004: Leaflabs Maple -->
     <usb-device vendor-id="3368" product-id="516"  /> <!-- 0x0d28 / 0x0204: ARM mbed -->
 
+    <!-- spark fun -->
     <usb-device vendor-id="6991" />                   <!-- 0x1b4f / ......: Spark Fun -->
+
+    <!-- RIG CAT control -->
+    <usb-device vendor-id="1155" product-id="22322" /> <!-- 0x0483 / 0x5732: STM, MCHF -->
 </resources>
