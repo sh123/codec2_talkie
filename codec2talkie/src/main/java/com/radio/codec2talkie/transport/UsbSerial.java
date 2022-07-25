@@ -1,7 +1,5 @@
 package com.radio.codec2talkie.transport;
 
-import android.util.Log;
-
 import com.hoho.android.usbserial.driver.SerialTimeoutException;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 

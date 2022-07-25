@@ -1,7 +1,5 @@
 package com.radio.codec2talkie.protocol.aprs;
 
-import android.util.Log;
-
 import com.radio.codec2talkie.protocol.aprs.tools.AprsTools;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
@@ -84,6 +82,18 @@ public class AprsDataPositionReportMicE implements AprsData {
         byte[] symbol = position.symbolCode.getBytes();
         buffer.put(symbol[1]);
         buffer.put(symbol[0]);
+
+        // encode altitude if enabled
+        if (position.isAltitudeEnabled && position.hasAltitude) {
+            int datumAltitude = (int) (10000 + position.altitudeMeters);
+            int a1 = 33 + (datumAltitude / (91 * 91));
+            buffer.put((byte)a1);
+            int a2 = 33 + ((datumAltitude % (91 * 91)) / 91);
+            buffer.put((byte)a2);
+            int a3 = 33 + ((datumAltitude % (91 * 91)) % 91);
+            buffer.put((byte)a3);
+            buffer.put((byte)'}');
+        }
 
         // comment
         buffer.put(position.comment.getBytes());
@@ -207,8 +217,13 @@ public class AprsDataPositionReportMicE implements AprsData {
         // read symbol table + symbol code
         _position.symbolCode = String.format(Locale.US, "%c%c", infoData[7], infoData[6]);
 
-        // read comment until the end
-        _position.comment = new String(Arrays.copyOfRange(infoData, 8, infoData.length));
+        if (infoData.length > 11 && infoData[11] == '}') {
+            _position.hasAltitude = true;
+            _position.altitudeMeters = ((infoData[8] - 33) * 91 * 91 + (infoData[9] - 33) * 91 + (infoData[10] - 33)) - 10000;
+            _position.comment = new String(Arrays.copyOfRange(infoData, 12, infoData.length));
+        } else {
+            _position.comment = new String(Arrays.copyOfRange(infoData, 8, infoData.length));
+        }
 
         _position.maidenHead = UnitTools.decimalToMaidenhead(_position.latitude, _position.longitude);
         _isValid = true;
@@ -223,7 +238,6 @@ public class AprsDataPositionReportMicE implements AprsData {
     public boolean isValid() {
         return _isValid;
     }
-
 
     private String generateDestinationCallsign(Position position) {
 
