@@ -52,11 +52,13 @@ public final class PreferenceKeys {
     public static String APP_NOTIFICATIONS_VOICE = "app_notifications_voice";
     public static String APP_NO_CPU_SLEEP = "app_no_cpu_sleep";
 
+    public static String AX25_VOAX25_ENABLE = "aprs_voax25_enable";
+    public static String AX25_CALLSIGN = "aprs_callsign";
+    public static String AX25_SSID = "aprs_ssid";
+    public static String AX25_DIGIPATH = "aprs_digipath";
+    public static String AX25_DIGIREPEATER_ENABLED = "aprs_digirepeater_enable";
+
     public static String APRS_ENABLED = "aprs_enable";
-    public static String APRS_VOAX25_ENABLE = "aprs_voax25_enable";
-    public static String APRS_CALLSIGN = "aprs_callsign";
-    public static String APRS_SSID = "aprs_ssid";
-    public static String APRS_DIGIPATH = "aprs_digipath";
     public static String APRS_SYMBOL = "aprs_symbol";
     public static String APRS_COMMENT = "aprs_comment";
     public static String APRS_LOCATION_PACKET_FORMAT = "aprs_location_packet_format";
@@ -72,7 +74,6 @@ public final class PreferenceKeys {
     public static String APRS_PRIVACY_POSITION_AMBIGUITY = "aprs_privacy_position_ambiguity";
     public static String APRS_PRIVACY_SPEED_ENABLED = "aprs_privacy_speed_enable";
     public static String APRS_PRIVACY_ALTITUDE_ENABLED = "aprs_privacy_altitude_enable";
-    public static String APRS_DIGIREPEATER_ENABLED = "aprs_digirepeater_enable";
 
     public static String APRS_LOCATION_SOURCE_SMART_FAST_SPEED = "aprs_location_source_smart_fast_speed";
     public static String APRS_LOCATION_SOURCE_SMART_FAST_RATE = "aprs_location_source_smart_fast_rate";

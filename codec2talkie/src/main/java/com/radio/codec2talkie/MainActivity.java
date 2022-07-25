@@ -447,13 +447,13 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             status += getString(R.string.aprs_label);
 
             // VoAX25
-            boolean voax25Enabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_VOAX25_ENABLE, false);
+            boolean voax25Enabled = _sharedPreferences.getBoolean(PreferenceKeys.AX25_VOAX25_ENABLE, false);
             if (voax25Enabled) {
                 status += getString(R.string.voax25_label);
             }
 
             // Digirepeater
-            boolean isDigirepeaterEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_DIGIREPEATER_ENABLED, false);
+            boolean isDigirepeaterEnabled = _sharedPreferences.getBoolean(PreferenceKeys.AX25_DIGIREPEATER_ENABLED, false);
             if (isDigirepeaterEnabled) {
                 status += getString(R.string.digirepeater_label);
             }

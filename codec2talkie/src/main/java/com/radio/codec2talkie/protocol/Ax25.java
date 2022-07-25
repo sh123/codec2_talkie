@@ -6,6 +6,7 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.protocol.ax25.AX25Callsign;
 import com.radio.codec2talkie.protocol.ax25.AX25Packet;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
@@ -19,6 +20,8 @@ public class Ax25 implements Protocol {
     private static final String TAG = Ax25.class.getSimpleName();
 
     final Protocol _childProtocol;
+
+    private String _myCallsign;
     private String _digipath;
     private boolean _isVoax25Enabled;
     private boolean _isDigiRepeaterEnabled;
@@ -34,10 +37,13 @@ public class Ax25 implements Protocol {
         _parentProtocolCallback = protocolCallback;
         _childProtocol.initialize(transport, context, _protocolCallback);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        _myCallsign = AX25Callsign.formatCallsign(
+                sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "NOCALL").toUpperCase(),
+                sharedPreferences.getString(PreferenceKeys.AX25_SSID, "0"));
         // NOTE, may need to pass through sendData/sendAudio
-        _digipath = sharedPreferences.getString(PreferenceKeys.APRS_DIGIPATH, "").toUpperCase();
-        _isVoax25Enabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_VOAX25_ENABLE, false);
-        _isDigiRepeaterEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_DIGIREPEATER_ENABLED, false);
+        _digipath = sharedPreferences.getString(PreferenceKeys.AX25_DIGIPATH, "").toUpperCase();
+        _isVoax25Enabled = sharedPreferences.getBoolean(PreferenceKeys.AX25_VOAX25_ENABLE, false);
+        _isDigiRepeaterEnabled = sharedPreferences.getBoolean(PreferenceKeys.AX25_DIGIREPEATER_ENABLED, false);
     }
 
     @Override
@@ -202,7 +208,7 @@ public class Ax25 implements Protocol {
     }
 
     private void digiRepeat(AX25Packet ax25Packet) {
-        // TODO, do not digi repeat own callsign
+        if (ax25Packet.src.equals(_myCallsign)) return;
         if (!ax25Packet.digiRepeat()) return;
         byte[] ax25Frame = ax25Packet.toBinary();
         if (ax25Frame == null) {

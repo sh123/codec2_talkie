@@ -16,8 +16,6 @@ import com.radio.codec2talkie.protocol.ax25.AX25Callsign;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.transport.Transport;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 
 public class Aprs implements Protocol {
@@ -51,11 +49,11 @@ public class Aprs implements Protocol {
         _childProtocol.initialize(transport, context, _protocolCallback);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        _isVoax25Enabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_VOAX25_ENABLE, false);
+        _isVoax25Enabled = sharedPreferences.getBoolean(PreferenceKeys.AX25_VOAX25_ENABLE, false);
 
         _srcCallsign = AX25Callsign.formatCallsign(
-                sharedPreferences.getString(PreferenceKeys.APRS_CALLSIGN, "NOCALL").toUpperCase(),
-                sharedPreferences.getString(PreferenceKeys.APRS_SSID, "0"));
+                sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "NOCALL").toUpperCase(),
+                sharedPreferences.getString(PreferenceKeys.AX25_SSID, "0"));
         _dstCallsign = "APZMDM";
 
         _symbolCode = sharedPreferences.getString(PreferenceKeys.APRS_SYMBOL, "/[");
