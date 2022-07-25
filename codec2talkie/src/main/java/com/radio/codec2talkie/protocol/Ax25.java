@@ -202,6 +202,7 @@ public class Ax25 implements Protocol {
     }
 
     private void digiRepeat(AX25Packet ax25Packet) {
+        // TODO, do not digi repeat own callsign
         if (!ax25Packet.digiRepeat()) return;
         byte[] ax25Frame = ax25Packet.toBinary();
         if (ax25Frame == null) {
