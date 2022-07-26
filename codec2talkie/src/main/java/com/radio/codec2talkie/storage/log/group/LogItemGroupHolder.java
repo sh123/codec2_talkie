@@ -46,7 +46,7 @@ public class LogItemGroupHolder extends RecyclerView.ViewHolder {
     public void bind(LogItemGroup group) {
         @SuppressLint("MissingPermission") Location loc = _locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (loc == null) {
-            _logItemViewDistance.setText(R.string.log_item_group_holder_unknown_km);
+            _logItemViewDistance.setText("");
         } else {
             double distanceKm = Position.distanceTo(loc.getLatitude(), loc.getLongitude(), loc.getAltitude(),
                     group.getLatitude(), group.getLongitude(), group.getAltitudeMeters()) / 1000.0;
