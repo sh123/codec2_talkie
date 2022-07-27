@@ -242,15 +242,17 @@
             app:defaultValue="WIDE1-1">
         </EditTextPreference>
 
-        <ListPreference
+        <Preference
             app:key="aprs_symbol"
             app:title="@string/aprs_symbol_title"
-            app:entries="@array/aprs_symbol_labels"
-            app:entryValues="@array/aprs_symbol_values"
-            app:summary="%s"
+            app:summary="@string/aprs_symbol_summary"
             app:dependency="aprs_enable"
             app:defaultValue="/$">
-        </ListPreference>
+            <intent
+                android:targetPackage="com.radio.codec2talkie"
+                android:targetClass="com.radio.codec2talkie.settings.AprsSymbolSelectionActivity">
+            </intent>
+        </Preference>
 
         <EditTextPreference
             app:key="aprs_comment"

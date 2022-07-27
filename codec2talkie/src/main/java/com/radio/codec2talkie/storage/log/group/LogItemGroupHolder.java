@@ -65,7 +65,7 @@ public class LogItemGroupHolder extends RecyclerView.ViewHolder {
                 group.getStatus(),
                 group.getComment()));
         String symbol = group.getSymbolCode();
-        Bitmap iconBitmap = _symbolTable.bitmapFromSymbol(symbol);
+        Bitmap iconBitmap = _symbolTable.bitmapFromSymbol(symbol, false);
         if (iconBitmap == null) {
             Log.e(TAG, "Cannot load bitmap for " + symbol);
         } else {

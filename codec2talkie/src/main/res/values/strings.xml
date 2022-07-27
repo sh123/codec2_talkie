@@ -290,4 +290,5 @@
     <string name="log_view_station_history">Station history</string>
     <string name="log_item_group_holder_unknown_km">\? km</string>
     <string name="log_view_group_item_icon_description">APRS icon</string>
+    <string name="settings_aprs_symbol_image_view_description">APRS symbols</string>
 </resources>
