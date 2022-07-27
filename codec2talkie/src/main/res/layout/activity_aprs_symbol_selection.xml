@@ -54,6 +54,7 @@
         android:id="@+id/settings_aprs_symbol_button_ok"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:text="@string/ok"
         android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
