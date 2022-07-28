@@ -27,24 +27,17 @@ public class Codec2 {
     public static final int CODEC2_FILE_HEADER_SIZE = 7;
 
     public native static long create(int mode);
-
-    public native static int getSamplesPerFrame(long con);
-
-    public native static int getBitsSize(long con);
-
     public native static int destroy(long con);
 
-    public native static long encode(long con, short[] buf, char[] bits);
+    public native static int getSamplesPerFrame(long con);
+    public native static int getBitsSize(long con);
 
-    /**
-     * Decode one frame from codec2.
-     *
-     * @param con pointer long, as from the create method
-     * @param outputBuffer buffer which will be filled with raw PCM audio decoded
-     * @param bits input buffer containing one frame of audio
-     *
-     * @return 0 on successful completion
-     */
-    public native static long decode(long con, short[] outputBuffer, byte[] bits);
+    public native static long encode(long con, short[] inputSamples, char[] outputBits);
+    public native static long decode(long con, short[] outputSamples, byte[] inputsBits);
 
+    public native static long fskCreate(int sampleFrequency, int symbolRate, int toneFreq, int toneSpacing);
+    public native static int fskDestroy(long conFsk);
+
+    public native static long fskModulate(long conFsk, short[] outputSamples, char[] inputBits);
+    public native static long fskDemodulate(long conFsk, short[] inputSamples, short[] outputBits);
 }

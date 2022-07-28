@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include "codec2/codec2_fdmdv.h"
 #include "codec2/codec2.h"
+#include "codec2/fsk.h"
 
 namespace Java_com_ustadmobile_codec2_Codec2 {
 
@@ -14,11 +15,27 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         int nbyte;//size of one frame of codec2 data
     };
 
+    struct ContextFsk {
+        struct FSK *fsk;
+        float *buf;
+        unsigned char *bits;
+        COMP * modBuf;
+        int Nbits;
+        int N;
+    };
+
     static Context *getContext(jlong jp) {
-        unsigned long p = (unsigned long) jp;
+        auto p = (unsigned long) jp;
         Context *con;
         con = (Context *) p;
         return con;
+    }
+
+    static ContextFsk *getContextFsk(jlong jp) {
+        auto p = (unsigned long) jp;
+        ContextFsk *conFsk;
+        conFsk = (ContextFsk *) p;
+        return conFsk;
     }
 
     static jlong create(JNIEnv *env, jclass clazz, int mode) {
@@ -32,8 +49,22 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         con->buf = (short*)malloc(con->nsam*sizeof(short));
         con->nbyte = (con->nbit +  7) / 8;
         con->bits = (unsigned char*)malloc(con->nbyte*sizeof(char));
-        unsigned long pv = (unsigned long) con;
+        auto pv = (unsigned long) con;
+        return pv;
+    }
 
+    static jlong fskCreate(JNIEnv *env, jclass clazz, int sampleFrequency, int symbolRate, int toneFreq, int toneSpacing) {
+        struct ContextFsk *conFsk;
+        conFsk = (struct ContextFsk *) malloc(sizeof(struct ContextFsk));
+        struct FSK *fsk;
+        fsk = fsk_create(sampleFrequency, symbolRate, MODE_2FSK, toneFreq, toneSpacing);
+        conFsk->fsk = fsk;
+        conFsk->Nbits = fsk->Nbits;
+        conFsk->N = fsk->N;
+        conFsk->buf = (float*)malloc(conFsk->N);
+        conFsk->modBuf = (COMP*)malloc(sizeof(COMP)*(fsk->N+fsk->Ts*2));
+        conFsk->bits = (unsigned char*)malloc(conFsk->Nbits);
+        auto pv = (unsigned long) conFsk;
         return pv;
     }
 
@@ -56,20 +87,30 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         return 0;
     }
 
-    static jlong encode(JNIEnv *env, jclass clazz, jlong n,
-                        jshortArray inputBuffer,
-                        jcharArray outputBits) {
+    static jint fskDestroy(JNIEnv *env, jclass clazz, jlong n) {
+        ContextFsk *conFsk = getContextFsk(n);
+        fsk_destroy(conFsk->fsk);
+        free(conFsk->bits);
+        free(conFsk->modBuf);
+        free(conFsk->buf);
+        free(conFsk);
+        return 0;
+    }
+
+    static jlong encode(JNIEnv *env, jclass clazz, jlong n, jshortArray inputBuffer, jcharArray outputBits) {
         Context *con = getContext(n);
         int i;
-        jshort *jbuf = env->GetShortArrayElements(inputBuffer, 0);
+        jshort *jbuf = env->GetShortArrayElements(inputBuffer, nullptr);
         for (i = 0; i < con->nsam; i++) {
-            short v = (short) jbuf[i];
+            auto v = (short) jbuf[i];
             con->buf[i] = v;
         }
         env->ReleaseShortArrayElements(inputBuffer, jbuf, 0);
         //env->DeleteLocalRef(inputBuffer);
+
         codec2_encode(con->c2, con->bits, con->buf);
-        jchar *jbits = env->GetCharArrayElements(outputBits, 0);
+
+        jchar *jbits = env->GetCharArrayElements(outputBits, nullptr);
         for (i = 0; i < con->nbyte; i++) {
             jbits[i] = con->bits[i];
         }
@@ -78,26 +119,60 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         return 0;
     }
 
-    static jlong decode(JNIEnv *env, jclass clazz, jlong n, jshortArray outBuffer, jbyteArray inBuffer) {
+    static jlong fskModulate(JNIEnv *env, jclass clazz, jlong n, jshortArray outputSamples, jbyteArray inputBits) {
+        ContextFsk *conFsk = getContextFsk(n);
+        int i;
+        jbyte *jbuf = env->GetByteArrayElements(inputBits, nullptr);
+        for (i = 0; i < conFsk->Nbits; i++) {
+            auto v = (unsigned char) jbuf[i];
+            conFsk->bits[i] = v;
+        }
+        env->ReleaseByteArrayElements(inputBits, jbuf, 0);
+        //env->DeleteLocalRef(inputBits);
+
+        fsk_mod(conFsk->fsk, conFsk->buf, conFsk->bits, conFsk->Nbits);
+
+        jshort *jOutBuf = env->GetShortArrayElements(outputSamples, nullptr);
+        for (i = 0; i < conFsk->N; i++) {
+            jOutBuf[i] = (int16_t)(conFsk->buf[i] * FDMDV_SCALE);
+        }
+        env->ReleaseShortArrayElements(outputSamples, jOutBuf, 0);
+        //env->DeleteLocalRef(outputSamples);
+        return 0;
+    }
+
+    static jlong decode(JNIEnv *env, jclass clazz, jlong n, jshortArray outputSamples, jbyteArray inputBits) {
         Context *con = getContext(n);
-
-        env->GetByteArrayRegion (inBuffer, 0, con->nbyte, reinterpret_cast<jbyte*>(con->bits));
-
+        env->GetByteArrayRegion(inputBits, 0, con->nbyte, reinterpret_cast<jbyte*>(con->bits));
         codec2_decode_ber(con->c2, con->buf, con->bits, 0.0);
+        env->SetShortArrayRegion(outputSamples, 0, con->nsam, con->buf);
+        return 0;
+    }
 
-        env->SetShortArrayRegion(outBuffer, 0, con->nsam, con->buf);
-
+    static jlong fskDemodulate(JNIEnv * env, jclass clazz, jlong n, jshortArray inputSamples, jbyteArray outputBits) {
+        ContextFsk *conFsk = getContextFsk(n);
+        env->GetShortArrayRegion(inputSamples, 0, conFsk->N, reinterpret_cast<jshort*>(conFsk->buf));
+        for(int i = 0; i < fsk_nin(conFsk->fsk); i++){
+            conFsk->modBuf[i].real = ((float)conFsk->buf[i])/FDMDV_SCALE;
+            conFsk->modBuf[i].imag = 0.0;
+        }
+        fsk_demod(conFsk->fsk, conFsk->bits, conFsk->modBuf);
+        env->SetByteArrayRegion(outputBits, 0, conFsk->Nbits, reinterpret_cast<const jbyte *>(conFsk->bits));
         return 0;
     }
 
     static JNINativeMethod method_table[] = {
-            {"create",             "(I)J",     (void *) create},
-            {"getSamplesPerFrame", "(J)I",     (void *) c2spf},
-            {"getBitsSize",        "(J)I",     (void *) c2bits},
-            {"destroy",            "(J)I",     (void *) destroy},
-            {"encode",             "(J[S[C)J", (void *) encode},
-            {"decode",             "(J[S[B)J", (void *) decode}};
-
+        {"create",             "(I)J",     (void *) create},
+        {"getSamplesPerFrame", "(J)I",     (void *) c2spf},
+        {"getBitsSize",        "(J)I",     (void *) c2bits},
+        {"destroy",            "(J)I",     (void *) destroy},
+        {"encode",             "(J[S[C)J", (void *) encode},
+        {"decode",             "(J[S[B)J", (void *) decode},
+        {"fskCreate",          "(IIII)J",  (void *) fskCreate},
+        {"fskDestroy",         "(J)I",     (void *) fskDestroy},
+        {"fskModulate",        "(J[S[C)J", (void *) fskModulate},
+        {"fskDemodulate",      "(J[S[S)J", (void *) fskDemodulate}
+    };
 }
 
 using namespace Java_com_ustadmobile_codec2_Codec2;
