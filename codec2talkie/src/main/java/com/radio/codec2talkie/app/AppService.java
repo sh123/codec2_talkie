@@ -160,11 +160,9 @@ public class AppService extends Service {
             _tracker = TrackerFactory.create(trackerName);
             _tracker.initialize(getApplicationContext(), position -> { if (_appWorker != null) _appWorker.sendPositionToTnc(position); });
 
-            transportType = (TransportFactory.TransportType) extras.get("transportType");
-            startAppWorker(transportType);
-
             Notification notification = buildServiceNotification(getString(R.string.app_service_notif_text_ptt_ready), R.drawable.ic_app_action);
             startForeground(SERVICE_NOTIFICATION_ID, notification);
+
             PowerManager powerManager = (PowerManager) getSystemService(POWER_SERVICE);
 
             boolean noCpuSleep = _sharedPreferences.getBoolean(PreferenceKeys.APP_NO_CPU_SLEEP, false);
@@ -174,6 +172,9 @@ public class AppService extends Service {
             }
 
             isRunning = true;
+
+            transportType = (TransportFactory.TransportType) extras.get("transportType");
+            startAppWorker(transportType);
 
             Log.i(TAG, "App service started");
         }

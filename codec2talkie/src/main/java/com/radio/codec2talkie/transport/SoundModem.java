@@ -7,18 +7,21 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
-import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
-import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.ustadmobile.codec2.Codec2;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.BitSet;
 
 public class SoundModem implements Transport {
 
-    private static final int AUDIO_SAMPLE_SIZE = 8000;
+    private static final String TAG = SoundModem.class.getSimpleName();
+
+    private static final int AUDIO_SAMPLE_SIZE = 12000;
 
     private final String _name;
 
@@ -62,7 +65,7 @@ public class SoundModem implements Transport {
                 AUDIO_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
-                10 * _audioRecorderMinBufferSize);
+                _audioRecorderMinBufferSize);
 
         int _audioPlayerMinBufferSize = AudioTrack.getMinBufferSize(
                 AUDIO_SAMPLE_SIZE,
@@ -81,7 +84,7 @@ public class SoundModem implements Transport {
                         .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
                         .build())
                 .setTransferMode(AudioTrack.MODE_STREAM)
-                .setBufferSizeInBytes(10 * _audioPlayerMinBufferSize)
+                .setBufferSizeInBytes(_audioPlayerMinBufferSize)
                 .build();
     }
 
@@ -95,8 +98,30 @@ public class SoundModem implements Transport {
         return 0;
     }
 
+    public static byte[] toByteBitArray(BitSet bits) {
+        byte[] bytes = new byte[bits.length()];
+        for (int i=0; i<bits.length(); i++) {
+            bytes[i] = (byte) (bits.get(i) ? 1 : 0);
+        }
+        return bytes;
+    }
+
     @Override
     public int write(byte[] data) throws IOException {
+        _systemAudioPlayer.play();
+        byte[] dataBits = toByteBitArray(BitSet.valueOf(data));
+        Log.i(TAG, "write() " + data.length + " " + dataBits.length + " " + _playbackBitBuffer.length);
+        int j = 0;
+        for (int i = 0; i < dataBits.length; i++, j++) {
+            if (j >= _playbackBitBuffer.length) {
+                Log.i(TAG, "-- " + i + " " + j);
+                Codec2.fskModulate(_fskModem, _playbackAudioBuffer, _playbackBitBuffer);
+                _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
+                j = 0;
+            }
+            _playbackBitBuffer[j] = dataBits[i];
+        }
+        Log.i(TAG, "-- " + j);
         Codec2.fskModulate(_fskModem, _playbackAudioBuffer, _playbackBitBuffer);
         _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
         return 0;

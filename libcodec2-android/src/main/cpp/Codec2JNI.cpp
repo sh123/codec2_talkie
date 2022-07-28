@@ -131,9 +131,8 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
 
     static jlong encode(JNIEnv *env, jclass clazz, jlong n, jshortArray inputBuffer, jcharArray outputBits) {
         Context *con = getContext(n);
-        int i;
         jshort *jbuf = env->GetShortArrayElements(inputBuffer, nullptr);
-        for (i = 0; i < con->nsam; i++) {
+        for (int i = 0; i < con->nsam; i++) {
             auto v = (short) jbuf[i];
             con->buf[i] = v;
         }
@@ -143,7 +142,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         codec2_encode(con->c2, con->bits, con->buf);
 
         jchar *jbits = env->GetCharArrayElements(outputBits, nullptr);
-        for (i = 0; i < con->nbyte; i++) {
+        for (int i = 0; i < con->nbyte; i++) {
             jbits[i] = con->bits[i];
         }
         env->ReleaseCharArrayElements(outputBits, jbits, 0);
@@ -153,9 +152,8 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
 
     static jlong fskModulate(JNIEnv *env, jclass clazz, jlong n, jshortArray outputSamples, jbyteArray inputBits) {
         ContextFsk *conFsk = getContextFsk(n);
-        int i;
         jbyte *jbuf = env->GetByteArrayElements(inputBits, nullptr);
-        for (i = 0; i < conFsk->Nbits; i++) {
+        for (int i = 0; i < conFsk->Nbits; i++) {
             auto v = (unsigned char) jbuf[i];
             conFsk->modBits[i] = v;
         }
@@ -165,7 +163,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         fsk_mod(conFsk->fsk, conFsk->modBuf, conFsk->modBits, conFsk->Nbits);
 
         jshort *jOutBuf = env->GetShortArrayElements(outputSamples, nullptr);
-        for (i = 0; i < conFsk->N; i++) {
+        for (int i = 0; i < conFsk->N; i++) {
             jOutBuf[i] = (int16_t)(conFsk->modBuf[i] * FDMDV_SCALE);
         }
         env->ReleaseShortArrayElements(outputSamples, jOutBuf, 0);

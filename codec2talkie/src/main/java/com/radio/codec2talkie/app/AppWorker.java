@@ -87,7 +87,7 @@ public class AppWorker extends Thread {
         String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, _context.getResources().getStringArray(R.array.codec2_modes)[0]);
         _codec2Mode = AudioTools.extractCodec2ModeId(codec2ModeName);
 
-        _transport  = TransportFactory.create(transportType, context);
+        _transport = TransportFactory.create(transportType, context);
         _protocol = ProtocolFactory.create(_codec2Mode, context);
 
         _processPeriodicTimer = new Timer();
@@ -492,6 +492,11 @@ public class AppWorker extends Thread {
     @Override
     public void run() {
         Log.i(TAG, "Starting message loop");
+        try {
+            sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         setPriority(Thread.MAX_PRIORITY);
         Looper.prepare();
 
