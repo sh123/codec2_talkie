@@ -66,11 +66,11 @@ public class AudioFrameAggregator implements Protocol {
     public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
         if ( _outputBufferPos + frame.length >= _outputBufferSize) {
             _childProtocol.sendCompressedAudio(src, dst, codec2Mode, Arrays.copyOf(_outputBuffer, _outputBufferPos));
-            _lastSrc = src;
-            _lastDst = dst;
-            _lastCodec2Mode = codec2Mode;
             _outputBufferPos = 0;
         }
+        _lastSrc = src;
+        _lastDst = dst;
+        _lastCodec2Mode = codec2Mode;
         System.arraycopy(frame, 0, _outputBuffer, _outputBufferPos, frame.length);
         _outputBufferPos += frame.length;
     }
