@@ -14,7 +14,8 @@ public class TransportFactory {
         BLUETOOTH,
         LOOPBACK,
         TCP_IP,
-        BLE
+        BLE,
+        AUDIO
     };
 
     public static Transport create(TransportType transportType) throws IOException {
@@ -27,6 +28,8 @@ public class TransportFactory {
                 return new TcpIp(TcpIpSocketHandler.getSocket(), TcpIpSocketHandler.getName());
             case BLE:
                 return new Ble(BleHandler.getGatt(), BleHandler.getName());
+            case AUDIO:
+                return new Audio("SoundModem");
             case LOOPBACK:
             default:
                 return new Loopback();

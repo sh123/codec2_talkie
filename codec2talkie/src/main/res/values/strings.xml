@@ -291,4 +291,7 @@
     <string name="log_item_group_holder_unknown_km">\? km</string>
     <string name="log_view_group_item_icon_description">APRS icon</string>
     <string name="settings_aprs_symbol_image_view_description">APRS symbols</string>
+    <string name="ports_audio_enable_title">Enable sound modem</string>
+    <string name="ports_audio_enable_summary">Send data and receive data through sound modem by using phone speaker and mic</string>
+    <string name="main_status_sound_modem">SoundModem</string>
 </resources>

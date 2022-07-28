@@ -7,13 +7,17 @@ public final class PreferenceKeys {
     public static String PORTS_USB_PARITY = "ports_usb_parity";
     public static String PORTS_USB_DTR = "ports_usb_dtr";
     public static String PORTS_USB_RTS = "ports_usb_rts";
+
     public static String PORTS_BT_CLIENT_NAME = "ports_bt_client_name";
     public static String PORTS_BT_BLE_ENABLED = "ports_bt_ble_enable";
+
     public static String PORTS_TCP_IP_ENABLED = "ports_tcp_ip_enable";
     public static String PORTS_TCP_IP_ADDRESS = "ports_tcp_ip_address";
     public static String PORTS_TCP_IP_PORT = "ports_tcp_ip_port";
     public static String PORTS_TCP_IP_RETRY_COUNT = "ports_tcp_ip_retry_count";
     public static String PORTS_TCP_IP_RETRY_DELAY = "ports_tcp_ip_retry_delay";
+
+    public static String PORTS_AUDIO_ENABLED = "ports_audio_enabled";
 
     public static String CODEC2_MODE = "codec2_mode";
     public static String CODEC2_TEST_MODE = "codec2_test_mode";
