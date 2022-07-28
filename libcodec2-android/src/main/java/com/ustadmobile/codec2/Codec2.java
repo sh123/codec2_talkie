@@ -38,6 +38,9 @@ public class Codec2 {
     public native static long fskCreate(int sampleFrequency, int symbolRate, int toneFreq, int toneSpacing);
     public native static int fskDestroy(long conFsk);
 
-    public native static long fskModulate(long conFsk, short[] outputSamples, char[] inputBits);
-    public native static long fskDemodulate(long conFsk, short[] inputSamples, short[] outputBits);
+    public native static int fskDemodBitsBufSize(long conFsk);
+    public native static int fskModSamplesBufSize(long conFsk);
+
+    public native static long fskModulate(long conFsk, short[] outputSamples, byte[] inputBits);
+    public native static long fskDemodulate(long conFsk, short[] inputSamples, byte[] outputBits);
 }
