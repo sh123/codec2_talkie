@@ -24,6 +24,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         unsigned char *demodBits;
         int Nbits;
         int N;
+        int Ts;
     };
 
     static Context *getContext(jlong jp) {
@@ -64,6 +65,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
 
         conFsk->Nbits = fsk->Nbits;
         conFsk->N = fsk->N;
+        conFsk->Ts = fsk->Ts;
 
         conFsk->modBuf = (float*)malloc(conFsk->N);
         conFsk->modBits = (uint8_t*)malloc(conFsk->Nbits);
@@ -86,6 +88,11 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         return con->nbyte;
     }
 
+    static jint fskDemodSamplesBufSize(JNIEnv * env, jclass clazz, jlong n) {
+        ContextFsk *conFsk = getContextFsk(n);
+        return sizeof(short) * (conFsk->N + 2 * conFsk->Ts);
+    }
+
     static jint fskDemodBitsBufSize(JNIEnv * env, jclass clazz, jlong n) {
         ContextFsk *conFsk = getContextFsk(n);
         return sizeof(uint8_t) * conFsk->Nbits;
@@ -94,6 +101,11 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
     static jint fskModSamplesBufSize(JNIEnv * env, jclass clazz, jlong n) {
         ContextFsk *conFsk = getContextFsk(n);
         return conFsk->N;
+    }
+
+    static jint fskModBitsBufSize(JNIEnv * env, jclass clazz, jlong n) {
+        ContextFsk *conFsk = getContextFsk(n);
+        return conFsk->Nbits;
     }
 
     static jint destroy(JNIEnv *env, jclass clazz, jlong n) {
@@ -193,7 +205,9 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         {"fskModulate",        "(J[S[B)J", (void *) fskModulate},
         {"fskDemodulate",      "(J[S[B)J", (void *) fskDemodulate},
         {"fskDemodBitsBufSize","(J)I",     (void *) fskDemodBitsBufSize},
-        {"fskModSamplesBufSize","(J)I",    (void *) fskModSamplesBufSize}
+        {"fskModSamplesBufSize","(J)I",    (void *) fskModSamplesBufSize},
+        {"fskDemodSamplesBufSize","(J)I",  (void *) fskDemodSamplesBufSize},
+        {"fskModBitsBufSize",  "(J)I",     (void *) fskModBitsBufSize}
     };
 }
 

@@ -255,9 +255,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             _textConnInfo.setText(R.string.main_status_loopback_test);
             startAppService(TransportFactory.TransportType.LOOPBACK);
         } else if (requestPermissions()) {
-            if (_sharedPreferences.getBoolean(PreferenceKeys.PORTS_AUDIO_ENABLED, false)) {
+            if (_sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_ENABLED, false)) {
                 _textConnInfo.setText(R.string.main_status_sound_modem);
-                startAppService(TransportFactory.TransportType.AUDIO);
+                startAppService(TransportFactory.TransportType.SOUND_MODEM);
             } else if (_sharedPreferences.getBoolean(PreferenceKeys.PORTS_TCP_IP_ENABLED, false)) {
                 startTcpIpConnectActivity();
             } else {

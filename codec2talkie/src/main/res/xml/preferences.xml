@@ -142,9 +142,9 @@
         </Preference>
 
         <SwitchPreference
-            app:key="ports_audio_enable"
-            app:title="@string/ports_audio_enable_title"
-            app:summary="@string/ports_audio_enable_summary"
+            app:key="ports_sound_modem_enable"
+            app:title="@string/ports_sound_modem_enable_title"
+            app:summary="@string/ports_sound_modem_enable_summary"
             app:defaultValue="false">
         </SwitchPreference>
 

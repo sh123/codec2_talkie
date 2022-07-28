@@ -87,7 +87,7 @@ public class AppWorker extends Thread {
         String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, _context.getResources().getStringArray(R.array.codec2_modes)[0]);
         _codec2Mode = AudioTools.extractCodec2ModeId(codec2ModeName);
 
-        _transport  = TransportFactory.create(transportType);
+        _transport  = TransportFactory.create(transportType, context);
         _protocol = ProtocolFactory.create(_codec2Mode, context);
 
         _processPeriodicTimer = new Timer();

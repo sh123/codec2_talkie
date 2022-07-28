@@ -17,7 +17,7 @@ public final class PreferenceKeys {
     public static String PORTS_TCP_IP_RETRY_COUNT = "ports_tcp_ip_retry_count";
     public static String PORTS_TCP_IP_RETRY_DELAY = "ports_tcp_ip_retry_delay";
 
-    public static String PORTS_AUDIO_ENABLED = "ports_audio_enabled";
+    public static String PORTS_SOUND_MODEM_ENABLED = "ports_sound_modem_enable";
 
     public static String CODEC2_MODE = "codec2_mode";
     public static String CODEC2_TEST_MODE = "codec2_test_mode";
