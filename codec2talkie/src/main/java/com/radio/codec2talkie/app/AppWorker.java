@@ -28,7 +28,6 @@ import com.radio.codec2talkie.protocol.Protocol;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
-import com.radio.codec2talkie.storage.message.MessageItem;
 import com.radio.codec2talkie.storage.message.MessageItemRepository;
 import com.radio.codec2talkie.storage.position.PositionItemRepository;
 import com.radio.codec2talkie.tools.AudioTools;
@@ -87,15 +86,15 @@ public class AppWorker extends Thread {
         String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, _context.getResources().getStringArray(R.array.codec2_modes)[0]);
         _codec2Mode = AudioTools.extractCodec2ModeId(codec2ModeName);
 
+        _logItemRepository = new LogItemRepository((Application)context);
+        _messageItemRepository = new MessageItemRepository((Application)context);
+        _positionItemRepository = new PositionItemRepository((Application)context);
+
         _transport = TransportFactory.create(transportType, context);
         _protocol = ProtocolFactory.create(_codec2Mode, context);
 
         _processPeriodicTimer = new Timer();
         _recordAudioBuffer = new short[_protocol.getPcmAudioBufferSize()];
-
-        _logItemRepository = new LogItemRepository((Application)context);
-        _messageItemRepository = new MessageItemRepository((Application)context);
-        _positionItemRepository = new PositionItemRepository((Application)context);
 
         constructSystemAudioDevices();
     }
@@ -493,7 +492,7 @@ public class AppWorker extends Thread {
     public void run() {
         Log.i(TAG, "Starting message loop");
         try {
-            sleep(1000);
+            sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

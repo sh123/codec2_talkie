@@ -76,22 +76,20 @@ public class ProtocolFactory {
                 break;
         }
 
-        if (protocolType != ProtocolType.RAW) {
-            if (scramblingEnabled) {
-                proto = new Scrambler(proto, scramblingKey);
-            }
-            if (aprsEnabled) {
-                proto = new Ax25(proto);
-            }
-            if (recordingEnabled) {
-                proto = new Recorder(proto, codec2ModeId);
-            }
+        if (scramblingEnabled) {
+            proto = new Scrambler(proto, scramblingKey);
+        }
+        if (aprsEnabled) {
+            proto = new Ax25(proto);
+        }
+        if (recordingEnabled) {
+            proto = new Recorder(proto, codec2ModeId);
         }
 
         proto = new AudioFrameAggregator(proto, codec2ModeId);
         proto = new AudioCodec2(proto, codec2ModeId);
 
-        if (aprsEnabled && protocolType != ProtocolType.RAW) {
+        if (aprsEnabled) { // && protocolType != ProtocolType.RAW) {
             proto = new Aprs(proto);
         }
         return proto;

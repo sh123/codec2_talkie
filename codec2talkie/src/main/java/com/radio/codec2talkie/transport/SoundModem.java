@@ -11,17 +11,18 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.tools.ChecksumTools;
 import com.ustadmobile.codec2.Codec2;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.BitSet;
 
 public class SoundModem implements Transport {
 
     private static final String TAG = SoundModem.class.getSimpleName();
 
-    private static final int AUDIO_SAMPLE_SIZE = 12000;
+    private static final int AUDIO_SAMPLE_SIZE = 48000;
 
     private final String _name;
 
@@ -44,7 +45,8 @@ public class SoundModem implements Transport {
         _context = context;
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
 
-        _fskModem = Codec2.fskCreate(AUDIO_SAMPLE_SIZE, 300, 1600, 200);
+        //_fskModem = Codec2.fskCreate(AUDIO_SAMPLE_SIZE, 300, 1600, 200);
+        _fskModem = Codec2.fskCreate(AUDIO_SAMPLE_SIZE, 1200, 1200, 1000);
 
         _recordAudioBuffer = new short[Codec2.fskDemodSamplesBufSize(_fskModem)];
         _recordBitBuffer = new byte[Codec2.fskDemodBitsBufSize(_fskModem)];
@@ -55,19 +57,20 @@ public class SoundModem implements Transport {
     }
 
     private void constructSystemAudioDevices() {
-        int _audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
+        int audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
                 AUDIO_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
+
         int audioSource = MediaRecorder.AudioSource.MIC;
         _systemAudioRecorder = new AudioRecord(
                 audioSource,
                 AUDIO_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
-                _audioRecorderMinBufferSize);
+                audioRecorderMinBufferSize);
 
-        int _audioPlayerMinBufferSize = AudioTrack.getMinBufferSize(
+        int audioPlayerMinBufferSize = AudioTrack.getMinBufferSize(
                 AUDIO_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
@@ -76,7 +79,7 @@ public class SoundModem implements Transport {
         _systemAudioPlayer = new AudioTrack.Builder()
                 .setAudioAttributes(new AudioAttributes.Builder()
                         .setUsage(usage)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                         .build())
                 .setAudioFormat(new AudioFormat.Builder()
                         .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
@@ -84,7 +87,7 @@ public class SoundModem implements Transport {
                         .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
                         .build())
                 .setTransferMode(AudioTrack.MODE_STREAM)
-                .setBufferSizeInBytes(_audioPlayerMinBufferSize)
+                .setBufferSizeInBytes(audioPlayerMinBufferSize)
                 .build();
     }
 
@@ -98,32 +101,93 @@ public class SoundModem implements Transport {
         return 0;
     }
 
-    public static byte[] toByteBitArray(BitSet bits) {
-        byte[] bytes = new byte[bits.length()];
-        for (int i=0; i<bits.length(); i++) {
-            bytes[i] = (byte) (bits.get(i) ? 1 : 0);
+    public static byte[] toHdlcByteBitArray(byte[] data, boolean shouldBitStuff) {
+        StringBuilder s = new StringBuilder();
+        ByteBuffer bitBuffer = ByteBuffer.allocate(512*8);
+
+        int cntOnes = 0;
+        for (int i = 0; i < 8 * data.length; i++) {
+            int b = data[i / 8];
+            if ((b & (1 << (i % 8))) > 0) {
+                bitBuffer.put((byte)1);
+                s.append(1);
+                if (shouldBitStuff)
+                    cntOnes += 1;
+            } else {
+                bitBuffer.put((byte)0);
+                s.append(0);
+            }
+            if (shouldBitStuff && cntOnes == 5) {
+                bitBuffer.put((byte)0);
+                s.append(0);
+                cntOnes = 0;
+            }
         }
-        return bytes;
+
+        Log.i(TAG, s.toString());
+
+        bitBuffer.flip();
+        byte[] r = new byte[bitBuffer.remaining()];
+        bitBuffer.get(r);
+        return r;
+    }
+
+    public byte[] genPreamble(int count) {
+        byte[] preamble = new byte[count];
+        for (int i = 0; i < count; i++)
+            preamble[i] = (byte)0x7e;
+        return toHdlcByteBitArray(preamble, false);
+    }
+
+    public byte[] hdlcEncode(byte[] dataSrc) {
+        ByteBuffer buffer = ByteBuffer.allocate(512);
+
+        buffer.put(dataSrc);
+        int fcs = ChecksumTools.calculateFcs(dataSrc);
+        buffer.put((byte)((fcs >> 8) & 0xff));
+        buffer.put((byte)(fcs & 0xff));
+
+        buffer.flip();
+        byte[] data = new byte[buffer.remaining()];
+        buffer.get(data);
+
+        Log.i(TAG, String.format("checksum: %x", fcs));
+        Log.i(TAG, "" + Arrays.toString(data));
+
+        byte[] dataBytesAsBits = toHdlcByteBitArray(data, true);
+        Log.i(TAG, "write() " + data.length + " " + 8 * data.length + " "  + dataBytesAsBits.length + " " + _playbackBitBuffer.length);
+
+        ByteBuffer hdlcBitBuffer = ByteBuffer.allocate(512*8);
+        hdlcBitBuffer.put(genPreamble(30));
+        hdlcBitBuffer.put(dataBytesAsBits);
+        hdlcBitBuffer.put(genPreamble(5));
+
+        hdlcBitBuffer.flip();
+        byte[] r = new byte[hdlcBitBuffer.remaining()];
+        hdlcBitBuffer.get(r);
+        return r;
     }
 
     @Override
-    public int write(byte[] data) throws IOException {
-        _systemAudioPlayer.play();
-        byte[] dataBits = toByteBitArray(BitSet.valueOf(data));
-        Log.i(TAG, "write() " + data.length + " " + dataBits.length + " " + _playbackBitBuffer.length);
+    public int write(byte[] dataSrc) throws IOException {
+        byte[] dataBytesAsBits = hdlcEncode(dataSrc);
+
         int j = 0;
-        for (int i = 0; i < dataBits.length; i++, j++) {
+        for (int i = 0; i < dataBytesAsBits.length; i++, j++) {
             if (j >= _playbackBitBuffer.length) {
                 Log.i(TAG, "-- " + i + " " + j);
                 Codec2.fskModulate(_fskModem, _playbackAudioBuffer, _playbackBitBuffer);
                 _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
+                _systemAudioPlayer.play();
                 j = 0;
             }
-            _playbackBitBuffer[j] = dataBits[i];
+            _playbackBitBuffer[j] = dataBytesAsBits[i];
         }
         Log.i(TAG, "-- " + j);
-        Codec2.fskModulate(_fskModem, _playbackAudioBuffer, _playbackBitBuffer);
+        Codec2.fskModulate(_fskModem, _playbackAudioBuffer, Arrays.copyOf(_playbackBitBuffer, j));
         _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
+        _systemAudioPlayer.play();
+
         return 0;
     }
 

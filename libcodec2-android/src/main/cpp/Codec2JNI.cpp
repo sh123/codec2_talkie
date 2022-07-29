@@ -153,14 +153,16 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
     static jlong fskModulate(JNIEnv *env, jclass clazz, jlong n, jshortArray outputSamples, jbyteArray inputBits) {
         ContextFsk *conFsk = getContextFsk(n);
         jbyte *jbuf = env->GetByteArrayElements(inputBits, nullptr);
-        for (int i = 0; i < conFsk->Nbits; i++) {
+        //for (int i = 0; i < conFsk->Nbits; i++) {
+        int inputBitsSize = env->GetArrayLength(inputBits);
+        for (int i = 0; i < inputBitsSize; i++) {
             auto v = (unsigned char) jbuf[i];
             conFsk->modBits[i] = v;
         }
         env->ReleaseByteArrayElements(inputBits, jbuf, 0);
         //env->DeleteLocalRef(inputBits);
 
-        fsk_mod(conFsk->fsk, conFsk->modBuf, conFsk->modBits, conFsk->Nbits);
+        fsk_mod(conFsk->fsk, conFsk->modBuf, conFsk->modBits, inputBitsSize);
 
         jshort *jOutBuf = env->GetShortArrayElements(outputSamples, nullptr);
         for (int i = 0; i < conFsk->N; i++) {

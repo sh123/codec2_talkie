@@ -118,6 +118,7 @@ public class AX25Packet {
         }
         // data
         buffer.put(rawData);
+
         // return
         buffer.flip();
         byte[] b = new byte[buffer.remaining()];
