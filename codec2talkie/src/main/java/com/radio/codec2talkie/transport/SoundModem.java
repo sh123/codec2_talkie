@@ -22,7 +22,7 @@ public class SoundModem implements Transport {
 
     private static final String TAG = SoundModem.class.getSimpleName();
 
-    private static final int AUDIO_SAMPLE_SIZE = 48000;
+    private static final int AUDIO_SAMPLE_SIZE = 24000;
 
     private final String _name;
 
@@ -79,7 +79,7 @@ public class SoundModem implements Transport {
         _systemAudioPlayer = new AudioTrack.Builder()
                 .setAudioAttributes(new AudioAttributes.Builder()
                         .setUsage(usage)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                         .build())
                 .setAudioFormat(new AudioFormat.Builder()
                         .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
@@ -103,27 +103,35 @@ public class SoundModem implements Transport {
 
     public static byte[] toHdlcByteBitArray(byte[] data, boolean shouldBitStuff) {
         StringBuilder s = new StringBuilder();
+        StringBuilder s2 = new StringBuilder();
         ByteBuffer bitBuffer = ByteBuffer.allocate(512*8);
 
         int cntOnes = 0;
         for (int i = 0; i < 8 * data.length; i++) {
-            int b = data[i / 8];
-            if ((b & (1 << (i % 8))) > 0) {
+            int b = ((int)data[i / 8]) & 0xff;
+            if ((b & (1 << (7 - (i % 8)))) > 0) {
                 bitBuffer.put((byte)1);
-                s.append(1);
+                s.append('1');
                 if (shouldBitStuff)
                     cntOnes += 1;
             } else {
                 bitBuffer.put((byte)0);
                 s.append(0);
+                cntOnes = 0;
             }
             if (shouldBitStuff && cntOnes == 5) {
                 bitBuffer.put((byte)0);
-                s.append(0);
+                s.append('0');
                 cntOnes = 0;
+            }
+            if (i % 8 == 3) s.append(':');
+            if (i % 8 == 7) {
+                s.append(' ');
+                s2.append(String.format("%02x ", b));
             }
         }
 
+        Log.i(TAG, s2.toString());
         Log.i(TAG, s.toString());
 
         bitBuffer.flip();
