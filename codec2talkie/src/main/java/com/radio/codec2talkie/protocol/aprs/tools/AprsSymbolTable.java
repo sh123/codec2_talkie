@@ -75,7 +75,7 @@ public class AprsSymbolTable {
     }
 
     public Bitmap bitmapFromSymbol(String symbolCode, boolean useLarge) {
-        if (symbolCode.length() != 2) return null;
+        if (symbolCode == null || symbolCode.length() != 2) return null;
 
         ArrayList<Bitmap> _primaryTable = useLarge ? _primaryTableIconsLarge : _primaryTableIcons;
         ArrayList<Bitmap> _secondaryTable = useLarge ? _secondaryTableIconsLarge : _secondaryTableIcons;

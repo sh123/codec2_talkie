@@ -79,7 +79,7 @@ public class SoundModem implements Transport {
         _systemAudioPlayer = new AudioTrack.Builder()
                 .setAudioAttributes(new AudioAttributes.Builder()
                         .setUsage(usage)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                         .build())
                 .setAudioFormat(new AudioFormat.Builder()
                         .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
@@ -89,6 +89,7 @@ public class SoundModem implements Transport {
                 .setTransferMode(AudioTrack.MODE_STREAM)
                 .setBufferSizeInBytes(audioPlayerMinBufferSize)
                 .build();
+        _systemAudioPlayer.setVolume(AudioTrack.getMaxVolume());
     }
 
     @Override
@@ -185,7 +186,14 @@ public class SoundModem implements Transport {
             if (j >= _playbackBitBuffer.length) {
                 Log.i(TAG, "-- " + i + " " + j);
                 Codec2.fskModulate(_fskModem, _playbackAudioBuffer, _playbackBitBuffer);
-                _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
+                StringBuilder s = new StringBuilder();
+                for (int x = 0; x < _playbackAudioBuffer.length; x++) {
+                    s.append(_playbackAudioBuffer[x]);
+                    s.append(' ');
+                }
+                Log.i(TAG, s.toString());
+                int r = _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
+                Log.i(TAG, "---- result " + r);
                 _systemAudioPlayer.play();
                 j = 0;
             }
@@ -195,7 +203,6 @@ public class SoundModem implements Transport {
         Codec2.fskModulate(_fskModem, _playbackAudioBuffer, Arrays.copyOf(_playbackBitBuffer, j));
         _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
         _systemAudioPlayer.play();
-
         return 0;
     }
 
