@@ -110,7 +110,8 @@ public class SoundModem implements Transport {
         int cntOnes = 0;
         for (int i = 0; i < 8 * data.length; i++) {
             int b = ((int)data[i / 8]) & 0xff;
-            if ((b & (1 << (7 - (i % 8)))) > 0) {
+            // HDLC transmits least significant bit first
+            if ((b & (1 << (i % 8))) > 0) {
                 bitBuffer.put((byte)1);
                 s.append('1');
                 if (shouldBitStuff)
@@ -123,12 +124,13 @@ public class SoundModem implements Transport {
             if (shouldBitStuff && cntOnes == 5) {
                 bitBuffer.put((byte)0);
                 s.append('0');
+                s2.append(' ');
                 cntOnes = 0;
             }
             if (i % 8 == 3) s.append(':');
             if (i % 8 == 7) {
                 s.append(' ');
-                s2.append(String.format("%02x ", b));
+                s2.append(String.format("%02x        ", b));
             }
         }
 
@@ -148,19 +150,45 @@ public class SoundModem implements Transport {
         return toHdlcByteBitArray(preamble, false);
     }
 
+    public static byte[] crc16(byte[] d)
+    {
+        byte[] out = new byte[2];
+        int crc = 0xFFFF;
+        int crcpoly = 0x8408;
+        int i,k=0;
+        for (i=0; i<d.length-2; i++)
+            for (k=0; k<8; k++)
+            {
+                if ((crc & 1) != ((d[i] & (1 << k))>>k))
+                    crc = ((crc >> 1) ^ crcpoly) & 0xFFFF;
+                else
+                    crc >>= 1;
+            }
+        crc ^= 0xFFFF;
+        out[1] = (byte)(((crc & 0xff00) >> 8)-255-1);   // high byte
+        out[0] = (byte)((crc & 0xff)-255-1);	        // low byte
+        return out;
+    }
+
     public byte[] hdlcEncode(byte[] dataSrc) {
         ByteBuffer buffer = ByteBuffer.allocate(512);
 
         buffer.put(dataSrc);
-        int fcs = ChecksumTools.calculateFcs(dataSrc);
-        buffer.put((byte)((fcs >> 8) & 0xff));
-        buffer.put((byte)(fcs & 0xff));
+        byte[] rr = crc16(dataSrc);
+        buffer.put(rr[0]);
+        buffer.put(rr[1]);
+        //int fcs = (((int)rr[1] & 0xff) << 8) | ((int)rr[0] & 0xff);
+        //Log.i(TAG, String.format("checksum: %x %x", fcs, ChecksumTools.calculateFcs(dataSrc)));
+        //int fcs = ChecksumTools.calculateFcs(dataSrc);
+        //least significant byte first
+        //buffer.put((byte)(fcs & 0xff));
+        //buffer.put((byte)((fcs >> 8) & 0xff));
 
         buffer.flip();
         byte[] data = new byte[buffer.remaining()];
         buffer.get(data);
 
-        Log.i(TAG, String.format("checksum: %x", fcs));
+        //Log.i(TAG, String.format("checksum: %x", fcs));
         Log.i(TAG, "" + Arrays.toString(data));
 
         byte[] dataBytesAsBits = toHdlcByteBitArray(data, true);

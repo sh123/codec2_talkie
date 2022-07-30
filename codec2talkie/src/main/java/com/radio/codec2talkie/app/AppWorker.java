@@ -11,6 +11,7 @@ import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Process;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
@@ -496,7 +497,7 @@ public class AppWorker extends Thread {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        setPriority(Thread.MAX_PRIORITY);
+        android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
         Looper.prepare();
 
         sendStatusUpdate(AppMessage.EV_CONNECTED, null);
