@@ -54,8 +54,7 @@ public class Aprs implements Protocol {
         _srcCallsign = AX25Callsign.formatCallsign(
                 sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "NOCALL").toUpperCase(),
                 sharedPreferences.getString(PreferenceKeys.AX25_SSID, "0"));
-        //_dstCallsign = "APZMDM";
-        _dstCallsign = "APDR15";
+        _dstCallsign = "APZMDM";
 
         _symbolCode = sharedPreferences.getString(PreferenceKeys.APRS_SYMBOL, "/[");
         String packetFormat = sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_PACKET_FORMAT, "uncompressed");

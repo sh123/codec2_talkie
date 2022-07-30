@@ -22,7 +22,7 @@ public class SoundModem implements Transport {
 
     private static final String TAG = SoundModem.class.getSimpleName();
 
-    private static final int AUDIO_SAMPLE_SIZE = 24000;
+    private static final int AUDIO_SAMPLE_SIZE = 48000;
 
     private final String _name;
 
@@ -150,39 +150,14 @@ public class SoundModem implements Transport {
         return toHdlcByteBitArray(preamble, false);
     }
 
-    public static byte[] crc16(byte[] d)
-    {
-        byte[] out = new byte[2];
-        int crc = 0xFFFF;
-        int crcpoly = 0x8408;
-        int i,k=0;
-        for (i=0; i<d.length-2; i++)
-            for (k=0; k<8; k++)
-            {
-                if ((crc & 1) != ((d[i] & (1 << k))>>k))
-                    crc = ((crc >> 1) ^ crcpoly) & 0xFFFF;
-                else
-                    crc >>= 1;
-            }
-        crc ^= 0xFFFF;
-        out[1] = (byte)(((crc & 0xff00) >> 8)-255-1);   // high byte
-        out[0] = (byte)((crc & 0xff)-255-1);	        // low byte
-        return out;
-    }
-
     public byte[] hdlcEncode(byte[] dataSrc) {
         ByteBuffer buffer = ByteBuffer.allocate(512);
 
         buffer.put(dataSrc);
-        byte[] rr = crc16(dataSrc);
-        buffer.put(rr[0]);
-        buffer.put(rr[1]);
-        //int fcs = (((int)rr[1] & 0xff) << 8) | ((int)rr[0] & 0xff);
-        //Log.i(TAG, String.format("checksum: %x %x", fcs, ChecksumTools.calculateFcs(dataSrc)));
-        //int fcs = ChecksumTools.calculateFcs(dataSrc);
+        int fcs = ChecksumTools.calculateFcs(dataSrc);
         //least significant byte first
-        //buffer.put((byte)(fcs & 0xff));
-        //buffer.put((byte)((fcs >> 8) & 0xff));
+        buffer.put((byte)(fcs & 0xff));
+        buffer.put((byte)((fcs >> 8) & 0xff));
 
         buffer.flip();
         byte[] data = new byte[buffer.remaining()];
@@ -205,11 +180,27 @@ public class SoundModem implements Transport {
         return r;
     }
 
+    public byte[] toNrzi(byte[] data) {
+        ByteBuffer buffer = ByteBuffer.allocate(data.length);
+        byte last = 0;
+        for (int i = 0; i < data.length; i++) {
+            if (data[i] == 0) {
+                last = last == 0 ? (byte)1 : (byte)0;
+            }
+            buffer.put(last);
+        }
+        buffer.flip();
+        byte[] r = new byte[buffer.remaining()];
+        buffer.get(r);
+        return r;
+    }
+
     @Override
     public int write(byte[] dataSrc) throws IOException {
-        byte[] dataBytesAsBits = hdlcEncode(dataSrc);
+        byte[] dataBytesAsBits = toNrzi(hdlcEncode(dataSrc));
 
         int j = 0;
+        StringBuilder ss = new StringBuilder();
         for (int i = 0; i < dataBytesAsBits.length; i++, j++) {
             if (j >= _playbackBitBuffer.length) {
                 Log.i(TAG, "-- " + i + " " + j);
@@ -226,10 +217,22 @@ public class SoundModem implements Transport {
                 j = 0;
             }
             _playbackBitBuffer[j] = dataBytesAsBits[i];
+            if (dataBytesAsBits[i] == 1)
+                ss.append('1');
+            else
+                ss.append('0');
         }
+        Log.i(TAG, ss.toString());
         Log.i(TAG, "-- " + j);
         Codec2.fskModulate(_fskModem, _playbackAudioBuffer, Arrays.copyOf(_playbackBitBuffer, j));
-        _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
+        int r = _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
+        Log.i(TAG, "---- result " + r);
+        StringBuilder s = new StringBuilder();
+        for (int x = 0; x < _playbackAudioBuffer.length; x++) {
+            s.append(_playbackAudioBuffer[x]);
+            s.append(' ');
+        }
+        Log.i(TAG, s.toString());
         _systemAudioPlayer.play();
         return 0;
     }

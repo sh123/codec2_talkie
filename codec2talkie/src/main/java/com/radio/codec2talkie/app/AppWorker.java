@@ -501,7 +501,7 @@ public class AppWorker extends Thread {
         Looper.prepare();
 
         sendStatusUpdate(AppMessage.EV_CONNECTED, null);
-        _systemAudioPlayer.play();
+        //_systemAudioPlayer.play();
 
         try {
             _protocol.initialize(_transport, _context, _protocolCallback);
