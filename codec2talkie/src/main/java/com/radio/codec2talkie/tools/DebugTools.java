@@ -15,6 +15,24 @@ public class DebugTools {
         return new String(hexChars);
     }
 
+    public static String shortsToHex(short[] shorts) {
+        StringBuilder s = new StringBuilder();
+        for (short aShort : shorts) {
+            s.append(String.format("%04x ", aShort));
+        }
+        return s.toString();
+    }
+
+    public static String byteBitsToString(byte[] bytesAsBits) {
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < bytesAsBits.length; i++) {
+            s.append(bytesAsBits[i]);
+            if (i % 8 == 7) s.append(' ');
+            else if (i % 4 == 3) s.append(':');
+        }
+        return s.toString();
+    }
+
     public static boolean isPrintableAscii(byte value)
     {
         return (value >= 32 ) && (value < 127);

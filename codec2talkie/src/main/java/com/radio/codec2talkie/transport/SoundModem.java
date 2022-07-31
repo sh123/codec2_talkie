@@ -7,11 +7,13 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
+import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.BitTools;
+import com.radio.codec2talkie.tools.DebugTools;
 import com.ustadmobile.codec2.Codec2;
 
 import java.io.IOException;
@@ -21,7 +23,8 @@ public class SoundModem implements Transport {
 
     private static final String TAG = SoundModem.class.getSimpleName();
 
-    private static final int AUDIO_SAMPLE_SIZE = 48000;
+    // NOTE, codec2 library requires that sample_rate % bit_rate == 0
+    public static final int AUDIO_SAMPLE_SIZE = 24000;
 
     private final String _name;
 
@@ -108,12 +111,16 @@ public class SoundModem implements Transport {
 
     @Override
     public int write(byte[] srcDataBytesAsBits) throws IOException {
+        //Log.i(TAG, DebugTools.byteBitsToString(srcDataBytesAsBits));
         byte[] dataBytesAsBits = BitTools.convertToNRZI(srcDataBytesAsBits);
+        //Log.i(TAG, DebugTools.byteBitsToString(dataBytesAsBits));
 
         int j = 0;
         for (int i = 0; i < dataBytesAsBits.length; i++, j++) {
             if (j >= _playbackBitBuffer.length) {
+                //Log.i(TAG, DebugTools.byteBitsToString(_playbackBitBuffer));
                 Codec2.fskModulate(_fskModem, _playbackAudioBuffer, _playbackBitBuffer);
+                //Log.i(TAG, DebugTools.shortsToHex(_playbackAudioBuffer));
                 _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
                 _systemAudioPlayer.play();
                 j = 0;
