@@ -452,7 +452,9 @@ public class AppWorker extends Thread {
                 break;
             case CMD_SEND_LOCATION_TO_TNC:
                 try {
-                    _protocol.sendPosition((Position)msg.obj);
+                    Position position = (Position)msg.obj;
+                    _protocol.sendPosition(position);
+                    _positionItemRepository.insertPositionItem(position.toPositionItem(true));
                 } catch (IOException e) {
                     e.printStackTrace();
                     quitProcessing();
