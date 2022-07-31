@@ -108,6 +108,11 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         return conFsk->Nbits;
     }
 
+    static jint fskSamplesPerSymbol(JNIEnv * env, jclass clazz, jlong n) {
+        ContextFsk *conFsk = getContextFsk(n);
+        return conFsk->Ts;
+    }
+
     static jint destroy(JNIEnv *env, jclass clazz, jlong n) {
         Context *con = getContext(n);
         codec2_destroy(con->c2);
@@ -203,7 +208,8 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         {"fskDemodBitsBufSize","(J)I",     (void *) fskDemodBitsBufSize},
         {"fskModSamplesBufSize","(J)I",    (void *) fskModSamplesBufSize},
         {"fskDemodSamplesBufSize","(J)I",  (void *) fskDemodSamplesBufSize},
-        {"fskModBitsBufSize",  "(J)I",     (void *) fskModBitsBufSize}
+        {"fskModBitsBufSize",  "(J)I",     (void *) fskModBitsBufSize},
+        {"fskSamplesPerSymbol","(J)I",     (void *) fskSamplesPerSymbol}
     };
 }
 

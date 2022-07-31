@@ -42,6 +42,7 @@ public class Codec2 {
     public native static int fskModSamplesBufSize(long conFsk);
     public native static int fskDemodSamplesBufSize(long conFsk);
     public native static int fskModBitsBufSize(long conFsk);
+    public native static int fskSamplesPerSymbol(long conFsk);
 
     public native static long fskModulate(long conFsk, short[] outputSamples, byte[] inputBits);
     public native static long fskDemodulate(long conFsk, short[] inputSamples, byte[] outputBits);

@@ -34,6 +34,7 @@ public class SoundModem implements Transport {
     private final byte[] _recordBitBuffer;
     private final short[] _playbackAudioBuffer;
     private final byte[] _playbackBitBuffer;
+    private final int _samplesPerSymbol;
 
     private final Context _context;
     private final SharedPreferences _sharedPreferences;
@@ -54,6 +55,7 @@ public class SoundModem implements Transport {
         _recordBitBuffer = new byte[Codec2.fskDemodBitsBufSize(_fskModem)];
         _playbackAudioBuffer = new short[Codec2.fskModSamplesBufSize(_fskModem)];
         _playbackBitBuffer = new byte[Codec2.fskModBitsBufSize(_fskModem)];
+        _samplesPerSymbol = Codec2.fskSamplesPerSymbol(_fskModem);
 
         constructSystemAudioDevices();
     }
@@ -118,8 +120,11 @@ public class SoundModem implements Transport {
             }
             _playbackBitBuffer[j] = dataBytesAsBits[i];
         }
-        Codec2.fskModulate(_fskModem, _playbackAudioBuffer, Arrays.copyOf(_playbackBitBuffer, j));
-        int r = _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
+
+        // process tail
+        byte [] bitBufferTail = Arrays.copyOf(_playbackBitBuffer, j);
+        Codec2.fskModulate(_fskModem, _playbackAudioBuffer, bitBufferTail);
+        _systemAudioPlayer.write(_playbackAudioBuffer, 0, bitBufferTail.length * _samplesPerSymbol);
         _systemAudioPlayer.play();
         return 0;
     }
