@@ -11,6 +11,7 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.tools.BitTools;
 import com.radio.codec2talkie.tools.ChecksumTools;
 import com.ustadmobile.codec2.Codec2;
 
@@ -45,6 +46,7 @@ public class SoundModem implements Transport {
         _context = context;
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
 
+        // TODO, read from settings
         //_fskModem = Codec2.fskCreate(AUDIO_SAMPLE_SIZE, 300, 1600, 200);
         _fskModem = Codec2.fskCreate(AUDIO_SAMPLE_SIZE, 1200, 1200, 1000);
 
@@ -102,102 +104,9 @@ public class SoundModem implements Transport {
         return 0;
     }
 
-    public static byte[] toHdlcByteBitArray(byte[] data, boolean shouldBitStuff) {
-        StringBuilder s = new StringBuilder();
-        StringBuilder s2 = new StringBuilder();
-        ByteBuffer bitBuffer = ByteBuffer.allocate(512*8);
-
-        int cntOnes = 0;
-        for (int i = 0; i < 8 * data.length; i++) {
-            int b = ((int)data[i / 8]) & 0xff;
-            // HDLC transmits least significant bit first
-            if ((b & (1 << (i % 8))) > 0) {
-                bitBuffer.put((byte)1);
-                s.append('1');
-                if (shouldBitStuff)
-                    cntOnes += 1;
-            } else {
-                bitBuffer.put((byte)0);
-                s.append(0);
-                cntOnes = 0;
-            }
-            if (shouldBitStuff && cntOnes == 5) {
-                bitBuffer.put((byte)0);
-                s.append('0');
-                s2.append(' ');
-                cntOnes = 0;
-            }
-            if (i % 8 == 3) s.append(':');
-            if (i % 8 == 7) {
-                s.append(' ');
-                s2.append(String.format("%02x        ", b));
-            }
-        }
-
-        Log.i(TAG, s2.toString());
-        Log.i(TAG, s.toString());
-
-        bitBuffer.flip();
-        byte[] r = new byte[bitBuffer.remaining()];
-        bitBuffer.get(r);
-        return r;
-    }
-
-    public byte[] genPreamble(int count) {
-        byte[] preamble = new byte[count];
-        for (int i = 0; i < count; i++)
-            preamble[i] = (byte)0x7e;
-        return toHdlcByteBitArray(preamble, false);
-    }
-
-    public byte[] hdlcEncode(byte[] dataSrc) {
-        ByteBuffer buffer = ByteBuffer.allocate(512);
-
-        buffer.put(dataSrc);
-        int fcs = ChecksumTools.calculateFcs(dataSrc);
-        //least significant byte first
-        buffer.put((byte)(fcs & 0xff));
-        buffer.put((byte)((fcs >> 8) & 0xff));
-
-        buffer.flip();
-        byte[] data = new byte[buffer.remaining()];
-        buffer.get(data);
-
-        //Log.i(TAG, String.format("checksum: %x", fcs));
-        Log.i(TAG, "" + Arrays.toString(data));
-
-        byte[] dataBytesAsBits = toHdlcByteBitArray(data, true);
-        Log.i(TAG, "write() " + data.length + " " + 8 * data.length + " "  + dataBytesAsBits.length + " " + _playbackBitBuffer.length);
-
-        ByteBuffer hdlcBitBuffer = ByteBuffer.allocate(512*8);
-        hdlcBitBuffer.put(genPreamble(30));
-        hdlcBitBuffer.put(dataBytesAsBits);
-        hdlcBitBuffer.put(genPreamble(5));
-
-        hdlcBitBuffer.flip();
-        byte[] r = new byte[hdlcBitBuffer.remaining()];
-        hdlcBitBuffer.get(r);
-        return r;
-    }
-
-    public byte[] toNrzi(byte[] data) {
-        ByteBuffer buffer = ByteBuffer.allocate(data.length);
-        byte last = 0;
-        for (int i = 0; i < data.length; i++) {
-            if (data[i] == 0) {
-                last = last == 0 ? (byte)1 : (byte)0;
-            }
-            buffer.put(last);
-        }
-        buffer.flip();
-        byte[] r = new byte[buffer.remaining()];
-        buffer.get(r);
-        return r;
-    }
-
     @Override
-    public int write(byte[] dataSrc) throws IOException {
-        byte[] dataBytesAsBits = toNrzi(hdlcEncode(dataSrc));
+    public int write(byte[] srcDataBytesAsBits) throws IOException {
+        byte[] dataBytesAsBits = BitTools.convertToNRZI(srcDataBytesAsBits);
 
         int j = 0;
         StringBuilder ss = new StringBuilder();
@@ -206,8 +115,8 @@ public class SoundModem implements Transport {
                 Log.i(TAG, "-- " + i + " " + j);
                 Codec2.fskModulate(_fskModem, _playbackAudioBuffer, _playbackBitBuffer);
                 StringBuilder s = new StringBuilder();
-                for (int x = 0; x < _playbackAudioBuffer.length; x++) {
-                    s.append(_playbackAudioBuffer[x]);
+                for (short value : _playbackAudioBuffer) {
+                    s.append(value);
                     s.append(' ');
                 }
                 Log.i(TAG, s.toString());

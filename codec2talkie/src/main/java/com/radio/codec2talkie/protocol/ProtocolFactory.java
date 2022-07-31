@@ -11,6 +11,7 @@ public class ProtocolFactory {
 
     public enum ProtocolType {
         RAW("RAW"),
+        HDLC("HDLC"),
         KISS("KISS"),
         KISS_BUFFERED("KISS BUF"),
         KISS_PARROT("KISS RPT");
@@ -32,7 +33,9 @@ public class ProtocolFactory {
 
         ProtocolFactory.ProtocolType protocolType;
 
-        if (sharedPreferences.getBoolean(PreferenceKeys.KISS_ENABLED, true)) {
+        if (sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_ENABLED, true)) {
+            protocolType = ProtocolFactory.ProtocolType.HDLC;
+        } else if (sharedPreferences.getBoolean(PreferenceKeys.KISS_ENABLED, true)) {
             if (sharedPreferences.getBoolean(PreferenceKeys.KISS_PARROT, false)) {
                 protocolType = ProtocolFactory.ProtocolType.KISS_PARROT;
             }
@@ -69,6 +72,9 @@ public class ProtocolFactory {
                 break;
             case KISS_PARROT:
                 proto = new KissParrot();
+                break;
+            case HDLC:
+                proto = new Hdlc();
                 break;
             case RAW:
             default:

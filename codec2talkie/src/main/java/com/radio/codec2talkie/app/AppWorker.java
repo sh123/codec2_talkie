@@ -492,16 +492,11 @@ public class AppWorker extends Thread {
     @Override
     public void run() {
         Log.i(TAG, "Starting message loop");
-        try {
-            sleep(2000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
         Looper.prepare();
 
         sendStatusUpdate(AppMessage.EV_CONNECTED, null);
-        //_systemAudioPlayer.play();
+        _systemAudioPlayer.play();
 
         try {
             _protocol.initialize(_transport, _context, _protocolCallback);

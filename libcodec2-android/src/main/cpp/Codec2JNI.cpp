@@ -137,7 +137,6 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
             con->buf[i] = v;
         }
         env->ReleaseShortArrayElements(inputBuffer, jbuf, 0);
-        //env->DeleteLocalRef(inputBuffer);
 
         codec2_encode(con->c2, con->bits, con->buf);
 
@@ -146,7 +145,6 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
             jbits[i] = con->bits[i];
         }
         env->ReleaseCharArrayElements(outputBits, jbits, 0);
-        //env->DeleteLocalRef(outputBits);
         return 0;
     }
 
@@ -160,7 +158,6 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
             conFsk->modBits[i] = v;
         }
         env->ReleaseByteArrayElements(inputBits, jbuf, 0);
-        //env->DeleteLocalRef(inputBits);
 
         fsk_mod(conFsk->fsk, conFsk->modBuf, conFsk->modBits, inputBitsSize);
 
@@ -169,7 +166,6 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
             jOutBuf[i] = (int16_t)(conFsk->modBuf[i] * FDMDV_SCALE);
         }
         env->ReleaseShortArrayElements(outputSamples, jOutBuf, 0);
-        //env->DeleteLocalRef(outputSamples);
         return 0;
     }
 
