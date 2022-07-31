@@ -332,4 +332,22 @@
         <item>300</item>
         <item>1200</item>
     </string-array>
+
+    <string-array name="ports_type_labels">
+        <item>Loopback/Echo</item>
+        <item>Bluetooth</item>
+        <item>Bluetooth LE (BLE)</item>
+        <item>TCP/IP</item>
+        <item>USB serial</item>
+        <item>Sound modem</item>
+    </string-array>
+
+    <string-array name="ports_type_values">
+        <item>loopback</item>
+        <item>bluetooth</item>
+        <item>ble</item>
+        <item>tcpip</item>
+        <item>usb</item>
+        <item>sound</item>
+    </string-array>
 </resources>

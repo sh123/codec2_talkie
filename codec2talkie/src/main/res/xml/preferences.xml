@@ -84,13 +84,6 @@
         </EditTextPreference>
 
         <SwitchPreference
-            app:key="codec2_test_mode"
-            app:title="@string/codec2_test_mode_title"
-            app:summary="@string/codec2_test_mode_summary"
-            app:defaultValue="false">
-        </SwitchPreference>
-
-        <SwitchPreference
             app:key="codec2_recording_enabled"
             app:title="@string/codec2_recorder_title"
             app:summary="@string/codec2_recorder_summary"
@@ -101,6 +94,22 @@
     <PreferenceCategory
         app:key="ports_category"
         app:title="@string/ports_category_title">
+
+        <ListPreference
+            app:key="ports_type"
+            app:title="@string/ports_type_title"
+            app:entries="@array/ports_type_labels"
+            app:entryValues="@array/ports_type_values"
+            app:summary="%s"
+            app:defaultValue="loopback">
+        </ListPreference>
+
+        <SwitchPreference
+            app:key="codec2_test_mode"
+            app:title="@string/codec2_test_mode_title"
+            app:summary="@string/codec2_test_mode_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
 
         <Preference
             app:key="ports_bt_client_name"

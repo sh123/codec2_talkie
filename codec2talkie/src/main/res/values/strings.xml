@@ -14,12 +14,12 @@
 
     <string name="codec2_category_title">Codec2 Settings</string>
     <string name="codec2_mode_title">Mode/Speed</string>
-    <string name="codec2_test_mode_title">Echo test mode</string>
+    <string name="codec2_test_mode_title">Loopback test mode</string>
     <string name="codec2_test_mode_summary">Records and plays recording without transmission</string>
     <string name="codec2_recorder_title">Enable recorder</string>
     <string name="codec2_recorder_summary">Record incoming and outgoing transmissions for future playback</string>
 
-    <string name="main_status_loopback_test">ECHO TEST</string>
+    <string name="main_status_loopback_test">Loopback</string>
     <string name="main_status_stop">STOPPED</string>
     <string name="main_status_tx">TRANSMITTING</string>
     <string name="main_status_rx">RECEIVING</string>
@@ -299,4 +299,5 @@
     <string name="ports_sound_modem_type_title">Modem modulation type</string>
     <string name="ports_sound_modem_control_title">Sound modem settings</string>
     <string name="ports_sound_modem_control_settings">Set sound modem settings, such as bit rate</string>
+    <string name="ports_type_title">TNC transport type</string>
 </resources>

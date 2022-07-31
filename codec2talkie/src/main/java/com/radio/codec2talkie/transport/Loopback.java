@@ -20,7 +20,7 @@ public class Loopback implements Transport {
 
     @Override
     public String name() {
-        return "ECHO TEST";
+        return "Loopback";
     }
 
     @Override
