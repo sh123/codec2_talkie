@@ -294,4 +294,9 @@
     <string name="ports_sound_modem_enable_title">Enable sound modem</string>
     <string name="ports_sound_modem_enable_summary">Send data and receive data through sound modem by using phone speaker and mic</string>
     <string name="main_status_sound_modem">SoundModem</string>
+    <string name="ports_sound_modem_preamble_title">Frame sync prefix</string>
+    <string name="ports_sound_modem_preamble_summary">No-op preamble (e.g. for VOX control) in milliseconds</string>
+    <string name="ports_sound_modem_type_title">Modem modulation type</string>
+    <string name="ports_sound_modem_control_title">Sound modem settings</string>
+    <string name="ports_sound_modem_control_settings">Set sound modem settings, such as bit rate</string>
 </resources>

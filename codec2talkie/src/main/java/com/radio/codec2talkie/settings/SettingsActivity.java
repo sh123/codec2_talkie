@@ -36,7 +36,8 @@ public class SettingsActivity extends AppCompatActivity
             "kiss_scrambler_iterations",
             "ports_tcp_ip_port",
             "ports_tcp_ip_retry_count",
-            "ports_tcp_ip_retry_delay"
+            "ports_tcp_ip_retry_delay",
+            "ports_sound_modem_preamble"
     };
 
     private static final String[] _signedDecimalSettings = {
@@ -118,6 +119,15 @@ public class SettingsActivity extends AppCompatActivity
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferences_tcpip, null);
+            setNumberInputType(getPreferenceManager());
+        }
+    }
+
+    public static class SettingsSoundModemFragment extends PreferenceFragmentCompat
+    {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences_sound_modem, null);
             setNumberInputType(getPreferenceManager());
         }
     }

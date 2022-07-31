@@ -322,4 +322,14 @@
         <item>21</item>
         <item>22</item>
     </string-array>
+
+    <string-array name="ports_sound_modem_type_entries">
+        <item>FSK 300 (1600/1800)</item>
+        <item>AFSK 1200 (1200/2200)</item>
+    </string-array>
+
+    <string-array name="ports_sound_modem_type_values">
+        <item>300</item>
+        <item>1200</item>
+    </string-array>
 </resources>

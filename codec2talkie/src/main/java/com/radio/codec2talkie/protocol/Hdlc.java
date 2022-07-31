@@ -1,9 +1,11 @@
 package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
+import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.BitTools;
 import com.radio.codec2talkie.tools.ChecksumTools;
 import com.radio.codec2talkie.transport.Transport;
@@ -16,7 +18,14 @@ public class Hdlc implements Protocol {
     protected Transport _transport;
     private ProtocolCallback _parentProtocolCallback;
 
-    public Hdlc() {
+    private final int _prefixSymCount;
+
+    public Hdlc(SharedPreferences sharedPreferences) {
+        double preambleLenSec = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_PREAMBLE, "200")) / 1000.0;
+        String modemType = sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200");
+        // FIXME if more modulation schemes
+        int modemSpeed = modemType.equals("300") ? 300 : 1200;
+        _prefixSymCount = (int) (preambleLenSec * modemSpeed / 8);
     }
 
     @Override
@@ -78,10 +87,6 @@ public class Hdlc implements Protocol {
     public byte[] hdlcEncode(byte[] dataSrc) {
         ByteBuffer buffer = ByteBuffer.allocate(dataSrc.length + 2);
 
-        // TODO, read from settings
-        int prefixLen = 30;
-        int suffixLen = 5;
-
         // include checksum
         buffer.put(dataSrc);
         int fcs = ChecksumTools.calculateFcs(dataSrc);
@@ -96,10 +101,10 @@ public class Hdlc implements Protocol {
         byte[] dataBytesAsBits = BitTools.convertToHDLCBitArray(data, true);
 
         // add preamble
-        ByteBuffer hdlcBitBuffer = ByteBuffer.allocate(dataBytesAsBits.length + 8*prefixLen + 8*suffixLen);
-        hdlcBitBuffer.put(genPreamble(prefixLen));
+        ByteBuffer hdlcBitBuffer = ByteBuffer.allocate(dataBytesAsBits.length + 8*_prefixSymCount + 8);
+        hdlcBitBuffer.put(genPreamble(_prefixSymCount));
         hdlcBitBuffer.put(dataBytesAsBits);
-        hdlcBitBuffer.put(genPreamble(suffixLen));
+        hdlcBitBuffer.put(genPreamble(1));
 
         // return
         hdlcBitBuffer.flip();

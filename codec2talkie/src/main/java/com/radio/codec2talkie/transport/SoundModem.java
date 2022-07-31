@@ -11,6 +11,7 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.BitTools;
 import com.radio.codec2talkie.tools.ChecksumTools;
 import com.ustadmobile.codec2.Codec2;
@@ -41,15 +42,18 @@ public class SoundModem implements Transport {
 
     private final long _fskModem;
 
-    public SoundModem(String name, Context context) {
-        _name = name;
-
+    public SoundModem(Context context) {
         _context = context;
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
 
-        // TODO, read from settings
-        //_fskModem = Codec2.fskCreate(AUDIO_SAMPLE_SIZE, 300, 1600, 200);
-        _fskModem = Codec2.fskCreate(AUDIO_SAMPLE_SIZE, 1200, 1200, 1000);
+        String type = _sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200");
+        if (type.equals("300")) {
+            _fskModem = Codec2.fskCreate(AUDIO_SAMPLE_SIZE, 300, 1600, 200);
+            _name = "SndModemHF300";
+        } else {
+            _fskModem = Codec2.fskCreate(AUDIO_SAMPLE_SIZE, 1200, 1200, 1000);
+            _name = "SndModemAFSK1200";
+        }
 
         _recordAudioBuffer = new short[Codec2.fskDemodSamplesBufSize(_fskModem)];
         _recordBitBuffer = new byte[Codec2.fskDemodBitsBufSize(_fskModem)];

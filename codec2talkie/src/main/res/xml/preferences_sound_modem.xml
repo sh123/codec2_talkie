@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:key="ports_tcp_ip_category"
+        app:title="@string/kiss_basic_title">
+
+        <ListPreference
+            app:key="ports_sound_modem_type"
+            app:title="@string/ports_sound_modem_type_title"
+            app:entries="@array/ports_sound_modem_type_entries"
+            app:entryValues="@array/ports_sound_modem_type_values"
+            app:defaultValue="1200"
+            app:summary="%s">
+        </ListPreference>
+
+        <EditTextPreference
+            app:key="ports_sound_modem_preamble"
+            app:title="@string/ports_sound_modem_preamble_title"
+            app:summary="@string/ports_sound_modem_preamble_summary"
+            app:defaultValue="200">
+        </EditTextPreference>
+
+    </PreferenceCategory>
+</PreferenceScreen>

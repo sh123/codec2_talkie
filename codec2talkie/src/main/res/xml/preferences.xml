@@ -148,6 +148,13 @@
             app:defaultValue="false">
         </SwitchPreference>
 
+        <Preference
+            app:key="ports_sound_modem_control"
+            app:title="@string/ports_sound_modem_control_title"
+            app:summary="@string/ports_sound_modem_control_settings"
+            app:fragment="com.radio.codec2talkie.settings.SettingsActivity$SettingsSoundModemFragment">
+        </Preference>
+
     </PreferenceCategory>
 
     <PreferenceCategory

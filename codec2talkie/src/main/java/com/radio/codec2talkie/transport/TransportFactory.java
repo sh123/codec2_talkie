@@ -31,7 +31,7 @@ public class TransportFactory {
             case BLE:
                 return new Ble(BleHandler.getGatt(), BleHandler.getName());
             case SOUND_MODEM:
-                return new SoundModem("SoundModem", context);
+                return new SoundModem(context);
             case LOOPBACK:
             default:
                 return new Loopback();

@@ -18,6 +18,8 @@ public final class PreferenceKeys {
     public static String PORTS_TCP_IP_RETRY_DELAY = "ports_tcp_ip_retry_delay";
 
     public static String PORTS_SOUND_MODEM_ENABLED = "ports_sound_modem_enable";
+    public static String PORTS_SOUND_MODEM_TYPE = "ports_sound_modem_type";
+    public static String PORTS_SOUND_MODEM_PREAMBLE = "ports_sound_modem_preamble";
 
     public static String CODEC2_MODE = "codec2_mode";
     public static String CODEC2_TEST_MODE = "codec2_test_mode";

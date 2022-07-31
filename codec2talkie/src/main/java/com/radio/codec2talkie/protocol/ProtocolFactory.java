@@ -74,7 +74,7 @@ public class ProtocolFactory {
                 proto = new KissParrot();
                 break;
             case HDLC:
-                proto = new Hdlc();
+                proto = new Hdlc(sharedPreferences);
                 break;
             case RAW:
             default:
