@@ -7,17 +7,14 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
-import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.BitTools;
-import com.radio.codec2talkie.tools.ChecksumTools;
 import com.ustadmobile.codec2.Codec2;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class SoundModem implements Transport {
