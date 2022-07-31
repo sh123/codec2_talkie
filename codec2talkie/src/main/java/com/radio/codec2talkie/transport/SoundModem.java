@@ -97,6 +97,7 @@ public class SoundModem implements Transport {
                 .setBufferSizeInBytes(audioPlayerMinBufferSize)
                 .build();
         _systemAudioPlayer.setVolume(AudioTrack.getMaxVolume());
+        _systemAudioPlayer.play();
     }
 
     @Override
@@ -111,16 +112,13 @@ public class SoundModem implements Transport {
 
     @Override
     public int write(byte[] srcDataBytesAsBits) throws IOException {
-        Log.i(TAG, DebugTools.byteBitsToString(srcDataBytesAsBits));
         byte[] dataBytesAsBits = BitTools.convertToNRZI(srcDataBytesAsBits);
-        Log.i(TAG, DebugTools.byteBitsToString(dataBytesAsBits));
 
         int j = 0;
         for (int i = 0; i < dataBytesAsBits.length; i++, j++) {
             if (j >= _playbackBitBuffer.length) {
                 Codec2.fskModulate(_fskModem, _playbackAudioBuffer, _playbackBitBuffer);
                 _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
-                _systemAudioPlayer.play();
                 j = 0;
             }
             _playbackBitBuffer[j] = dataBytesAsBits[i];
@@ -130,7 +128,6 @@ public class SoundModem implements Transport {
         byte [] bitBufferTail = Arrays.copyOf(_playbackBitBuffer, j);
         Codec2.fskModulate(_fskModem, _playbackAudioBuffer, bitBufferTail);
         _systemAudioPlayer.write(_playbackAudioBuffer, 0, bitBufferTail.length * _samplesPerSymbol);
-        _systemAudioPlayer.play();
         return 0;
     }
 
