@@ -67,7 +67,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         conFsk->N = fsk->N;
         conFsk->Ts = fsk->Ts;
 
-        conFsk->modBuf = (float*)malloc(conFsk->N);
+        conFsk->modBuf = (float*)malloc(sizeof(float) * conFsk->N);
         conFsk->modBits = (uint8_t*)malloc(conFsk->Nbits);
 
         conFsk->demodCBuf = (COMP*)malloc(sizeof(COMP) * (fsk->N + 2 * fsk->Ts));
