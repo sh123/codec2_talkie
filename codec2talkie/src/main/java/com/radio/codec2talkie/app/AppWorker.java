@@ -305,6 +305,11 @@ public class AppWorker extends Thread {
         }
 
         @Override
+        protected void onTransmitPosition(Position position) {
+            _positionItemRepository.insertPositionItem(position.toPositionItem(true));
+        }
+
+        @Override
         protected void onTransmitData(String src, String dst, byte[] data) {
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
             sendStatusUpdate(AppMessage.EV_TRANSMITTED_VOICE, note);
@@ -452,9 +457,7 @@ public class AppWorker extends Thread {
                 break;
             case CMD_SEND_LOCATION_TO_TNC:
                 try {
-                    Position position = (Position)msg.obj;
-                    _protocol.sendPosition(position);
-                    _positionItemRepository.insertPositionItem(position.toPositionItem(true));
+                    _protocol.sendPosition((Position)msg.obj);
                 } catch (IOException e) {
                     e.printStackTrace();
                     quitProcessing();

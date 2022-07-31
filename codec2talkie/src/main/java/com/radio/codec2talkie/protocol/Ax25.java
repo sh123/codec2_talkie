@@ -172,6 +172,11 @@ public class Ax25 implements Protocol {
         }
 
         @Override
+        protected void onTransmitPosition(Position position) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
         protected void onTransmitData(String src, String dst, byte[] data) {
             _parentProtocolCallback.onTransmitData(src, dst, data);
         }

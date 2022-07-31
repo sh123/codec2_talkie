@@ -17,6 +17,7 @@ public abstract class ProtocolCallback {
     abstract protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame);
     abstract protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame);
     abstract protected void onTransmitTextMessage(TextMessage textMessage);
+    abstract protected void onTransmitPosition(Position position);
     abstract protected void onTransmitData(String src, String dst, byte[] data);
     abstract protected void onTransmitLog(String logData);
 

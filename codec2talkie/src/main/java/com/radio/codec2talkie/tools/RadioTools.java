@@ -15,7 +15,8 @@ public class RadioTools {
         int resultBps = 0;
         int maxSpeedBps = 128000;
         try {
-            if (sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false)) {
+            if (!sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_ENABLED, false) &&
+                 sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false)) {
                 int bw = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_BANDWIDTH, "125000"));
                 int sf = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SF, "7"));
                 int cr = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_CR, "5"));

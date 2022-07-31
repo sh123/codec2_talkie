@@ -119,7 +119,6 @@ public class Aprs implements Protocol {
     ProtocolCallback _protocolCallback = new ProtocolCallback() {
         @Override
         protected void onReceivePosition(Position position) {
-            // TODO, process incoming position, stored to db, show on map
             throw new UnsupportedOperationException();
         }
 
@@ -187,6 +186,11 @@ public class Aprs implements Protocol {
         }
 
         @Override
+        protected void onTransmitPosition(Position position) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
         protected void onTransmitData(String src, String dst, byte[] data) {
             _parentProtocolCallback.onTransmitData(src, dst, data);
         }
@@ -230,6 +234,7 @@ public class Aprs implements Protocol {
             }
             if (aprsData.isValid()) {
                 sendData(position.srcCallsign, position.dstCallsign, aprsData.toBinary());
+                _parentProtocolCallback.onTransmitPosition(position);
             } else {
                 Log.e(TAG, "Invalid APRS data");
                 _parentProtocolCallback.onProtocolTxError();
