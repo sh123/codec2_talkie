@@ -155,12 +155,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         registerReceiver(onBluetoothDisconnected, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
         registerReceiver(onUsbDetached, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
 
-        _isTestMode = _sharedPreferences.getBoolean(PreferenceKeys.CODEC2_TEST_MODE, false);
-        _isBleEnabled = _sharedPreferences.getBoolean(PreferenceKeys.PORTS_BT_BLE_ENABLED, false);
+        _isTestMode = _sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("loopback");
+        _isBleEnabled = _sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("ble");
 
         // show/hide S-meter
         FrameLayout frameRssi = findViewById(R.id.frameRssi);
-        if (!_sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_ENABLED, false) &&
+        if (!_sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("sound_modem") &&
              _sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false)) {
 
             int sLevelId = RadioTools.getMinimumDecodeSLevelLabel(_sharedPreferences, S_METER_S0_VALUE_DB);
@@ -257,10 +257,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             _textConnInfo.setText(R.string.main_status_loopback_test);
             startAppService(TransportFactory.TransportType.LOOPBACK);
         } else if (requestPermissions()) {
-            if (_sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_ENABLED, false)) {
+            if (_sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("sound_modem")) {
                 _textConnInfo.setText(R.string.main_status_sound_modem);
                 startAppService(TransportFactory.TransportType.SOUND_MODEM);
-            } else if (_sharedPreferences.getBoolean(PreferenceKeys.PORTS_TCP_IP_ENABLED, false)) {
+            } else if (_sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("tcp_ip")) {
                 startTcpIpConnectActivity();
             } else {
                 startUsbConnectActivity();

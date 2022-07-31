@@ -346,8 +346,8 @@
         <item>loopback</item>
         <item>bluetooth</item>
         <item>ble</item>
-        <item>tcpip</item>
+        <item>tcp_ip</item>
         <item>usb</item>
-        <item>sound</item>
+        <item>sound_modem</item>
     </string-array>
 </resources>

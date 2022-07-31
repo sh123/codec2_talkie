@@ -33,7 +33,7 @@ public class ProtocolFactory {
 
         ProtocolFactory.ProtocolType protocolType;
 
-        if (sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_ENABLED, true)) {
+        if (sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("sound_modem")) {
             protocolType = ProtocolFactory.ProtocolType.HDLC;
         } else if (sharedPreferences.getBoolean(PreferenceKeys.KISS_ENABLED, true)) {
             if (sharedPreferences.getBoolean(PreferenceKeys.KISS_PARROT, false)) {

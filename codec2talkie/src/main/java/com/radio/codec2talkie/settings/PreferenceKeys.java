@@ -1,6 +1,8 @@
 package com.radio.codec2talkie.settings;
 
 public final class PreferenceKeys {
+    public static String PORTS_TYPE="ports_type";
+
     public static String PORTS_USB_SERIAL_SPEED = "ports_usb_serial_speed";
     public static String PORTS_USB_DATA_BITS = "ports_usb_data_bits";
     public static String PORTS_USB_STOP_BITS = "ports_usb_stop_bits";
@@ -9,20 +11,16 @@ public final class PreferenceKeys {
     public static String PORTS_USB_RTS = "ports_usb_rts";
 
     public static String PORTS_BT_CLIENT_NAME = "ports_bt_client_name";
-    public static String PORTS_BT_BLE_ENABLED = "ports_bt_ble_enable";
 
-    public static String PORTS_TCP_IP_ENABLED = "ports_tcp_ip_enable";
     public static String PORTS_TCP_IP_ADDRESS = "ports_tcp_ip_address";
     public static String PORTS_TCP_IP_PORT = "ports_tcp_ip_port";
     public static String PORTS_TCP_IP_RETRY_COUNT = "ports_tcp_ip_retry_count";
     public static String PORTS_TCP_IP_RETRY_DELAY = "ports_tcp_ip_retry_delay";
 
-    public static String PORTS_SOUND_MODEM_ENABLED = "ports_sound_modem_enable";
     public static String PORTS_SOUND_MODEM_TYPE = "ports_sound_modem_type";
     public static String PORTS_SOUND_MODEM_PREAMBLE = "ports_sound_modem_preamble";
 
     public static String CODEC2_MODE = "codec2_mode";
-    public static String CODEC2_TEST_MODE = "codec2_test_mode";
     public static String CODEC2_RECORDING_ENABLED = "codec2_recording_enabled";
     public static String CODEC2_TX_FRAME_MAX_SIZE = "codec2_tx_frame_max_size";
 

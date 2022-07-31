@@ -44,7 +44,7 @@ public class BluetoothSettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_bluetooth_connect);
 
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        _isBleEnabled = _sharedPreferences.getBoolean(PreferenceKeys.PORTS_BT_BLE_ENABLED, false);
+        _isBleEnabled = _sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("ble");
 
         _btAdapter = BluetoothAdapter.getDefaultAdapter();
         _btArrayAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item);

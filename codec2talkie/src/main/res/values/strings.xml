@@ -10,7 +10,7 @@
 
     <string name="usb_serial_speed_title">USB Serial Speed</string>
     <string name="usb_bt_client_name_title">Bluetooth Device</string>
-    <string name="usb_bt_client_name_summary">Default Bluetooth device to connect on startup</string>
+    <string name="usb_bt_client_name_summary">Default Bluetooth device to connect</string>
 
     <string name="codec2_category_title">Codec2 Settings</string>
     <string name="codec2_mode_title">Mode/Speed</string>
