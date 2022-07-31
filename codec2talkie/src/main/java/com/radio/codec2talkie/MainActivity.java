@@ -251,19 +251,29 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private void startTransportConnection() {
         Log.i(TAG, "startTransportConnection()");
+        String transportName = _sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback");
         if (AppService.isRunning) {
             startAppService(AppService.transportType);
-        } else if (_isTestMode) {
-            _textConnInfo.setText(R.string.main_status_loopback_test);
-            startAppService(TransportFactory.TransportType.LOOPBACK);
         } else if (requestPermissions()) {
-            if (_sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("sound_modem")) {
-                _textConnInfo.setText(R.string.main_status_sound_modem);
-                startAppService(TransportFactory.TransportType.SOUND_MODEM);
-            } else if (_sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("tcp_ip")) {
-                startTcpIpConnectActivity();
-            } else {
-                startUsbConnectActivity();
+            switch (transportName) {
+                case "loopback":
+                    _textConnInfo.setText(R.string.main_status_loopback_test);
+                    startAppService(TransportFactory.TransportType.LOOPBACK);
+                    break;
+                case "sound_modem":
+                    _textConnInfo.setText(R.string.main_status_sound_modem);
+                    startAppService(TransportFactory.TransportType.SOUND_MODEM);
+                    break;
+                case "tcp_ip":
+                    startTcpIpConnectActivity();
+                    break;
+                case "usb":
+                    startUsbConnectActivity();
+                    break;
+                case "bluetooth":
+                case "ble":
+                    startBluetoothConnectActivity();
+                    break;
             }
         }
     }
@@ -275,8 +285,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             assert data != null;
             int resultCode = result.getResultCode();
             if (resultCode == RESULT_CANCELED) {
-                // fall back to bluetooth if usb failed
-                startBluetoothConnectActivity();
+                _textConnInfo.setText(R.string.main_status_loopback_test);
+                startAppService(TransportFactory.TransportType.LOOPBACK);
             } else if (resultCode == RESULT_OK) {
                 _textConnInfo.setText(data.getStringExtra("name"));
                 startAppService(TransportFactory.TransportType.USB);

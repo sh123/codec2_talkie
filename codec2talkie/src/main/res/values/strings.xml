@@ -9,10 +9,10 @@
     <string name="kiss_category_title">KISS Settings</string>
 
     <string name="usb_serial_speed_title">USB Serial Speed</string>
-    <string name="usb_bt_client_name_title">Bluetooth Device</string>
+    <string name="usb_bt_client_name_title">Bluetooth device</string>
     <string name="usb_bt_client_name_summary">Default Bluetooth device to connect</string>
 
-    <string name="codec2_category_title">Codec2 Settings</string>
+    <string name="codec2_category_title">Codec2 settings</string>
     <string name="codec2_mode_title">Mode/Speed</string>
     <string name="codec2_test_mode_title">Loopback test mode</string>
     <string name="codec2_test_mode_summary">Records and plays recording without transmission</string>
