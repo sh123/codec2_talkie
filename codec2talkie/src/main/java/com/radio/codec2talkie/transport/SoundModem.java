@@ -47,12 +47,11 @@ public class SoundModem implements Transport {
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
 
         String type = _sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200");
+        _name = "SoundModem" + type;
         if (type.equals("300")) {
             _fskModem = Codec2.fskCreate(AUDIO_SAMPLE_SIZE, 300, 1600, 200);
-            _name = "SndModemHF300";
         } else {
             _fskModem = Codec2.fskCreate(AUDIO_SAMPLE_SIZE, 1200, 1200, 1000);
-            _name = "SndModemAFSK1200";
         }
 
         _recordAudioBuffer = new short[Codec2.fskDemodSamplesBufSize(_fskModem)];
