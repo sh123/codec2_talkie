@@ -109,39 +109,17 @@ public class SoundModem implements Transport {
         byte[] dataBytesAsBits = BitTools.convertToNRZI(srcDataBytesAsBits);
 
         int j = 0;
-        StringBuilder ss = new StringBuilder();
         for (int i = 0; i < dataBytesAsBits.length; i++, j++) {
             if (j >= _playbackBitBuffer.length) {
-                Log.i(TAG, "-- " + i + " " + j);
                 Codec2.fskModulate(_fskModem, _playbackAudioBuffer, _playbackBitBuffer);
-                StringBuilder s = new StringBuilder();
-                for (short value : _playbackAudioBuffer) {
-                    s.append(value);
-                    s.append(' ');
-                }
-                Log.i(TAG, s.toString());
-                int r = _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
-                Log.i(TAG, "---- result " + r);
+                _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
                 _systemAudioPlayer.play();
                 j = 0;
             }
             _playbackBitBuffer[j] = dataBytesAsBits[i];
-            if (dataBytesAsBits[i] == 1)
-                ss.append('1');
-            else
-                ss.append('0');
         }
-        Log.i(TAG, ss.toString());
-        Log.i(TAG, "-- " + j);
         Codec2.fskModulate(_fskModem, _playbackAudioBuffer, Arrays.copyOf(_playbackBitBuffer, j));
         int r = _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
-        Log.i(TAG, "---- result " + r);
-        StringBuilder s = new StringBuilder();
-        for (int x = 0; x < _playbackAudioBuffer.length; x++) {
-            s.append(_playbackAudioBuffer[x]);
-            s.append(' ');
-        }
-        Log.i(TAG, s.toString());
         _systemAudioPlayer.play();
         return 0;
     }
