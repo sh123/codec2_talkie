@@ -7,6 +7,7 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
+import android.os.Debug;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
@@ -17,9 +18,11 @@ import com.radio.codec2talkie.tools.DebugTools;
 import com.ustadmobile.codec2.Codec2;
 
 import java.io.IOException;
+import java.nio.BufferOverflowException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-public class SoundModem implements Transport {
+public class SoundModem implements Transport, Runnable {
 
     private static final String TAG = SoundModem.class.getSimpleName();
 
@@ -36,9 +39,12 @@ public class SoundModem implements Transport {
     private final short[] _playbackAudioBuffer;
     private final byte[] _playbackBitBuffer;
     private final int _samplesPerSymbol;
+    private final ByteBuffer _bitBuffer;
 
     private final Context _context;
     private final SharedPreferences _sharedPreferences;
+
+    private boolean _isRunning = true;
 
     private final long _fskModem;
 
@@ -59,8 +65,11 @@ public class SoundModem implements Transport {
         _playbackAudioBuffer = new short[Codec2.fskModSamplesBufSize(_fskModem)];
         _playbackBitBuffer = new byte[Codec2.fskModBitsBufSize(_fskModem)];
         _samplesPerSymbol = Codec2.fskSamplesPerSymbol(_fskModem);
+        _bitBuffer = ByteBuffer.allocate(10 * _recordBitBuffer.length);
 
         constructSystemAudioDevices();
+
+        new Thread(this).start();
     }
 
     private void constructSystemAudioDevices() {
@@ -81,6 +90,7 @@ public class SoundModem implements Transport {
                 AUDIO_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
+        _systemAudioRecorder.startRecording();
 
         int usage = AudioAttributes.USAGE_MEDIA;
         _systemAudioPlayer = new AudioTrack.Builder()
@@ -107,6 +117,16 @@ public class SoundModem implements Transport {
 
     @Override
     public int read(byte[] data) throws IOException {
+        synchronized (_bitBuffer) {
+            if (_bitBuffer.position() > 0) {
+                _bitBuffer.flip();
+                int len = _bitBuffer.remaining();
+                _bitBuffer.get(data, 0, len);
+                //Log.i(TAG, "-- " + DebugTools.byteBitsToString(data));
+                _bitBuffer.compact();
+                return len;
+            }
+        }
         return 0;
     }
 
@@ -133,6 +153,36 @@ public class SoundModem implements Transport {
 
     @Override
     public void close() throws IOException {
+        Log.i(TAG, "close()");
+        _isRunning = false;
+        _systemAudioRecorder.stop();
+        _systemAudioPlayer.stop();
+        _systemAudioRecorder.release();
+        _systemAudioPlayer.release();
         Codec2.fskDestroy(_fskModem);
+    }
+
+    @Override
+    public void run() {
+        byte prevLastBit = 0;
+        while (_isRunning) {
+            // TODO, take readCnt into account, do not read if playback is active
+            int readCnt = _systemAudioRecorder.read(_recordAudioBuffer, 0, Codec2.fskNin(_fskModem));
+            //Log.i(TAG, DebugTools.shortsToHex(_recordAudioBuffer));
+            //Log.i(TAG, readCnt + " " + _recordAudioBuffer.length + " " + Codec2.fskNin(_fskModem));
+            Codec2.fskDemodulate(_fskModem, _recordAudioBuffer, _recordBitBuffer);
+
+            //Log.i(TAG, "-- " + DebugTools.byteBitsToString(_recordBitBuffer));
+            //Log.i(TAG, "== " + DebugTools.byteBitsToString(BitTools.convertFromNRZI(_recordBitBuffer, prevLastBit)));
+            synchronized (_bitBuffer) {
+                try {
+                    _bitBuffer.put(BitTools.convertFromNRZI(_recordBitBuffer, prevLastBit));
+                    prevLastBit = _recordBitBuffer[_recordBitBuffer.length - 1];
+                } catch (BufferOverflowException e) {
+                    e.printStackTrace();
+                    _bitBuffer.clear();
+                }
+            }
+        }
     }
 }

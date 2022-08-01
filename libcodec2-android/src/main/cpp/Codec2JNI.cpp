@@ -74,6 +74,9 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         conFsk->demodBits = (uint8_t*)malloc(sizeof(uint8_t) * fsk->Nbits);
         conFsk->demodBuf = (int16_t*)malloc(sizeof(short) * (fsk->N + 2 * fsk->Ts));
 
+        fsk_set_freq_est_limits(fsk, -sampleFrequency / 2, sampleFrequency / 2);
+        fsk_set_freq_est_alg(fsk, 1);
+
         auto pv = (unsigned long) conFsk;
         return pv;
     }
@@ -111,6 +114,11 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
     static jint fskSamplesPerSymbol(JNIEnv * env, jclass clazz, jlong n) {
         ContextFsk *conFsk = getContextFsk(n);
         return conFsk->Ts;
+    }
+
+    static jint fskNin(JNIEnv * env, jclass clazz, jlong n) {
+        ContextFsk *conFsk = getContextFsk(n);
+        return fsk_nin(conFsk->fsk);
     }
 
     static jint destroy(JNIEnv *env, jclass clazz, jlong n) {
@@ -201,7 +209,8 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         {"fskModSamplesBufSize","(J)I",    (void *) fskModSamplesBufSize},
         {"fskDemodSamplesBufSize","(J)I",  (void *) fskDemodSamplesBufSize},
         {"fskModBitsBufSize",  "(J)I",     (void *) fskModBitsBufSize},
-        {"fskSamplesPerSymbol","(J)I",     (void *) fskSamplesPerSymbol}
+        {"fskSamplesPerSymbol","(J)I",     (void *) fskSamplesPerSymbol},
+        {"fskNin",             "(J)I",     (void *) fskNin}
     };
 }
 

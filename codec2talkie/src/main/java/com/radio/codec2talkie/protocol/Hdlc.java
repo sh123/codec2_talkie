@@ -2,23 +2,37 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Debug;
+import android.util.Log;
 
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.BitTools;
 import com.radio.codec2talkie.tools.ChecksumTools;
+import com.radio.codec2talkie.tools.DebugTools;
+import com.radio.codec2talkie.transport.SoundModem;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class Hdlc implements Protocol {
+    private static final String TAG = Hdlc.class.getSimpleName();
+
+    private static final int RX_BUFFER_SIZE = 8192;
 
     protected Transport _transport;
     private ProtocolCallback _parentProtocolCallback;
 
+    protected final byte[] _rxDataBuffer;
+    protected final ByteBuffer _currentFrameBuffer;
+
     private final int _prefixSymCount;
+
+    private int _readByte = 0;
+    private int _prevHdlc = 0;
 
     public Hdlc(SharedPreferences sharedPreferences) {
         double preambleLenSec = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_PREAMBLE, "200")) / 1000.0;
@@ -26,6 +40,9 @@ public class Hdlc implements Protocol {
         // FIXME if more modulation schemes
         int modemSpeed = modemType.equals("300") ? 300 : 1200;
         _prefixSymCount = (int) (preambleLenSec * modemSpeed / 8);
+
+        _rxDataBuffer = new byte[RX_BUFFER_SIZE];
+        _currentFrameBuffer = ByteBuffer.allocate(RX_BUFFER_SIZE);
     }
 
     @Override
@@ -61,6 +78,38 @@ public class Hdlc implements Protocol {
 
     @Override
     public boolean receive() throws IOException {
+        int bitsRead = _transport.read(_rxDataBuffer);
+        if (bitsRead > 0) {
+            byte[] data = Arrays.copyOf(_rxDataBuffer, bitsRead);
+            for (byte bit : data) {
+                _readByte <<= 1;
+                _readByte |= bit;
+                _readByte &= 0xff;
+                if (_readByte == 0x7e) {
+                    Log.i(TAG, "HDLC " + _prevHdlc/8);
+                    int pos = _currentFrameBuffer.position();
+                    if (pos >= 7) {
+                        _currentFrameBuffer.position(_currentFrameBuffer.position() - 7);
+                    } else {
+                        _currentFrameBuffer.position(0);
+                    }
+                    _currentFrameBuffer.flip();
+                    byte[] packetBits = new byte[_currentFrameBuffer.remaining()];
+                    _currentFrameBuffer.get(packetBits);
+                    byte[] packetBytes = BitTools.convertFromHDLCBitArray(packetBits);
+                    if (packetBytes != null) {
+                        Log.i(TAG, DebugTools.byteBitsToString(packetBits));
+                        Log.i(TAG, DebugTools.bytesToHex(packetBytes));
+                    }
+                    _currentFrameBuffer.clear();
+                    _readByte = 0;
+                    _prevHdlc = 0;
+                } else {
+                    _currentFrameBuffer.put(bit);
+                    _prevHdlc++;
+                }
+            }
+        }
         return false;
     }
 
