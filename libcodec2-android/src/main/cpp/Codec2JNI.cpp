@@ -68,7 +68,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         conFsk->Ts = fsk->Ts;
 
         conFsk->modBuf = (float*)malloc(sizeof(float) * conFsk->N);
-        conFsk->modBits = (uint8_t*)malloc(conFsk->Nbits);
+        conFsk->modBits = (uint8_t*)malloc(sizeof(uint8_t) * conFsk->Nbits);
 
         conFsk->demodCBuf = (COMP*)malloc(sizeof(COMP) * (fsk->N + 2 * fsk->Ts));
         conFsk->demodBits = (uint8_t*)malloc(sizeof(uint8_t) * fsk->Nbits);
@@ -155,14 +155,8 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
 
     static jlong fskModulate(JNIEnv *env, jclass clazz, jlong n, jshortArray outputSamples, jbyteArray inputBits) {
         ContextFsk *conFsk = getContextFsk(n);
-        jbyte *jbuf = env->GetByteArrayElements(inputBits, nullptr);
-        //for (int i = 0; i < conFsk->Nbits; i++) {
         int inputBitsSize = env->GetArrayLength(inputBits);
-        for (int i = 0; i < inputBitsSize; i++) {
-            auto v = (unsigned char) jbuf[i];
-            conFsk->modBits[i] = v;
-        }
-        env->ReleaseByteArrayElements(inputBits, jbuf, 0);
+        env->GetByteArrayRegion(inputBits, 0, inputBitsSize, reinterpret_cast<jbyte*>(conFsk->modBits));
         fsk_mod(conFsk->fsk, conFsk->modBuf, conFsk->modBits, inputBitsSize);
         jshort *jOutBuf = env->GetShortArrayElements(outputSamples, nullptr);
         for (int i = 0; i < conFsk->N; i++) {
