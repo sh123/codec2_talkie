@@ -86,7 +86,7 @@ public class Hdlc implements Protocol {
                 _readByte |= bit;
                 _readByte &= 0xff;
                 if (_readByte == 0x7e) {
-                    Log.i(TAG, "HDLC " + _prevHdlc/8);
+                    //Log.i(TAG, "HDLC " + _prevHdlc/8);
                     int pos = _currentFrameBuffer.position();
 
                     // shift/flush back previous 8 - 1 bits
@@ -103,15 +103,18 @@ public class Hdlc implements Protocol {
                     // get bytes from bits
                     byte[] packetBytes = BitTools.convertFromHDLCBitArray(packetBits);
                     if (packetBytes != null) {
-                        Log.i(TAG, DebugTools.byteBitsToString(packetBits));
-                        Log.i(TAG, DebugTools.bytesToHex(packetBytes));
+                        //Log.i(TAG, DebugTools.byteBitsToString(packetBits));
+                        //Log.i(TAG, DebugTools.bytesToHex(packetBytes));
                         if (packetBytes.length > 2) {
                             byte[] contentBytes = Arrays.copyOf(packetBytes, packetBytes.length - 2);
                             int calculatedCrc = ChecksumTools.calculateFcs(contentBytes);
                             int packetCrc = ((int)packetBytes[packetBytes.length - 2] & 0xff) | (((int)packetBytes[packetBytes.length - 1] & 0xff) << 8);
-                            Log.i(TAG, "checksum: " + calculatedCrc + " " + packetCrc);
+                            //Log.i(TAG, "checksum: " + calculatedCrc + " " + packetCrc);
                             if (calculatedCrc == packetCrc) {
+                                Log.i(TAG, DebugTools.byteBitsToString(packetBits));
+                                Log.i(TAG, DebugTools.bytesToHex(packetBytes));
                                 Log.i(TAG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                                _parentProtocolCallback.onReceiveCompressedAudio(null, null, -1, contentBytes);
                             }
                         }
                     }
@@ -166,10 +169,10 @@ public class Hdlc implements Protocol {
         byte[] dataBytesAsBits = BitTools.convertToHDLCBitArray(data, true);
 
         // add preamble
-        ByteBuffer hdlcBitBuffer = ByteBuffer.allocate(dataBytesAsBits.length + 8*_prefixSymCount + 8);
+        ByteBuffer hdlcBitBuffer = ByteBuffer.allocate(dataBytesAsBits.length + 8*_prefixSymCount + 8*10);
         hdlcBitBuffer.put(genPreamble(_prefixSymCount));
         hdlcBitBuffer.put(dataBytesAsBits);
-        hdlcBitBuffer.put(genPreamble(1));
+        hdlcBitBuffer.put(genPreamble(10));
 
         // return
         hdlcBitBuffer.flip();

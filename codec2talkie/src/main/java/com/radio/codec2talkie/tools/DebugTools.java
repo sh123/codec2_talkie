@@ -33,6 +33,14 @@ public class DebugTools {
         return s.toString();
     }
 
+    public static String byteBitsToFlatString(byte[] bytesAsBits) {
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < bytesAsBits.length; i++) {
+            s.append(bytesAsBits[i]);
+        }
+        return s.toString();
+    }
+
     public static boolean isPrintableAscii(byte value)
     {
         return (value >= 32 ) && (value < 127);

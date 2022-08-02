@@ -46,7 +46,9 @@ public class SoundModem implements Transport, Runnable {
     private final SharedPreferences _sharedPreferences;
 
     private boolean _isRunning = true;
-    private final boolean _loopbackTest = false;
+
+    private final ByteBuffer _sampleBuffer;
+    private final boolean _isLoopback = false;
 
     private final long _fskModem;
 
@@ -67,12 +69,16 @@ public class SoundModem implements Transport, Runnable {
         _playbackAudioBuffer = new short[Codec2.fskModSamplesBufSize(_fskModem)];
         _playbackBitBuffer = new byte[Codec2.fskModBitsBufSize(_fskModem)];
         _samplesPerSymbol = Codec2.fskSamplesPerSymbol(_fskModem);
-        _bitBuffer = ByteBuffer.allocate(10 * _recordBitBuffer.length);
+        _bitBuffer = ByteBuffer.allocate(100 * _recordBitBuffer.length);
 
         constructSystemAudioDevices();
 
-        if (!_loopbackTest)
-            new Thread(this).start();
+        if (_isLoopback)
+            _sampleBuffer = ByteBuffer.allocate(1000000 );
+        else
+            _sampleBuffer = ByteBuffer.allocate(0);
+
+        new Thread(this).start();
     }
 
     private void constructSystemAudioDevices() {
@@ -87,7 +93,7 @@ public class SoundModem implements Transport, Runnable {
                 AUDIO_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
-                audioRecorderMinBufferSize);
+                10*audioRecorderMinBufferSize);
 
         int audioPlayerMinBufferSize = AudioTrack.getMinBufferSize(
                 AUDIO_SAMPLE_SIZE,
@@ -135,18 +141,24 @@ public class SoundModem implements Transport, Runnable {
 
     @Override
     public int write(byte[] srcDataBytesAsBits) throws IOException {
+        //Log.i(TAG, "write " + DebugTools.byteBitsToFlatString(srcDataBytesAsBits));
         byte[] dataBytesAsBits = BitTools.convertToNRZI(srcDataBytesAsBits);
-
-        if (_loopbackTest) {
-            Log.i(TAG, "write " + DebugTools.byteBitsToString(srcDataBytesAsBits));
-            _bitBuffer.put(BitTools.convertFromNRZI(dataBytesAsBits, (byte) 0));
-        }
+        //Log.i(TAG, "write " + DebugTools.byteBitsToString(dataBytesAsBits));
+        //Log.i(TAG, "write " + DebugTools.byteBitsToFlatString(dataBytesAsBits));
 
         int j = 0;
         for (int i = 0; i < dataBytesAsBits.length; i++, j++) {
             if (j >= _playbackBitBuffer.length) {
                 Codec2.fskModulate(_fskModem, _playbackAudioBuffer, _playbackBitBuffer);
-                _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
+                if (_isLoopback) {
+                    synchronized (_sampleBuffer) {
+                        for (short sample : _playbackAudioBuffer) {
+                            _sampleBuffer.putShort(sample);
+                        }
+                    }
+                } else {
+                    _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
+                }
                 j = 0;
             }
             _playbackBitBuffer[j] = dataBytesAsBits[i];
@@ -156,6 +168,15 @@ public class SoundModem implements Transport, Runnable {
         byte [] bitBufferTail = Arrays.copyOf(_playbackBitBuffer, j);
         Codec2.fskModulate(_fskModem, _playbackAudioBuffer, bitBufferTail);
         _systemAudioPlayer.write(_playbackAudioBuffer, 0, bitBufferTail.length * _samplesPerSymbol);
+        if (_isLoopback) {
+            synchronized (_sampleBuffer) {
+                for (short sample : _playbackAudioBuffer) {
+                    _sampleBuffer.putShort(sample);
+                }
+            }
+        } else {
+            _systemAudioPlayer.write(_playbackAudioBuffer, 0, bitBufferTail.length * _samplesPerSymbol);
+        }
         return 0;
     }
 
@@ -172,21 +193,37 @@ public class SoundModem implements Transport, Runnable {
 
     @Override
     public void run() {
-        byte prevLastBit = 0;
+        byte prevBit = 0;
         while (_isRunning) {
+            int nin = Codec2.fskNin(_fskModem);
             // TODO, take readCnt into account, do not read if playback is active
-            int readCnt = _systemAudioRecorder.read(_recordAudioBuffer, 0, Codec2.fskNin(_fskModem));
+            if (_isLoopback) {
+                synchronized (_sampleBuffer) {
+                    if (_sampleBuffer.position() / 2 >= nin) {
+                        _sampleBuffer.flip();
+                        for (int i = 0; i < nin; i++) {
+                            _recordAudioBuffer[i] = _sampleBuffer.getShort();
+                        }
+                        _sampleBuffer.compact();
+                    } else {
+                        continue;
+                    }
+                }
+            } else {
+                int readCnt = _systemAudioRecorder.read(_recordAudioBuffer, 0, nin);
+            }
             //Log.i(TAG, "! " + AudioTools.getSampleLevelDb(Arrays.copyOf(_recordAudioBuffer, Codec2.fskNin(_fskModem))));
             //Log.i(TAG, DebugTools.shortsToHex(_recordAudioBuffer));
             //Log.i(TAG, readCnt + " " + _recordAudioBuffer.length + " " + Codec2.fskNin(_fskModem));
             Codec2.fskDemodulate(_fskModem, _recordAudioBuffer, _recordBitBuffer);
 
-            //Log.i(TAG, "-- " + DebugTools.byteBitsToString(_recordBitBuffer));
+            //Log.i(TAG, "----- " + DebugTools.byteBitsToFlatString(_recordBitBuffer));
+            //Log.i(TAG, "----- " + DebugTools.byteBitsToFlatString(BitTools.convertFromNRZI(_recordBitBuffer, prevBit)));
             //Log.i(TAG, "== " + DebugTools.byteBitsToString(BitTools.convertFromNRZI(_recordBitBuffer, prevLastBit)));
             synchronized (_bitBuffer) {
                 try {
-                    _bitBuffer.put(BitTools.convertFromNRZI(_recordBitBuffer, prevLastBit));
-                    prevLastBit = _recordBitBuffer[_recordBitBuffer.length - 1];
+                    _bitBuffer.put(BitTools.convertFromNRZI(_recordBitBuffer, prevBit));
+                    prevBit = _recordBitBuffer[_recordBitBuffer.length - 1];
                 } catch (BufferOverflowException e) {
                     e.printStackTrace();
                     _bitBuffer.clear();

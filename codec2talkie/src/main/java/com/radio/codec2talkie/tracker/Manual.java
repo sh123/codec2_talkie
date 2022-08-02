@@ -52,6 +52,7 @@ public class Manual implements Tracker {
         position.bearingDegrees = 0;
         position.speedMetersPerSecond = 0;
         position.altitudeMeters = 0;
+        position.maidenHead = UnitTools.decimalToMaidenhead(position.latitude, position.longitude);
         _trackerCallback.onSendLocation(position);
     }
 

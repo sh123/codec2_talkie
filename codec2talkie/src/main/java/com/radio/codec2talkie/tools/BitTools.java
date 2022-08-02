@@ -21,9 +21,9 @@ public class BitTools {
         return r;
     }
 
-    public static byte[] convertFromNRZI(byte[] bitsAsBytes, byte prevLastBit) {
+    public static byte[] convertFromNRZI(byte[] bitsAsBytes, byte prevBit) {
         ByteBuffer buffer = ByteBuffer.allocate(bitsAsBytes.length);
-        byte last = prevLastBit;
+        byte last = prevBit;
         for (byte bitAsByte : bitsAsBytes) {
             // no transition -> 1
             if (last == bitAsByte) {
@@ -109,7 +109,7 @@ public class BitTools {
             cntBits++;
         }
         //if (cntBits % 8 != 0) return null;
-        Log.i("----", s.toString());
+        //Log.i("----", s.toString());
         // return
         byteBuffer.flip();
         byte[] r = new byte[byteBuffer.remaining()];
