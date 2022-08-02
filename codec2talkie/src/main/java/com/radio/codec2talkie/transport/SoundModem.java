@@ -13,6 +13,7 @@ import android.util.Log;
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.tools.BitTools;
 import com.radio.codec2talkie.tools.DebugTools;
 import com.ustadmobile.codec2.Codec2;
@@ -45,6 +46,7 @@ public class SoundModem implements Transport, Runnable {
     private final SharedPreferences _sharedPreferences;
 
     private boolean _isRunning = true;
+    private final boolean _loopbackTest = false;
 
     private final long _fskModem;
 
@@ -69,7 +71,8 @@ public class SoundModem implements Transport, Runnable {
 
         constructSystemAudioDevices();
 
-        new Thread(this).start();
+        if (!_loopbackTest)
+            new Thread(this).start();
     }
 
     private void constructSystemAudioDevices() {
@@ -122,7 +125,7 @@ public class SoundModem implements Transport, Runnable {
                 _bitBuffer.flip();
                 int len = _bitBuffer.remaining();
                 _bitBuffer.get(data, 0, len);
-                //Log.i(TAG, "-- " + DebugTools.byteBitsToString(data));
+                //Log.i(TAG, "read  " + DebugTools.byteBitsToString(data));
                 _bitBuffer.compact();
                 return len;
             }
@@ -133,6 +136,11 @@ public class SoundModem implements Transport, Runnable {
     @Override
     public int write(byte[] srcDataBytesAsBits) throws IOException {
         byte[] dataBytesAsBits = BitTools.convertToNRZI(srcDataBytesAsBits);
+
+        if (_loopbackTest) {
+            Log.i(TAG, "write " + DebugTools.byteBitsToString(srcDataBytesAsBits));
+            _bitBuffer.put(BitTools.convertFromNRZI(dataBytesAsBits, (byte) 0));
+        }
 
         int j = 0;
         for (int i = 0; i < dataBytesAsBits.length; i++, j++) {
@@ -168,6 +176,7 @@ public class SoundModem implements Transport, Runnable {
         while (_isRunning) {
             // TODO, take readCnt into account, do not read if playback is active
             int readCnt = _systemAudioRecorder.read(_recordAudioBuffer, 0, Codec2.fskNin(_fskModem));
+            //Log.i(TAG, "! " + AudioTools.getSampleLevelDb(Arrays.copyOf(_recordAudioBuffer, Codec2.fskNin(_fskModem))));
             //Log.i(TAG, DebugTools.shortsToHex(_recordAudioBuffer));
             //Log.i(TAG, readCnt + " " + _recordAudioBuffer.length + " " + Codec2.fskNin(_fskModem));
             Codec2.fskDemodulate(_fskModem, _recordAudioBuffer, _recordBitBuffer);

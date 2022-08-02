@@ -77,8 +77,7 @@ public class BitTools {
         boolean skipNext = false;
         StringBuffer s = new StringBuffer();
         int cntBits = 0;
-        for (int i = 0; i < dataBitsAsBytes.length; i++) {
-            byte currentBit = dataBitsAsBytes[i];
+        for (byte currentBit : dataBitsAsBytes) {
             if (skipNext) {
                 // cannot have 6 consecutive 1, non-HDLC data
                 if (currentBit == 1) return null;
@@ -94,9 +93,12 @@ public class BitTools {
             } else {
                 cntOnes = 0;
             }
-            if (i % 8 == 7) {
+            if (cntBits % 8 == 3) {
+                s.append(':');
+            }
+            if (cntBits % 8 == 7) {
                 s.append(' ');
-                byteBuffer.put((byte)(currentByte & 0xff));
+                byteBuffer.put((byte) (currentByte & 0xff));
                 currentByte = 0;
             }
             // 5 ones, skip next

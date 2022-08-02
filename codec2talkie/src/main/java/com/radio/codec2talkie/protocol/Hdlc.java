@@ -88,18 +88,32 @@ public class Hdlc implements Protocol {
                 if (_readByte == 0x7e) {
                     Log.i(TAG, "HDLC " + _prevHdlc/8);
                     int pos = _currentFrameBuffer.position();
+
+                    // shift/flush back previous 8 - 1 bits
                     if (pos >= 7) {
                         _currentFrameBuffer.position(_currentFrameBuffer.position() - 7);
                     } else {
                         _currentFrameBuffer.position(0);
                     }
+                    // get packet bits between 0x7e
                     _currentFrameBuffer.flip();
                     byte[] packetBits = new byte[_currentFrameBuffer.remaining()];
                     _currentFrameBuffer.get(packetBits);
+
+                    // get bytes from bits
                     byte[] packetBytes = BitTools.convertFromHDLCBitArray(packetBits);
                     if (packetBytes != null) {
                         Log.i(TAG, DebugTools.byteBitsToString(packetBits));
                         Log.i(TAG, DebugTools.bytesToHex(packetBytes));
+                        if (packetBytes.length > 2) {
+                            byte[] contentBytes = Arrays.copyOf(packetBytes, packetBytes.length - 2);
+                            int calculatedCrc = ChecksumTools.calculateFcs(contentBytes);
+                            int packetCrc = ((int)packetBytes[packetBytes.length - 2] & 0xff) | (((int)packetBytes[packetBytes.length - 1] & 0xff) << 8);
+                            Log.i(TAG, "checksum: " + calculatedCrc + " " + packetCrc);
+                            if (calculatedCrc == packetCrc) {
+                                Log.i(TAG, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                            }
+                        }
                     }
                     _currentFrameBuffer.clear();
                     _readByte = 0;
@@ -147,6 +161,8 @@ public class Hdlc implements Protocol {
         buffer.flip();
         byte[] data = new byte[buffer.remaining()];
         buffer.get(data);
+        Log.i(TAG, DebugTools.bytesToHex(data));
+
         byte[] dataBytesAsBits = BitTools.convertToHDLCBitArray(data, true);
 
         // add preamble
