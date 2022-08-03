@@ -8,6 +8,7 @@ import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Debug;
+import android.os.Process;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
@@ -74,7 +75,7 @@ public class SoundModem implements Transport, Runnable {
         constructSystemAudioDevices();
 
         if (_isLoopback)
-            _sampleBuffer = ByteBuffer.allocate(1000000 );
+            _sampleBuffer = ByteBuffer.allocate(1000000);
         else
             _sampleBuffer = ByteBuffer.allocate(0);
 
@@ -87,7 +88,7 @@ public class SoundModem implements Transport, Runnable {
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
 
-        int audioSource = MediaRecorder.AudioSource.MIC;
+        int audioSource = MediaRecorder.AudioSource.UNPROCESSED;
         _systemAudioRecorder = new AudioRecord(
                 audioSource,
                 AUDIO_SAMPLE_SIZE,
@@ -167,7 +168,6 @@ public class SoundModem implements Transport, Runnable {
         // process tail
         byte [] bitBufferTail = Arrays.copyOf(_playbackBitBuffer, j);
         Codec2.fskModulate(_fskModem, _playbackAudioBuffer, bitBufferTail);
-        _systemAudioPlayer.write(_playbackAudioBuffer, 0, bitBufferTail.length * _samplesPerSymbol);
         if (_isLoopback) {
             synchronized (_sampleBuffer) {
                 for (short sample : _playbackAudioBuffer) {
@@ -194,12 +194,19 @@ public class SoundModem implements Transport, Runnable {
     @Override
     public void run() {
         byte prevBit = 0;
+        android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
         while (_isRunning) {
             int nin = Codec2.fskNin(_fskModem);
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             // TODO, take readCnt into account, do not read if playback is active
             if (_isLoopback) {
                 synchronized (_sampleBuffer) {
                     if (_sampleBuffer.position() / 2 >= nin) {
+                        Log.i(TAG, "" + nin + " " + _sampleBuffer.position() / 2);
                         _sampleBuffer.flip();
                         for (int i = 0; i < nin; i++) {
                             _recordAudioBuffer[i] = _sampleBuffer.getShort();
@@ -211,6 +218,9 @@ public class SoundModem implements Transport, Runnable {
                 }
             } else {
                 int readCnt = _systemAudioRecorder.read(_recordAudioBuffer, 0, nin);
+                if (readCnt != nin) {
+                    Log.i(TAG, "" + readCnt + " " + nin);
+                }
             }
             //Log.i(TAG, "! " + AudioTools.getSampleLevelDb(Arrays.copyOf(_recordAudioBuffer, Codec2.fskNin(_fskModem))));
             //Log.i(TAG, DebugTools.shortsToHex(_recordAudioBuffer));
@@ -219,7 +229,7 @@ public class SoundModem implements Transport, Runnable {
 
             //Log.i(TAG, "----- " + DebugTools.byteBitsToFlatString(_recordBitBuffer));
             //Log.i(TAG, "----- " + DebugTools.byteBitsToFlatString(BitTools.convertFromNRZI(_recordBitBuffer, prevBit)));
-            //Log.i(TAG, "== " + DebugTools.byteBitsToString(BitTools.convertFromNRZI(_recordBitBuffer, prevLastBit)));
+            //Log.i(TAG, "== " + DebugTools.byteBitsToString(BitTools.convertFromNRZI(_recordBitBuffer, prevBit)));
             synchronized (_bitBuffer) {
                 try {
                     _bitBuffer.put(BitTools.convertFromNRZI(_recordBitBuffer, prevBit));
