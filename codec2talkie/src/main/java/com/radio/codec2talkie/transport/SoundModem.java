@@ -7,7 +7,6 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
-import android.os.Debug;
 import android.os.Process;
 import android.util.Log;
 
@@ -29,7 +28,7 @@ public class SoundModem implements Transport, Runnable {
     private static final String TAG = SoundModem.class.getSimpleName();
 
     // NOTE, codec2 library requires that sample_rate % bit_rate == 0
-    public static final int AUDIO_SAMPLE_SIZE = 24000;
+    public static final int SAMPLE_RATE = 24000;
 
     private final String _name;
 
@@ -49,7 +48,7 @@ public class SoundModem implements Transport, Runnable {
     private boolean _isRunning = true;
 
     private final ByteBuffer _sampleBuffer;
-    private final boolean _isLoopback = false;
+    private final boolean _isLoopback = true;
 
     private final long _fskModem;
 
@@ -60,9 +59,9 @@ public class SoundModem implements Transport, Runnable {
         String type = _sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200");
         _name = "SoundModem" + type;
         if (type.equals("300")) {
-            _fskModem = Codec2.fskCreate(AUDIO_SAMPLE_SIZE, 300, 1600, 200);
+            _fskModem = Codec2.fskCreate(SAMPLE_RATE, 300, 1600, 200);
         } else {
-            _fskModem = Codec2.fskCreate(AUDIO_SAMPLE_SIZE, 1200, 1200, 1000);
+            _fskModem = Codec2.fskCreate(SAMPLE_RATE, 1200, 1200, 1000);
         }
 
         _recordAudioBuffer = new short[Codec2.fskDemodSamplesBufSize(_fskModem)];
@@ -75,7 +74,7 @@ public class SoundModem implements Transport, Runnable {
         constructSystemAudioDevices();
 
         if (_isLoopback)
-            _sampleBuffer = ByteBuffer.allocate(1000000);
+            _sampleBuffer = ByteBuffer.allocate(100000);
         else
             _sampleBuffer = ByteBuffer.allocate(0);
 
@@ -84,20 +83,20 @@ public class SoundModem implements Transport, Runnable {
 
     private void constructSystemAudioDevices() {
         int audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
-                AUDIO_SAMPLE_SIZE,
+                SAMPLE_RATE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
 
-        int audioSource = MediaRecorder.AudioSource.UNPROCESSED;
+        int audioSource = MediaRecorder.AudioSource.VOICE_RECOGNITION;
         _systemAudioRecorder = new AudioRecord(
                 audioSource,
-                AUDIO_SAMPLE_SIZE,
+                SAMPLE_RATE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
                 10*audioRecorderMinBufferSize);
 
         int audioPlayerMinBufferSize = AudioTrack.getMinBufferSize(
-                AUDIO_SAMPLE_SIZE,
+                SAMPLE_RATE,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
         _systemAudioRecorder.startRecording();
@@ -110,7 +109,7 @@ public class SoundModem implements Transport, Runnable {
                         .build())
                 .setAudioFormat(new AudioFormat.Builder()
                         .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                        .setSampleRate(AUDIO_SAMPLE_SIZE)
+                        .setSampleRate(SAMPLE_RATE)
                         .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
                         .build())
                 .setTransferMode(AudioTrack.MODE_STREAM)
@@ -132,7 +131,7 @@ public class SoundModem implements Transport, Runnable {
                 _bitBuffer.flip();
                 int len = _bitBuffer.remaining();
                 _bitBuffer.get(data, 0, len);
-                //Log.i(TAG, "read  " + DebugTools.byteBitsToString(data));
+                Log.v(TAG, "read user: " + DebugTools.byteBitsToFlatString(data));
                 _bitBuffer.compact();
                 return len;
             }
@@ -142,21 +141,23 @@ public class SoundModem implements Transport, Runnable {
 
     @Override
     public int write(byte[] srcDataBytesAsBits) throws IOException {
-        //Log.i(TAG, "write " + DebugTools.byteBitsToFlatString(srcDataBytesAsBits));
+        Log.v(TAG, "write     " + DebugTools.byteBitsToFlatString(srcDataBytesAsBits));
         byte[] dataBytesAsBits = BitTools.convertToNRZI(srcDataBytesAsBits);
-        //Log.i(TAG, "write " + DebugTools.byteBitsToString(dataBytesAsBits));
-        //Log.i(TAG, "write " + DebugTools.byteBitsToFlatString(dataBytesAsBits));
+        Log.v(TAG, "write NRZ " + DebugTools.byteBitsToFlatString(dataBytesAsBits));
+        Log.v(TAG, "write NRZ " + DebugTools.byteBitsToString(dataBytesAsBits));
 
         int j = 0;
         for (int i = 0; i < dataBytesAsBits.length; i++, j++) {
             if (j >= _playbackBitBuffer.length) {
                 Codec2.fskModulate(_fskModem, _playbackAudioBuffer, _playbackBitBuffer);
+                Log.v(TAG, "write samples: " + DebugTools.shortsToHex(_playbackAudioBuffer));
                 if (_isLoopback) {
                     synchronized (_sampleBuffer) {
                         for (short sample : _playbackAudioBuffer) {
                             _sampleBuffer.putShort(sample);
                         }
                     }
+                    Log.v(TAG, "pos: " + _sampleBuffer.position() / 2);
                 } else {
                     _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
                 }
@@ -206,12 +207,14 @@ public class SoundModem implements Transport, Runnable {
             if (_isLoopback) {
                 synchronized (_sampleBuffer) {
                     if (_sampleBuffer.position() / 2 >= nin) {
-                        Log.i(TAG, "" + nin + " " + _sampleBuffer.position() / 2);
+                        Log.i(TAG, "nin: " + nin + ", pos: " + _sampleBuffer.position() / 2);
                         _sampleBuffer.flip();
                         for (int i = 0; i < nin; i++) {
                             _recordAudioBuffer[i] = _sampleBuffer.getShort();
                         }
+                        //Log.i(TAG, String.format("%04x", _recordAudioBuffer[0]));
                         _sampleBuffer.compact();
+                        Log.v(TAG, "read samples: " + DebugTools.shortsToHex(_recordAudioBuffer));
                     } else {
                         continue;
                     }
@@ -219,17 +222,16 @@ public class SoundModem implements Transport, Runnable {
             } else {
                 int readCnt = _systemAudioRecorder.read(_recordAudioBuffer, 0, nin);
                 if (readCnt != nin) {
-                    Log.i(TAG, "" + readCnt + " " + nin);
+                    Log.e(TAG, "" + readCnt + " != " + nin);
                 }
+                Log.v(TAG, "read samples: " + DebugTools.shortsToHex(_recordAudioBuffer));
             }
-            //Log.i(TAG, "! " + AudioTools.getSampleLevelDb(Arrays.copyOf(_recordAudioBuffer, Codec2.fskNin(_fskModem))));
-            //Log.i(TAG, DebugTools.shortsToHex(_recordAudioBuffer));
-            //Log.i(TAG, readCnt + " " + _recordAudioBuffer.length + " " + Codec2.fskNin(_fskModem));
+            Log.v(TAG, "read audio power: " + AudioTools.getSampleLevelDb(Arrays.copyOf(_recordAudioBuffer, Codec2.fskNin(_fskModem))));
+            //Log.v(TAG, readCnt + " " + _recordAudioBuffer.length + " " + Codec2.fskNin(_fskModem));
             Codec2.fskDemodulate(_fskModem, _recordAudioBuffer, _recordBitBuffer);
 
-            //Log.i(TAG, "----- " + DebugTools.byteBitsToFlatString(_recordBitBuffer));
-            //Log.i(TAG, "----- " + DebugTools.byteBitsToFlatString(BitTools.convertFromNRZI(_recordBitBuffer, prevBit)));
-            //Log.i(TAG, "== " + DebugTools.byteBitsToString(BitTools.convertFromNRZI(_recordBitBuffer, prevBit)));
+            Log.v(TAG, "read NRZ " + DebugTools.byteBitsToFlatString(_recordBitBuffer));
+            Log.v(TAG, "read     " + DebugTools.byteBitsToFlatString(BitTools.convertFromNRZI(_recordBitBuffer, prevBit)));
             synchronized (_bitBuffer) {
                 try {
                     _bitBuffer.put(BitTools.convertFromNRZI(_recordBitBuffer, prevBit));

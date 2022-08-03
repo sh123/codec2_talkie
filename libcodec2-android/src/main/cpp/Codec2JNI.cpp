@@ -74,7 +74,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         conFsk->demodBits = (uint8_t*)malloc(sizeof(uint8_t) * fsk->Nbits);
         conFsk->demodBuf = (int16_t*)malloc(sizeof(short) * (fsk->N + 2 * fsk->Ts));
 
-        fsk_set_freq_est_limits(fsk, 0, sampleFrequency / 2);
+        fsk_set_freq_est_limits(fsk, 500, sampleFrequency / 2);
         fsk_set_freq_est_alg(fsk, 0);
 
         auto pv = (unsigned long) conFsk;
@@ -93,12 +93,12 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
 
     static jint fskDemodSamplesBufSize(JNIEnv * env, jclass clazz, jlong n) {
         ContextFsk *conFsk = getContextFsk(n);
-        return sizeof(short) * (conFsk->N + 2 * conFsk->Ts);
+        return conFsk->N + 2 * conFsk->Ts;  // number of shorts
     }
 
     static jint fskDemodBitsBufSize(JNIEnv * env, jclass clazz, jlong n) {
         ContextFsk *conFsk = getContextFsk(n);
-        return sizeof(uint8_t) * conFsk->Nbits;
+        return conFsk->Nbits;
     }
 
     static jint fskModSamplesBufSize(JNIEnv * env, jclass clazz, jlong n) {
@@ -186,7 +186,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         ContextFsk *conFsk = getContextFsk(n);
         env->GetShortArrayRegion(inputSamples, 0, conFsk->N, reinterpret_cast<jshort*>(conFsk->demodBuf));
         for(int i = 0; i < fsk_nin(conFsk->fsk); i++){
-            conFsk->demodCBuf[i].real = ((float)conFsk->demodBuf[i]) / FDMDV_SCALE ;
+            conFsk->demodCBuf[i].real = ((float)conFsk->demodBuf[i]) / FDMDV_SCALE;
             conFsk->demodCBuf[i].imag = 0.0;
         }
         fsk_demod(conFsk->fsk, conFsk->demodBits, conFsk->demodCBuf);
