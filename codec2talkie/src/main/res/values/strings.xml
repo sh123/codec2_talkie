@@ -300,4 +300,6 @@
     <string name="ports_sound_modem_control_title">Sound modem settings</string>
     <string name="ports_sound_modem_control_settings">Set sound modem settings, such as bit rate</string>
     <string name="ports_type_title">TNC transport type</string>
+    <string name="ports_sound_modem_disable_rx_title">Disable receive</string>
+    <string name="ports_sound_modem_disable_rx_summary">Run modem in transmit only mode, receive is disabled to save CPU cycles</string>
 </resources>

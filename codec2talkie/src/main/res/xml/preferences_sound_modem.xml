@@ -22,5 +22,12 @@
             app:defaultValue="200">
         </EditTextPreference>
 
+        <SwitchPreference
+            app:key="ports_sound_modem_disable_rx"
+            app:title="@string/ports_sound_modem_disable_rx_title"
+            app:summary="@string/ports_sound_modem_disable_rx_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
     </PreferenceCategory>
 </PreferenceScreen>
