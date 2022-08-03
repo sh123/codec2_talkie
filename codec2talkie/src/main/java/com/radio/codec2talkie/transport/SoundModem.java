@@ -203,7 +203,6 @@ public class SoundModem implements Transport, Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            // TODO, take readCnt into account, do not read if playback is active
             if (_isLoopback) {
                 synchronized (_sampleBuffer) {
                     if (_sampleBuffer.position() / 2 >= nin) {

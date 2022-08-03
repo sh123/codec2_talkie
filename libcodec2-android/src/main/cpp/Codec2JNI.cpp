@@ -60,7 +60,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         struct ContextFsk *conFsk;
         conFsk = (struct ContextFsk *) malloc(sizeof(struct ContextFsk));
         struct FSK *fsk;
-        fsk = fsk_create_hbr(sampleFrequency, symbolRate, MODE_2FSK, sampleFrequency/symbolRate, FSK_DEFAULT_NSYM, toneFreq, toneSpacing);
+        fsk = fsk_create_hbr(sampleFrequency, symbolRate, MODE_2FSK, 10, FSK_DEFAULT_NSYM, toneFreq, toneSpacing);
         conFsk->fsk = fsk;
 
         conFsk->Nbits = fsk->Nbits;
