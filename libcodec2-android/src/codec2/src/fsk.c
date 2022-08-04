@@ -487,7 +487,7 @@ void fsk_demod_freq_est(struct FSK *fsk, COMP fsk_in[], float *freqs, int M) {
             #ifdef USE_HANN_TABLE
             hann = fsk->hann_table[i];
             #else
-            hann = 0.5 - 0.5 * cosf(2.0 * M_PI * (float)i / (float) (fft_samps-1));
+            hann = 0.5 - 0.5 * cosf(2.0 * M_PI * (float)i / (float) (Ndft-1));
             #endif
             fftin[i].r = hann*fsk_in[i+a].real;
             fftin[i].i = hann*fsk_in[i+a].imag;
