@@ -1,5 +1,8 @@
 package com.radio.codec2talkie.protocol.aprs;
 
+import android.util.Log;
+
+import com.radio.codec2talkie.protocol.Aprs;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsTools;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
@@ -13,6 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AprsDataPositionReport implements AprsData {
+    private static final String TAG = AprsData.class.getSimpleName();
 
     private Position _position;
     private byte[] _binary;
@@ -139,9 +143,12 @@ public class AprsDataPositionReport implements AprsData {
         byte[] tail = new byte[buffer.remaining()];
         buffer.get(tail);
         String strTail = new String(tail);
-        Pattern latLonPattern = Pattern.compile("^([\\\\/])(\\S{4})(\\S{4})(\\S)(.\\S)(\\S)(.*)$", Pattern.DOTALL);
+        Pattern latLonPattern = Pattern.compile("^([\\\\/])(\\S{4})(\\S{4})(\\S)(.\\S)?(\\S)?(.*)$", Pattern.DOTALL);
         Matcher latLonMatcher = latLonPattern.matcher(strTail);
-        if (!latLonMatcher.matches()) return false;
+        if (!latLonMatcher.matches()) {
+            Log.w(TAG, "cannot match compressed aprs data");
+            return false;
+        }
 
         String table = latLonMatcher.group(1);
         String latitude = latLonMatcher.group(2);
@@ -159,19 +166,20 @@ public class AprsDataPositionReport implements AprsData {
         if (comment != null)
             _position.comment = comment;
 
-        if (altSpeed == null) return false;
-        if (tValue == null) return false;
-
-        byte tByte = (byte) ((byte)tValue.charAt(0) - 33);
-        int tByteNmeaSource = ((tByte >> 3) & 0x3);
-        byte cByte = (byte)altSpeed.charAt(0);
-        byte sByte = (byte)altSpeed.charAt(1);
-
         _position.hasSpeed = false;
         _position.hasBearing = false;
         _position.isSpeedBearingEnabled = false;
         _position.hasAltitude = false;
         _position.isAltitudeEnabled = false;
+
+        if (altSpeed == null || tValue == null) {
+            return true;
+        }
+
+        byte tByte = (byte) ((byte)tValue.charAt(0) - 33);
+        int tByteNmeaSource = ((tByte >> 3) & 0x3);
+        byte cByte = (byte)altSpeed.charAt(0);
+        byte sByte = (byte)altSpeed.charAt(1);
 
         // no course/speed
         if (cByte == ' ') return true;

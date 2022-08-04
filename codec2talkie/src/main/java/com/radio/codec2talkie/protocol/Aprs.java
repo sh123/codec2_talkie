@@ -143,6 +143,7 @@ public class Aprs implements Protocol {
             if (data.length == 0) return;
             AprsDataType dataType = new AprsDataType((char)data[0]);
             AprsData aprsData = AprsDataFactory.fromBinary(src, dst, data);
+            Log.i(TAG, "onReceiveData() " + aprsData.isValid() + " " + dataType.getDataType() + " " + src + " " + dst);
             if (aprsData != null && aprsData.isValid()) {
                 if (dataType.isTextMessage()) {
                     TextMessage textMessage = aprsData.toTextMessage();
