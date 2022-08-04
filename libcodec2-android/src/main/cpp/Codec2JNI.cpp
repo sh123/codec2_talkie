@@ -74,7 +74,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         conFsk->demodBits = (uint8_t*)malloc(sizeof(uint8_t) * fsk->Nbits);
         conFsk->demodBuf = (int16_t*)malloc(sizeof(short) * (fsk->N + 2 * fsk->Ts));
 
-        fsk_set_freq_est_limits(fsk, 500, sampleFrequency / 2);
+        fsk_set_freq_est_limits(fsk, 500, sampleFrequency / 4);
         fsk_set_freq_est_alg(fsk, 0);
 
         auto pv = (unsigned long) conFsk;
