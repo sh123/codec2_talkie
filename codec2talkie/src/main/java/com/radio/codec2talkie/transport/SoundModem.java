@@ -28,7 +28,7 @@ public class SoundModem implements Transport, Runnable {
     private static final String TAG = SoundModem.class.getSimpleName();
 
     // NOTE, codec2 library requires that sample_rate % bit_rate == 0
-    public static final int SAMPLE_RATE = 24000;
+    public static final int SAMPLE_RATE = 19200;
 
     private final String _name;
 
@@ -212,7 +212,7 @@ public class SoundModem implements Transport, Runnable {
             if (_isLoopback) {
                 synchronized (_sampleBuffer) {
                     if (_sampleBuffer.position() / 2 >= nin) {
-                        Log.i(TAG, "nin: " + nin + ", pos: " + _sampleBuffer.position() / 2);
+                        //Log.i(TAG, "nin: " + nin + ", pos: " + _sampleBuffer.position() / 2);
                         _sampleBuffer.flip();
                         for (int i = 0; i < nin; i++) {
                             _recordAudioBuffer[i] = _sampleBuffer.getShort();
