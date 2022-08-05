@@ -10,6 +10,6 @@ import java.io.IOException;
 public interface RigCtl {
     void initialize(Transport transport, Context context, RigCtlCallback protocolCallback) throws IOException;
 
-    void pttOn();
-    void pttOff();
+    void pttOn() throws IOException;
+    void pttOff() throws IOException;
 }
