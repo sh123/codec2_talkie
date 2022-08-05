@@ -237,8 +237,10 @@ public class SoundModem implements Transport, Runnable {
                 }
             } else {
                 int readCnt = _systemAudioRecorder.read(_recordAudioBuffer, 0, nin);
+                // TODO, read tail
                 if (readCnt != nin) {
-                    Log.e(TAG, "" + readCnt + " != " + nin);
+                    Log.w(TAG, "" + readCnt + " != " + nin);
+                    continue;
                 }
                 //Log.v(TAG, "read samples: " + DebugTools.shortsToHex(_recordAudioBuffer));
             }
