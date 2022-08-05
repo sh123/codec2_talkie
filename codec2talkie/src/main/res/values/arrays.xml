@@ -326,11 +326,13 @@
     <string-array name="ports_sound_modem_type_entries">
         <item>FSK 300 (1600/1800)</item>
         <item>AFSK 1200 (1200/2200)</item>
+        <item>AFSK 2400 (2165/3970)</item>
     </string-array>
 
     <string-array name="ports_sound_modem_type_values">
         <item>300</item>
         <item>1200</item>
+        <item>2400</item>
     </string-array>
 
     <string-array name="ports_type_labels">
