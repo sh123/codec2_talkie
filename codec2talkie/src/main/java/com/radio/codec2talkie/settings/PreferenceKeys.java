@@ -20,6 +20,7 @@ public final class PreferenceKeys {
     public static String PORTS_SOUND_MODEM_TYPE = "ports_sound_modem_type";
     public static String PORTS_SOUND_MODEM_PREAMBLE = "ports_sound_modem_preamble";
     public static String PORTS_SOUND_MODEM_DISABLE_RX = "ports_sound_modem_disable_rx";
+    public static String PORTS_SOUND_MODEM_RIG = "ports_sound_modem_rig";
 
     public static String CODEC2_MODE = "codec2_mode";
     public static String CODEC2_RECORDING_ENABLED = "codec2_recording_enabled";

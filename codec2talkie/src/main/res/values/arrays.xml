@@ -352,4 +352,14 @@
         <item>usb</item>
         <item>sound_modem</item>
     </string-array>
+
+    <string-array name="ports_sound_modem_rig_entries">
+        <item>Do not use rig control</item>
+        <item>FT-817/818/MCHF</item>
+    </string-array>
+
+    <string-array name="ports_sound_modem_rig_values">
+        <item>Disabled</item>
+        <item>Ft817</item>
+    </string-array>
 </resources>

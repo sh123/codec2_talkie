@@ -302,4 +302,5 @@
     <string name="ports_type_title">TNC transport type</string>
     <string name="ports_sound_modem_disable_rx_title">Disable receive</string>
     <string name="ports_sound_modem_disable_rx_summary">Run modem in transmit only mode, receive is disabled to save CPU cycles</string>
+    <string name="ports_sound_modem_rig_title">Select radio model to control</string>
 </resources>

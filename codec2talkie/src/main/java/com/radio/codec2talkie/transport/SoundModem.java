@@ -12,6 +12,8 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.rigctl.RigCtl;
+import com.radio.codec2talkie.rigctl.RigCtlFactory;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.tools.BitTools;
@@ -52,6 +54,8 @@ public class SoundModem implements Transport, Runnable {
 
     private final long _fskModem;
 
+    private final RigCtl _rigCtl;
+
     public SoundModem(Context context) {
         _context = context;
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
@@ -81,6 +85,13 @@ public class SoundModem implements Transport, Runnable {
             _sampleBuffer = ByteBuffer.allocate(100000);
         else
             _sampleBuffer = ByteBuffer.allocate(0);
+
+        _rigCtl = RigCtlFactory.create(context);
+        try {
+            _rigCtl.initialize(TransportFactory.create(TransportFactory.TransportType.USB, context), context, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         if (!disableRx)
             new Thread(this).start();
