@@ -262,7 +262,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     break;
                 case "sound_modem":
                     _textConnInfo.setText(R.string.main_status_sound_modem);
-                    startAppService(TransportFactory.TransportType.SOUND_MODEM);
+                    String rig = _sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_RIG, "Disabled");
+                    if (rig.equals("Disabled"))
+                        startAppService(TransportFactory.TransportType.SOUND_MODEM);
+                    else
+                        startUsbConnectActivity();
                     break;
                 case "tcp_ip":
                     startTcpIpConnectActivity();
@@ -284,7 +288,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             Intent data = result.getData();
             assert data != null;
             int resultCode = result.getResultCode();
-            if (resultCode == RESULT_CANCELED) {
+            String transportType = _sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback");
+            if (transportType.equals("sound_modem")) {
+                startAppService(TransportFactory.TransportType.SOUND_MODEM);
+            } else if (resultCode == RESULT_CANCELED) {
                 _textConnInfo.setText(R.string.main_status_loopback_test);
                 startAppService(TransportFactory.TransportType.LOOPBACK);
             } else if (resultCode == RESULT_OK) {
