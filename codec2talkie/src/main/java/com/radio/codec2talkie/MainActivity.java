@@ -463,6 +463,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             status += getString(R.string.kiss_scrambler_label);
         }
 
+        // rig CAT control
+        String rigName = _sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_RIG, "Disabled");
+        if (!rigName.equals("Disabled") && UsbPortHandler.getPort() != null) {
+            status += getString(R.string.ports_sound_modem_rig_label);
+        }
+
         // aprs
         boolean aprsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
         if (aprsEnabled) {

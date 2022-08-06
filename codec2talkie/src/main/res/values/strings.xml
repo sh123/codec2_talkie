@@ -304,4 +304,5 @@
     <string name="ports_sound_modem_disable_rx_summary">Run modem in transmit only mode, receive is disabled to save CPU cycles</string>
     <string name="ports_sound_modem_rig_title">Select RIG model for CAT PTT control</string>
     <string name="ports_sound_modem_gain_title">Set modem audio gain</string>
+    <string name="ports_sound_modem_rig_label">&#127899;</string>
 </resources>
