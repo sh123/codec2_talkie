@@ -16,6 +16,8 @@ import java.util.TimerTask;
 public class Ft817 implements RigCtl {
     private static final String TAG = Ft817.class.getSimpleName();
 
+    private static final int PTT_OFF_DELAY_MS = 1000;
+
     private Transport _transport;
 
     private Timer _pttOffTimer;
@@ -64,20 +66,22 @@ public class Ft817 implements RigCtl {
                     e.printStackTrace();
                 }
             }
-        }, 2000);
+        }, PTT_OFF_DELAY_MS);
     }
 
     public void sendPttOff() throws IOException {
-        // 0x00, 0x00, 0x00, 0x00, 0xf0
+        // 0x00, 0x00, 0x00, 0x00, 0x88
         // returns 0x00 (was keyed), 0xf0 (already un-keyed)
         Log.i(TAG, "PTT OFF");
         ByteBuffer cmd = ByteBuffer.allocate(5);
-        cmd.put((byte)0x00).put((byte)0x00).put((byte)0x00).put((byte)0x00).put((byte)0xf0);
+        cmd.put((byte)0x00).put((byte)0x00).put((byte)0x00).put((byte)0x00).put((byte)0x88);
         _transport.write(cmd.array());
         Log.i(TAG, "PTT OFF done");
 
         byte[] response = new byte[1];
         int bytesRead = _transport.read(response);
         Log.i(TAG, "PTT OFF response: " + bytesRead + " " + response[0]);
+
+        _isPttOn = false;
     }
 }
