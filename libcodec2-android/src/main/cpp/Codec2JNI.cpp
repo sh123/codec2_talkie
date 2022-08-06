@@ -57,7 +57,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         return pv;
     }
 
-    static jlong fskCreate(JNIEnv *env, jclass clazz, int sampleFrequency, int symbolRate, int toneFreq, int toneSpacing) {
+    static jlong fskCreate(JNIEnv *env, jclass clazz, int sampleFrequency, int symbolRate, int toneFreq, int toneSpacing, int gain) {
         struct ContextFsk *conFsk;
         conFsk = (struct ContextFsk *) malloc(sizeof(struct ContextFsk));
         struct FSK *fsk;
@@ -75,7 +75,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         conFsk->demodBits = (uint8_t*)malloc(sizeof(uint8_t) * fsk->Nbits);
         conFsk->demodBuf = (int16_t*)malloc(sizeof(short) * (fsk->N + 2 * fsk->Ts));
 
-        conFsk->gain = 10 * FDMDV_SCALE;
+        conFsk->gain = gain;
 
         fsk_set_freq_est_limits(fsk, 500, sampleFrequency / 4);
         fsk_set_freq_est_alg(fsk, 0);
@@ -204,7 +204,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         {"destroy",            "(J)I",     (void *) destroy},
         {"encode",             "(J[S[C)J", (void *) encode},
         {"decode",             "(J[S[B)J", (void *) decode},
-        {"fskCreate",          "(IIII)J",  (void *) fskCreate},
+        {"fskCreate",          "(IIIII)J", (void *) fskCreate},
         {"fskDestroy",         "(J)I",     (void *) fskDestroy},
         {"fskModulate",        "(J[S[B)J", (void *) fskModulate},
         {"fskDemodulate",      "(J[S[B)J", (void *) fskDemodulate},

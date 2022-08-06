@@ -362,4 +362,36 @@
         <item>Disabled</item>
         <item>Ft817</item>
     </string-array>
+
+    <string-array name="ports_sound_modem_gain_entries">
+        <item>+0 db</item>
+        <item>+1 db</item>
+        <item>+2 db</item>
+        <item>+3 db</item>
+        <item>+4 db</item>
+        <item>+5 db</item>
+        <item>+6 db</item>
+        <item>+7 db</item>
+        <item>+8 db</item>
+        <item>+9 db</item>
+        <item>+10 db</item>
+        <item>+11 db</item>
+        <item>+12 db</item>
+    </string-array>
+
+    <string-array name="ports_sound_modem_gain_values">
+        <item>1000</item>
+        <item>1258</item>
+        <item>1584</item>
+        <item>1995</item>
+        <item>2511</item>
+        <item>3162</item>
+        <item>3981</item>
+        <item>5011</item>
+        <item>6309</item>
+        <item>7943</item>
+        <item>10000</item>
+        <item>12589</item>
+        <item>15848</item>
+    </string-array>
 </resources>

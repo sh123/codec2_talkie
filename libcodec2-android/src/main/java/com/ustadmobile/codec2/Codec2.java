@@ -35,7 +35,7 @@ public class Codec2 {
     public native static long encode(long con, short[] inputSamples, char[] outputBits);
     public native static long decode(long con, short[] outputSamples, byte[] inputsBits);
 
-    public native static long fskCreate(int sampleFrequency, int symbolRate, int toneFreq, int toneSpacing);
+    public native static long fskCreate(int sampleFrequency, int symbolRate, int toneFreq, int toneSpacing, int gain);
     public native static int fskDestroy(long conFsk);
 
     public native static int fskDemodBitsBufSize(long conFsk);

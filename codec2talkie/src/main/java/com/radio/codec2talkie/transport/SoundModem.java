@@ -69,14 +69,15 @@ public class SoundModem implements Transport, Runnable {
 
         boolean disableRx = _sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_DISABLE_RX, false);
         int bitRate = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200"));
+        int gain = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_GAIN, "10000"));
         _name = "SoundModem" + bitRate;
         if (bitRate == 300) {
             // <230 spacing for 300 bps does not work with codec2 fsk for receive
-            _fskModem = Codec2.fskCreate(SAMPLE_RATE, 300, 1600, 200);
+            _fskModem = Codec2.fskCreate(SAMPLE_RATE, 300, 1600, 200, gain);
         } else if (bitRate == 1200) {
-            _fskModem = Codec2.fskCreate(SAMPLE_RATE, 1200, 1200, 1000);
+            _fskModem = Codec2.fskCreate(SAMPLE_RATE, 1200, 1200, 1000, gain);
         } else {
-            _fskModem = Codec2.fskCreate(SAMPLE_RATE, 2400, 2165, 1805);
+            _fskModem = Codec2.fskCreate(SAMPLE_RATE, 2400, 2165, 1805, gain);
         }
 
         _recordAudioBuffer = new short[Codec2.fskDemodSamplesBufSize(_fskModem)];

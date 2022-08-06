@@ -38,5 +38,14 @@
             app:summary="%s">
         </ListPreference>
 
+        <ListPreference
+            app:key="ports_sound_modem_gain"
+            app:title="@string/ports_sound_modem_gain_title"
+            app:entries="@array/ports_sound_modem_gain_entries"
+            app:entryValues="@array/ports_sound_modem_gain_values"
+            app:defaultValue="10000"
+            app:summary="%s">
+        </ListPreference>
+
     </PreferenceCategory>
 </PreferenceScreen>
