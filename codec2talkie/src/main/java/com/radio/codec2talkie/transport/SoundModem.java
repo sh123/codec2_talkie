@@ -30,7 +30,8 @@ public class SoundModem implements Transport, Runnable {
     private static final String TAG = SoundModem.class.getSimpleName();
 
     // NOTE, codec2 library requires that sample_rate % bit_rate == 0
-    public static final int SAMPLE_RATE = 19200;
+    //public static final int SAMPLE_RATE = 19200;
+    public static final int SAMPLE_RATE = 48000;
 
     private final String _name;
 
@@ -162,6 +163,7 @@ public class SoundModem implements Transport, Runnable {
         byte[] dataBytesAsBits = BitTools.convertToNRZI(srcDataBytesAsBits);
         //Log.v(TAG, "write NRZ " + DebugTools.byteBitsToFlatString(dataBytesAsBits));
         //Log.v(TAG, "write NRZ " + DebugTools.byteBitsToString(dataBytesAsBits));
+        _rigCtl.pttOn();
 
         int j = 0;
         for (int i = 0; i < dataBytesAsBits.length; i++, j++) {
@@ -195,6 +197,7 @@ public class SoundModem implements Transport, Runnable {
         } else {
             _systemAudioPlayer.write(_playbackAudioBuffer, 0, bitBufferTail.length * _samplesPerSymbol);
         }
+        _rigCtl.pttOff();
         return 0;
     }
 

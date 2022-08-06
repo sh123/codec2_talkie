@@ -15,6 +15,7 @@ import com.radio.codec2talkie.transport.SoundModem;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -121,7 +122,12 @@ public class Hdlc implements Protocol {
                     _readByte = 0;
                     _prevHdlc = 0;
                 } else {
-                    _currentFrameBuffer.put(bit);
+                    try {
+                        _currentFrameBuffer.put(bit);
+                    } catch (BufferOverflowException e) {
+                        e.printStackTrace();
+                        _currentFrameBuffer.clear();
+                    }
                     _prevHdlc++;
                 }
             }
