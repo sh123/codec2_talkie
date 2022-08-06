@@ -3,14 +3,10 @@ package com.radio.codec2talkie.rigctl;
 import android.content.Context;
 import android.util.Log;
 
-import com.radio.codec2talkie.protocol.Hdlc;
-import com.radio.codec2talkie.tools.UnitTools;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Timer;
-import java.util.TimerTask;
 
 // http://www.ka7oei.com/ft817_meow.html
 public class Ft817 implements RigCtl {
