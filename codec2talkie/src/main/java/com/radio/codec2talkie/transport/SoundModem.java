@@ -24,14 +24,18 @@ import java.io.IOException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SoundModem implements Transport, Runnable {
 
     private static final String TAG = SoundModem.class.getSimpleName();
 
+    private static final int PTT_OFF_DELAY_MS = 1000;
+
     // NOTE, codec2 library requires that sample_rate % bit_rate == 0
-    //public static final int SAMPLE_RATE = 19200;
-    public static final int SAMPLE_RATE = 48000;
+    public static final int SAMPLE_RATE = 19200;
+    //public static final int SAMPLE_RATE = 48000;
 
     private final String _name;
 
@@ -56,6 +60,8 @@ public class SoundModem implements Transport, Runnable {
     private final long _fskModem;
 
     private final RigCtl _rigCtl;
+    private Timer _pttOffTimer;
+    private boolean _isPttOn = false;
 
     public SoundModem(Context context) {
         _context = context;
@@ -93,6 +99,8 @@ public class SoundModem implements Transport, Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        _isPttOn = false;
 
         if (!disableRx)
             new Thread(this).start();
@@ -159,11 +167,12 @@ public class SoundModem implements Transport, Runnable {
 
     @Override
     public int write(byte[] srcDataBytesAsBits) throws IOException {
+        pttOn();
+
         //Log.v(TAG, "write     " + DebugTools.byteBitsToFlatString(srcDataBytesAsBits));
         byte[] dataBytesAsBits = BitTools.convertToNRZI(srcDataBytesAsBits);
         //Log.v(TAG, "write NRZ " + DebugTools.byteBitsToFlatString(dataBytesAsBits));
         //Log.v(TAG, "write NRZ " + DebugTools.byteBitsToString(dataBytesAsBits));
-        _rigCtl.pttOn();
 
         int j = 0;
         for (int i = 0; i < dataBytesAsBits.length; i++, j++) {
@@ -197,7 +206,7 @@ public class SoundModem implements Transport, Runnable {
         } else {
             _systemAudioPlayer.write(_playbackAudioBuffer, 0, bitBufferTail.length * _samplesPerSymbol);
         }
-        _rigCtl.pttOff();
+        pttOff();
         return 0;
     }
 
@@ -263,5 +272,37 @@ public class SoundModem implements Transport, Runnable {
                 }
             }
         }
+    }
+
+    private void pttOn() {
+        if (_isPttOn) return;
+
+        try {
+            _rigCtl.pttOn();
+            _isPttOn = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void pttOff() {
+        if (!_isPttOn) return;
+        if (_pttOffTimer != null) {
+            _pttOffTimer.cancel();
+            _pttOffTimer.purge();
+            _pttOffTimer = null;
+        }
+        _pttOffTimer = new Timer();
+        _pttOffTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    _rigCtl.pttOff();
+                    _isPttOn = false;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, PTT_OFF_DELAY_MS);
     }
 }
