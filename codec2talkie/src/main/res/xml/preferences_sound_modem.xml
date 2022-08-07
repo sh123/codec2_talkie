@@ -47,5 +47,12 @@
             app:summary="%s">
         </ListPreference>
 
+        <EditTextPreference
+            app:key="ports_sound_modem_ptt_off_delay_ms"
+            app:title="@string/ports_sound_modem_ptt_off_delay_ms_title"
+            app:summary="@string/ports_sound_modem_ptt_off_delay_ms_summary"
+            app:defaultValue="1000">
+        </EditTextPreference>
+
     </PreferenceCategory>
 </PreferenceScreen>

@@ -21,6 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
 import com.hoho.android.usbserial.driver.CdcAcmSerialDriver;
+import com.hoho.android.usbserial.driver.Cp21xxSerialDriver;
 import com.hoho.android.usbserial.driver.ProbeTable;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
@@ -94,6 +95,8 @@ public class UsbConnectActivity extends AppCompatActivity {
         customTable.addProduct(0x2341, 0x003d, CdcAcmSerialDriver.class);
         // STM, MCHF
         customTable.addProduct(0x0483, 0x5732, CdcAcmSerialDriver.class);
+        // CP2102/2109, iCom
+        customTable.addProduct(0x10c4, 0xea60, Cp21xxSerialDriver.class);
         return new UsbSerialProber(customTable);
     }
 
@@ -115,34 +118,37 @@ public class UsbConnectActivity extends AppCompatActivity {
                     return;
                 }
 
-                UsbSerialDriver driver = availableDrivers.get(0);
-                UsbDeviceConnection connection = manager.openDevice(driver.getDevice());
-                if (connection == null) {
-                    resultMsg.what = USB_NOT_FOUND;
-                    onUsbStateChanged.sendMessage(resultMsg);
-                    return;
-                }
-                UsbSerialPort port = driver.getPorts().get(0);
-                if (port == null) {
-                    resultMsg.what = USB_NOT_FOUND;
-                    onUsbStateChanged.sendMessage(resultMsg);
-                    return;
-                }
+                boolean isFound = false;
+                for (int i = 0; i < availableDrivers.size(); i++) {
+                    UsbSerialDriver driver = availableDrivers.get(i);
+                    UsbDeviceConnection connection = manager.openDevice(driver.getDevice());
+                    if (connection == null) {
+                        continue;
+                    }
+                    UsbSerialPort port = driver.getPorts().get(i);
+                    if (port == null) {
+                        continue;
+                    }
 
-                try {
-                    port.open(connection);
-                    port.setParameters(_baudRate, _dataBits, _stopBits, _parity);
-                    port.setDTR(_enableDtr);
-                    port.setRTS(_enableRts);
-                } catch (IOException e) {
+                    try {
+                        port.open(connection);
+                        port.setParameters(_baudRate, _dataBits, _stopBits, _parity);
+                        port.setDTR(_enableDtr);
+                        port.setRTS(_enableRts);
+                    } catch (IOException e) {
+                        continue;
+                    }
+                    _usbPort = port;
+                    _usbDeviceName = port.getClass().getSimpleName().replace("SerialDriver", "");
+                    resultMsg.what = USB_CONNECTED;
+                    onUsbStateChanged.sendMessage(resultMsg);
+                    isFound = true;
+                    break;
+                }
+                if (!isFound) {
                     resultMsg.what = USB_NOT_FOUND;
                     onUsbStateChanged.sendMessage(resultMsg);
-                    return;
                 }
-                _usbPort = port;
-                _usbDeviceName = port.getClass().getSimpleName().replace("SerialDriver","");
-                resultMsg.what = USB_CONNECTED;
-                onUsbStateChanged.sendMessage(resultMsg);
             }
         }.start();
     }

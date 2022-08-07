@@ -31,8 +31,6 @@ public class SoundModem implements Transport, Runnable {
 
     private static final String TAG = SoundModem.class.getSimpleName();
 
-    private static final int PTT_OFF_DELAY_MS = 1000;
-
     // NOTE, codec2 library requires that sample_rate % bit_rate == 0
     public static final int SAMPLE_RATE = 19200;
     //public static final int SAMPLE_RATE = 48000;
@@ -62,6 +60,7 @@ public class SoundModem implements Transport, Runnable {
     private final RigCtl _rigCtl;
     private Timer _pttOffTimer;
     private boolean _isPttOn = false;
+    private int _pttOffDelayMs = 1000;
 
     public SoundModem(Context context) {
         _context = context;
@@ -70,6 +69,7 @@ public class SoundModem implements Transport, Runnable {
         boolean disableRx = _sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_DISABLE_RX, false);
         int bitRate = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200"));
         int gain = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_GAIN, "10000"));
+        _pttOffDelayMs = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_PTT_OFF_DELAY_MS, "1000"));
         _name = "SoundModem" + bitRate;
         if (bitRate == 300) {
             // <230 spacing for 300 bps does not work with codec2 fsk for receive
@@ -304,6 +304,6 @@ public class SoundModem implements Transport, Runnable {
                     e.printStackTrace();
                 }
             }
-        }, PTT_OFF_DELAY_MS);
+        }, _pttOffDelayMs);
     }
 }
