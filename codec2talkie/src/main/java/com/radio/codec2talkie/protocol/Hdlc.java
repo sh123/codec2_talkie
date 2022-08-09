@@ -177,7 +177,7 @@ public class Hdlc implements Protocol {
         ByteBuffer hdlcBitBuffer = ByteBuffer.allocate(dataBytesAsBits.length + 8*_prefixSymCount + 8*10);
         hdlcBitBuffer.put(genPreamble(_prefixSymCount));
         hdlcBitBuffer.put(dataBytesAsBits);
-        hdlcBitBuffer.put(genPreamble(10));
+        hdlcBitBuffer.put(genPreamble(1));
 
         // return
         hdlcBitBuffer.flip();

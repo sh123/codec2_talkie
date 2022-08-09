@@ -59,8 +59,8 @@ public class SoundModem implements Transport, Runnable {
 
     private final RigCtl _rigCtl;
     private Timer _pttOffTimer;
-    private boolean _isPttOn = false;
-    private int _pttOffDelayMs = 1000;
+    private boolean _isPttOn;
+    private int _pttOffDelayMs;
 
     public SoundModem(Context context) {
         _context = context;
@@ -205,7 +205,7 @@ public class SoundModem implements Transport, Runnable {
                 }
             }
         } else {
-            _systemAudioPlayer.write(_playbackAudioBuffer, 0, bitBufferTail.length * _samplesPerSymbol);
+            _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
         }
         pttOff();
         return 0;
