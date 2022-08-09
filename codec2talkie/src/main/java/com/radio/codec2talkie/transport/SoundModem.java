@@ -8,6 +8,7 @@ import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Process;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
@@ -143,7 +144,6 @@ public class SoundModem implements Transport, Runnable {
                 .setBufferSizeInBytes(audioPlayerMinBufferSize)
                 .build();
         _systemAudioPlayer.setVolume(AudioTrack.getMaxVolume());
-        _systemAudioPlayer.play();
     }
 
     @Override
@@ -174,6 +174,9 @@ public class SoundModem implements Transport, Runnable {
         byte[] dataBytesAsBits = BitTools.convertToNRZI(srcDataBytesAsBits);
         //Log.v(TAG, "write NRZ " + DebugTools.byteBitsToFlatString(dataBytesAsBits));
         //Log.v(TAG, "write NRZ " + DebugTools.byteBitsToString(dataBytesAsBits));
+
+        if (_systemAudioPlayer.getPlayState() != AudioTrack.PLAYSTATE_PLAYING)
+            _systemAudioPlayer.play();
 
         int j = 0;
         for (int i = 0; i < dataBytesAsBits.length; i++, j++) {
@@ -207,6 +210,7 @@ public class SoundModem implements Transport, Runnable {
         } else {
             _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
         }
+        _systemAudioPlayer.stop();
         pttOff();
         return 0;
     }
