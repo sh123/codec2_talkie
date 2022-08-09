@@ -141,7 +141,7 @@ public class SoundModem implements Transport, Runnable {
                         .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
                         .build())
                 .setTransferMode(AudioTrack.MODE_STREAM)
-                .setBufferSizeInBytes(audioPlayerMinBufferSize)
+                .setBufferSizeInBytes(10*audioPlayerMinBufferSize)
                 .build();
         _systemAudioPlayer.setVolume(AudioTrack.getMaxVolume());
     }
