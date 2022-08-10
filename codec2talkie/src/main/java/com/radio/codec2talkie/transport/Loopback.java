@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.transport;
 
+import java.io.IOException;
 import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -55,6 +56,16 @@ public class Loopback implements Transport {
             e.printStackTrace();
         }
         return bytesWritten;
+    }
+
+    @Override
+    public int read(short[] data) throws IOException {
+        return 0;
+    }
+
+    @Override
+    public int write(short[] data) throws IOException {
+        return 0;
     }
 
     @Override

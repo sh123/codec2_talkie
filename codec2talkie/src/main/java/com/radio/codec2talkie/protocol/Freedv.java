@@ -21,7 +21,6 @@ public class Freedv implements Protocol {
 
     private short[] _modemTxBuffer;
     private short[] _speechRxBuffer;
-    private short[] _modemRxBuffer;
 
     public Freedv(Protocol childProtocol, int freedvMode) {
         _childProtocol = childProtocol;
@@ -36,7 +35,6 @@ public class Freedv implements Protocol {
 
         _freedv = Codec2.freedvCreate(_freedvMode);
         _modemTxBuffer = new short[Codec2.freedvGetNomModemSamples(_freedv)];
-        _modemRxBuffer = new short[Codec2.freedvGetMaxModemSamples(_freedv)];
         _speechRxBuffer = new short[Codec2.freedvGetMaxSpeechSamples(_freedv)];
     }
 
@@ -48,7 +46,7 @@ public class Freedv implements Protocol {
     @Override
     public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException {
         Codec2.freedvTx(_freedv, _modemTxBuffer, pcmFrame);
-        // _transport.write(_modemTxBuffer);
+        _transport.write(_modemTxBuffer);
     }
 
     @Override
@@ -65,10 +63,15 @@ public class Freedv implements Protocol {
 
     @Override
     public boolean receive() throws IOException {
-        // int bytesRead = _transport.read(_modemRxBuffer);
-        long cntRead = Codec2.freedvRx(_freedv, _speechRxBuffer, _modemRxBuffer);
-        if (cntRead > 0) {
-            _parentProtocolCallback.onReceivePcmAudio(null, null, -1, Arrays.copyOf(_modemRxBuffer, (int) cntRead));
+        int nin = Codec2.freedvNin(_freedv);
+        short[] buf = new short[nin];
+        int bytesRead = _transport.read(buf);
+        if (bytesRead == nin) {
+            long cntRead = Codec2.freedvRx(_freedv, _speechRxBuffer, buf);
+            if (cntRead > 0) {
+                _parentProtocolCallback.onReceivePcmAudio(null, null, -1, Arrays.copyOf(_speechRxBuffer, (int) cntRead));
+                return true;
+            }
         }
         return false;
     }

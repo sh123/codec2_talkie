@@ -7,8 +7,8 @@ import java.io.IOException;
 
 public class UsbSerial implements Transport {
 
-    private final int RX_TIMEOUT = 100;
-    private final int TX_TIMEOUT = 2000;
+    private static final int RX_TIMEOUT = 100;
+    private static final int TX_TIMEOUT = 2000;
 
     private final UsbSerialPort _usbPort;
     private final String _name;
@@ -37,6 +37,16 @@ public class UsbSerial implements Transport {
             e.printStackTrace();
             return -1;
         }
+    }
+
+    @Override
+    public int read(short[] data) throws IOException {
+        return 0;
+    }
+
+    @Override
+    public int write(short[] data) throws IOException {
+        return 0;
     }
 
     @Override

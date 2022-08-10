@@ -2,7 +2,6 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Debug;
 import android.util.Log;
 
 import com.radio.codec2talkie.protocol.message.TextMessage;
@@ -11,7 +10,6 @@ import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.BitTools;
 import com.radio.codec2talkie.tools.ChecksumTools;
 import com.radio.codec2talkie.tools.DebugTools;
-import com.radio.codec2talkie.transport.SoundModem;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;

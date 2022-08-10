@@ -3,14 +3,11 @@ package com.radio.codec2talkie.transport;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioAttributes;
-import android.media.AudioDeviceInfo;
 import android.media.AudioFormat;
-import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Process;
-import android.provider.MediaStore;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
@@ -18,15 +15,10 @@ import androidx.preference.PreferenceManager;
 import com.radio.codec2talkie.rigctl.RigCtl;
 import com.radio.codec2talkie.rigctl.RigCtlFactory;
 import com.radio.codec2talkie.settings.PreferenceKeys;
-import com.radio.codec2talkie.tools.AudioTools;
-import com.radio.codec2talkie.tools.BitTools;
-import com.radio.codec2talkie.tools.DebugTools;
-import com.ustadmobile.codec2.Codec2;
 
 import java.io.IOException;
-import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
+import java.nio.ShortBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -34,68 +26,31 @@ public class SoundModem implements Transport, Runnable {
 
     private static final String TAG = SoundModem.class.getSimpleName();
 
-    // NOTE, codec2 library requires that sample_rate % bit_rate == 0
-    public static final int SAMPLE_RATE = 19200;
-    //public static final int SAMPLE_RATE = 48000;
+    private static final int RECORD_DELAY_MS = 10;
+    private static final int SAMPLE_RATE = 8000;
 
     private final String _name;
 
     private AudioTrack _systemAudioPlayer;
     private AudioRecord _systemAudioRecorder;
 
-    private final short[] _recordAudioBuffer;
-    private final byte[] _recordBitBuffer;
-    private final short[] _playbackAudioBuffer;
-    private final byte[] _playbackBitBuffer;
-    private final int _samplesPerSymbol;
-    private final ByteBuffer _bitBuffer;
-
-    private final Context _context;
-    private final SharedPreferences _sharedPreferences;
-
     private boolean _isRunning = true;
-
-    private final ByteBuffer _sampleBuffer;
-    private final boolean _isLoopback = false;
-
-    private final long _fskModem;
 
     private final RigCtl _rigCtl;
     private Timer _pttOffTimer;
     private boolean _isPttOn;
-    private int _pttOffDelayMs;
+    private final int _pttOffDelayMs;
+
+    private final ShortBuffer _recordAudioBuffer;
 
     public SoundModem(Context context) {
-        _context = context;
-        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-        boolean disableRx = _sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_DISABLE_RX, false);
-        int bitRate = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200"));
-        int gain = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_GAIN, "10000"));
-        _pttOffDelayMs = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_PTT_OFF_DELAY_MS, "1000"));
-        _name = "SoundModem" + bitRate;
-        if (bitRate == 300) {
-            // <230 spacing for 300 bps does not work with codec2 fsk for receive
-            _fskModem = Codec2.fskCreate(SAMPLE_RATE, 300, 1600, 200, gain);
-        } else if (bitRate == 1200) {
-            _fskModem = Codec2.fskCreate(SAMPLE_RATE, 1200, 1200, 1000, gain);
-        } else {
-            _fskModem = Codec2.fskCreate(SAMPLE_RATE, 2400, 2165, 1805, gain);
-        }
-
-        _recordAudioBuffer = new short[Codec2.fskDemodSamplesBufSize(_fskModem)];
-        _recordBitBuffer = new byte[Codec2.fskDemodBitsBufSize(_fskModem)];
-        _playbackAudioBuffer = new short[Codec2.fskModSamplesBufSize(_fskModem)];
-        _playbackBitBuffer = new byte[Codec2.fskModBitsBufSize(_fskModem)];
-        _samplesPerSymbol = Codec2.fskSamplesPerSymbol(_fskModem);
-        _bitBuffer = ByteBuffer.allocate(100 * _recordBitBuffer.length);
+        boolean disableRx = sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_DISABLE_RX, false);
+        _pttOffDelayMs = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_PTT_OFF_DELAY_MS, "1000"));
+        _name = "SndModem";
 
         constructSystemAudioDevices(disableRx);
-
-        if (_isLoopback)
-            _sampleBuffer = ByteBuffer.allocate(100000);
-        else
-            _sampleBuffer = ByteBuffer.allocate(0);
 
         _rigCtl = RigCtlFactory.create(context);
         try {
@@ -103,6 +58,8 @@ public class SoundModem implements Transport, Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        _recordAudioBuffer = ShortBuffer.allocate(4096);
 
         _isPttOn = false;
 
@@ -155,66 +112,36 @@ public class SoundModem implements Transport, Runnable {
 
     @Override
     public int read(byte[] data) throws IOException {
-        synchronized (_bitBuffer) {
-            if (_bitBuffer.position() > 0) {
-                _bitBuffer.flip();
-                int len = _bitBuffer.remaining();
-                _bitBuffer.get(data, 0, len);
-                //Log.v(TAG, "read user: " + DebugTools.byteBitsToFlatString(data));
-                _bitBuffer.compact();
-                return len;
+        return 0;
+    }
+
+    @Override
+    public int write(byte[] data) throws IOException {
+        return 0;
+    }
+
+    @Override
+    public int read(short[] audioSamples) throws IOException {
+        synchronized (_recordAudioBuffer) {
+            if (_recordAudioBuffer.position() >= audioSamples.length) {
+                _recordAudioBuffer.flip();
+                _recordAudioBuffer.get(audioSamples);
+                _recordAudioBuffer.compact();
+                return audioSamples.length;
             }
         }
         return 0;
     }
 
     @Override
-    public int write(byte[] srcDataBytesAsBits) throws IOException {
+    public int write(short[] audioSamples) throws IOException {
         pttOn();
-
-        //Log.v(TAG, "write     " + DebugTools.byteBitsToFlatString(srcDataBytesAsBits));
-        byte[] dataBytesAsBits = BitTools.convertToNRZI(srcDataBytesAsBits);
-        //Log.v(TAG, "write NRZ " + DebugTools.byteBitsToFlatString(dataBytesAsBits));
-        //Log.v(TAG, "write NRZ " + DebugTools.byteBitsToString(dataBytesAsBits));
-
         if (_systemAudioPlayer.getPlayState() != AudioTrack.PLAYSTATE_PLAYING)
             _systemAudioPlayer.play();
-
-        int j = 0;
-        for (int i = 0; i < dataBytesAsBits.length; i++, j++) {
-            if (j >= _playbackBitBuffer.length) {
-                Codec2.fskModulate(_fskModem, _playbackAudioBuffer, _playbackBitBuffer);
-                //Log.v(TAG, "write samples: " + DebugTools.shortsToHex(_playbackAudioBuffer));
-                if (_isLoopback) {
-                    synchronized (_sampleBuffer) {
-                        for (short sample : _playbackAudioBuffer) {
-                            _sampleBuffer.putShort(sample);
-                        }
-                    }
-                    //Log.v(TAG, "pos: " + _sampleBuffer.position() / 2);
-                } else {
-                    _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
-                }
-                j = 0;
-            }
-            _playbackBitBuffer[j] = dataBytesAsBits[i];
-        }
-
-        // process tail
-        byte [] bitBufferTail = Arrays.copyOf(_playbackBitBuffer, j);
-        Codec2.fskModulate(_fskModem, _playbackAudioBuffer, bitBufferTail);
-        if (_isLoopback) {
-            synchronized (_sampleBuffer) {
-                for (short sample : _playbackAudioBuffer) {
-                    _sampleBuffer.putShort(sample);
-                }
-            }
-        } else {
-            _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
-        }
+        _systemAudioPlayer.write(audioSamples, 0, audioSamples.length);
         _systemAudioPlayer.stop();
         pttOff();
-        return 0;
+        return audioSamples.length;
     }
 
     @Override
@@ -225,57 +152,27 @@ public class SoundModem implements Transport, Runnable {
         _systemAudioPlayer.stop();
         _systemAudioRecorder.release();
         _systemAudioPlayer.release();
-        Codec2.fskDestroy(_fskModem);
     }
 
     @Override
     public void run() {
-        byte prevBit = 0;
         android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
+        int readSize = 16;
+        short [] sampleBuf = new short[readSize];
         while (_isRunning) {
-            int nin = Codec2.fskNin(_fskModem);
             try {
-                Thread.sleep(10);
+                Thread.sleep(RECORD_DELAY_MS);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            if (_isLoopback) {
-                synchronized (_sampleBuffer) {
-                    if (_sampleBuffer.position() / 2 >= nin) {
-                        //Log.i(TAG, "nin: " + nin + ", pos: " + _sampleBuffer.position() / 2);
-                        _sampleBuffer.flip();
-                        for (int i = 0; i < nin; i++) {
-                            _recordAudioBuffer[i] = _sampleBuffer.getShort();
-                        }
-                        //Log.i(TAG, String.format("%04x", _recordAudioBuffer[0]));
-                        _sampleBuffer.compact();
-                        //Log.v(TAG, "read samples: " + DebugTools.shortsToHex(_recordAudioBuffer));
-                    } else {
-                        continue;
-                    }
-                }
-            } else {
-                int readCnt = _systemAudioRecorder.read(_recordAudioBuffer, 0, nin);
-                // TODO, read tail
-                if (readCnt != nin) {
-                    Log.w(TAG, "" + readCnt + " != " + nin);
-                    continue;
-                }
-                //Log.v(TAG, "read samples: " + DebugTools.shortsToHex(_recordAudioBuffer));
+            int readCnt = _systemAudioRecorder.read(sampleBuf, 0, readSize);
+            if (readCnt != readSize) {
+                Log.w(TAG, "" + readCnt + " != " + readSize);
+                continue;
             }
-            //Log.v(TAG, "read audio power: " + AudioTools.getSampleLevelDb(Arrays.copyOf(_recordAudioBuffer, Codec2.fskNin(_fskModem))));
-            //Log.v(TAG, readCnt + " " + _recordAudioBuffer.length + " " + Codec2.fskNin(_fskModem));
-            Codec2.fskDemodulate(_fskModem, _recordAudioBuffer, _recordBitBuffer);
-
-            //Log.v(TAG, "read NRZ " + DebugTools.byteBitsToFlatString(_recordBitBuffer));
-            //Log.v(TAG, "read     " + DebugTools.byteBitsToFlatString(BitTools.convertFromNRZI(_recordBitBuffer, prevBit)));
-            synchronized (_bitBuffer) {
-                try {
-                    _bitBuffer.put(BitTools.convertFromNRZI(_recordBitBuffer, prevBit));
-                    prevBit = _recordBitBuffer[_recordBitBuffer.length - 1];
-                } catch (BufferOverflowException e) {
-                    e.printStackTrace();
-                    _bitBuffer.clear();
+            synchronized (_recordAudioBuffer) {
+                for (short sample : sampleBuf) {
+                    _recordAudioBuffer.put(sample);
                 }
             }
         }

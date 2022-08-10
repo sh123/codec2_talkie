@@ -41,6 +41,16 @@ public class Bluetooth implements Transport {
     }
 
     @Override
+    public int read(short[] data) throws IOException {
+        return 0;
+    }
+
+    @Override
+    public int write(short[] data) throws IOException {
+        return 0;
+    }
+
+    @Override
     public void close() throws IOException {
         _btSocket.close();
     }
