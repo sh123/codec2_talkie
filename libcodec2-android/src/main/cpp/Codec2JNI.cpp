@@ -269,9 +269,9 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         ContextFreedv *conFreedv = getContextFreedv(n);
         int nin = freedv_nin(conFreedv->freeDv);
         env->GetShortArrayRegion(inputModemSamples, 0, nin, conFreedv->speechSamples);
-        freedv_rx(conFreedv->freeDv, conFreedv->modemSamples, conFreedv->speechSamples);
+        int cntRead = freedv_rx(conFreedv->freeDv, conFreedv->modemSamples, conFreedv->speechSamples);
         env->SetShortArrayRegion(outputSpeechSamples, 0, nin, conFreedv->modemSamples);
-        return nin;
+        return cntRead;
     }
 
     static JNINativeMethod method_table[] = {
