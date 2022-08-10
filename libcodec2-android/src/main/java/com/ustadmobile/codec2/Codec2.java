@@ -10,6 +10,7 @@ public class Codec2 {
         System.loadLibrary("Codec2JNI");
     }
 
+    // codec2 modes
     public static final int CODEC2_MODE_3200 = 0;
     public static final int CODEC2_MODE_2400 = 1;
     public static final int CODEC2_MODE_1600 = 2;
@@ -20,12 +21,18 @@ public class Codec2 {
     public static final int CODEC2_MODE_450=10;
     public static final int CODEC2_MODE_450PWB=11;
 
-    /**
-     * The size of the file header that is written when using c2enc. When decoding, this must be
-     * skipped.
-     */
-    public static final int CODEC2_FILE_HEADER_SIZE = 7;
+    // freedv modes
+    public static final int FREEDV_MODE_1600 = 0;
+    public static final int FREEDV_MODE_2400A = 3;
+    public static final int FREEDV_MODE_2400B = 4;
+    public static final int FREEDV_MODE_800XA = 5;
+    public static final int FREEDV_MODE_700C = 6;
+    public static final int FREEDV_MODE_700D = 7;
+    public static final int FREEDV_MODE_2020 = 8;
+    public static final int FREEDV_MODE_2020B = 16;
+    public static final int FREEDV_MODE_700E = 13;
 
+    // raw codec2
     public native static long create(int mode);
     public native static int destroy(long con);
 
@@ -35,6 +42,7 @@ public class Codec2 {
     public native static long encode(long con, short[] inputSamples, char[] outputBits);
     public native static long decode(long con, short[] outputSamples, byte[] inputsBits);
 
+    // raw fsk
     public native static long fskCreate(int sampleFrequency, int symbolRate, int toneFreq, int toneSpacing, int gain);
     public native static int fskDestroy(long conFsk);
 
@@ -47,4 +55,17 @@ public class Codec2 {
 
     public native static long fskModulate(long conFsk, short[] outputSamples, byte[] inputBits);
     public native static long fskDemodulate(long conFsk, short[] inputSamples, byte[] outputBits);
+
+    // freedv
+    public native static long freedvCreate(int mode);
+    public native static int freedvDestroy(long conFreedv);
+
+    public native static int freedvGetMaxSpeechSamples(long conFreedv);
+    public native static int freedvGetMaxModemSamples(long conFreedv);
+    public native static int freedvGetNSpeechSamples(long conFreedv);
+    public native static int freedvGetNomModemSamples(long conFreedv);
+    public native static int freedvNin(long conFreedv);
+
+    public native static long freedvTx(long conFsk, short[] outputModemSamples, short[] inputSpeechSamples);
+    public native static long freedvRx(long conFsk, short[] outputSpeechSamples, short[] inputModemSamples);
 }

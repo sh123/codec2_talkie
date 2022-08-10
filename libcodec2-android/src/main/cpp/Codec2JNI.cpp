@@ -3,6 +3,7 @@
 #include "codec2/codec2_fdmdv.h"
 #include "codec2/codec2.h"
 #include "codec2/fsk.h"
+#include "codec2/freedv_api.h"
 
 namespace Java_com_ustadmobile_codec2_Codec2 {
 
@@ -28,6 +29,12 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         int gain;
     };
 
+    struct ContextFreedv {
+        struct freedv *freeDv;
+        short *speechSamples;
+        short *modemSamples;
+    };
+
     static Context *getContext(jlong jp) {
         auto p = (unsigned long) jp;
         Context *con;
@@ -40,6 +47,13 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         ContextFsk *conFsk;
         conFsk = (ContextFsk *) p;
         return conFsk;
+    }
+
+    static ContextFreedv *getContextFreedv(jlong jp) {
+        auto p = (unsigned long) jp;
+        ContextFreedv *conFreedv;
+        conFreedv = (ContextFreedv *) p;
+        return conFreedv;
     }
 
     static jlong create(JNIEnv *env, jclass clazz, int mode) {
@@ -80,8 +94,18 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         fsk_set_freq_est_limits(fsk, 500, sampleFrequency / 4);
         fsk_set_freq_est_alg(fsk, 0);
 
-        auto pv = (unsigned long) conFsk;
-        return pv;
+        return reinterpret_cast<jlong>(conFsk);
+    }
+
+    static jlong freedvCreate(JNIEnv *env, jclass clazz, int mode) {
+        struct ContextFreedv *conFreedv;
+        conFreedv = (struct ContextFreedv *) malloc(sizeof(struct ContextFreedv));
+        conFreedv->freeDv = freedv_open(mode);
+        conFreedv->speechSamples = static_cast<short *>(malloc(
+                freedv_get_n_max_speech_samples(conFreedv->freeDv) * sizeof(short)));
+        conFreedv->modemSamples = static_cast<short *>(malloc(
+                freedv_get_n_max_modem_samples(conFreedv->freeDv) * sizeof(short)));
+        return reinterpret_cast<jlong>(conFreedv);
     }
 
     static jint c2spf(JNIEnv *env, jclass clazz, jlong n) {
@@ -124,6 +148,31 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         return fsk_nin(conFsk->fsk);
     }
 
+    static jint freedvGetMaxSpeechSamples(JNIEnv * env, jclass clazz, jlong n) {
+        ContextFreedv *conFreedv = getContextFreedv(n);
+        return freedv_get_n_max_speech_samples(conFreedv->freeDv);
+    }
+
+    static jint freedvGetMaxModemSamples(JNIEnv * env, jclass clazz, jlong n) {
+        ContextFreedv *conFreedv = getContextFreedv(n);
+        return freedv_get_n_max_modem_samples(conFreedv->freeDv);
+    }
+
+    static jint freedvGetNSpeechSamples(JNIEnv * env, jclass clazz, jlong n) {
+        ContextFreedv *conFreedv = getContextFreedv(n);
+        return freedv_get_n_speech_samples(conFreedv->freeDv);
+    }
+
+    static jint freedvGetNomModemSamples(JNIEnv * env, jclass clazz, jlong n) {
+        ContextFreedv *conFreedv = getContextFreedv(n);
+        return freedv_get_n_nom_modem_samples(conFreedv->freeDv);
+    }
+
+    static jint freedvNin(JNIEnv * env, jclass clazz, jlong n) {
+        ContextFreedv *conFreedv = getContextFreedv(n);
+        return freedv_nin(conFreedv->freeDv);
+    }
+
     static jint destroy(JNIEnv *env, jclass clazz, jlong n) {
         Context *con = getContext(n);
         codec2_destroy(con->c2);
@@ -142,6 +191,15 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         free(conFsk->modBits);
         free(conFsk->modBuf);
         free(conFsk);
+        return 0;
+    }
+
+    static jint freedvDestroy(JNIEnv *env, jclass clazz, jlong n) {
+        ContextFreedv *conFreedv = getContextFreedv(n);
+        freedv_close(conFreedv->freeDv);
+        free(conFreedv->modemSamples);
+        free(conFreedv->speechSamples);
+        free(conFreedv);
         return 0;
     }
 
@@ -177,6 +235,16 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         return 0;
     }
 
+    static jlong freedvTx(JNIEnv *env, jclass clazz, jlong n, jshortArray outputModemSamples, jshortArray inputSpeechSamples) {
+        ContextFreedv *conFreedv = getContextFreedv(n);
+        int cntSpeechSamples = freedv_get_n_speech_samples(conFreedv->freeDv);
+        env->GetShortArrayRegion(inputSpeechSamples, 0, cntSpeechSamples, conFreedv->speechSamples);
+        int cntModemSamples = freedv_get_n_nom_modem_samples(conFreedv->freeDv);
+        freedv_tx(conFreedv->freeDv, conFreedv->modemSamples, conFreedv->speechSamples);
+        env->SetShortArrayRegion(outputModemSamples, 0, cntModemSamples, conFreedv->modemSamples);
+        return cntModemSamples;
+    }
+
     static jlong decode(JNIEnv *env, jclass clazz, jlong n, jshortArray outputSamples, jbyteArray inputBits) {
         Context *con = getContext(n);
         env->GetByteArrayRegion(inputBits, 0, con->nbyte, reinterpret_cast<jbyte*>(con->bits));
@@ -197,23 +265,44 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         return 0;
     }
 
+    static jlong freedvRx(JNIEnv *env, jclass clazz, jlong n, jshortArray outputSpeechSamples, jshortArray inputModemSamples) {
+        ContextFreedv *conFreedv = getContextFreedv(n);
+        int nin = freedv_nin(conFreedv->freeDv);
+        env->GetShortArrayRegion(inputModemSamples, 0, nin, conFreedv->speechSamples);
+        freedv_rx(conFreedv->freeDv, conFreedv->modemSamples, conFreedv->speechSamples);
+        env->SetShortArrayRegion(outputSpeechSamples, 0, nin, conFreedv->modemSamples);
+        return nin;
+    }
+
     static JNINativeMethod method_table[] = {
-        {"create",             "(I)J",     (void *) create},
-        {"getSamplesPerFrame", "(J)I",     (void *) c2spf},
-        {"getBitsSize",        "(J)I",     (void *) c2bits},
-        {"destroy",            "(J)I",     (void *) destroy},
-        {"encode",             "(J[S[C)J", (void *) encode},
-        {"decode",             "(J[S[B)J", (void *) decode},
-        {"fskCreate",          "(IIIII)J", (void *) fskCreate},
-        {"fskDestroy",         "(J)I",     (void *) fskDestroy},
-        {"fskModulate",        "(J[S[B)J", (void *) fskModulate},
-        {"fskDemodulate",      "(J[S[B)J", (void *) fskDemodulate},
-        {"fskDemodBitsBufSize","(J)I",     (void *) fskDemodBitsBufSize},
-        {"fskModSamplesBufSize","(J)I",    (void *) fskModSamplesBufSize},
-        {"fskDemodSamplesBufSize","(J)I",  (void *) fskDemodSamplesBufSize},
-        {"fskModBitsBufSize",  "(J)I",     (void *) fskModBitsBufSize},
-        {"fskSamplesPerSymbol","(J)I",     (void *) fskSamplesPerSymbol},
-        {"fskNin",             "(J)I",     (void *) fskNin}
+        // codec2
+        {"create", "(I)J",                      (void *) create},
+        {"getSamplesPerFrame", "(J)I",          (void *) c2spf},
+        {"getBitsSize", "(J)I",                 (void *) c2bits},
+        {"destroy", "(J)I",                     (void *) destroy},
+        {"encode", "(J[S[C)J",                  (void *) encode},
+        {"decode", "(J[S[B)J",                  (void *) decode},
+        // fsk
+        {"fskCreate", "(IIIII)J",               (void *) fskCreate},
+        {"fskDestroy", "(J)I",                  (void *) fskDestroy},
+        {"fskModulate", "(J[S[B)J",             (void *) fskModulate},
+        {"fskDemodulate", "(J[S[B)J",           (void *) fskDemodulate},
+        {"fskDemodBitsBufSize", "(J)I",         (void *) fskDemodBitsBufSize},
+        {"fskModSamplesBufSize", "(J)I",        (void *) fskModSamplesBufSize},
+        {"fskDemodSamplesBufSize", "(J)I",      (void *) fskDemodSamplesBufSize},
+        {"fskModBitsBufSize", "(J)I",           (void *) fskModBitsBufSize},
+        {"fskSamplesPerSymbol", "(J)I",         (void *) fskSamplesPerSymbol},
+        {"fskNin", "(J)I",                      (void *) fskNin},
+        // freedv
+        {"freedvCreate", "(I)J",                (void *)freedvCreate},
+        {"freedvDestroy", "(J)I",               (void *)freedvDestroy},
+        {"freedvGetMaxSpeechSamples", "(J)I",   (void *)freedvGetMaxSpeechSamples},
+        {"freedvGetMaxModemSamples", "(J)I",    (void *)freedvGetMaxModemSamples},
+        {"freedvGetNSpeechSamples", "(J)I",     (void *)freedvGetNSpeechSamples},
+        {"freedvGetNomModemSamples", "(J)I",    (void *)freedvGetNomModemSamples},
+        {"freedvNin", "(J)I",                   (void *)freedvNin},
+        {"freedvTx", "(J[S[S)J",                (void *)freedvTx},
+        {"freedvRx", "(J[S[S)J",                (void *)freedvRx}
     };
 }
 

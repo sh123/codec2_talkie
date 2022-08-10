@@ -33,6 +33,7 @@ public class ProtocolFactory {
 
         ProtocolFactory.ProtocolType protocolType;
 
+        // Use HDLC instead of KISS for the sound modem as we are the modem
         if (sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("sound_modem")) {
             protocolType = ProtocolFactory.ProtocolType.HDLC;
         } else if (sharedPreferences.getBoolean(PreferenceKeys.KISS_ENABLED, true)) {
