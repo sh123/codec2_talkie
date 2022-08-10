@@ -10,6 +10,7 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -99,10 +100,10 @@ public class AppWorker extends Thread {
         _processPeriodicTimer = new Timer();
         _recordAudioBuffer = new short[_protocol.getPcmAudioBufferSize()];
 
-        constructSystemAudioDevices();
+        constructSystemAudioDevices(transportType);
     }
 
-    private void constructSystemAudioDevices() {
+    private void constructSystemAudioDevices(TransportFactory.TransportType transportType) {
         int _audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
                 AUDIO_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_IN_MONO,
@@ -118,15 +119,6 @@ public class AppWorker extends Thread {
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
                 10 * _audioRecorderMinBufferSize);
-
-        /*
-        AudioManager audioManager = (AudioManager)_context.getSystemService(Context.AUDIO_SERVICE);
-        for (AudioDeviceInfo inputDevice : audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)) {
-            boolean isBuiltIn = inputDevice.getType() == AudioDeviceInfo.TYPE_BUILTIN_MIC;
-            Log.i(TAG, "input device: " + isBuiltIn + " " + inputDevice.getProductName());
-            if (isBuiltIn) _systemAudioRecorder.setPreferredDevice(inputDevice);
-        }
-        */
 
         int _audioPlayerMinBufferSize = AudioTrack.getMinBufferSize(
                 AUDIO_SAMPLE_SIZE,
@@ -152,13 +144,36 @@ public class AppWorker extends Thread {
                 .setBufferSizeInBytes(10 * _audioPlayerMinBufferSize)
                 .build();
 
-        /*
-        for (AudioDeviceInfo outputDevice : audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
-            boolean isBuiltIn = outputDevice.getType() == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER;
-            Log.i(TAG, "output device: " + isBuiltIn + " " + outputDevice.getProductName());
-            if (isBuiltIn) _systemAudioRecorder.setPreferredDevice(outputDevice);
+        // Use built in mic and speaker for speech when sound modem is in use
+        if (transportType == TransportFactory.TransportType.SOUND_MODEM) {
+            selectBuiltinMicAndSpeakerEarpiece(isSpeakerOutput);
         }
-        */
+    }
+
+    private void selectBuiltinMicAndSpeakerEarpiece(boolean isSpeakerOutput) {
+        AudioManager audioManager = (AudioManager)_context.getSystemService(Context.AUDIO_SERVICE);
+
+        for (AudioDeviceInfo inputDevice : audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS)) {
+            boolean isBuiltIn = inputDevice.getType() == AudioDeviceInfo.TYPE_BUILTIN_MIC;
+            Log.i(TAG, "input device: " + isBuiltIn + " " + inputDevice.getProductName() + " " + inputDevice.getType());
+            if (isBuiltIn) {
+                boolean isSet = _systemAudioRecorder.setPreferredDevice(inputDevice);
+                if (!isSet)
+                    Log.w(TAG, "cannot select input " + inputDevice.getProductName());
+                break;
+            }
+        }
+
+        for (AudioDeviceInfo outputDevice : audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS)) {
+            boolean isBuiltIn = outputDevice.getType() == (isSpeakerOutput ? AudioDeviceInfo.TYPE_BUILTIN_SPEAKER : AudioDeviceInfo.TYPE_BUILTIN_EARPIECE);
+            Log.i(TAG, "output device: " + isBuiltIn + " " + outputDevice.getProductName() + " " + outputDevice.getType());
+            if (isBuiltIn) {
+                boolean isSet = _systemAudioPlayer.setPreferredDevice(outputDevice);
+                if (!isSet)
+                    Log.w(TAG, "cannot select output " + outputDevice.getProductName());
+                break;
+            }
+        }
     }
 
     public static int getAudioMinLevel() {
