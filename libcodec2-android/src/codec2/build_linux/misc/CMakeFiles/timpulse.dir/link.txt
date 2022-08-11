@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/timpulse.dir/timpulse.c.o  -o timpulse -lm 

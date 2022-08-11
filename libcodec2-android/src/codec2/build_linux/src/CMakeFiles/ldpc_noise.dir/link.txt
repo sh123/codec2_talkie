@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/ldpc_noise.dir/ldpc_noise.c.o  -o ldpc_noise -lm 

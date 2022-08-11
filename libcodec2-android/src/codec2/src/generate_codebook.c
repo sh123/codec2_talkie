@@ -4,7 +4,7 @@
   AUTHOR......: Bruce Perens
   DATE CREATED: 29 Sep 2010
 
-  Generate header files containing LSP quantisers, runs at compile time.
+  Generate header files containing quantisers, runs at compile time.
 
 \*---------------------------------------------------------------------------*/
 
@@ -80,7 +80,7 @@ dump_structure(const struct codebook * b, int index)
 {
   printf("  {\n");
   printf("    %d,\n", b->k);
-  printf("    %g,\n", log(b->m) / log(2));
+  printf("    %d,\n", (int)roundf(log(b->m) / log(2)));
   printf("    %d,\n", b->m);
   printf("    codes%d\n", index);
   printf("  }");

@@ -31,8 +31,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -226,11 +224,6 @@ int main(int argc, char *argv[]) {
         freedv_rx(freedv, speech_out, demod_in);
 
         nin = freedv_nin(freedv);
-
-	/* if this is in a pipeline, we probably don't want the usual
-           buffering to occur */
-
-        if (fin == stdin) fflush(stdin);
     }
 
     fclose(fin);

@@ -69,20 +69,7 @@ int lspd_bits(int i) {
 }
 
 int lsp_pred_vq_bits(int i) {
-    return lsp_cbjvm[i].log2m;
-}
-
-/*---------------------------------------------------------------------------*\
-
-  quantise_init
-
-  Loads the entire LSP quantiser comprised of several vector quantisers
-  (codebooks).
-
-\*---------------------------------------------------------------------------*/
-
-void quantise_init()
-{
+    return lsp_cbjmv[i].log2m;
 }
 
 /*---------------------------------------------------------------------------*\
@@ -135,7 +122,7 @@ long quantise(const float * cb, float vec[], float w[], int k, int m, float *se)
 
   encode_lspds_scalar()
 
-  Scalar/VQ LSP difference quantiser.
+  Scalar/VQ LSP difference-in-frequency quantiser.
 
 \*---------------------------------------------------------------------------*/
 
@@ -167,7 +154,7 @@ void encode_lspds_scalar(
     wt[0] = 1.0;
     for(i=0; i<order; i++) {
 
-	/* find difference from previous qunatised lsp */
+	/* find difference from previous quantised lsp */
 
 	if (i)
 	    dlsp[i] = lsp_hz[i] - lsp__hz[i-1];
@@ -179,7 +166,6 @@ void encode_lspds_scalar(
 	cb = lsp_cbd[i].cb;
 	indexes[i] = quantise(cb, &dlsp[i], wt, k, m, &se);
  	dlsp_[i] = cb[indexes[i]*k];
-
 
 	if (i)
 	    lsp__hz[i] = lsp__hz[i-1] + dlsp_[i];
@@ -272,14 +258,14 @@ int find_nearest_weighted(const float *codebook, int nb_entries, float *x, const
   return nearest;
 }
 
-void lspjvm_quantise(float *x, float *xq, int order)
+void lspjmv_quantise(float *x, float *xq, int order)
 {
   int i, n1, n2, n3;
   float err[order], err2[order], err3[order];
   float w[order], w2[order], w3[order];
-  const float *codebook1 = lsp_cbjvm[0].cb;
-  const float *codebook2 = lsp_cbjvm[1].cb;
-  const float *codebook3 = lsp_cbjvm[2].cb;
+  const float *codebook1 = lsp_cbjmv[0].cb;
+  const float *codebook2 = lsp_cbjmv[1].cb;
+  const float *codebook3 = lsp_cbjmv[2].cb;
 
   w[0] = MIN(x[0], x[1]-x[0]);
   for (i=1;i<order-1;i++)
@@ -288,7 +274,7 @@ void lspjvm_quantise(float *x, float *xq, int order)
 
   compute_weights(x, w, order);
 
-  n1 = find_nearest(codebook1, lsp_cbjvm[0].m, x, order);
+  n1 = find_nearest(codebook1, lsp_cbjmv[0].m, x, order);
 
   for (i=0;i<order;i++)
   {
@@ -302,8 +288,8 @@ void lspjvm_quantise(float *x, float *xq, int order)
     w2[i] = w[2*i];
     w3[i] = w[2*i+1];
   }
-  n2 = find_nearest_weighted(codebook2, lsp_cbjvm[1].m, err2, w2, order/2);
-  n3 = find_nearest_weighted(codebook3, lsp_cbjvm[2].m, err3, w3, order/2);
+  n2 = find_nearest_weighted(codebook2, lsp_cbjmv[1].m, err2, w2, order/2);
+  n3 = find_nearest_weighted(codebook3, lsp_cbjmv[2].m, err3, w3, order/2);
 
   for (i=0;i<order/2;i++)
   {
@@ -780,8 +766,8 @@ float speech_to_uq_lsps(float lsp[],
   AUTHOR......: David Rowe
   DATE CREATED: 22/8/2010
 
-  Thirty-six bit sclar LSP quantiser. From a vector of unquantised
-  (floating point) LSPs finds the quantised LSP indexes.
+  Scalar LSP quantiser. From a vector of unquantised (floating point)
+  LSPs finds the quantised LSP indexes.
 
 \*---------------------------------------------------------------------------*/
 
@@ -854,9 +840,9 @@ void encode_lsps_vq(int *indexes, float *x, float *xq, int order)
   int i, n1, n2, n3;
   float err[order], err2[order], err3[order];
   float w[order], w2[order], w3[order];
-  const float *codebook1 = lsp_cbjvm[0].cb;
-  const float *codebook2 = lsp_cbjvm[1].cb;
-  const float *codebook3 = lsp_cbjvm[2].cb;
+  const float *codebook1 = lsp_cbjmv[0].cb;
+  const float *codebook2 = lsp_cbjmv[1].cb;
+  const float *codebook3 = lsp_cbjmv[2].cb;
 
   w[0] = MIN(x[0], x[1]-x[0]);
   for (i=1;i<order-1;i++)
@@ -865,7 +851,7 @@ void encode_lsps_vq(int *indexes, float *x, float *xq, int order)
 
   compute_weights(x, w, order);
 
-  n1 = find_nearest(codebook1, lsp_cbjvm[0].m, x, order);
+  n1 = find_nearest(codebook1, lsp_cbjmv[0].m, x, order);
 
   for (i=0;i<order;i++)
   {
@@ -879,8 +865,8 @@ void encode_lsps_vq(int *indexes, float *x, float *xq, int order)
     w2[i] = w[2*i];
     w3[i] = w[2*i+1];
   }
-  n2 = find_nearest_weighted(codebook2, lsp_cbjvm[1].m, err2, w2, order/2);
-  n3 = find_nearest_weighted(codebook3, lsp_cbjvm[2].m, err3, w3, order/2);
+  n2 = find_nearest_weighted(codebook2, lsp_cbjmv[1].m, err2, w2, order/2);
+  n3 = find_nearest_weighted(codebook3, lsp_cbjmv[2].m, err3, w3, order/2);
 
   indexes[0] = n1;
   indexes[1] = n2;
@@ -899,9 +885,9 @@ void encode_lsps_vq(int *indexes, float *x, float *xq, int order)
 void decode_lsps_vq(int *indexes, float *xq, int order, int stages)
 {
   int i, n1, n2, n3;
-  const float *codebook1 = lsp_cbjvm[0].cb;
-  const float *codebook2 = lsp_cbjvm[1].cb;
-  const float *codebook3 = lsp_cbjvm[2].cb;
+  const float *codebook1 = lsp_cbjmv[0].cb;
+  const float *codebook2 = lsp_cbjmv[1].cb;
+  const float *codebook3 = lsp_cbjmv[2].cb;
 
   n1 = indexes[0];
   n2 = indexes[1];

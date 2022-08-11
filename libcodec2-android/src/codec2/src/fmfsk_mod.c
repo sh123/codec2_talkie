@@ -29,6 +29,7 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "fmfsk.h"
 #include "codec2_fdmdv.h"
@@ -69,13 +70,13 @@ int main(int argc,char *argv[]){
     
     if(fin==NULL || fout==NULL || fmfsk==NULL){
         fprintf(stderr,"Couldn't open test vector files\n");
-        goto cleanup;
+        exit(1);
     }
     
     /* allocate buffers for processing */
-    bitbuf = (uint8_t*)alloca(sizeof(uint8_t)*fmfsk->nbit);
-    rawbuf = (int16_t*)alloca(sizeof(int16_t)*fmfsk->N);
-    modbuf = (float*)alloca(sizeof(float)*fmfsk->N);
+    bitbuf = (uint8_t*)malloc(sizeof(uint8_t)*fmfsk->nbit);
+    rawbuf = (int16_t*)malloc(sizeof(int16_t)*fmfsk->N);
+    modbuf = (float*)malloc(sizeof(float)*fmfsk->N);
     
     /* Modulate! */
     while( fread(bitbuf,sizeof(uint8_t),fmfsk->nbit,fin) == fmfsk->nbit ){
@@ -85,15 +86,19 @@ int main(int argc,char *argv[]){
 	}
         fwrite(rawbuf,sizeof(int16_t),fmfsk->N,fout);
         
-	if(fin == stdin || fout == stdin){
-	    fflush(fin);
+	if(fout == stdin){
 	    fflush(fout);
 	}
     }
     
-    cleanup:
+    free(modbuf);
+    free(rawbuf);
+    free(bitbuf);
+
+    fmfsk_destroy(fmfsk);
+
     fclose(fin);
     fclose(fout);
-    fmfsk_destroy(fmfsk);
+
     exit(0);
 }

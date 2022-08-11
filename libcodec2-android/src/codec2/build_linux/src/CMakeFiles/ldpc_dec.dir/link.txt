@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/ldpc_dec.dir/ldpc_dec.c.o  -o ldpc_dec -Wl,-rpath,/home/sh/Downloads/hackrf/codec2/build_linux/src -lm libcodec2.so.0.9 -lm 

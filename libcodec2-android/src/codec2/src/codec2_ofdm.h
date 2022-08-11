@@ -29,10 +29,10 @@
 #define CODEC2_OFDM_H
 
 /* Includes */
-    
+
 #include <stdbool.h>
 #include <stdint.h>
-  
+
 #include "comp.h"
 #include "modem_stats.h"
 
@@ -42,14 +42,14 @@
 extern "C" {
 #endif
 
-#define OFDM_AMP_SCALE (2E5*1.1491/1.06)   /* use to scale to 16 bit short */
+#define OFDM_PEAK 16384                    /* peak level of OFDM TX signal */
 #define OFDM_CLIP (32767*0.35)             /* experimentally derived constant to reduce PAPR to about 8dB */
 
 #define UN_SYNC      0  /* Used with the ofdm_set_sync() */
 #define AUTO_SYNC    1
 #define MANUAL_SYNC  2
 
-#define AUTO_PHASE_EST   0 
+#define AUTO_PHASE_EST   0
 #define LOCKED_PHASE_EST 1
 
 #define LOW_BW       0
@@ -62,6 +62,7 @@ struct OFDM;
 
 struct OFDM *ofdm_create(const struct OFDM_CONFIG * config);
 void ofdm_destroy(struct OFDM *);
+void ofdm_init_mode(char mode[], struct OFDM_CONFIG *config);
 
 /* signal processing */
 
@@ -74,7 +75,7 @@ void ofdm_sync_state_machine(struct OFDM *, uint8_t *);
 void ofdm_sync_state_machine2(struct OFDM *, uint8_t *);
 
 /* getters */
-    
+
 struct OFDM_CONFIG *ofdm_get_config_param(struct OFDM *ofdm);
 int ofdm_get_nin(struct OFDM *);
 int ofdm_get_samples_per_frame(struct OFDM *ofdm);
@@ -82,7 +83,6 @@ int ofdm_get_samples_per_packet(struct OFDM *ofdm);
 int ofdm_get_max_samples_per_frame(struct OFDM *ofdm);
 int ofdm_get_bits_per_frame(struct OFDM *ofdm);
 int ofdm_get_bits_per_packet(struct OFDM *ofdm);
-void ofdm_get_demod_stats(struct OFDM *ofdm, struct MODEM_STATS *stats);
 int ofdm_get_phase_est_bandwidth_mode(struct OFDM *ofdm);
 
 /* option setters */
@@ -96,7 +96,8 @@ void ofdm_set_off_est_hz(struct OFDM *, float);
 void ofdm_set_sync(struct OFDM *, int);
 void ofdm_set_tx_bpf(struct OFDM *, bool);
 void ofdm_set_dpsk(struct OFDM *ofdm, bool val);
-    
+void ofdm_set_packets_per_burst(struct OFDM *ofdm, int packetsperburst);
+
 void ofdm_print_info(struct OFDM *);
 
 #ifdef __cplusplus
@@ -104,4 +105,3 @@ void ofdm_print_info(struct OFDM *);
 #endif
 
 #endif
-

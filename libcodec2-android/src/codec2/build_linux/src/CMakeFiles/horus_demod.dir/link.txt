@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2  -rdynamic CMakeFiles/horus_demod.dir/horus_demod.c.o CMakeFiles/horus_demod.dir/horus_api.c.o CMakeFiles/horus_demod.dir/horus_l2.c.o CMakeFiles/horus_demod.dir/golay23.c.o CMakeFiles/horus_demod.dir/fsk.c.o CMakeFiles/horus_demod.dir/kiss_fft.c.o  -o horus_demod -lm 

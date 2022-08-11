@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/test_phi0.dir/test_phi0.c.o CMakeFiles/test_phi0.dir/__/src/phi0.c.o  -o test_phi0 -lm 

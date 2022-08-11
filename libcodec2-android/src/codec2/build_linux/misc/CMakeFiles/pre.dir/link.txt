@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/pre.dir/pre.c.o  -o pre -Wl,-rpath,/home/sh/Downloads/hackrf/codec2/build_linux/src ../src/libcodec2.so.0.9 -lm 

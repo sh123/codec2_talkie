@@ -20,8 +20,14 @@ target_link_libraries(tdeframer m codec2)
 
 add_definitions(-DMODEMPROBE_ENABLE -DXXXXX)
 
-add_executable(tofdm tofdm.c ../src/ofdm.c ../src/octave.c ../src/kiss_fft.c ../src/modem_probe.c ../src/mpdecode_core.c ../src/phi0.c ../src/filter.c ../src/HRA_112_112.c)
-target_link_libraries(tofdm m)
+add_executable(tofdm tofdm.c ../src/octave.c)
+target_link_libraries(tofdm m codec2)
+
+add_executable(tofdm_acq tofdm_acq.c ../src/octave.c)
+target_link_libraries(tofdm_acq m codec2)
+
+add_executable(tesno_est tesno_est.c)
+target_link_libraries(tesno_est m codec2)
 
 if(UNIX) # Uses pthreads
 add_executable(tfifo tfifo.c ../src/codec2_fifo.c)
@@ -38,10 +44,10 @@ add_library(function_trace STATIC ../unittest/function_trace.c)
 add_executable(ofdm_stack ofdm_stack.c ../src/ofdm.c ../src/octave.c ../src/kiss_fft.c ../src/modem_probe.c ../src/mpdecode_core.c ../src/phi0.c ../src/filter.c)
 if (CMAKE_C_COMPILER MATCHES "gcc$")
     target_link_libraries(ofdm_stack function_trace m -no-pie "-Wl,-Map=ofdm_stack.map")
-    target_compile_options(ofdm_stack PUBLIC -fstack-usage -finstrument-functions -no-pie)
+    target_compile_options(ofdm_stack PUBLIC -fstack-usage -finstrument-functions)
 else()
     target_link_libraries(ofdm_stack function_trace m -no-pie)
-    target_compile_options(ofdm_stack PUBLIC -finstrument-functions -no-pie)
+    target_compile_options(ofdm_stack PUBLIC -finstrument-functions)
 endif()
 add_definitions(-D__UNITTEST__)
 
@@ -77,3 +83,54 @@ target_link_libraries(thash codec2 m)
 
 add_executable(tqam16 tqam16.c)
 target_link_libraries(tqam16 codec2 m)
+
+add_executable(t16_8 t16_8.c ../src/fdmdv.c ../src/kiss_fft.c)
+target_link_libraries(t16_8 codec2)
+
+add_executable(t16_8_short t16_8_short.c ../src/fdmdv.c ../src/kiss_fft.c)
+target_link_libraries(t16_8_short codec2)
+
+
+add_executable(t48_8 t48_8.c ../src/fdmdv.c ../src/kiss_fft.c)
+target_link_libraries(t48_8 codec2)
+
+add_executable(t48_8_short t48_8_short.c ../src/fdmdv.c ../src/kiss_fft.c)
+target_link_libraries(t48_8_short codec2)
+
+# Build CML as part of unit test setup
+find_program(OCTAVE_CMD octave-cli REQUIRED)
+message("Octave command: ${OCTAVE_CMD}")
+
+include(ExternalProject)
+set(CML_PATH ${CMAKE_CURRENT_BINARY_DIR}/../cml)
+ExternalProject_Add(cml
+   GIT_REPOSITORY https://github.com/drowe67/cml.git
+   SOURCE_DIR ${CML_PATH}
+   BUILD_IN_SOURCE 1
+   CONFIGURE_COMMAND true # No configuration required
+   BUILD_COMMAND cd ${CMAKE_CURRENT_BINARY_DIR}/../cml && make
+   INSTALL_COMMAND true # No installation required
+)
+
+# Create fading files (used for channel simulation) as part of unit test setup
+add_custom_target(fading_files ALL
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/fast_fading_samples.float
+  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/faster_fading_samples.float
+  )
+add_custom_command(
+  OUTPUT  ${CMAKE_CURRENT_BINARY_DIR}/fast_fading_samples.float
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/faster_fading_samples.float
+  COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && ./fading_files.sh ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+add_executable(freedv_700d_comptx freedv_700d_comptx.c)
+add_executable(freedv_700d_comprx freedv_700d_comprx.c)
+
+if(LPCNET AND lpcnetfreedv_FOUND)
+    target_link_libraries(freedv_700d_comptx m codec2 lpcnetfreedv)
+    target_link_libraries(freedv_700d_comprx m codec2 lpcnetfreedv)
+    list(APPEND CODEC2_PUBLIC_HEADERS ${CMAKE_SOURCE_DIR}/lpcnet/src/lpcnet_freedv.h)
+else()
+    target_link_libraries(freedv_700d_comptx m codec2)
+    target_link_libraries(freedv_700d_comprx m codec2)
+endif()

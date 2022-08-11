@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/fdmdv_put_test_bits.dir/fdmdv_put_test_bits.c.o CMakeFiles/fdmdv_put_test_bits.dir/fdmdv.c.o CMakeFiles/fdmdv_put_test_bits.dir/kiss_fft.c.o CMakeFiles/fdmdv_put_test_bits.dir/codec2_fft.c.o CMakeFiles/fdmdv_put_test_bits.dir/kiss_fftr.c.o  -o fdmdv_put_test_bits -lm -lm 

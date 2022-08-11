@@ -4,12 +4,6 @@ include_directories(../src)
 add_executable(mksine mksine.c)
 target_link_libraries(mksine m)
 
-add_executable(t16_8 t16_8.c ../src/fdmdv.c ../src/kiss_fft.c)
-target_link_libraries(t16_8 codec2)
-
-add_executable(t16_8_short t16_8_short.c ../src/fdmdv.c ../src/kiss_fft.c)
-target_link_libraries(t16_8_short codec2)
-
 add_executable(16_8_short 16_8_short.c ../src/fdmdv.c ../src/kiss_fft.c)
 target_link_libraries(16_8_short codec2)
 
@@ -28,14 +22,14 @@ add_executable(tlininterp tlininterp.c)
 
 add_executable(tdec tdec.c)
 
-add_executable(est_n0 est_n0.c)
-target_link_libraries(est_n0 m)
-
 add_executable(timpulse timpulse.c)
 target_link_libraries(timpulse m)
 
 add_executable(vq_mbest vq_mbest.c)
 target_link_libraries(vq_mbest codec2)
+
+add_executable(vq_binary_switch vq_binary_switch.c)
+target_link_libraries(vq_binary_switch m)
 
 add_executable(pre pre.c)
 target_link_libraries(pre codec2)

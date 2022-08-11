@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/fsk_put_test_bits.dir/fsk_put_test_bits.c.o  -o fsk_put_test_bits -Wl,-rpath,/home/sh/Downloads/hackrf/codec2/build_linux/src -lm libcodec2.so.0.9 -lm 

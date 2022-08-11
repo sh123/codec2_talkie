@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/tfreedv_data_channel.dir/tfreedv_data_channel.c.o CMakeFiles/tfreedv_data_channel.dir/__/src/freedv_data_channel.c.o  -o tfreedv_data_channel 

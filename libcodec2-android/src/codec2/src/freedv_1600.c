@@ -56,8 +56,8 @@ void freedv_1600_open(struct freedv *f) {
     f->bits_per_modem_frame = fdmdv_bits_per_frame(f->fdmdv);
     f->bits_per_codec_frame = codec2_bits_per_frame(f->codec2);
     f->n_codec_frames = 1;
-    f->tx_payload_bits = MALLOC(f->bits_per_codec_frame); assert(f->tx_payload_bits != NULL);  
-    f->rx_payload_bits = MALLOC(f->bits_per_codec_frame); assert(f->rx_payload_bits != NULL);  
+    f->tx_payload_bits = MALLOC(f->bits_per_codec_frame); assert(f->tx_payload_bits != NULL);
+    f->rx_payload_bits = MALLOC(f->bits_per_codec_frame); assert(f->rx_payload_bits != NULL);
 }
 
 
@@ -72,7 +72,7 @@ void freedv_comptx_fdmdv_1600(struct freedv *f, COMP mod_out[]) {
     data_flag_index = codec2_get_spare_bit_index(f->codec2);
 
     if (f->nvaricode_bits) {
-        f->fdmdv_tx_bits[data_flag_index] = f->tx_varicode_bits[f->varicode_bit_index++];
+        f->tx_payload_bits[data_flag_index] = f->tx_varicode_bits[f->varicode_bit_index++];
         f->nvaricode_bits--;
     }
 
@@ -81,14 +81,14 @@ void freedv_comptx_fdmdv_1600(struct freedv *f, COMP mod_out[]) {
         char s[2];
         if (f->freedv_get_next_tx_char != NULL) {
             s[0] = (*f->freedv_get_next_tx_char)(f->callback_state);
-            f->nvaricode_bits = varicode_encode(f->tx_varicode_bits, s, VARICODE_MAX_BITS, 1, 1);
+            f->nvaricode_bits = varicode_encode(f->tx_varicode_bits, s, VARICODE_MAX_BITS, 1, f->varicode_dec_states.code_num);
             f->varicode_bit_index = 0;
         }
     }
 
     /* Protect first 12 out of first 16 excitation bits with (23,12) Golay Code:
 
-       0,1,2,3: v[0]..v[1]
+       0,1,2,3: v[0]..v[3]
        4,5,6,7: MSB of pitch
        11,12,13,14: MSB of energy
 
@@ -146,7 +146,7 @@ int freedv_comprx_fdmdv_1600(struct freedv *f, COMP demod_in[]) {
     char                ascii_out;
     int                 reliable_sync_bit;
     int                 rx_status = 0;
-    
+
     COMP ademod_in[f->nin];
     for(i=0; i<f->nin; i++)
         ademod_in[i] = fcmult(1.0/FDMDV_SCALE, demod_in[i]);
@@ -163,7 +163,7 @@ int freedv_comprx_fdmdv_1600(struct freedv *f, COMP demod_in[]) {
     }
 
     if (f->sync) {
-        rx_status = RX_SYNC;
+        rx_status = FREEDV_RX_SYNC;
 
         if (f->evenframe == 0) {
             memcpy(f->fdmdv_rx_bits, f->fdmdv_bits, bits_per_fdmdv_frame*sizeof(int));
@@ -212,7 +212,7 @@ int freedv_comprx_fdmdv_1600(struct freedv *f, COMP demod_in[]) {
                 // reconstruct missing bit we steal for data bit and decode
                 codec2_rebuild_spare_bit(f->codec2, (char*)f->rx_payload_bits);
 
-                rx_status |= RX_BITS;
+                rx_status |= FREEDV_RX_BITS;
             }
             else {
                 int   test_frame_sync, bit_errors, ntest_bits, k;
@@ -256,4 +256,3 @@ int freedv_comprx_fdmdv_1600(struct freedv *f, COMP demod_in[]) {
 
     return rx_status;
 }
-

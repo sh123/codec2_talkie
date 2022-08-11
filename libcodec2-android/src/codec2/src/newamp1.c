@@ -166,18 +166,12 @@ float rate_K_mbest_encode(int *indexes, float *x, float *xq, int ndim, int mbest
   const float *codebook2 = newamp1vq_cb[1].cb;
   struct MBEST *mbest_stage1, *mbest_stage2;
   float target[ndim];
-  float w[ndim];
   int   index[MBEST_STAGES];
   float mse, tmp;
 
   /* codebook is compiled for a fixed K */
 
   assert(ndim == newamp1vq_cb[0].k);
-
-  /* equal weights, could be argued mel freq axis gives freq dep weighting */
-
-  for(i=0; i<ndim; i++)
-      w[i] = 1.0;
 
   mbest_stage1 = mbest_create(mbest_entries);
   mbest_stage2 = mbest_create(mbest_entries);
@@ -186,7 +180,7 @@ float rate_K_mbest_encode(int *indexes, float *x, float *xq, int ndim, int mbest
 
   /* Stage 1 */
 
-  mbest_search(codebook1, x, w, ndim, newamp1vq_cb[0].m, mbest_stage1, index);
+  mbest_search(codebook1, x, ndim, newamp1vq_cb[0].m, mbest_stage1, index);
 
   /* Stage 2 */
 
@@ -194,7 +188,7 @@ float rate_K_mbest_encode(int *indexes, float *x, float *xq, int ndim, int mbest
       index[1] = n1 = mbest_stage1->list[j].index[0];
       for(i=0; i<ndim; i++)
 	  target[i] = x[i] - codebook1[ndim*n1+i];
-      mbest_search(codebook2, target, w, ndim, newamp1vq_cb[1].m, mbest_stage2, index);
+      mbest_search(codebook2, target, ndim, newamp1vq_cb[1].m, mbest_stage2, index);
   }
 
   n1 = mbest_stage2->list[0].index[1];
@@ -238,7 +232,7 @@ void post_filter_newamp1(float vec[], float sample_freq_kHz[], int K, float pf_g
       vec is rate K vector describing spectrum of current frame lets
       pre-emp before applying PF. 20dB/dec over 300Hz.  Postfilter
       affects energy of frame so we measure energy before and after
-      and normalise.  Plenty of room for experiment here as well.
+      and normalise.  Plenty of room for experimentation here.
     */
     
     float pre[K];
@@ -497,7 +491,7 @@ void newamp1_model_to_indexes(C2CONST *c2const,
 
     /* running sum of squared error for variance calculation */
     for(k=0; k<K; k++)
-        *se += pow(rate_K_vec_no_mean[k]-rate_K_vec_no_mean_[k],2.0);
+        *se += (float)pow(rate_K_vec_no_mean[k]-rate_K_vec_no_mean_[k],2.0);
 
     /* scalar quantise mean (effectively the frame energy) */
     float w[1] = {1.0};

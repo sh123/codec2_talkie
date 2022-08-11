@@ -12,46 +12,56 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <limits.h>
 #include "mbest.h"
 
 #define MAX_K       20
 #define MAX_ENTRIES 4096
 #define MAX_STAGES  5
 
-void quant_pred_mbest(float vec_out[],
-                      int   indexes[],
-                      float vec_in[],
-                      int   num_stages,
-                      float vq[],
-                      int   m[], int k,
-                      int   mbest_survivors);
+void quant_mbest(float vec_out[],
+                 int   indexes[],
+                 float vec_in[],
+                 int   num_stages,
+                 float vqw[], float vq[], 
+                 int   m[], int k,
+                 int   mbest_survivors);
 
 int verbose = 0;
 
 int main(int argc, char *argv[]) {
     float vq[MAX_STAGES*MAX_K*MAX_ENTRIES];
+    float vqw[MAX_STAGES*MAX_K*MAX_ENTRIES];
     int   m[MAX_STAGES];
-    int   k=0, mbest_survivors=0, num_stages=0;
+    int   k=0, mbest_survivors=1, num_stages=0;
     char  fnames[256], fn[256], *comma, *p;
     FILE *fq;
     float lower = -1E32;
+    int   st = -1;
+    int   en = -1;
+    int   num = INT_MAX;
+    int   output_vec_usage = 0;
     
     int o = 0; int opt_idx = 0;
     while (o != -1) {
        static struct option long_opts[] = {
-	   {"k",       required_argument, 0, 'q'},
-	   {"quant",   required_argument, 0, 'q'},
-	   {"mbest",   required_argument, 0, 'm'},
-	   {"lower",   required_argument, 0, 'l'},
-	   {"verbose", required_argument, 0, 'v'},
+	   {"k",         required_argument, 0, 'k'},
+	   {"quant",     required_argument, 0, 'q'},
+	   {"mbest",     required_argument, 0, 'm'},
+	   {"lower",     required_argument, 0, 'l'},
+	   {"verbose",   required_argument, 0, 'v'},
+           {"st",        required_argument, 0, 't'},
+           {"en",        required_argument, 0, 'e'},
+           {"num",       required_argument, 0, 'n'},
+           {"vec_usage", no_argument, 0, 'u'},
 	   {0, 0, 0, 0}
         };
 
-        o = getopt_long(argc,argv,"hk:q:m:v",long_opts,&opt_idx);
+        o = getopt_long(argc,argv,"hk:q:m:vt:e:n:u",long_opts,&opt_idx);
         switch (o) {
 	case 'k':
 	    k = atoi(optarg);
-	    assert(k < MAX_K);
+	    assert(k <= MAX_K);
 	    break; 
 	case 'q':
 	    /* load up list of comma delimited file names */
@@ -67,7 +77,7 @@ int main(int argc, char *argv[]) {
                     p = comma+1;
                 }
                 /* load quantiser file */
-                fprintf(stderr, "stage: %d loading %s ...", num_stages, fn);
+                fprintf(stderr, "stage: %d loading %s ... ", num_stages, fn);
                 fq=fopen(fn, "rb");
                 if (fq == NULL) {
                     fprintf(stderr, "Couldn't open: %s\n", fn);
@@ -92,16 +102,37 @@ int main(int argc, char *argv[]) {
             mbest_survivors = atoi(optarg);
             fprintf(stderr, "mbest_survivors = %d\n",  mbest_survivors);
             break;
+        case 'n':
+	    num = atoi(optarg);
+            break;
         case 'l':
             lower = atof(optarg);
             break;
-        case 'v':
+        case 't':
+            st = atoi(optarg);
+            break;
+        case 'e':
+            en = atoi(optarg);
+            break;
+        case 'u':
+            output_vec_usage = 1;
+            break;
+	case 'v':
             verbose = 1;
             break;
 	help:
-            fprintf(stderr, "usage: %s -k dimension -q vq1.f32,vq2.f32,.... [-m mbest_survivors] [--lower lowermeanLimit]\n", argv[0]);
+	    fprintf(stderr, "\n");
+            fprintf(stderr, "usage: %s -k dimension -q vq1.f32,vq2.f32,.... [Options]\n", argv[0]);
+	    fprintf(stderr, "\n");
 	    fprintf(stderr, "input vectors on stdin, output quantised vectors on stdout\n");
-	    fprintf(stderr, "--mbest  number of survivors at each stage, set to 0 for standard VQ search\n");
+	    fprintf(stderr, "\n");
+	    fprintf(stderr, "--lower lowermeanLimit   Only count vectors with average above this level in distortion calculations\n");
+	    fprintf(stderr, "--mbest N                number of survivors at each stage, set to 0 for standard VQ search\n");
+            fprintf(stderr, "--st    Kst              start vector element for error calculation (default 0)\n");
+            fprintf(stderr, "--en    Ken              end vector element for error calculation (default K-1)\n");
+	    fprintf(stderr, "--num   numToProcess     number of vectors to quantise (default to EOF)\n");
+	    fprintf(stderr, "--vec_usage              Output a record of how many times each vector is used\n");
+ 	    fprintf(stderr, "-v                       Verbose\n");
             exit(1);
         }
     }
@@ -109,10 +140,31 @@ int main(int argc, char *argv[]) {
     if ((num_stages == 0) || (k == 0))
 	goto help;
 
-    int   indexes[num_stages], nvecs = 0;
+    /* default to measuring error on entire vector */
+    if (st == -1) st = 0; 
+    if (en == -1) en = k-1;
+
+    float w[k];
+    for(int i=0; i<st; i++)
+        w[i] = 0.0;
+    for(int i=st; i<=en; i++)
+        w[i] = 1.0;
+    for(int i=en+1; i<k; i++)
+        w[i] = 0.0;
+
+    /* apply weighting to codebook (rather than in search) */
+    memcpy(vqw, vq, sizeof(vq));
+    for(int s=0; s<num_stages; s++) {
+        mbest_precompute_weight(&vqw[s*k*MAX_ENTRIES], w, k, m[s]);
+    }
+    
+    int indexes[num_stages], nvecs = 0; int vec_usage[m[0]];
+    for(int i=0; i<m[0]; i++) vec_usage[i] = 0;
     float target[k], quantised[k];
     float sqe = 0.0;
-    while(fread(&target, sizeof(float), k, stdin)) {
+    while(fread(&target, sizeof(float), k, stdin) && (nvecs < num)) {
+	for(int i=0; i<k; i++)
+            target[i] *= w[i];
 	int dont_count = 0;
 	/* optional clamping to lower limit or mean */
 	float mean = 0.0;
@@ -126,15 +178,24 @@ int main(int argc, char *argv[]) {
 		target[i] += -difference;
 	    dont_count = 1;
 	}
-	quant_pred_mbest(quantised, indexes, target, num_stages, vq, m, k, mbest_survivors);
+	quant_mbest(quantised, indexes, target, num_stages, vqw, vq, m, k, mbest_survivors);
 	if (dont_count == 0) {
-	    for(int i=0; i<k; i++)
+	    for(int i=st; i<=en; i++)
 		sqe += pow(target[i]-quantised[i], 2.0);
 	}
 	fwrite(&quantised, sizeof(float), k, stdout);
 	nvecs++;
+	// count number f time each vector is used (just for first stage)
+	vec_usage[indexes[0]]++;
     }
-    fprintf(stderr, "%4.2f\n", sqe/(nvecs*k));
+
+    fprintf(stderr, "MSE: %4.2f\n", sqe/(nvecs*(en-st+1)));
+
+    if (output_vec_usage) {
+      for(int i=0; i<m[0]; i++)
+	fprintf(stderr, "%d\n", vec_usage[i]);
+    }
+
     return 0;
 }
 
@@ -152,15 +213,15 @@ void pv(char s[], float v[], int k) {
 
 // mbest algorithm version, backported from LPCNet/src
 
-void quant_pred_mbest(float vec_out[],
-                      int   indexes[],
-                      float vec_in[],
-                      int   num_stages,
-                      float vq[],
-                      int   m[], int k,
-                      int   mbest_survivors)
+void quant_mbest(float vec_out[],
+                 int   indexes[],
+                 float vec_in[],
+                 int   num_stages,
+                 float vqw[], float vq[],
+                 int   m[], int k,
+                 int   mbest_survivors)
 {
-    float err[k], w[k], se1;
+    float err[k], se1;
     int i,j,s,s1,ind;
     
     struct MBEST *mbest_stage[num_stages];
@@ -176,14 +237,13 @@ void quant_pred_mbest(float vec_out[],
     for(i=0; i<k; i++) {
         err[i] = vec_in[i];
         se1 += err[i]*err[i];
-        w[i] = 1.0;
     }
     se1 /= k;
-    
+                
     /* now quantise err[] using multi-stage mbest search, preserving
        mbest_survivors at each stage */
     
-    mbest_search(vq, err, w, k, m[0], mbest_stage[0], index);
+    mbest_search(vqw, err, k, m[0], mbest_stage[0], index);
     if (verbose) mbest_print("Stage 1:", mbest_stage[0]);
     
     for(s=1; s<num_stages; s++) {
@@ -201,11 +261,11 @@ void quant_pred_mbest(float vec_out[],
                 ind = index[s-s1];
                 if (verbose) fprintf(stderr, "   s: %d s1: %d s-s1: %d ind: %d\n", s,s1,s-s1,ind);
                 for(i=0; i<k; i++) {
-                    target[i] -= vq[s1*k*MAX_ENTRIES+ind*k+i];
+                    target[i] -= vqw[s1*k*MAX_ENTRIES+ind*k+i];
                 }
             }
             pv("   target: ", target, k);
-            mbest_search(&vq[s*k*MAX_ENTRIES], target, w, k, m[s], mbest_stage[s], index);
+            mbest_search(&vqw[s*k*MAX_ENTRIES], target, k, m[s], mbest_stage[s], index);
         }
         char str[80]; sprintf(str,"Stage %d:", s+1);
         if (verbose) mbest_print(str, mbest_stage[s]);
@@ -222,7 +282,7 @@ void quant_pred_mbest(float vec_out[],
         int ind = indexes[s];
         float se2 = 0.0;
         for(i=0; i<k; i++) {
-            err[i] -= vq[s*k*MAX_ENTRIES+ind*k+i];
+            err[i] -= vqw[s*k*MAX_ENTRIES+ind*k+i];
             vec_out[i] += vq[s*k*MAX_ENTRIES+ind*k+i];
             se2 += err[i]*err[i];
         }

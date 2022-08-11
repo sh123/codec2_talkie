@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2  -rdynamic CMakeFiles/ofdm_gen_test_bits.dir/ofdm_gen_test_bits.c.o  -o ofdm_gen_test_bits -Wl,-rpath,/home/sh/Downloads/hackrf/codec2/build_linux/src libcodec2.so.0.9 -lm 

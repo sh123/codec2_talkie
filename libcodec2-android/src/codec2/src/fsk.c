@@ -154,7 +154,7 @@ struct FSK * fsk_create_core(int Fs, int Rs, int M, int P, int Nsym, int f1_tx, 
     fsk->est_space = 0.75*Rs;
     fsk->freq_est_type = 0;
     
-    //printf("C.....: M: %d Fs: %d Rs: %d Ts: %d nsym: %d nbit: %d N: %d Ndft: %d fmin: %d fmax: %d\n",
+    //fprintf(stderr, "C.....: M: %d Fs: %d Rs: %d Ts: %d nsym: %d nbit: %d N: %d Ndft: %d fmin: %d fmax: %d\n",
     //       M, fsk->Fs, fsk->Rs, fsk->Ts, fsk->Nsym, fsk->Nbits, fsk->N, fsk->Ndft, fsk->est_min, fsk->est_max);
     /* Set up rx state */
     for(i=0; i<M; i++)
@@ -487,7 +487,7 @@ void fsk_demod_freq_est(struct FSK *fsk, COMP fsk_in[], float *freqs, int M) {
             #ifdef USE_HANN_TABLE
             hann = fsk->hann_table[i];
             #else
-            hann = 0.5 - 0.5 * cosf(2.0 * M_PI * (float)i / (float) (Ndft-1));
+            hann = 0.5 - 0.5 * cosf(2.0 * M_PI * (float)i / (float) (fft_samps-1));
             #endif
             fftin[i].r = hann*fsk_in[i+a].real;
             fftin[i].i = hann*fsk_in[i+a].imag;

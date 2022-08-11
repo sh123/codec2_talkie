@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/ofdm_demod.dir/ofdm_demod.c.o CMakeFiles/ofdm_demod.dir/octave.c.o  -o ofdm_demod -Wl,-rpath,/home/sh/Downloads/hackrf/codec2/build_linux/src -lm libcodec2.so.0.9 -lm 

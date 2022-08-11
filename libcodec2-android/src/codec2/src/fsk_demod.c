@@ -26,7 +26,7 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#define TEST_FRAME_SIZE 100  /* must match fsk_get_test_bits.c */
+#define TEST_FRAME_SIZE 1000  /* must match fsk_get_test_bits.c */
 
 #include <assert.h>
 #include <stdio.h>
@@ -419,8 +419,7 @@ int main(int argc,char *argv[]){
             fwrite(bitbuf,sizeof(uint8_t),fsk->Nbits,fout);
         }
 
-        if(fin == stdin || fout == stdin){
-            fflush(fin);
+        if(fout == stdin){
             fflush(fout);
         }
     } /* while(fread ...... */

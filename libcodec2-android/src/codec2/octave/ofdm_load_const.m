@@ -31,6 +31,8 @@ ftwindow_width = states.ftwindow_width;
 
 Nrxbuf = states.Nrxbuf;
 rxbuf = states.rxbuf;
+rxbufst = states.rxbufst;
+Nrxbufmin = states.Nrxbufmin;
 
 pilots = states.pilots;
 rate_fs_pilot_samples = states.rate_fs_pilot_samples;
@@ -52,4 +54,4 @@ if ldpc_en
 end
 
 verbose = states.verbose;
-
+ofdm_peak = states.ofdm_peak;

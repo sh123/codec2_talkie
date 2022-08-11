@@ -82,7 +82,6 @@ task compileCodec2 {
             commandLine "/usr/bin/make"
         }
 
-
         for(String abi : rootProject.ext.ABI_FILTERS.split(";")) {
             System.out.println("Handle abi " + abi)
             exec {

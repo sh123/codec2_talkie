@@ -47,7 +47,6 @@
 #define LPCPF_GAMMA 0.5
 #define LPCPF_BETA  0.2
 
-void quantise_init();
 float lpc_model_amplitudes(float Sn[], float w[], MODEL *model, int order,
 			   int lsp,float ak[]);
 void aks_to_M2(codec2_fftr_cfg fftr_fwd_cfg, float ak[], int order, MODEL *model,
@@ -68,7 +67,7 @@ void decode_lsps_vq(int *indexes, float *xq, int order, int stages);
 
 long quantise(const float * cb, float vec[], float w[], int k, int m, float *se);
 void lspvq_quantise(float lsp[], float lsp_[], int order);
-void lspjvm_quantise(float lsps[], float lsps_[], int order);
+void lspjmv_quantise(float lsps[], float lsps_[], int order);
 
 void quantise_WoE(C2CONST *c2const, MODEL *model, float *e, float xq[]);
 int  encode_WoE(MODEL *model, float e, float xq[]);

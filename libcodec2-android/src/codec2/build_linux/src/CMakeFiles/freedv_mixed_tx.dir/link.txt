@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/freedv_mixed_tx.dir/freedv_mixed_tx.c.o  -o freedv_mixed_tx -Wl,-rpath,/home/sh/Downloads/hackrf/codec2/build_linux/src -lm libcodec2.so.0.9 -lm 

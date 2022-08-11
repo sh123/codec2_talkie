@@ -1,1 +1,0 @@
-/usr/bin/cc  -Wall -Wno-strict-overflow -std=gnu11 -fPIC -g -O2 -DDUMP  -rdynamic CMakeFiles/tfsk.dir/tfsk.c.o CMakeFiles/tfsk.dir/__/src/kiss_fft.c.o CMakeFiles/tfsk.dir/__/src/kiss_fftr.c.o CMakeFiles/tfsk.dir/__/src/octave.c.o CMakeFiles/tfsk.dir/__/src/modem_probe.c.o  -o tfsk -lm 

@@ -7,68 +7,88 @@
 
 #{
   Examples:
- 
+
   i) 10 seconds, AWGN channel at SNR3k=3dB
 
-    octave:4> ofdm_tx("awgn_ebno_3dB_700d.raw", "700D", 10, 3);
+    octave:4> ofdm_tx("awgn_snr_3dB_700d.raw", "700D", 10, 3)
 
   ii) 10 seconds, multipath poor channel at SNR=6dB
 
-    ofdm_tx("hf_ebno_6dB_700d.raw", "700D", 10, 6, "mpp");
+    octave:5> ofdm_tx("hf_snr_6dB_700d.raw", "700D", 10, 6, "mpp")
     
-  iii) 10 seconds, 2200 waveform, AWGN channel, SNR3k=100dB (noise free)
+  iii) Data mode example, three bursts of one packet each, SNR=100dB:
+  
+    octave:6> ofdm_tx("test_datac0.raw","datac0",1,100,"awgn","bursts",3)
 
-    ofdm_tx("hf_2020.raw", "2200", 10);
 #}
 
-% Note EbNodB is for payload data bits, so will be 10log10(rate) higher than
-% raw EbNodB used in ofdm_tx() at uncoded bit rate
-
-function ofdm_tx(filename, mode="700D", Nsec, SNR3kdB=100, channel='awgn', freq_offset_Hz=0, tx_clip=0)
+function ofdm_tx(filename, mode="700D", N, SNR3kdB=100, channel='awgn', varargin)
   ofdm_lib;
   channel_lib;
   randn('seed',1);
+  pkg load signal;
 
-  dpsk = 0;
-  if strcmp(mode,"700D-DPSK")
-    mode = "700D"; dpsk = 1;
-  end
-  if strcmp(mode,"2020-DPSK")
-    mode = "2020"; dpsk = 1;
+  tx_clip_en = 0; freq_offset_Hz = 0.0; burst_mode = 0; Nbursts = 1;
+  i = 1;
+  while i<=length(varargin)
+    if strcmp(varargin{i},"txclip") 
+      tx_clip_en = 1;
+    elseif strcmp(varargin{i},"bursts") 
+      burst_mode = 1;
+      Nbursts = varargin{i+1}; i++;
+    else
+      printf("\nERROR unknown argument: [%d] %s \n", i ,varargin{i});
+      return;
+    end
+    i++;
   end
   
   % init modem
-  
+
   config = ofdm_init_mode(mode);
-  states = ofdm_init(config);
+  states = ofdm_init(config);  
   print_config(states);
   ofdm_load_const;
-  states.dpsk=dpsk;
-  
-  % Generate fixed test frame of tx bits and run OFDM modulator
 
-  Npackets = round(Nsec/states.Tpacket);
+  if burst_mode
+    % burst mode: treat N as Npackets
+    Npackets = N; 
+ else
+    % streaming mode: treat N as Nseconds
+    Npackets = round(N/states.Tpacket);
+  end
+
+  % Generate fixed test frame of tx bits and concatentate packets
+
   tx_bits = create_ldpc_test_frame(states, coded_frame=0);
+  atx = ofdm_mod(states, tx_bits);
   tx = [];
   for f=1:Npackets
-    tx = [tx ofdm_mod(states, tx_bits)];
+    tx = [tx atx];
   end
-  Nsam = length(tx);
-
-  % optional clipper to improve PAPR
-
-  if tx_clip != 0
-    threshold_level = ofdm_determine_clip_threshold(tx, tx_clip);
-    tx = ofdm_clip(states, tx, threshold_level);
+  if length(states.data_mode)
+    % note postamble provides a "column" of pilots at the end of the burst
+    tx = [states.tx_preamble tx states.tx_postamble];
   end
-  % note this is PAPR of complex signal, PAPR of real signal will be 3dB larger
-  cpapr = 10*log10(max(abs(tx).^2)/mean(abs(tx).^2));
   
-  % channel simulation and save to disk
+  % if burst mode concatenate multiple bursts with spaces
+  if burst_mode
+    atx = tx; tx = [];
+    for b=1:Nbursts
+      tx = [tx atx zeros(1,states.Fs)];
+    end
+    % adjust channel simulator SNR setpoint given (burst on length)/(total length including silence) ratio
+    burst_len = length(atx); padded_burst_len = burst_len + states.Fs;
+    mark_space_SNR_offset = 10*log10(burst_len/padded_burst_len);
+    SNRdB_setpoint = SNR3kdB + mark_space_SNR_offset;
+    printf("SNR3kdB: %4.2f Burst offset: %4.2f SNRdB_setpoint: %4.2f\n", SNR3kdB, mark_space_SNR_offset, SNRdB_setpoint)
+  else
+    SNRdB_setpoint = SNR3kdB; % no adjustment to SNR in streaming mode
+  end
   
-  printf("Packets: %3d CPAPR: %4.1f SNR(3k): %3.1f dB foff: %3.1f Hz ", Npackets, cpapr, SNR3kdB, freq_offset_Hz);
-  rx = channel_simulate(Fs, SNR3kdB, freq_offset_Hz, channel, tx);
-  rx *= 1E4/max(rx);;
-  printf("peak: %f\n", max(rx));
-  frx=fopen(filename,"wb"); fwrite(frx, rx, "short"); fclose(frx);
+  printf("Npackets: %d  Nbursts: %d  ", Npackets, Nbursts);
+  states.verbose=1;
+  tx = ofdm_hilbert_clipper(states, tx, tx_clip_en);
+  rx_real = ofdm_channel(states, tx, SNRdB_setpoint, channel, freq_offset_Hz);
+  frx = fopen(filename,"wb"); fwrite(frx, rx_real, "short"); fclose(frx);
 endfunction
