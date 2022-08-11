@@ -361,12 +361,12 @@
     </string-array>
 
     <string-array name="ports_type_values">
-        <item>loopback</item>
-        <item>bluetooth</item>
-        <item>ble</item>
-        <item>tcp_ip</item>
-        <item>usb</item>
-        <item>sound_modem</item>
+        <item>LOOPBACK</item>
+        <item>BLUETOOTH</item>
+        <item>BLE</item>
+        <item>TCP_IP</item>
+        <item>USB</item>
+        <item>SOUND_MODEM</item>
     </string-array>
 
     <string-array name="ports_sound_modem_rig_entries">

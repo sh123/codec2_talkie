@@ -33,6 +33,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -53,6 +54,7 @@ import com.radio.codec2talkie.connect.BleConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothSocketHandler;
 import com.radio.codec2talkie.connect.TcpIpConnectActivity;
+import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.storage.log.LogItemActivity;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.recorder.RecorderActivity;
@@ -156,12 +158,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         registerReceiver(onBluetoothDisconnected, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
         registerReceiver(onUsbDetached, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
 
-        _isTestMode = _sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("loopback");
-        _isBleEnabled = _sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("ble");
+        _isTestMode = SettingsWrapper.isLoopbackTransport(_sharedPreferences);
+        _isBleEnabled = SettingsWrapper.isBleTransport(_sharedPreferences);
 
         // show/hide S-meter
         FrameLayout frameRssi = findViewById(R.id.frameRssi);
-        if (!_sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("sound_modem") &&
+        if (!SettingsWrapper.isSoundModemEnabled(_sharedPreferences) &&
              _sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false)) {
 
             int sLevelId = RadioTools.getMinimumDecodeSLevelLabel(_sharedPreferences, S_METER_S0_VALUE_DB);
@@ -252,31 +254,31 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private void startTransportConnection() {
         Log.i(TAG, "startTransportConnection()");
-        String transportName = _sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback");
         if (AppService.isRunning) {
             startAppService(AppService.transportType);
         } else if (requestPermissions()) {
-            switch (transportName) {
-                case "loopback":
+            switch (SettingsWrapper.getCurrentTransportType(_sharedPreferences)) {
+                case LOOPBACK:
                     _textConnInfo.setText(R.string.main_status_loopback_test);
                     startAppService(TransportFactory.TransportType.LOOPBACK);
                     break;
-                case "sound_modem":
+                case SOUND_MODEM:
                     _textConnInfo.setText(R.string.main_status_sound_modem);
-                    String rig = _sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_RIG, "Disabled");
-                    if (rig.equals("Disabled"))
+                    // start sound modem without rig cat usb connection
+                    if (SettingsWrapper.isSoundModemRigDisabled(_sharedPreferences))
                         startAppService(TransportFactory.TransportType.SOUND_MODEM);
+                    // otherwise try to connect with usb for cat ptt
                     else
                         startUsbConnectActivity();
                     break;
-                case "tcp_ip":
+                case TCP_IP:
                     startTcpIpConnectActivity();
                     break;
-                case "usb":
+                case USB:
                     startUsbConnectActivity();
                     break;
-                case "bluetooth":
-                case "ble":
+                case BLUETOOTH:
+                case BLE:
                     startBluetoothConnectActivity();
                     break;
             }
@@ -289,8 +291,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             Intent data = result.getData();
             assert data != null;
             int resultCode = result.getResultCode();
-            String transportType = _sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback");
-            if (transportType.equals("sound_modem")) {
+            if (SettingsWrapper.isSoundModemEnabled(_sharedPreferences)) {
                 _isRigCtlUsbConnected = resultCode == RESULT_OK;
                 startAppService(TransportFactory.TransportType.SOUND_MODEM);
             } else if (resultCode == RESULT_CANCELED) {

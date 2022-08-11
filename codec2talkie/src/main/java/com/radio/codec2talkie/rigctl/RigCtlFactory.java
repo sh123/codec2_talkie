@@ -12,11 +12,13 @@ import com.radio.codec2talkie.settings.PreferenceKeys;
 public class RigCtlFactory {
     private static final String TAG = RigCtlFactory.class.getSimpleName();
 
+    public static final String RIG_DISABLED = "Disabled";
+
     public static RigCtl create(Context context) {
         if (UsbPortHandler.getPort() == null)
             return new Disabled();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String rigName = sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_RIG, "Disabled");
+        String rigName = sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_RIG, RIG_DISABLED);
         try {
             Class<?> loadClass = Class.forName(String.format("com.radio.codec2talkie.rigctl.%s", rigName));
             Log.i(TAG, "Using rig " + rigName);

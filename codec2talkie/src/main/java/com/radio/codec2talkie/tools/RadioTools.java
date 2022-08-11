@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.settings.SettingsWrapper;
 
 public class RadioTools {
 
@@ -15,8 +16,7 @@ public class RadioTools {
         int resultBps = 0;
         int maxSpeedBps = 128000;
         try {
-            if (!sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("sound_modem") &&
-                 sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false)) {
+            if (!SettingsWrapper.isSoundModemEnabled(sharedPreferences) && SettingsWrapper.isKissExtensionEnabled(sharedPreferences)) {
                 int bw = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_BANDWIDTH, "125000"));
                 int sf = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SF, "7"));
                 int cr = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_CR, "5"));

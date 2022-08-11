@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.settings.SettingsWrapper;
 
 public class ProtocolFactory {
 
@@ -35,17 +36,17 @@ public class ProtocolFactory {
         ProtocolFactory.ProtocolType protocolType;
 
         // Use HDLC instead of KISS for the sound modem as we are the modem
-        if (sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("sound_modem")) {
-            if (sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200").startsWith("F")) {
+        if (SettingsWrapper.isSoundModemEnabled(sharedPreferences)) {
+            if (SettingsWrapper.isFreeDvSoundModemModulation(sharedPreferences)) {
                 protocolType = ProtocolType.FREEDV;
             } else {
                 protocolType = ProtocolFactory.ProtocolType.HDLC;
             }
-        } else if (sharedPreferences.getBoolean(PreferenceKeys.KISS_ENABLED, true)) {
-            if (sharedPreferences.getBoolean(PreferenceKeys.KISS_PARROT, false)) {
+        } else if (SettingsWrapper.isKissProtocolEnabled(sharedPreferences)) {
+            if (SettingsWrapper.isKissParrotEnabled(sharedPreferences)) {
                 protocolType = ProtocolFactory.ProtocolType.KISS_PARROT;
             }
-            else if (sharedPreferences.getBoolean(PreferenceKeys.KISS_BUFFERED_ENABLED, false)) {
+            else if (SettingsWrapper.isKissBufferedModeEnabled(sharedPreferences)) {
                 protocolType = ProtocolFactory.ProtocolType.KISS_BUFFERED;
             }
             else {
@@ -63,10 +64,10 @@ public class ProtocolFactory {
 
         ProtocolType protocolType = getBaseProtocolType(context);
 
-        boolean recordingEnabled = sharedPreferences.getBoolean(PreferenceKeys.CODEC2_RECORDING_ENABLED, false);
-        boolean scramblingEnabled = sharedPreferences.getBoolean(PreferenceKeys.KISS_SCRAMBLING_ENABLED, false);
-        String scramblingKey = sharedPreferences.getString(PreferenceKeys.KISS_SCRAMBLER_KEY, "");
-        boolean aprsEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
+        boolean recordingEnabled = SettingsWrapper.isCodec2RecorderEnabled(sharedPreferences);
+        boolean scramblingEnabled = SettingsWrapper.isKissScramblerEnabled(sharedPreferences);
+        String scramblingKey = SettingsWrapper.getKissScramblerKey(sharedPreferences);
+        boolean aprsEnabled = SettingsWrapper.isAprsEnabled(sharedPreferences);
 
         Protocol proto;
         switch (protocolType) {

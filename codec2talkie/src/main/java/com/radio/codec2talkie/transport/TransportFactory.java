@@ -10,18 +10,19 @@ import com.radio.codec2talkie.connect.BluetoothSocketHandler;
 import com.radio.codec2talkie.connect.TcpIpSocketHandler;
 import com.radio.codec2talkie.connect.UsbPortHandler;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.settings.SettingsWrapper;
 
 import java.io.IOException;
 
 public class TransportFactory {
 
     public enum TransportType {
-        USB("usb"),
-        BLUETOOTH("bluetooth"),
-        LOOPBACK("loopback"),
-        TCP_IP("tcp_ip"),
-        BLE("ble"),
-        SOUND_MODEM("sound_modem");
+        USB("USB"),
+        BLUETOOTH("BLUETOOTH"),
+        LOOPBACK("LOOPBACK"),
+        TCP_IP("TCP_IP"),
+        BLE("BLE"),
+        SOUND_MODEM("SOUND_MODEM");
 
         private final String _name;
 
@@ -36,6 +37,7 @@ public class TransportFactory {
     }
 
     public static Transport create(TransportType transportType, Context context) throws IOException {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
         switch (transportType) {
             case USB:
@@ -47,16 +49,10 @@ public class TransportFactory {
             case BLE:
                 return new Ble(BleHandler.getGatt(), BleHandler.getName());
             case SOUND_MODEM:
-                return isFreeDv(context) ? new SoundModem(context) : new SoundModemFsk(context);
+                return SettingsWrapper.isFreeDvSoundModemModulation(sharedPreferences) ? new SoundModem(context) : new SoundModemFsk(context);
             case LOOPBACK:
             default:
                 return new Loopback();
         }
-    }
-
-    private static boolean isFreeDv(Context context) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String modemType = sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200");
-        return modemType.startsWith("F");
     }
 }

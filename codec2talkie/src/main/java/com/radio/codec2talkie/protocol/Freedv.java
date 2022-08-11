@@ -10,6 +10,7 @@ import com.radio.codec2talkie.app.AppWorker;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.ustadmobile.codec2.Codec2;
 
@@ -38,7 +39,7 @@ public class Freedv implements Protocol {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String modemType = sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200");
         int mode = Integer.parseInt(modemType.substring(1));
-        Log.i(TAG, "Using freedv mode " + mode);
+        Log.i(TAG, "Using freedv mode " + AudioTools.getFreedvModeAsText(sharedPreferences));
 
         _freedv = Codec2.freedvCreate(mode);
         _modemTxBuffer = new short[Codec2.freedvGetNomModemSamples(_freedv)];
@@ -53,7 +54,7 @@ public class Freedv implements Protocol {
     @Override
     public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException {
         Codec2.freedvTx(_freedv, _modemTxBuffer, pcmFrame);
-        Log.i(TAG, "send pcm " + _modemTxBuffer.length);
+        //Log.i(TAG, "send pcm " + _modemTxBuffer.length);
         _transport.write(_modemTxBuffer);
         _parentProtocolCallback.onTransmitPcmAudio(src, dst, codec, pcmFrame);
     }
@@ -78,7 +79,7 @@ public class Freedv implements Protocol {
         if (bytesRead == nin) {
             long cntRead = Codec2.freedvRx(_freedv, _speechRxBuffer, buf);
             if (cntRead > 0) {
-                Log.i(TAG, "receive " + cntRead);
+                //Log.i(TAG, "receive " + cntRead);
                 _parentProtocolCallback.onReceivePcmAudio(null, null, -1, Arrays.copyOf(_speechRxBuffer, (int) cntRead));
                 return true;
             }
