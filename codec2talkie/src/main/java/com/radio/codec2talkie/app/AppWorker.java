@@ -62,7 +62,7 @@ public class AppWorker extends Thread {
 
     // output data., mic -> bt
     private AudioRecord _systemAudioRecorder;
-    private final short[] _recordAudioBuffer;
+    private short[] _recordAudioBuffer;
 
     // callbacks
     private final Handler _onPlayerStateChanged;
@@ -98,7 +98,6 @@ public class AppWorker extends Thread {
         _protocol = ProtocolFactory.create(_codec2Mode, context);
 
         _processPeriodicTimer = new Timer();
-        _recordAudioBuffer = new short[_protocol.getPcmAudioBufferSize()];
 
         constructSystemAudioDevices(transportType);
     }
@@ -541,6 +540,7 @@ public class AppWorker extends Thread {
 
         try {
             _protocol.initialize(_transport, _context, _protocolCallback);
+            _recordAudioBuffer = new short[_protocol.getPcmAudioBufferSize()];
             startWorkerMessageHandler();
             Looper.loop();
         } catch (IOException e) {

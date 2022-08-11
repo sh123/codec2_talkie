@@ -22,13 +22,6 @@
             app:defaultValue="200">
         </EditTextPreference>
 
-        <SwitchPreference
-            app:key="ports_sound_modem_disable_rx"
-            app:title="@string/ports_sound_modem_disable_rx_title"
-            app:summary="@string/ports_sound_modem_disable_rx_summary"
-            app:defaultValue="false">
-        </SwitchPreference>
-
         <ListPreference
             app:key="ports_sound_modem_rig"
             app:title="@string/ports_sound_modem_rig_title"
@@ -53,6 +46,20 @@
             app:summary="@string/ports_sound_modem_ptt_off_delay_ms_summary"
             app:defaultValue="1000">
         </EditTextPreference>
+
+        <SwitchPreference
+            app:key="ports_sound_modem_disable_rx"
+            app:title="@string/ports_sound_modem_disable_rx_title"
+            app:summary="@string/ports_sound_modem_disable_rx_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <SwitchPreference
+            app:key="ports_sound_modem_loopback"
+            app:title="@string/ports_sound_modem_loopback_title"
+            app:summary="@string/ports_sound_modem_loopback_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
 
     </PreferenceCategory>
 </PreferenceScreen>

@@ -332,9 +332,9 @@
         <item>FreeDV 800XA</item>
         <item>FreeDV 700C</item>
         <item>FreeDV 700D</item>
-        <item>FreeDV 2020</item>
+        <!--item>FreeDV 2020</item>
         <item>FreeDV 2020B</item>
-        <item>FreeDV 700E</item>
+        <item>FreeDV 700E</item-->
     </string-array>
 
     <string-array name="ports_sound_modem_type_values">
@@ -346,9 +346,9 @@
         <item>F5</item>
         <item>F6</item>
         <item>F7</item>
-        <item>F8</item>
+        <!--item>F8</item>
         <item>F16</item>
-        <item>F13</item>
+        <item>F13</item-->
     </string-array>
 
     <string-array name="ports_type_labels">

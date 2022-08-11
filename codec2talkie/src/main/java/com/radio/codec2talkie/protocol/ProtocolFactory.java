@@ -14,7 +14,8 @@ public class ProtocolFactory {
         HDLC("HDLC"),
         KISS("KISS"),
         KISS_BUFFERED("KISS BUF"),
-        KISS_PARROT("KISS RPT");
+        KISS_PARROT("KISS RPT"),
+        FREEDV("FREEDV");
 
         private final String _name;
 
@@ -35,7 +36,11 @@ public class ProtocolFactory {
 
         // Use HDLC instead of KISS for the sound modem as we are the modem
         if (sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("sound_modem")) {
-            protocolType = ProtocolFactory.ProtocolType.HDLC;
+            if (sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200").startsWith("F")) {
+                protocolType = ProtocolType.FREEDV;
+            } else {
+                protocolType = ProtocolFactory.ProtocolType.HDLC;
+            }
         } else if (sharedPreferences.getBoolean(PreferenceKeys.KISS_ENABLED, true)) {
             if (sharedPreferences.getBoolean(PreferenceKeys.KISS_PARROT, false)) {
                 protocolType = ProtocolFactory.ProtocolType.KISS_PARROT;
@@ -77,6 +82,9 @@ public class ProtocolFactory {
             case HDLC:
                 proto = new Hdlc(sharedPreferences);
                 break;
+            case FREEDV:
+                // standalone
+                return new Freedv();
             case RAW:
             default:
                 proto = new Raw();
@@ -96,7 +104,7 @@ public class ProtocolFactory {
         proto = new AudioFrameAggregator(proto, codec2ModeId);
         proto = new AudioCodec2(proto, codec2ModeId);
 
-        if (aprsEnabled) { // && protocolType != ProtocolType.RAW) {
+        if (aprsEnabled) {
             proto = new Aprs(proto);
         }
         return proto;

@@ -53,7 +53,7 @@ public class SoundModemFsk implements Transport, Runnable {
     private boolean _isRunning = true;
 
     private final ByteBuffer _sampleBuffer;
-    private final boolean _isLoopback = false;
+    private boolean _isLoopback = false;
 
     private final long _fskModem;
 
@@ -70,6 +70,8 @@ public class SoundModemFsk implements Transport, Runnable {
         int bitRate = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200"));
         int gain = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_GAIN, "10000"));
         _pttOffDelayMs = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_PTT_OFF_DELAY_MS, "1000"));
+        _isLoopback = _sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_LOOPBACK, false);
+
         _name = "SndModemFsk" + bitRate;
         if (bitRate == 300) {
             // <230 spacing for 300 bps does not work with codec2 fsk for receive

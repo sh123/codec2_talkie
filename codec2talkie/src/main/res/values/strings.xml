@@ -307,4 +307,6 @@
     <string name="ports_sound_modem_rig_label">&#127899;</string>
     <string name="ports_sound_modem_ptt_off_delay_ms_title">CAT PTT transmit off delay</string>
     <string name="ports_sound_modem_ptt_off_delay_ms_summary">How long to wait before switching off the transmission after last data is sent out (milliseconds)</string>
+    <string name="ports_sound_modem_loopback_title">Enable modulator loopback mode</string>
+    <string name="ports_sound_modem_loopback_summary">Audio modulated samples will be fed back to de-modulator</string>
 </resources>

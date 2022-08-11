@@ -1,9 +1,15 @@
 package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.util.Log;
 
+import androidx.preference.PreferenceManager;
+
+import com.radio.codec2talkie.app.AppWorker;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
+import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.transport.Transport;
 import com.ustadmobile.codec2.Codec2;
 
@@ -11,8 +17,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class Freedv implements Protocol {
-    private final int _freedvMode;
-    private final Protocol _childProtocol;
+    private static final String TAG = Freedv.class.getSimpleName();
 
     private ProtocolCallback _parentProtocolCallback;
     private Transport _transport;
@@ -22,18 +27,20 @@ public class Freedv implements Protocol {
     private short[] _modemTxBuffer;
     private short[] _speechRxBuffer;
 
-    public Freedv(Protocol childProtocol, int freedvMode) {
-        _childProtocol = childProtocol;
-        _freedvMode = freedvMode;
+    public Freedv() {
     }
 
     @Override
     public void initialize(Transport transport, Context context, ProtocolCallback parentProtocolCallback) throws IOException {
         _transport = transport;
         _parentProtocolCallback = parentProtocolCallback;
-        _childProtocol.initialize(transport, context, _parentProtocolCallback);
 
-        _freedv = Codec2.freedvCreate(_freedvMode);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String modemType = sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200");
+        int mode = Integer.parseInt(modemType.substring(1));
+        Log.i(TAG, "Using freedv mode " + mode);
+
+        _freedv = Codec2.freedvCreate(mode);
         _modemTxBuffer = new short[Codec2.freedvGetNomModemSamples(_freedv)];
         _speechRxBuffer = new short[Codec2.freedvGetMaxSpeechSamples(_freedv)];
     }
@@ -46,7 +53,9 @@ public class Freedv implements Protocol {
     @Override
     public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException {
         Codec2.freedvTx(_freedv, _modemTxBuffer, pcmFrame);
+        Log.i(TAG, "send pcm " + _modemTxBuffer.length);
         _transport.write(_modemTxBuffer);
+        _parentProtocolCallback.onTransmitPcmAudio(src, dst, codec, pcmFrame);
     }
 
     @Override
@@ -69,6 +78,7 @@ public class Freedv implements Protocol {
         if (bytesRead == nin) {
             long cntRead = Codec2.freedvRx(_freedv, _speechRxBuffer, buf);
             if (cntRead > 0) {
+                Log.i(TAG, "receive " + cntRead);
                 _parentProtocolCallback.onReceivePcmAudio(null, null, -1, Arrays.copyOf(_speechRxBuffer, (int) cntRead));
                 return true;
             }
