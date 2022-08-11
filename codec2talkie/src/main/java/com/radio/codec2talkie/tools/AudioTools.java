@@ -49,9 +49,7 @@ public class AudioTools {
     }
 
     public static String getFreedvModeAsText(SharedPreferences sharedPreferences) {
-        if (SettingsWrapper.isSoundModemEnabled(sharedPreferences) &&
-            SettingsWrapper.isFreeDvSoundModemModulation(sharedPreferences)) {
-
+        if (SettingsWrapper.isFreeDvSoundModemModulation(sharedPreferences)) {
             switch (SettingsWrapper.getFreeDvSoundModemModulation(sharedPreferences)) {
                 case Codec2.FREEDV_MODE_700C:
                     return "700C";

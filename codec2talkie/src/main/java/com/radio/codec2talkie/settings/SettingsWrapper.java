@@ -36,7 +36,8 @@ public class SettingsWrapper {
     }
 
     public static boolean isFreeDvSoundModemModulation(SharedPreferences sharedPreferences) {
-        return sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200").startsWith("F");
+        return isSoundModemEnabled(sharedPreferences) &&
+                sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200").startsWith("F");
     }
 
     public static int getFreeDvSoundModemModulation(SharedPreferences sharedPreferences) {
