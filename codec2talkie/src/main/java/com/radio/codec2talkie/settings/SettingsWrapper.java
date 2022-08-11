@@ -48,6 +48,14 @@ public class SettingsWrapper {
         return -1;
     }
 
+    public static int getFskSpeed(SharedPreferences sharedPreferences) {
+        String modemType = sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200");
+        if (!modemType.startsWith("F")) {
+            return Integer.parseInt(modemType);
+        }
+        return -1;
+    }
+
     public static boolean isKissProtocolEnabled(SharedPreferences sharedPreferences) {
         return sharedPreferences.getBoolean(PreferenceKeys.KISS_ENABLED, true);
     }

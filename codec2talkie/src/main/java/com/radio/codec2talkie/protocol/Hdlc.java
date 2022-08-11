@@ -7,6 +7,7 @@ import android.util.Log;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.tools.BitTools;
 import com.radio.codec2talkie.tools.ChecksumTools;
 import com.radio.codec2talkie.tools.DebugTools;
@@ -35,9 +36,7 @@ public class Hdlc implements Protocol {
 
     public Hdlc(SharedPreferences sharedPreferences) {
         double preambleLenSec = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_PREAMBLE, "200")) / 1000.0;
-        String modemType = sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200");
-        // FIXME if more modulation schemes
-        int modemSpeed = modemType.equals("300") ? 300 : 1200;
+        int modemSpeed = SettingsWrapper.getFskSpeed(sharedPreferences);
         _prefixSymCount = (int) (preambleLenSec * modemSpeed / 8);
 
         _rxDataBuffer = new byte[RX_BUFFER_SIZE];

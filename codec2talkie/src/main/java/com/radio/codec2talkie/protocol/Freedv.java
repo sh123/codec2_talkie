@@ -10,6 +10,7 @@ import com.radio.codec2talkie.app.AppWorker;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.ustadmobile.codec2.Codec2;
@@ -37,8 +38,7 @@ public class Freedv implements Protocol {
         _parentProtocolCallback = parentProtocolCallback;
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String modemType = sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200");
-        int mode = Integer.parseInt(modemType.substring(1));
+        int mode = SettingsWrapper.getFreeDvSoundModemModulation(sharedPreferences);
         Log.i(TAG, "Using freedv mode " + AudioTools.getFreedvModeAsText(sharedPreferences));
 
         _freedv = Codec2.freedvCreate(mode);
