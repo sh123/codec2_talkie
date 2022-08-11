@@ -76,6 +76,7 @@ public class SettingsWrapper {
     }
 
     public static boolean isAprsEnabled(SharedPreferences sharedPreferences) {
-        return sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
+        return sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false) &&
+                !isFreeDvSoundModemModulation(sharedPreferences); // no aprs when in freedv
     }
 }

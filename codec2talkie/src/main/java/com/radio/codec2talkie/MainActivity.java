@@ -474,7 +474,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
 
         // aprs
-        boolean aprsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
+        boolean aprsEnabled = SettingsWrapper.isAprsEnabled(_sharedPreferences);
         if (aprsEnabled) {
             status += getString(R.string.aprs_label);
 
@@ -526,7 +526,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        boolean isAprsEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
+        boolean isAprsEnabled = SettingsWrapper.isAprsEnabled(_sharedPreferences);
         menu.setGroupVisible(R.id.group_aprs, isAprsEnabled);
         return true;
     }
