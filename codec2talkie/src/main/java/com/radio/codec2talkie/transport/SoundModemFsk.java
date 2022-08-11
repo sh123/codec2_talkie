@@ -21,6 +21,7 @@ import com.ustadmobile.codec2.Codec2;
 import java.io.IOException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.nio.ShortBuffer;
 import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -29,9 +30,7 @@ public class SoundModemFsk implements Transport, Runnable {
 
     private static final String TAG = SoundModemFsk.class.getSimpleName();
 
-    private static final int RECORD_DELAY_MS = 10;
-
-    // NOTE, codec2 library requires that sample_rate % bit_rate == 0
+    // NOTE, codec2 fsk library requires that sample_rate % bit_rate == 0
     public static final int SAMPLE_RATE = 19200;
     //public static final int SAMPLE_RATE = 48000;
 
@@ -52,8 +51,10 @@ public class SoundModemFsk implements Transport, Runnable {
 
     private boolean _isRunning = true;
 
+    private final ShortBuffer _recordAudioSampleBuffer;
+
     private final ByteBuffer _sampleBuffer;
-    private boolean _isLoopback = false;
+    private boolean _isLoopback;
 
     private final long _fskModem;
 
@@ -62,9 +63,12 @@ public class SoundModemFsk implements Transport, Runnable {
     private boolean _isPttOn;
     private final int _pttOffDelayMs;
 
+    private byte _prevBit;
+
     public SoundModemFsk(Context context) {
         _context = context;
         _isPttOn = false;
+        _prevBit = 0;
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
 
         boolean disableRx = _sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_DISABLE_RX, false);
@@ -93,6 +97,7 @@ public class SoundModemFsk implements Transport, Runnable {
         constructSystemAudioDevices(disableRx);
 
         _sampleBuffer = ByteBuffer.allocate(_isLoopback ? 1024 * 100 : 0);
+        _recordAudioSampleBuffer = ShortBuffer.allocate(_isLoopback ? 1024*100 : 1024*10);
 
         _rigCtl = RigCtlFactory.create(context);
         try {
@@ -150,15 +155,40 @@ public class SoundModemFsk implements Transport, Runnable {
 
     @Override
     public int read(byte[] data) throws IOException {
-        synchronized (_bitBuffer) {
-            if (_bitBuffer.position() > 0) {
-                _bitBuffer.flip();
-                int len = _bitBuffer.remaining();
-                _bitBuffer.get(data, 0, len);
-                //Log.v(TAG, "read user: " + DebugTools.byteBitsToFlatString(data));
-                _bitBuffer.compact();
-                return len;
+        int nin = Codec2.fskNin(_fskModem);
+
+        synchronized (_recordAudioSampleBuffer) {
+            // read samples to record audio buffer if there is enough data
+            if (_recordAudioSampleBuffer.position() >= nin) {
+                _recordAudioSampleBuffer.flip();
+                _recordAudioSampleBuffer.get(_recordAudioBuffer, 0, nin);
+                _recordAudioSampleBuffer.compact();
+                //Log.i(TAG, "read " + _recordAudioBuffer.position() + " " +audioSamples.length + " " +  DebugTools.shortsToHex(audioSamples));
+            // otherwise return void to the user
+            } else {
+                return 0;
             }
+        }
+        //Log.v(TAG, "read audio power: " + AudioTools.getSampleLevelDb(Arrays.copyOf(_recordAudioBuffer, Codec2.fskNin(_fskModem))));
+        //Log.v(TAG, readCnt + " " + _recordAudioBuffer.length + " " + Codec2.fskNin(_fskModem));
+        Codec2.fskDemodulate(_fskModem, _recordAudioBuffer, _recordBitBuffer);
+
+        //Log.v(TAG, "read NRZ " + DebugTools.byteBitsToFlatString(_recordBitBuffer));
+        //Log.v(TAG, "read     " + DebugTools.byteBitsToFlatString(BitTools.convertFromNRZI(_recordBitBuffer, prevBit)));
+        try {
+            _bitBuffer.put(BitTools.convertFromNRZI(_recordBitBuffer, _prevBit));
+            _prevBit = _recordBitBuffer[_recordBitBuffer.length - 1];
+        } catch (BufferOverflowException e) {
+            e.printStackTrace();
+            _bitBuffer.clear();
+        }
+        if (_bitBuffer.position() > 0) {
+            _bitBuffer.flip();
+            int len = _bitBuffer.remaining();
+            _bitBuffer.get(data, 0, len);
+            //Log.v(TAG, "read user: " + DebugTools.byteBitsToFlatString(data));
+            _bitBuffer.compact();
+            return len;
         }
         return 0;
     }
@@ -181,12 +211,16 @@ public class SoundModemFsk implements Transport, Runnable {
                 Codec2.fskModulate(_fskModem, _playbackAudioBuffer, _playbackBitBuffer);
                 //Log.v(TAG, "write samples: " + DebugTools.shortsToHex(_playbackAudioBuffer));
                 if (_isLoopback) {
-                    synchronized (_sampleBuffer) {
+                    synchronized (_recordAudioSampleBuffer) {
                         for (short sample : _playbackAudioBuffer) {
-                            _sampleBuffer.putShort(sample);
+                            try {
+                                _recordAudioSampleBuffer.put(sample);
+                            } catch (BufferOverflowException e) {
+                                // client is transmitting and cannot consume the buffer, just discard
+                                _recordAudioSampleBuffer.clear();
+                            }
                         }
                     }
-                    //Log.v(TAG, "pos: " + _sampleBuffer.position() / 2);
                 } else {
                     _systemAudioPlayer.write(_playbackAudioBuffer, 0, _playbackAudioBuffer.length);
                 }
@@ -199,9 +233,12 @@ public class SoundModemFsk implements Transport, Runnable {
         byte [] bitBufferTail = Arrays.copyOf(_playbackBitBuffer, j);
         Codec2.fskModulate(_fskModem, _playbackAudioBuffer, bitBufferTail);
         if (_isLoopback) {
-            synchronized (_sampleBuffer) {
-                for (short sample : _playbackAudioBuffer) {
-                    _sampleBuffer.putShort(sample);
+            for (short sample : _playbackAudioBuffer) {
+                try {
+                    _recordAudioSampleBuffer.put(sample);
+                } catch (BufferOverflowException e) {
+                    // client is transmitting and cannot consume the buffer, just discard
+                    _recordAudioSampleBuffer.clear();
                 }
             }
         } else {
@@ -235,52 +272,24 @@ public class SoundModemFsk implements Transport, Runnable {
 
     @Override
     public void run() {
-        byte prevBit = 0;
+        Log.i(TAG, "Starting receive thread");
         android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
+        int readSize = 32;
+        short[] sampleBuf = new short[readSize];
         while (_isRunning) {
-            int nin = Codec2.fskNin(_fskModem);
-            try {
-                Thread.sleep(RECORD_DELAY_MS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            int readCnt = _systemAudioRecorder.read(sampleBuf, 0, readSize);
+            if (readCnt != readSize) {
+                Log.w(TAG, "" + readCnt + " != " + readSize);
+                continue;
             }
-            if (_isLoopback) {
-                synchronized (_sampleBuffer) {
-                    if (_sampleBuffer.position() / 2 >= nin) {
-                        //Log.i(TAG, "nin: " + nin + ", pos: " + _sampleBuffer.position() / 2);
-                        _sampleBuffer.flip();
-                        for (int i = 0; i < nin; i++) {
-                            _recordAudioBuffer[i] = _sampleBuffer.getShort();
-                        }
-                        //Log.i(TAG, String.format("%04x", _recordAudioBuffer[0]));
-                        _sampleBuffer.compact();
-                        //Log.v(TAG, "read samples: " + DebugTools.shortsToHex(_recordAudioBuffer));
-                    } else {
-                        continue;
+            synchronized (_recordAudioBuffer) {
+                for (short sample : sampleBuf) {
+                    try {
+                        _recordAudioSampleBuffer.put(sample);
+                    } catch (BufferOverflowException e) {
+                        // user is probably transmitting and cannot consume, just discard
+                        _recordAudioSampleBuffer.clear();
                     }
-                }
-            } else {
-                int readCnt = _systemAudioRecorder.read(_recordAudioBuffer, 0, nin);
-                // TODO, read tail
-                if (readCnt != nin) {
-                    Log.w(TAG, "" + readCnt + " != " + nin);
-                    continue;
-                }
-                //Log.v(TAG, "read samples: " + DebugTools.shortsToHex(_recordAudioBuffer));
-            }
-            //Log.v(TAG, "read audio power: " + AudioTools.getSampleLevelDb(Arrays.copyOf(_recordAudioBuffer, Codec2.fskNin(_fskModem))));
-            //Log.v(TAG, readCnt + " " + _recordAudioBuffer.length + " " + Codec2.fskNin(_fskModem));
-            Codec2.fskDemodulate(_fskModem, _recordAudioBuffer, _recordBitBuffer);
-
-            //Log.v(TAG, "read NRZ " + DebugTools.byteBitsToFlatString(_recordBitBuffer));
-            //Log.v(TAG, "read     " + DebugTools.byteBitsToFlatString(BitTools.convertFromNRZI(_recordBitBuffer, prevBit)));
-            synchronized (_bitBuffer) {
-                try {
-                    _bitBuffer.put(BitTools.convertFromNRZI(_recordBitBuffer, prevBit));
-                    prevBit = _recordBitBuffer[_recordBitBuffer.length - 1];
-                } catch (BufferOverflowException e) {
-                    e.printStackTrace();
-                    _bitBuffer.clear();
                 }
             }
         }

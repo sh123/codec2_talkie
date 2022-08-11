@@ -15,11 +15,9 @@ import androidx.preference.PreferenceManager;
 import com.radio.codec2talkie.rigctl.RigCtl;
 import com.radio.codec2talkie.rigctl.RigCtlFactory;
 import com.radio.codec2talkie.settings.PreferenceKeys;
-import com.radio.codec2talkie.tools.DebugTools;
 
 import java.io.IOException;
 import java.nio.BufferOverflowException;
-import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -42,9 +40,9 @@ public class SoundModem implements Transport, Runnable {
     private boolean _isPttOn;
     private final int _pttOffDelayMs;
 
-    private final ShortBuffer _recordAudioBuffer;
+    private final ShortBuffer _recordAudioSampleBuffer;
 
-    private boolean _isLoopback;
+    private final boolean _isLoopback;
 
     public SoundModem(Context context) {
         _name = "SoundModem";
@@ -66,7 +64,7 @@ public class SoundModem implements Transport, Runnable {
             e.printStackTrace();
         }
 
-        _recordAudioBuffer = ShortBuffer.allocate(_isLoopback ? 1024*100 : 1024*10);
+        _recordAudioSampleBuffer = ShortBuffer.allocate(_isLoopback ? 1024*100 : 1024*10);
 
         if (!disableRx && !_isLoopback)
             new Thread(this).start();
@@ -127,11 +125,11 @@ public class SoundModem implements Transport, Runnable {
 
     @Override
     public int read(short[] audioSamples) throws IOException {
-        synchronized (_recordAudioBuffer) {
-            if (_recordAudioBuffer.position() >= audioSamples.length) {
-                _recordAudioBuffer.flip();
-                _recordAudioBuffer.get(audioSamples);
-                _recordAudioBuffer.compact();
+        synchronized (_recordAudioSampleBuffer) {
+            if (_recordAudioSampleBuffer.position() >= audioSamples.length) {
+                _recordAudioSampleBuffer.flip();
+                _recordAudioSampleBuffer.get(audioSamples);
+                _recordAudioSampleBuffer.compact();
                 //Log.i(TAG, "read " + _recordAudioBuffer.position() + " " +audioSamples.length + " " +  DebugTools.shortsToHex(audioSamples));
                 return audioSamples.length;
             }
@@ -145,13 +143,13 @@ public class SoundModem implements Transport, Runnable {
         if (_systemAudioPlayer.getPlayState() != AudioTrack.PLAYSTATE_PLAYING)
             _systemAudioPlayer.play();
         if (_isLoopback) {
-            synchronized (_recordAudioBuffer) {
+            synchronized (_recordAudioSampleBuffer) {
                 for (short sample : audioSamples) {
                     try {
-                        _recordAudioBuffer.put(sample);
+                        _recordAudioSampleBuffer.put(sample);
                     } catch (BufferOverflowException e) {
                         // client is transmitting and cannot consume the buffer, just discard
-                        _recordAudioBuffer.clear();
+                        _recordAudioSampleBuffer.clear();
                     }
                 }
             }
@@ -185,13 +183,13 @@ public class SoundModem implements Transport, Runnable {
                 Log.w(TAG, "" + readCnt + " != " + readSize);
                 continue;
             }
-            synchronized (_recordAudioBuffer) {
+            synchronized (_recordAudioSampleBuffer) {
                 for (short sample : sampleBuf) {
                     try {
-                        _recordAudioBuffer.put(sample);
+                        _recordAudioSampleBuffer.put(sample);
                     } catch (BufferOverflowException e) {
-                        e.printStackTrace();
-                        _recordAudioBuffer.clear();
+                        // user is probably transmitting and cannot consume, just discard
+                        _recordAudioSampleBuffer.clear();
                     }
                 }
             }
