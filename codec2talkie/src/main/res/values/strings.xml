@@ -22,8 +22,8 @@
     <string name="main_status_loopback_test">Loopback</string>
     <string name="main_status_stop">STOPPED</string>
     <string name="main_status_tx">TRANSMITTING</string>
-    <string name="main_status_rx">RECEIVING</string>
-    <string name="main_status_voice_received">(RECEIVING)</string>
+    <string name="main_status_rx">(RECEIVING)</string>
+    <string name="main_status_voice_received">RECEIVING</string>
     <string name="main_status_rx_error">RECEIVING\nERROR</string>
     <string name="main_status_tx_error">TRANSMITTING\nERROR</string>
 

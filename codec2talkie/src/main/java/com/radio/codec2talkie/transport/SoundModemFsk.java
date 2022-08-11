@@ -162,13 +162,7 @@ public class SoundModemFsk implements Transport, Runnable {
             // read samples to record audio buffer if there is enough data
             if (_recordAudioSampleBuffer.position() >= nin) {
                 _recordAudioSampleBuffer.flip();
-                try {
-                    _recordAudioSampleBuffer.get(_recordAudioBuffer, 0, nin);
-                } catch (BufferUnderflowException e) {
-                    e.printStackTrace();
-                    _recordAudioSampleBuffer.clear();
-                    return 0;
-                }
+                _recordAudioSampleBuffer.get(_recordAudioBuffer, 0, nin);
                 _recordAudioSampleBuffer.compact();
                 //Log.i(TAG, "read " + _recordAudioBuffer.position() + " " +audioSamples.length + " " +  DebugTools.shortsToHex(audioSamples));
             // otherwise return void to the user
@@ -240,12 +234,14 @@ public class SoundModemFsk implements Transport, Runnable {
         byte [] bitBufferTail = Arrays.copyOf(_playbackBitBuffer, j);
         Codec2.fskModulate(_fskModem, _playbackAudioBuffer, bitBufferTail);
         if (_isLoopback) {
-            for (short sample : _playbackAudioBuffer) {
-                try {
-                    _recordAudioSampleBuffer.put(sample);
-                } catch (BufferOverflowException e) {
-                    // client is transmitting and cannot consume the buffer, just discard
-                    _recordAudioSampleBuffer.clear();
+            synchronized (_recordAudioSampleBuffer) {
+                for (short sample : _playbackAudioBuffer) {
+                    try {
+                        _recordAudioSampleBuffer.put(sample);
+                    } catch (BufferOverflowException e) {
+                        // client is transmitting and cannot consume the buffer, just discard
+                        _recordAudioSampleBuffer.clear();
+                    }
                 }
             }
         } else {
@@ -289,7 +285,7 @@ public class SoundModemFsk implements Transport, Runnable {
                 Log.w(TAG, "" + readCnt + " != " + readSize);
                 continue;
             }
-            synchronized (_recordAudioBuffer) {
+            synchronized (_recordAudioSampleBuffer) {
                 for (short sample : sampleBuf) {
                     try {
                         _recordAudioSampleBuffer.put(sample);

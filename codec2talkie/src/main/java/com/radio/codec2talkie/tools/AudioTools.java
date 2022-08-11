@@ -80,7 +80,7 @@ public class AudioTools {
 
         // use freedv mode text instead if it is active
         String freedvModeLabel = getFreedvModeAsText(sharedPreferences);
-        if (freedvModeLabel != null) return "DV: " + freedvModeLabel;
+        if (freedvModeLabel != null) return freedvModeLabel;
 
         // codec2 speed
         String speedModeInfo = "C2: " + AudioTools.extractCodec2Speed(codec2ModeName);
