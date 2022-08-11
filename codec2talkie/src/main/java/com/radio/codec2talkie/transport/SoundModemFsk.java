@@ -73,7 +73,7 @@ public class SoundModemFsk implements Transport, Runnable {
         _pttOffDelayMs = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_PTT_OFF_DELAY_MS, "1000"));
         _isLoopback = _sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_LOOPBACK, false);
 
-        _name = "AFSK" + bitRate;
+        _name = "FSK" + bitRate;
         if (_isLoopback) _name += "_";
 
         if (bitRate == 300) {
