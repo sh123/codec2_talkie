@@ -57,7 +57,7 @@ public class Codec2 {
     public native static long fskDemodulate(long conFsk, short[] inputSamples, byte[] outputBits);
 
     // freedv
-    public native static long freedvCreate(int mode);
+    public native static long freedvCreate(int mode, int gain);
     public native static int freedvDestroy(long conFreedv);
 
     public native static int freedvGetMaxSpeechSamples(long conFreedv);

@@ -39,9 +39,11 @@ public class Freedv implements Protocol {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         int mode = SettingsWrapper.getFreeDvSoundModemModulation(sharedPreferences);
-        Log.i(TAG, "Using freedv mode " + AudioTools.getFreedvModeAsText(sharedPreferences));
+        int gain = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_GAIN, "10000"));
 
-        _freedv = Codec2.freedvCreate(mode);
+        Log.i(TAG, "Using freedv mode " + AudioTools.getFreedvModeAsText(sharedPreferences) + " gain " + gain);
+
+        _freedv = Codec2.freedvCreate(mode, gain);
         _modemTxBuffer = new short[Codec2.freedvGetNomModemSamples(_freedv)];
         _speechRxBuffer = new short[Codec2.freedvGetMaxSpeechSamples(_freedv)];
     }
@@ -77,12 +79,15 @@ public class Freedv implements Protocol {
         short[] buf = new short[nin];
         int bytesRead = _transport.read(buf);
         if (bytesRead == nin) {
+            //Log.i(TAG, "read " + bytesRead);
             long cntRead = Codec2.freedvRx(_freedv, _speechRxBuffer, buf);
             if (cntRead > 0) {
-                //Log.i(TAG, "receive " + cntRead);
+                Log.i(TAG, "receive " + cntRead);
                 _parentProtocolCallback.onReceivePcmAudio(null, null, -1, Arrays.copyOf(_speechRxBuffer, (int) cntRead));
                 return true;
             }
+        } else {
+            //Log.w(TAG, bytesRead + "!=" + nin);
         }
         return false;
     }

@@ -33,6 +33,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         struct freedv *freeDv;
         short *speechSamples;
         short *modemSamples;
+        int gain;
     };
 
     static Context *getContext(jlong jp) {
@@ -97,10 +98,11 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         return reinterpret_cast<jlong>(conFsk);
     }
 
-    static jlong freedvCreate(JNIEnv *env, jclass clazz, int mode) {
+    static jlong freedvCreate(JNIEnv *env, jclass clazz, int mode, int gain) {
         struct ContextFreedv *conFreedv;
         conFreedv = (struct ContextFreedv *) malloc(sizeof(struct ContextFreedv));
         conFreedv->freeDv = freedv_open(mode);
+        conFreedv->gain = gain;
         conFreedv->speechSamples = static_cast<short *>(malloc(
                 freedv_get_n_max_speech_samples(conFreedv->freeDv) * sizeof(short)));
         conFreedv->modemSamples = static_cast<short *>(malloc(
@@ -270,6 +272,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         ContextFreedv *conFreedv = getContextFreedv(n);
         int nin = freedv_nin(conFreedv->freeDv);
         env->GetShortArrayRegion(inputModemSamples, 0, nin, conFreedv->speechSamples);
+        //int cntRead = freedv_shortrx(conFreedv->freeDv, conFreedv->modemSamples, conFreedv->speechSamples, conFreedv->gain);
         int cntRead = freedv_rx(conFreedv->freeDv, conFreedv->modemSamples, conFreedv->speechSamples);
         env->SetShortArrayRegion(outputSpeechSamples, 0, nin, conFreedv->modemSamples);
         return cntRead;
@@ -295,7 +298,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         {"fskSamplesPerSymbol", "(J)I",         (void *) fskSamplesPerSymbol},
         {"fskNin", "(J)I",                      (void *) fskNin},
         // freedv
-        {"freedvCreate", "(I)J",                (void *)freedvCreate},
+        {"freedvCreate", "(II)J",               (void *)freedvCreate},
         {"freedvDestroy", "(J)I",               (void *)freedvDestroy},
         {"freedvGetMaxSpeechSamples", "(J)I",   (void *)freedvGetMaxSpeechSamples},
         {"freedvGetMaxModemSamples", "(J)I",    (void *)freedvGetMaxModemSamples},

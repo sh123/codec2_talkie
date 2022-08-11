@@ -15,6 +15,7 @@ import androidx.preference.PreferenceManager;
 import com.radio.codec2talkie.rigctl.RigCtl;
 import com.radio.codec2talkie.rigctl.RigCtlFactory;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.DebugTools;
 
 import java.io.IOException;
 import java.nio.BufferOverflowException;
@@ -129,10 +130,10 @@ public class SoundModem implements Transport, Runnable {
     public int read(short[] audioSamples) throws IOException {
         synchronized (_recordAudioBuffer) {
             if (_recordAudioBuffer.position() >= audioSamples.length) {
-                //Log.i(TAG, "read " + _recordAudioBuffer.position());
                 _recordAudioBuffer.flip();
                 _recordAudioBuffer.get(audioSamples);
                 _recordAudioBuffer.compact();
+                //Log.i(TAG, "read " + _recordAudioBuffer.position() + " " +audioSamples.length + " " +  DebugTools.shortsToHex(audioSamples));
                 return audioSamples.length;
             }
         }
