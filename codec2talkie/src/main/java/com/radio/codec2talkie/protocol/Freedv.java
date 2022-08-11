@@ -82,7 +82,7 @@ public class Freedv implements Protocol {
             //Log.i(TAG, "read " + bytesRead);
             long cntRead = Codec2.freedvRx(_freedv, _speechRxBuffer, buf);
             if (cntRead > 0) {
-                Log.i(TAG, "receive " + cntRead);
+                //Log.i(TAG, "receive " + cntRead);
                 _parentProtocolCallback.onReceivePcmAudio(null, null, -1, Arrays.copyOf(_speechRxBuffer, (int) cntRead));
                 return true;
             }

@@ -28,8 +28,7 @@ public class SoundModem implements Transport, Runnable {
 
     private static final String TAG = SoundModem.class.getSimpleName();
 
-    private static final int RECORD_DELAY_MS = 10;
-    private static final int SAMPLE_RATE = 8000;
+    private static final int SAMPLE_RATE = 8000;    // TODO, need to get from freedv
 
     private String _name;
 
@@ -45,7 +44,7 @@ public class SoundModem implements Transport, Runnable {
 
     private final ShortBuffer _recordAudioBuffer;
 
-    private boolean _isLoopback = false;
+    private boolean _isLoopback;
 
     public SoundModem(Context context) {
         _name = "SoundModem";
@@ -151,7 +150,7 @@ public class SoundModem implements Transport, Runnable {
                     try {
                         _recordAudioBuffer.put(sample);
                     } catch (BufferOverflowException e) {
-                        e.printStackTrace();
+                        // client is transmitting and cannot consume the buffer, just discard
                         _recordAudioBuffer.clear();
                     }
                 }
@@ -181,11 +180,6 @@ public class SoundModem implements Transport, Runnable {
         int readSize = 32;
         short [] sampleBuf = new short[readSize];
         while (_isRunning) {
-            try {
-                Thread.sleep(RECORD_DELAY_MS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             int readCnt = _systemAudioRecorder.read(sampleBuf, 0, readSize);
             if (readCnt != readSize) {
                 Log.w(TAG, "" + readCnt + " != " + readSize);

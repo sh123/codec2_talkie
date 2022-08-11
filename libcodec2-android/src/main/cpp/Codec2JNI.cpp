@@ -108,6 +108,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         conFreedv->modemSamples = static_cast<short *>(malloc(
                 freedv_get_n_max_modem_samples(conFreedv->freeDv) * sizeof(short)));
         freedv_set_squelch_en(conFreedv->freeDv, 1);
+        freedv_set_snr_squelch_thresh(conFreedv->freeDv, -5.0);
         return reinterpret_cast<jlong>(conFreedv);
     }
 
