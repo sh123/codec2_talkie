@@ -3,7 +3,11 @@ package com.radio.codec2talkie.tools;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 
+import androidx.preference.PreferenceManager;
+
 import com.radio.codec2talkie.app.AppWorker;
+import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.ustadmobile.codec2.Codec2;
 
 public class AudioTools {
 
@@ -43,7 +47,34 @@ public class AudioTools {
         return modeSpeed[1];
     }
 
+    public static String getFreedvModeAsText(SharedPreferences sharedPreferences) {
+        if (sharedPreferences.getString(PreferenceKeys.PORTS_TYPE, "loopback").equals("sound_modem")) {
+            String modemType = sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200");
+            if (modemType.startsWith("F")) {
+                int mode = Integer.parseInt(modemType.substring(1));
+                switch (mode) {
+                    case Codec2.FREEDV_MODE_700C: return "700C";
+                    case Codec2.FREEDV_MODE_700D: return "700D";
+                    case Codec2.FREEDV_MODE_700E: return "700E";
+                    case Codec2.FREEDV_MODE_1600: return "1600";
+                    case Codec2.FREEDV_MODE_800XA: return "800XA";
+                    case Codec2.FREEDV_MODE_2020: return "2020";
+                    case Codec2.FREEDV_MODE_2020B: return "2020B";
+                    case Codec2.FREEDV_MODE_2400A: return "2400A";
+                    case Codec2.FREEDV_MODE_2400B: return "2400B";
+                    default: return null;
+                }
+            }
+        }
+        return null;
+    }
+
     public static String getSpeedStatusText(String codec2ModeName, SharedPreferences sharedPreferences) {
+
+        // use freedv mode text instead if it is active
+        String freedvModeLabel = getFreedvModeAsText(sharedPreferences);
+        if (freedvModeLabel != null) return "DV: " + freedvModeLabel;
+
         // codec2 speed
         String speedModeInfo = "C2: " + AudioTools.extractCodec2Speed(codec2ModeName);
 

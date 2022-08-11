@@ -30,7 +30,7 @@ public class SoundModem implements Transport, Runnable {
     private static final int RECORD_DELAY_MS = 10;
     private static final int SAMPLE_RATE = 8000;
 
-    private final String _name;
+    private String _name;
 
     private AudioTrack _systemAudioPlayer;
     private AudioRecord _systemAudioRecorder;
@@ -47,7 +47,7 @@ public class SoundModem implements Transport, Runnable {
     private boolean _isLoopback = false;
 
     public SoundModem(Context context) {
-        _name = "SndModem";
+        _name = "SoundModem";
         _isPttOn = false;
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -55,6 +55,7 @@ public class SoundModem implements Transport, Runnable {
         boolean disableRx = sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_DISABLE_RX, false);
         _pttOffDelayMs = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_PTT_OFF_DELAY_MS, "1000"));
         _isLoopback = sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_LOOPBACK, false);
+        if (_isLoopback) _name += "_";
 
         constructSystemAudioDevices(disableRx);
 

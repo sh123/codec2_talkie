@@ -35,7 +35,7 @@ public class SoundModemFsk implements Transport, Runnable {
     public static final int SAMPLE_RATE = 19200;
     //public static final int SAMPLE_RATE = 48000;
 
-    private final String _name;
+    private String _name;
 
     private AudioTrack _systemAudioPlayer;
     private AudioRecord _systemAudioRecorder;
@@ -64,6 +64,7 @@ public class SoundModemFsk implements Transport, Runnable {
 
     public SoundModemFsk(Context context) {
         _context = context;
+        _isPttOn = false;
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
 
         boolean disableRx = _sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_DISABLE_RX, false);
@@ -72,7 +73,9 @@ public class SoundModemFsk implements Transport, Runnable {
         _pttOffDelayMs = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_PTT_OFF_DELAY_MS, "1000"));
         _isLoopback = _sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_LOOPBACK, false);
 
-        _name = "SndModemFsk" + bitRate;
+        _name = "AFSK" + bitRate;
+        if (_isLoopback) _name += "_";
+
         if (bitRate == 300) {
             // <230 spacing for 300 bps does not work with codec2 fsk for receive
             _fskModem = Codec2.fskCreate(SAMPLE_RATE, 300, 1600, 200, gain);
@@ -89,10 +92,7 @@ public class SoundModemFsk implements Transport, Runnable {
 
         constructSystemAudioDevices(disableRx);
 
-        if (_isLoopback)
-            _sampleBuffer = ByteBuffer.allocate(100000);
-        else
-            _sampleBuffer = ByteBuffer.allocate(0);
+        _sampleBuffer = ByteBuffer.allocate(_isLoopback ? 1024 * 100 : 0);
 
         _rigCtl = RigCtlFactory.create(context);
         try {
@@ -100,8 +100,6 @@ public class SoundModemFsk implements Transport, Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        _isPttOn = false;
 
         if (!disableRx)
             new Thread(this).start();
