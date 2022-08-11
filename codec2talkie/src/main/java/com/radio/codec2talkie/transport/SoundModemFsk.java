@@ -20,6 +20,7 @@ import com.ustadmobile.codec2.Codec2;
 
 import java.io.IOException;
 import java.nio.BufferOverflowException;
+import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
 import java.util.Arrays;
@@ -83,7 +84,7 @@ public class SoundModemFsk implements Transport, Runnable {
         if (bitRate == 300) {
             // <230 spacing for 300 bps does not work with codec2 fsk for receive
             _fskModem = Codec2.fskCreate(SAMPLE_RATE, 300, 1600, 200, gain);
-        } else  {
+        } else {
             _fskModem = Codec2.fskCreate(SAMPLE_RATE, 1200, 1200, 1000, gain);
         }
 
@@ -97,7 +98,7 @@ public class SoundModemFsk implements Transport, Runnable {
         constructSystemAudioDevices(disableRx);
 
         _sampleBuffer = ByteBuffer.allocate(_isLoopback ? 1024 * 100 : 0);
-        _recordAudioSampleBuffer = ShortBuffer.allocate(_isLoopback ? 1024*100 : 1024*10);
+        _recordAudioSampleBuffer = ShortBuffer.allocate(_isLoopback ? 1024*100 : 1024*100);
 
         _rigCtl = RigCtlFactory.create(context);
         try {
@@ -161,7 +162,13 @@ public class SoundModemFsk implements Transport, Runnable {
             // read samples to record audio buffer if there is enough data
             if (_recordAudioSampleBuffer.position() >= nin) {
                 _recordAudioSampleBuffer.flip();
-                _recordAudioSampleBuffer.get(_recordAudioBuffer, 0, nin);
+                try {
+                    _recordAudioSampleBuffer.get(_recordAudioBuffer, 0, nin);
+                } catch (BufferUnderflowException e) {
+                    e.printStackTrace();
+                    _recordAudioSampleBuffer.clear();
+                    return 0;
+                }
                 _recordAudioSampleBuffer.compact();
                 //Log.i(TAG, "read " + _recordAudioBuffer.position() + " " +audioSamples.length + " " +  DebugTools.shortsToHex(audioSamples));
             // otherwise return void to the user
