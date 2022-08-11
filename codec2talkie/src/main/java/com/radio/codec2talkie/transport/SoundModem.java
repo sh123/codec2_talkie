@@ -177,7 +177,7 @@ public class SoundModem implements Transport, Runnable {
     public void run() {
         Log.i(TAG, "Starting receive thread");
         android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
-        int readSize = 16;
+        int readSize = 32;
         short [] sampleBuf = new short[readSize];
         while (_isRunning) {
             try {
