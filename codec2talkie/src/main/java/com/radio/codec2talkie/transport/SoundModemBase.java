@@ -22,46 +22,48 @@ import java.nio.ShortBuffer;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SoundModem implements Transport, Runnable {
+public class SoundModemBase implements Runnable {
 
-    private static final String TAG = SoundModem.class.getSimpleName();
+    private static final String TAG = SoundModemBase.class.getSimpleName();
 
-    private static final int SAMPLE_RATE = 8000;    // TODO, need to get from freedv
+    protected String _name;
+    protected Context _context;
+    protected SharedPreferences _sharedPreferences;
 
-    private String _name;
+    protected AudioTrack _systemAudioPlayer;
+    protected AudioRecord _systemAudioRecorder;
 
-    private AudioTrack _systemAudioPlayer;
-    private AudioRecord _systemAudioRecorder;
-
-    private boolean _isRunning = true;
+    protected boolean _isRunning = true;
 
     private final RigCtl _rigCtl;
     private Timer _pttOffTimer;
     private boolean _isPttOn;
     private final int _pttOffDelayMs;
 
-    private final ShortBuffer _recordAudioSampleBuffer;
+    protected final ShortBuffer _recordAudioSampleBuffer;
 
-    private final boolean _isLoopback;
+    protected final boolean _isLoopback;
 
-    public SoundModem(Context context) {
+    public SoundModemBase(Context context, int sampleRate) {
         _name = "SoundModem";
         _isPttOn = false;
+        _context = context;
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-        boolean disableRx = sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_DISABLE_RX, false);
-        _pttOffDelayMs = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_PTT_OFF_DELAY_MS, "1000"));
-        _isLoopback = sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_LOOPBACK, false);
+        boolean disableRx = _sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_DISABLE_RX, false);
+        _pttOffDelayMs = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_PTT_OFF_DELAY_MS, "1000"));
+        _isLoopback = _sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_LOOPBACK, false);
         if (_isLoopback) _name += "_";
 
-        constructSystemAudioDevices(disableRx);
+        constructSystemAudioDevices(disableRx, sampleRate);
 
         _rigCtl = RigCtlFactory.create(context);
         try {
             _rigCtl.initialize(TransportFactory.create(TransportFactory.TransportType.USB, context), context, null);
         } catch (IOException e) {
             e.printStackTrace();
+            Log.e(TAG, "Failed to initialize RigCtl");
         }
 
         _recordAudioSampleBuffer = ShortBuffer.allocate(_isLoopback ? 1024*100 : 1024*10);
@@ -70,22 +72,22 @@ public class SoundModem implements Transport, Runnable {
             new Thread(this).start();
     }
 
-    private void constructSystemAudioDevices(boolean disableRx) {
+    private void constructSystemAudioDevices(boolean disableRx, int sampleRate) {
         int audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
-                SAMPLE_RATE,
+                sampleRate,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
 
         int audioSource = MediaRecorder.AudioSource.VOICE_RECOGNITION;
         _systemAudioRecorder = new AudioRecord(
                 audioSource,
-                SAMPLE_RATE,
+                sampleRate,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
                 10*audioRecorderMinBufferSize);
 
         int audioPlayerMinBufferSize = AudioTrack.getMinBufferSize(
-                SAMPLE_RATE,
+                sampleRate,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
         if (!disableRx)
@@ -99,7 +101,7 @@ public class SoundModem implements Transport, Runnable {
                         .build())
                 .setAudioFormat(new AudioFormat.Builder()
                         .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                        .setSampleRate(SAMPLE_RATE)
+                        .setSampleRate(sampleRate)
                         .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
                         .build())
                 .setTransferMode(AudioTrack.MODE_STREAM)
@@ -108,67 +110,16 @@ public class SoundModem implements Transport, Runnable {
         _systemAudioPlayer.setVolume(AudioTrack.getMaxVolume());
     }
 
-    @Override
-    public String name() {
-        return _name;
-    }
-
-    @Override
-    public int read(byte[] data) throws IOException {
-        return 0;
-    }
-
-    @Override
-    public int write(byte[] data) throws IOException {
-        return 0;
-    }
-
-    @Override
-    public int read(short[] audioSamples) throws IOException {
+    protected int read(short[] sampleBuffer, int samplesToRead) {
         synchronized (_recordAudioSampleBuffer) {
-            if (_recordAudioSampleBuffer.position() >= audioSamples.length) {
+            if (_recordAudioSampleBuffer.position() >= samplesToRead) {
                 _recordAudioSampleBuffer.flip();
-                _recordAudioSampleBuffer.get(audioSamples);
+                _recordAudioSampleBuffer.get(sampleBuffer, 0, samplesToRead);
                 _recordAudioSampleBuffer.compact();
-                //Log.i(TAG, "read " + _recordAudioBuffer.position() + " " +audioSamples.length + " " +  DebugTools.shortsToHex(audioSamples));
-                return audioSamples.length;
+                return samplesToRead;
             }
         }
         return 0;
-    }
-
-    @Override
-    public int write(short[] audioSamples) throws IOException {
-        pttOn();
-        if (_systemAudioPlayer.getPlayState() != AudioTrack.PLAYSTATE_PLAYING)
-            _systemAudioPlayer.play();
-        if (_isLoopback) {
-            synchronized (_recordAudioSampleBuffer) {
-                for (short sample : audioSamples) {
-                    try {
-                        _recordAudioSampleBuffer.put(sample);
-                    } catch (BufferOverflowException e) {
-                        // client is transmitting and cannot consume the buffer, just discard
-                        _recordAudioSampleBuffer.clear();
-                    }
-                }
-            }
-        } else {
-            _systemAudioPlayer.write(audioSamples, 0, audioSamples.length);
-        }
-        _systemAudioPlayer.stop();
-        pttOff();
-        return audioSamples.length;
-    }
-
-    @Override
-    public void close() throws IOException {
-        Log.i(TAG, "close()");
-        _isRunning = false;
-        _systemAudioRecorder.stop();
-        _systemAudioPlayer.stop();
-        _systemAudioRecorder.release();
-        _systemAudioPlayer.release();
     }
 
     @Override
@@ -196,7 +147,16 @@ public class SoundModem implements Transport, Runnable {
         }
     }
 
-    private void pttOn() {
+    protected void stop() {
+        Log.i(TAG, "stop()");
+        _isRunning = false;
+        _systemAudioRecorder.stop();
+        _systemAudioPlayer.stop();
+        _systemAudioRecorder.release();
+        _systemAudioPlayer.release();
+    }
+
+    protected void pttOn() {
         if (_isPttOn) return;
 
         try {
@@ -207,7 +167,7 @@ public class SoundModem implements Transport, Runnable {
         }
     }
 
-    private void pttOff() {
+    protected void pttOff() {
         if (!_isPttOn) return;
         if (_pttOffTimer != null) {
             _pttOffTimer.cancel();

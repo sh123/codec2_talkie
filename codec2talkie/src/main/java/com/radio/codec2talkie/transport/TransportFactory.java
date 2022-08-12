@@ -9,7 +9,6 @@ import com.radio.codec2talkie.connect.BleHandler;
 import com.radio.codec2talkie.connect.BluetoothSocketHandler;
 import com.radio.codec2talkie.connect.TcpIpSocketHandler;
 import com.radio.codec2talkie.connect.UsbPortHandler;
-import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsWrapper;
 
 import java.io.IOException;
@@ -49,7 +48,7 @@ public class TransportFactory {
             case BLE:
                 return new Ble(BleHandler.getGatt(), BleHandler.getName());
             case SOUND_MODEM:
-                return SettingsWrapper.isFreeDvSoundModemModulation(sharedPreferences) ? new SoundModem(context) : new SoundModemFsk(context);
+                return SettingsWrapper.isFreeDvSoundModemModulation(sharedPreferences) ? new SoundModemRaw(context) : new SoundModemFsk(context);
             case LOOPBACK:
             default:
                 return new Loopback();
