@@ -352,7 +352,7 @@
     </string-array>
 
     <string-array name="ports_type_labels">
-        <item>Loopback/Echo</item>
+        <item>[Debug] Loopback/Echo</item>
         <item>Bluetooth</item>
         <item>Bluetooth LE (BLE)</item>
         <item>TCP/IP</item>
@@ -425,5 +425,43 @@
         <item>10000</item>
         <item>12589</item>
         <item>15848</item>
+    </string-array>
+
+    <string-array name="ports_sound_modem_freedv_squelch_snr_entries">
+        <item>-5 db</item>
+        <item>-4 db</item>
+        <item>-3 db</item>
+        <item>-2 db</item>
+        <item>-1 db</item>
+        <item>+0 db</item>
+        <item>+1 db</item>
+        <item>+2 db</item>
+        <item>+3 db</item>
+        <item>+4 db</item>
+        <item>+5 db</item>
+    </string-array>
+
+    <string-array name="ports_sound_modem_freedv_squelch_snr_values">
+        <item>-5.0</item>
+        <item>-4.0</item>
+        <item>-3.0</item>
+        <item>-2.0</item>
+        <item>-1.0</item>
+        <item>0.0</item>
+        <item>1.0</item>
+        <item>2.0</item>
+        <item>3.0</item>
+        <item>4.0</item>
+        <item>5.0</item>
+    </string-array>
+
+    <string-array name="ports_sound_modem_freedv_data_mode_entries">
+        <item>DATAC1 980bps (medium SNR)</item>
+        <item>DATAC3 321bps (low SNR)</item>
+    </string-array>
+
+    <string-array name="ports_sound_modem_freedv_data_mode_values">
+        <item>10</item>
+        <item>12</item>
     </string-array>
 </resources>

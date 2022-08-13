@@ -39,11 +39,13 @@ public class Freedv implements Protocol {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         int mode = SettingsWrapper.getFreeDvSoundModemModulation(sharedPreferences);
-        int gain = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_GAIN, "10000"));
+        int dataMode = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_FREEDV_DATA_MODE, "12"));
+        boolean isSquelchEnabled = sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_FREEDV_ENABLE_SQUELCH, true);
+        float squelchSnr = Float.parseFloat( sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_FREEDV_SQUELCH_SNR, "0.0"));
 
-        Log.i(TAG, "Using freedv mode " + AudioTools.getFreedvModeAsText(sharedPreferences) + " gain " + gain);
+        Log.i(TAG, "Using freedv mode " + AudioTools.getFreedvModeAsText(sharedPreferences));
 
-        _freedv = Codec2.freedvCreate(mode, gain);
+        _freedv = Codec2.freedvCreate(mode, isSquelchEnabled, squelchSnr);
         _modemTxBuffer = new short[Codec2.freedvGetNomModemSamples(_freedv)];
         _speechRxBuffer = new short[Codec2.freedvGetMaxSpeechSamples(_freedv)];
     }

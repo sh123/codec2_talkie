@@ -24,6 +24,9 @@ public final class PreferenceKeys {
     public static String PORTS_SOUND_MODEM_GAIN ="ports_sound_modem_gain";
     public static String PORTS_SOUND_MODEM_PTT_OFF_DELAY_MS = "ports_sound_modem_ptt_off_delay_ms";
     public static String PORTS_SOUND_MODEM_LOOPBACK="ports_sound_modem_loopback";
+    public static String PORTS_SOUND_MODEM_FREEDV_ENABLE_SQUELCH="ports_sound_modem_freedv_enable_squelch";
+    public static String PORTS_SOUND_MODEM_FREEDV_SQUELCH_SNR="ports_sound_modem_freedv_squelch_snr";
+    public static String PORTS_SOUND_MODEM_FREEDV_DATA_MODE="ports_sound_modem_freedv_data_mode";
 
     public static String CODEC2_MODE = "codec2_mode";
     public static String CODEC2_RECORDING_ENABLED = "codec2_recording_enabled";

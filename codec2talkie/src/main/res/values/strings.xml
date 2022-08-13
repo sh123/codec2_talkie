@@ -273,7 +273,7 @@
     <string name="send_message_to_message_edit_text">Message text</string>
     <string name="send_message_to_btn_ok_text">Send</string>
     <string name="send_message_to_btn_cancel_text">Cancel</string>
-    <string name="activity_send_message_to_title">Send message to...</string>
+    <string name="activity_send_message_to_title">Send message to…</string>
     <string name="messages_view_title">Messages</string>
     <string name="app_notifications_text_title">Incoming message</string>
     <string name="app_notifications_text_summary">Click to open and read message</string>
@@ -301,12 +301,22 @@
     <string name="ports_sound_modem_control_settings">Set sound modem settings, such as bit rate</string>
     <string name="ports_type_title">TNC transport type</string>
     <string name="ports_sound_modem_disable_rx_title">Disable receive</string>
-    <string name="ports_sound_modem_disable_rx_summary">Run modem in transmit only mode, receive is disabled to save CPU cycles</string>
+    <string name="ports_sound_modem_disable_rx_summary">Run modem in transmit only mode, receive is disabled to save CPU cycles, e.g. when using APRS one way tracking</string>
     <string name="ports_sound_modem_rig_title">Select RIG model for CAT PTT control</string>
     <string name="ports_sound_modem_gain_title">Set modem audio gain</string>
     <string name="ports_sound_modem_rig_label">&#127899;</string>
     <string name="ports_sound_modem_ptt_off_delay_ms_title">CAT PTT transmit off delay</string>
     <string name="ports_sound_modem_ptt_off_delay_ms_summary">How long to wait before switching off the transmission after last data is sent out (milliseconds)</string>
-    <string name="ports_sound_modem_loopback_title">Enable modulator loopback mode</string>
+    <string name="ports_sound_modem_loopback_title">[Debug] Enable modulator loopback mode</string>
     <string name="ports_sound_modem_loopback_summary">Audio modulated samples will be fed back to de-modulator</string>
+    <string name="sound_modem_category_general_title">Sound modem settings</string>
+    <string name="sound_modem_category_afsk_title">AFSK modem settings</string>
+    <string name="ports_sound_modem_category_cat_ptt_title">CAT PTT  settings</string>
+    <string name="sound_modem_category_freedv_title">FreeDV settings</string>
+    <string name="ports_sound_modem_freedv_enable_squelch_title">Enable SNR squelch</string>
+    <string name="ports_sound_modem_freedv_enable_squelch_summary">Receive will be disabled when SNR is below given threshold</string>
+    <string name="ports_sound_modem_freedv_squelch_snr_title">Set squelch SNR threshold</string>
+    <string name="ports_sound_modem_freedv_squelch_snr_summary">Packets below give threshold won\'t be received</string>
+    <string name="ports_sound_modem_freedv_data_mode_title">FreeDV data mode</string>
+    <string name="ports_sound_modem_freedv_data_title">Select data mode</string>
 </resources>

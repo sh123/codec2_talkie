@@ -32,6 +32,12 @@ public class Codec2 {
     public static final int FREEDV_MODE_2020B = 16;
     public static final int FREEDV_MODE_700E = 13;
 
+    // freedv data modes
+    public static final int FREEDV_MODE_FSK_LDPC = 9;
+    public static final int FREEDV_MODE_DATAC1 = 10;
+    public static final int FREEDV_MODE_DATAC3 = 12;
+    public static final int FREEDV_MODE_DATAC0 = 14;
+
     // raw codec2
     public native static long create(int mode);
     public native static int destroy(long con);
@@ -57,7 +63,7 @@ public class Codec2 {
     public native static long fskDemodulate(long conFsk, short[] inputSamples, byte[] outputBits);
 
     // freedv
-    public native static long freedvCreate(int mode, int gain);
+    public native static long freedvCreate(int mode, boolean isSquelchEnabled, float squelchSnr);
     public native static int freedvDestroy(long conFreedv);
 
     public native static int freedvGetMaxSpeechSamples(long conFreedv);
