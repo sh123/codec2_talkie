@@ -72,6 +72,16 @@ public class Codec2 {
     public native static int freedvGetNomModemSamples(long conFreedv);
     public native static int freedvNin(long conFreedv);
 
-    public native static long freedvTx(long conFsk, short[] outputModemSamples, short[] inputSpeechSamples);
-    public native static long freedvRx(long conFsk, short[] outputSpeechSamples, short[] inputModemSamples);
+    public native static long freedvTx(long conFreedv, short[] outputModemSamples, short[] inputSpeechSamples);
+    public native static long freedvRx(long conFreedv, short[] outputSpeechSamples, short[] inputModemSamples);
+
+    // freedv raw data
+    public native static int freedvGetBitsPerModemFrame(long conFreedv);
+    public native static int freedvGetNTxSamples(long conFreedv);
+
+    public native static long freedvRawDataRx(long conFreedv, byte[] outputRawData, short[] inputDataSamples);
+    public native static long freedvRawDataTx(long conFreedv, short[] outputDataSamples, byte[] inputRawData);
+    public native static long freedvRawDataPreambleTx(long conFreedv, short[] outputDataSamples);
+    public native static long freedvRawDataPostambleTx(long conFreedv, short[] outputDataSamples);
+
 }

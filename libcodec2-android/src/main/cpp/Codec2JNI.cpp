@@ -33,6 +33,8 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         struct freedv *freeDv;
         short *speechSamples;
         short *modemSamples;
+        short *rawDataSamples;
+        unsigned char *rawData;
     };
 
     static Context *getContext(jlong jp) {
@@ -101,10 +103,17 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         struct ContextFreedv *conFreedv;
         conFreedv = (struct ContextFreedv *) malloc(sizeof(struct ContextFreedv));
         conFreedv->freeDv = freedv_open(mode);
+        // speech
         conFreedv->speechSamples = static_cast<short *>(malloc(
                 freedv_get_n_max_speech_samples(conFreedv->freeDv) * sizeof(short)));
         conFreedv->modemSamples = static_cast<short *>(malloc(
                 freedv_get_n_max_modem_samples(conFreedv->freeDv) * sizeof(short)));
+        // data
+        conFreedv->rawData = static_cast<unsigned char *>(malloc(
+                freedv_get_bits_per_modem_frame(conFreedv->freeDv) / 8));
+        conFreedv->rawDataSamples = static_cast<short *>(malloc(
+                freedv_get_n_tx_modem_samples(conFreedv->freeDv)));
+        // squelch
         freedv_set_squelch_en(conFreedv->freeDv, isSquelchEnabled);
         freedv_set_snr_squelch_thresh(conFreedv->freeDv, squelchSnr);
         return reinterpret_cast<jlong>(conFreedv);
@@ -170,6 +179,16 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         return freedv_get_n_nom_modem_samples(conFreedv->freeDv);
     }
 
+    static jint freedvGetBitsPerModemFrame(JNIEnv * env, jclass clazz, jlong n) {
+        ContextFreedv *conFreedv = getContextFreedv(n);
+        return freedv_get_bits_per_modem_frame(conFreedv->freeDv);
+    }
+
+    static jint freedvGetNTxSamples(JNIEnv * env, jclass clazz, jlong n) {
+        ContextFreedv *conFreedv = getContextFreedv(n);
+        return freedv_get_n_tx_modem_samples(conFreedv->freeDv);
+    }
+
     static jint freedvNin(JNIEnv * env, jclass clazz, jlong n) {
         ContextFreedv *conFreedv = getContextFreedv(n);
         return freedv_nin(conFreedv->freeDv);
@@ -201,6 +220,8 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         freedv_close(conFreedv->freeDv);
         free(conFreedv->modemSamples);
         free(conFreedv->speechSamples);
+        free(conFreedv->rawDataSamples);
+        free(conFreedv->rawData);
         free(conFreedv);
         return 0;
     }
@@ -247,6 +268,36 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         return cntModemSamples;
     }
 
+    static jlong freedvRawDataTx(JNIEnv *env, jclass clazz, jlong n, jshortArray outputModemSamples, jbyteArray inputData) {
+        ContextFreedv *conFreedv = getContextFreedv(n);
+        int cntBytes = freedv_get_bits_per_modem_frame(conFreedv->freeDv) / 8;
+        env->GetByteArrayRegion(inputData, 0, cntBytes,
+                                reinterpret_cast<jbyte *>(conFreedv->rawData));
+        uint16_t crc16 = freedv_gen_crc16(conFreedv->rawData, cntBytes - 2);
+        conFreedv->rawData[cntBytes-2] = crc16 >> 8;
+        conFreedv->rawData[cntBytes-1] = crc16 & 0xff;
+        freedv_rawdatatx(conFreedv->freeDv, conFreedv->rawDataSamples, conFreedv->rawData);
+        int cntSamples = freedv_get_n_tx_modem_samples(conFreedv->freeDv);
+        env->SetShortArrayRegion(outputModemSamples, 0, cntSamples, conFreedv->modemSamples);
+        return cntSamples;
+    }
+
+    static jlong freedvRawDataPreambleTx(JNIEnv *env, jclass clazz, jlong n, jshortArray outputModemSamples) {
+        ContextFreedv *conFreedv = getContextFreedv(n);
+        freedv_rawdatapreambletx(conFreedv->freeDv, conFreedv->rawDataSamples);
+        int cntSamples = freedv_get_n_tx_modem_samples(conFreedv->freeDv);
+        env->SetShortArrayRegion(outputModemSamples, 0, cntSamples, conFreedv->modemSamples);
+        return cntSamples;
+    }
+
+    static jlong freedvRawDataPostambleTx(JNIEnv *env, jclass clazz, jlong n, jshortArray outputModemSamples) {
+        ContextFreedv *conFreedv = getContextFreedv(n);
+        freedv_rawdatapostambletx(conFreedv->freeDv, conFreedv->rawDataSamples);
+        int cntSamples = freedv_get_n_tx_modem_samples(conFreedv->freeDv);
+        env->SetShortArrayRegion(outputModemSamples, 0, cntSamples, conFreedv->modemSamples);
+        return cntSamples;
+    }
+
     static jlong decode(JNIEnv *env, jclass clazz, jlong n, jshortArray outputSamples, jbyteArray inputBits) {
         Context *con = getContext(n);
         env->GetByteArrayRegion(inputBits, 0, con->nbyte, reinterpret_cast<jbyte*>(con->bits));
@@ -274,6 +325,16 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         //int cntRead = freedv_shortrx(conFreedv->freeDv, conFreedv->modemSamples, conFreedv->speechSamples, conFreedv->gain);
         int cntRead = freedv_rx(conFreedv->freeDv, conFreedv->modemSamples, conFreedv->speechSamples);
         env->SetShortArrayRegion(outputSpeechSamples, 0, nin, conFreedv->modemSamples);
+        return cntRead;
+    }
+
+    static jlong freedvRawDataRx(JNIEnv *env, jclass clazz, jlong n, jbyteArray outputRawData, jshortArray inputModemSamples) {
+        ContextFreedv *conFreedv = getContextFreedv(n);
+        int nin = freedv_nin(conFreedv->freeDv);
+        env->GetShortArrayRegion(inputModemSamples, 0, nin, conFreedv->rawDataSamples);
+        int cntRead = freedv_rawdatarx(conFreedv->freeDv, conFreedv->rawData, conFreedv->rawDataSamples);
+        env->SetByteArrayRegion(outputRawData, 0, nin,
+                                reinterpret_cast<const jbyte *>(conFreedv->rawData));
         return cntRead;
     }
 
@@ -305,7 +366,14 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         {"freedvGetNomModemSamples", "(J)I",    (void *)freedvGetNomModemSamples},
         {"freedvNin", "(J)I",                   (void *)freedvNin},
         {"freedvTx", "(J[S[S)J",                (void *)freedvTx},
-        {"freedvRx", "(J[S[S)J",                (void *)freedvRx}
+        {"freedvRx", "(J[S[S)J",                (void *)freedvRx},
+        // freedv raw data
+        {"freedvRawDataRx", "(J[B[S)J",         (void*)freedvRawDataRx},
+        {"freedvRawDataTx", "(J[S[B)J",         (void*)freedvRawDataTx},
+        {"freedvRawDataPreambleTx", "(J[S)J",   (void*)freedvRawDataPreambleTx},
+        {"freedvRawDataPostambleTx", "(J[S)J",  (void*)freedvRawDataPostambleTx},
+        {"freedvGetBitsPerModemFrame", "(J)I",  (void*)freedvGetBitsPerModemFrame},
+        {"freedvGetNTxSamples", "(J)I",         (void*)freedvGetNTxSamples}
     };
 }
 
