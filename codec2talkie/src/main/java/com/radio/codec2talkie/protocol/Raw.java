@@ -1,6 +1,7 @@
 package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.util.Arrays;
 
 public class Raw implements Protocol {
+    private static final String TAG = Raw.class.getSimpleName();
 
     private static final int RX_BUFFER_SIZE = 8192;
 
@@ -29,8 +31,9 @@ public class Raw implements Protocol {
     }
 
     @Override
-    public int getPcmAudioBufferSize() {
-        throw new UnsupportedOperationException();
+    public int getPcmAudioRecordBufferSize() {
+        Log.w(TAG, "getPcmAudioBufferSize() is not supported");
+        return -1;
     }
 
     @Override
@@ -40,12 +43,12 @@ public class Raw implements Protocol {
 
     @Override
     public void sendTextMessage(TextMessage textMessage) throws IOException {
-        throw new UnsupportedOperationException();
+        Log.w(TAG, "sendTextMessage() is not supported");
     }
 
     @Override
     public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-        throw new UnsupportedOperationException();
+        Log.w(TAG, "sendPcmAudio() is not supported");
     }
 
     @Override
@@ -65,7 +68,7 @@ public class Raw implements Protocol {
 
     @Override
     public void sendPosition(Position position) {
-        throw new UnsupportedOperationException();
+        Log.w(TAG, "sendPosition() is not supported");
     }
 
     @Override

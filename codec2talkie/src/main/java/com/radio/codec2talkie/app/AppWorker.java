@@ -10,7 +10,6 @@ import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
-import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -540,7 +539,7 @@ public class AppWorker extends Thread {
 
         try {
             _protocol.initialize(_transport, _context, _protocolCallback);
-            _recordAudioBuffer = new short[_protocol.getPcmAudioBufferSize()];
+            _recordAudioBuffer = new short[_protocol.getPcmAudioRecordBufferSize()];
             startWorkerMessageHandler();
             Looper.loop();
         } catch (IOException e) {

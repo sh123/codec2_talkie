@@ -51,7 +51,7 @@ public class Freedv implements Protocol {
     }
 
     @Override
-    public int getPcmAudioBufferSize() {
+    public int getPcmAudioRecordBufferSize() {
         return Codec2.freedvGetNSpeechSamples(_freedv);
     }
 
@@ -65,18 +65,22 @@ public class Freedv implements Protocol {
 
     @Override
     public void sendCompressedAudio(String src, String dst, int codec, byte[] frame) throws IOException {
+        Log.w(TAG, "sendCompressedAudio() is not supported");
     }
 
     @Override
     public void sendTextMessage(TextMessage textMessage) throws IOException {
+        Log.w(TAG, "sendTextMessage() is not supported");
     }
 
     @Override
     public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
+        // TODO, send as data
     }
 
     @Override
     public boolean receive() throws IOException {
+        // TODO, distinguish between audio and data and call onReceiveData on parent callback
         int nin = Codec2.freedvNin(_freedv);
         short[] buf = new short[nin];
         int bytesRead = _transport.read(buf);
@@ -96,6 +100,7 @@ public class Freedv implements Protocol {
 
     @Override
     public void sendPosition(Position position) throws IOException {
+        Log.w(TAG, "sendPosition() is not supported");
     }
 
     @Override

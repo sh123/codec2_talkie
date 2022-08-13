@@ -72,13 +72,13 @@ public class Aprs implements Protocol {
     }
 
     @Override
-    public int getPcmAudioBufferSize() {
-        return _childProtocol.getPcmAudioBufferSize();
+    public int getPcmAudioRecordBufferSize() {
+        return _childProtocol.getPcmAudioRecordBufferSize();
     }
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) {
-        throw new UnsupportedOperationException();
+    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+        _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class Aprs implements Protocol {
     ProtocolCallback _protocolCallback = new ProtocolCallback() {
         @Override
         protected void onReceivePosition(Position position) {
-            throw new UnsupportedOperationException();
+            _parentProtocolCallback.onReceivePosition(position);
         }
 
         @Override
@@ -130,7 +130,7 @@ public class Aprs implements Protocol {
 
         @Override
         protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) {
-            throw new UnsupportedOperationException();
+            _parentProtocolCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrame);
         }
 
         @Override
@@ -187,7 +187,7 @@ public class Aprs implements Protocol {
 
         @Override
         protected void onTransmitPosition(Position position) {
-            throw new UnsupportedOperationException();
+            _parentProtocolCallback.onTransmitPosition(position);
         }
 
         @Override

@@ -51,8 +51,8 @@ public class AudioFrameAggregator implements Protocol {
     }
 
     @Override
-    public int getPcmAudioBufferSize() {
-        throw new UnsupportedOperationException();
+    public int getPcmAudioRecordBufferSize() {
+        return _childProtocol.getPcmAudioRecordBufferSize();
 
     }
     public int getPcmAudioBufferSize(int codec2ModeId) {
@@ -77,12 +77,12 @@ public class AudioFrameAggregator implements Protocol {
 
     @Override
     public void sendTextMessage(TextMessage textMessage) throws IOException {
-        throw new UnsupportedOperationException();
+        _childProtocol.sendTextMessage(textMessage);
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-        throw new UnsupportedOperationException();
+    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException {
+        _childProtocol.sendPcmAudio(src, dst, codec, pcmFrame);
     }
 
     @Override
@@ -98,12 +98,12 @@ public class AudioFrameAggregator implements Protocol {
     ProtocolCallback _protocolCallback = new ProtocolCallback() {
         @Override
         protected void onReceivePosition(Position position) {
-            throw new UnsupportedOperationException();
+            _parentProtocolCallback.onReceivePosition(position);
         }
 
         @Override
         protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-            throw new UnsupportedOperationException();
+            _parentProtocolCallback.onReceivePcmAudio(src, dst, codec, pcmFrame);
         }
 
         @Override
@@ -160,7 +160,7 @@ public class AudioFrameAggregator implements Protocol {
 
         @Override
         protected void onTransmitPosition(Position position) {
-            throw new UnsupportedOperationException();
+            _parentProtocolCallback.onTransmitPosition(position);
         }
 
         @Override

@@ -14,7 +14,6 @@ import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
-import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -61,12 +60,12 @@ public class Kiss implements Protocol {
         GET_CMD,
         GET_DATA,
         ESCAPE
-    };
+    }
 
     private enum DataType {
         RAW,
         SIGNAL_REPORT
-    };
+    }
 
     private DataType _kissDataType = DataType.RAW;
     private State _kissState = State.GET_START;
@@ -145,8 +144,9 @@ public class Kiss implements Protocol {
     }
 
     @Override
-    public int getPcmAudioBufferSize() {
-        throw new UnsupportedOperationException();
+    public int getPcmAudioRecordBufferSize() {
+        Log.w(TAG, "getPcmAudioBufferSize() is not supported");
+        return -1;
     }
 
     private void initializeExtended() throws IOException {
@@ -211,12 +211,12 @@ public class Kiss implements Protocol {
 
     @Override
     public void sendTextMessage(TextMessage textMessage) throws IOException {
-        throw new UnsupportedOperationException();
+        Log.w(TAG, "sendTextMessage() is not supported");
     }
 
     @Override
     public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame)  {
-        throw new UnsupportedOperationException();
+        Log.w(TAG, "sendPcmAudio() is not supported");
     }
 
     @Override
@@ -237,7 +237,7 @@ public class Kiss implements Protocol {
 
     @Override
     public void sendPosition(Position position) {
-        throw new UnsupportedOperationException();
+        Log.w(TAG, "sendPosition() is not supported");
     }
 
     @Override

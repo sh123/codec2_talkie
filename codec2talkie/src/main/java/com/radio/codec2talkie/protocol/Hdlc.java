@@ -32,7 +32,6 @@ public class Hdlc implements Protocol {
     private final int _prefixSymCount;
 
     private int _readByte = 0;
-    private int _prevHdlc = 0;
 
     public Hdlc(SharedPreferences sharedPreferences) {
         double preambleLenSec = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_PREAMBLE, "200")) / 1000.0;
@@ -50,13 +49,14 @@ public class Hdlc implements Protocol {
     }
 
     @Override
-    public int getPcmAudioBufferSize() {
-        throw new UnsupportedOperationException();
+    public int getPcmAudioRecordBufferSize() {
+        Log.w(TAG, "getPcmAudioBufferSize() is not supported");
+        return -1;
     }
 
     @Override
     public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException {
-        throw new UnsupportedOperationException();
+        Log.w(TAG, "sendPcmAudio() is not supported");
     }
 
     @Override
@@ -66,7 +66,7 @@ public class Hdlc implements Protocol {
 
     @Override
     public void sendTextMessage(TextMessage textMessage) throws IOException {
-        throw new UnsupportedOperationException();
+        Log.w(TAG, "sendTextMessage() is not supported");
     }
 
     @Override
@@ -117,7 +117,6 @@ public class Hdlc implements Protocol {
                     }
                     _currentFrameBuffer.clear();
                     _readByte = 0;
-                    _prevHdlc = 0;
                 } else {
                     try {
                         _currentFrameBuffer.put(bit);
@@ -125,7 +124,6 @@ public class Hdlc implements Protocol {
                         e.printStackTrace();
                         _currentFrameBuffer.clear();
                     }
-                    _prevHdlc++;
                 }
             }
         }
@@ -134,7 +132,7 @@ public class Hdlc implements Protocol {
 
     @Override
     public void sendPosition(Position position) {
-        throw new UnsupportedOperationException();
+        Log.w(TAG, "sendPosition() is not supported");
     }
 
     @Override
