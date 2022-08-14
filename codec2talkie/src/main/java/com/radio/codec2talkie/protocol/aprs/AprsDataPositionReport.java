@@ -164,7 +164,7 @@ public class AprsDataPositionReport implements AprsData {
         if (longitude == null) return false;
         _position.longitude = getUncompressedCoordinate(longitude.getBytes(), false);
         if (comment != null)
-            _position.comment = comment;
+            _position.comment = TextTools.stripNulls(comment);
 
         _position.hasSpeed = false;
         _position.hasBearing = false;
@@ -283,7 +283,7 @@ public class AprsDataPositionReport implements AprsData {
             _position.hasAltitude = false;
         }
         // read comment until the end
-        _position.comment = strTail;
+        _position.comment = TextTools.stripNulls(strTail);
         return true;
     }
 

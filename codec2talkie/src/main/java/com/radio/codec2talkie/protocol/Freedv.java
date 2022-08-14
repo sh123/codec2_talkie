@@ -149,7 +149,8 @@ public class Freedv implements Protocol {
             long cntRead = Codec2.freedvRawDataRx(_freedvData, _dataBuffer, samplesData);
             if (cntRead > 0) {
                 Log.i(TAG, "receive " + cntRead);
-                //_parentProtocolCallback.onReceiveCompressedAudio(null, null, -1, _dataBuffer);
+                // TODO, refactor, use onReceiveData
+                _parentProtocolCallback.onReceiveCompressedAudio(null, null, -1, _dataBuffer);
                 isRead = true;
             }
             ninData = Codec2.freedvNin(_freedvData);
@@ -165,8 +166,7 @@ public class Freedv implements Protocol {
 
     @Override
     public void flush() throws IOException {
-        Log.i(TAG, "flush()");
-        // TODO buffers
+        // TODO, check if need to flush buffers
     }
 
     @Override

@@ -1,5 +1,9 @@
 package com.radio.codec2talkie.tools;
 
+import android.util.Log;
+
+import java.util.Arrays;
+
 public class TextTools {
     public static String addZeroWidthSpaces(String text) {
         return text.replaceAll(".(?!$)", "$0\u200b");
@@ -14,5 +18,21 @@ public class TextTools {
             }
         }
         return count;
+    }
+
+    public static String stripNulls(String text) {
+        int pos = text.indexOf('\0');
+        if (pos == -1) return text;
+        return text.substring(0, pos);
+    }
+
+    public static byte[] stripNulls(byte[] data) {
+        int i = 0;
+        for (byte b : data) {
+            if (b == 0) break;
+            i++;
+        }
+        if (i == data.length) return data;
+        return Arrays.copyOf(data, i);
     }
 }

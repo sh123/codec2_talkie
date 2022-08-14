@@ -3,6 +3,7 @@ package com.radio.codec2talkie.protocol.ax25;
 import androidx.annotation.NonNull;
 
 import com.radio.codec2talkie.tools.DebugTools;
+import com.radio.codec2talkie.tools.TextTools;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -157,7 +158,11 @@ public class AX25Packet {
         String path = digipath == null ? "" : digipath;
         if (!path.isEmpty())
             path = "," + path;
-        return String.format("%s>%s%s:%s", src, dst, path, DebugTools.bytesToDebugString(rawData));
+        String info = DebugTools.bytesToDebugString(rawData);
+        if (!isAudio) {
+            info = DebugTools.bytesToDebugString(TextTools.stripNulls(rawData));
+        }
+        return String.format("%s>%s%s:%s", src, dst, path, info);
     }
 
     private boolean digiRepeatMicE() {

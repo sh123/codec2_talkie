@@ -3,6 +3,7 @@ package com.radio.codec2talkie.protocol.aprs;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsTools;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
+import com.radio.codec2talkie.tools.TextTools;
 import com.radio.codec2talkie.tools.UnitTools;
 
 import java.nio.ByteBuffer;
@@ -220,9 +221,9 @@ public class AprsDataPositionReportMicE implements AprsData {
         if (infoData.length > 11 && infoData[11] == '}') {
             _position.hasAltitude = true;
             _position.altitudeMeters = ((infoData[8] - 33) * 91 * 91 + (infoData[9] - 33) * 91 + (infoData[10] - 33)) - 10000;
-            _position.comment = new String(Arrays.copyOfRange(infoData, 12, infoData.length));
+            _position.comment = TextTools.stripNulls(new String(Arrays.copyOfRange(infoData, 12, infoData.length)));
         } else {
-            _position.comment = new String(Arrays.copyOfRange(infoData, 8, infoData.length));
+            _position.comment = TextTools.stripNulls(new String(Arrays.copyOfRange(infoData, 8, infoData.length)));
         }
 
         _position.maidenHead = UnitTools.decimalToMaidenhead(_position.latitude, _position.longitude);

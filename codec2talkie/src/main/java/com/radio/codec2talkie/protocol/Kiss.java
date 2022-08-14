@@ -296,6 +296,7 @@ public class Kiss implements Protocol {
             case KISS_FEND:
                 if (_kissDataType == DataType.RAW) {
                     // NOTE, KISS does not distinguish between audio and data packets, upper layer should decide
+                    // TODO, refactor, use onReceiveData
                     protocolCallback.onReceiveCompressedAudio(null, null, -1, Arrays.copyOf(_frameOutputBuffer, _frameOutputBufferPos));
                 } else if (_kissDataType == DataType.SIGNAL_REPORT && _isExtendedMode) {
                     byte[] signalLevelRaw = Arrays.copyOf(_kissCmdBuffer, _kissCmdBufferPos);

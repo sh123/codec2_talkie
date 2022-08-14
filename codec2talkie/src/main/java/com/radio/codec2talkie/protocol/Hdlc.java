@@ -110,7 +110,7 @@ public class Hdlc implements Protocol {
                             //Log.i(TAG, "checksum: " + calculatedCrc + " " + packetCrc);
                             if (calculatedCrc == packetCrc) {
                                 //Log.v(TAG, DebugTools.byteBitsToString(packetBits));
-                                Log.i(TAG, "RX: " + DebugTools.bytesToHex(packetBytes));
+                                //Log.i(TAG, "RX: " + DebugTools.bytesToHex(packetBytes));
                                 _parentProtocolCallback.onReceiveCompressedAudio(null, null, -1, contentBytes);
                             }
                         }
