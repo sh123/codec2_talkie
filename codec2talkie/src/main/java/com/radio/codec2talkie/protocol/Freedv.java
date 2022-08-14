@@ -82,23 +82,19 @@ public class Freedv implements Protocol {
 
     @Override
     public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
-        Log.v(TAG, "sendData() " + dataPacket.length);
         if (dataPacket.length > _dataTxBuffer.length - 2) {
             Log.e(TAG, "Too large packet " + dataPacket.length + " > " + _dataTxBuffer.length);
             return;
         }
         long cnt = Codec2.freedvRawDataPreambleTx(_freedvData, _dataSamplesBuffer);
-        Log.v(TAG, "sendData() write preamble " + cnt);
         _transport.write(Arrays.copyOf(_dataSamplesBuffer, (int) cnt));
 
         Arrays.fill(_dataTxBuffer, (byte) 0);
         System.arraycopy(dataPacket, 0, _dataTxBuffer, 0, dataPacket.length);
         Codec2.freedvRawDataTx(_freedvData, _dataSamplesBuffer, _dataTxBuffer);
-        Log.v(TAG, "sendData() write data " + _dataSamplesBuffer.length);
         _transport.write(_dataSamplesBuffer);
 
         cnt = Codec2.freedvRawDataPostambleTx(_freedvData, _dataSamplesBuffer);
-        Log.v(TAG, "sendData() write postamble " + cnt);
         _transport.write(Arrays.copyOf(_dataSamplesBuffer, (int) cnt));
     }
 
