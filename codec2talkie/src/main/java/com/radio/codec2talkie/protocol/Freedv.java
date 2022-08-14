@@ -135,6 +135,8 @@ public class Freedv implements Protocol {
             if (cntRead > 0) {
                 //Log.i(TAG, "receive " + cntRead);
                 _parentProtocolCallback.onReceivePcmAudio(null, null, -1, Arrays.copyOf(_speechRxBuffer, (int) cntRead));
+                float snr = Codec2.freedvGetModemStat(_freedv);
+                _parentProtocolCallback.onReceiveSignalLevel((short) 0, (short)(100 * snr));
                 isRead = true;
             }
             nin = Codec2.freedvNin(_freedv);
@@ -151,6 +153,8 @@ public class Freedv implements Protocol {
                 Log.i(TAG, "receive " + cntRead);
                 // TODO, refactor, use onReceiveData
                 _parentProtocolCallback.onReceiveCompressedAudio(null, null, -1, _dataBuffer);
+                float snr = Codec2.freedvGetModemStat(_freedv);
+                _parentProtocolCallback.onReceiveSignalLevel((short) 0, (short)(100 * snr));
                 isRead = true;
             }
             ninData = Codec2.freedvNin(_freedvData);

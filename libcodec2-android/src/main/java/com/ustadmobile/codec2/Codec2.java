@@ -71,6 +71,7 @@ public class Codec2 {
     public native static int freedvGetNSpeechSamples(long conFreedv);
     public native static int freedvGetNomModemSamples(long conFreedv);
     public native static int freedvNin(long conFreedv);
+    public native static float freedvGetModemStat(long conFreedv);
 
     public native static long freedvTx(long conFreedv, short[] outputModemSamples, short[] inputSpeechSamples);
     public native static long freedvRx(long conFreedv, short[] outputSpeechSamples, short[] inputModemSamples);

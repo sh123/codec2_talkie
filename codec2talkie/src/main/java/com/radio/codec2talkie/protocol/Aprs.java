@@ -2,6 +2,7 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.provider.Settings;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
@@ -14,6 +15,7 @@ import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.protocol.ax25.AX25Callsign;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -49,7 +51,7 @@ public class Aprs implements Protocol {
         _childProtocol.initialize(transport, context, _protocolCallback);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        _isVoax25Enabled = sharedPreferences.getBoolean(PreferenceKeys.AX25_VOAX25_ENABLE, false);
+        _isVoax25Enabled = SettingsWrapper.isVoax25Enabled(sharedPreferences);
 
         _srcCallsign = AX25Callsign.formatCallsign(
                 sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "NOCALL").toUpperCase(),

@@ -296,6 +296,13 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         return cntSamples;
     }
 
+    static jfloat freedvGetModemStat(JNIEnv *env, jclass clazz, jlong n) {
+        ContextFreedv *conFreedv = getContextFreedv(n);
+        float snr;
+        freedv_get_modem_stats(conFreedv->freeDv, NULL, &snr);
+        return snr;
+    }
+
     static jlong decode(JNIEnv *env, jclass clazz, jlong n, jshortArray outputSamples, jbyteArray inputBits) {
         Context *con = getContext(n);
         env->GetByteArrayRegion(inputBits, 0, con->nbyte, reinterpret_cast<jbyte*>(con->bits));
@@ -364,6 +371,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         {"freedvNin", "(J)I",                   (void *)freedvNin},
         {"freedvTx", "(J[S[S)J",                (void *)freedvTx},
         {"freedvRx", "(J[S[S)J",                (void *)freedvRx},
+        {"freedvGetModemStat", "(J)F",          (void *)freedvGetModemStat},
         // freedv raw data
         {"freedvRawDataRx", "(J[B[S)J",         (void*)freedvRawDataRx},
         {"freedvRawDataTx", "(J[S[B)J",         (void*)freedvRawDataTx},

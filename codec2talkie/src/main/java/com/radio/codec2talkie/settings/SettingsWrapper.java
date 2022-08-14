@@ -87,4 +87,9 @@ public class SettingsWrapper {
     public static boolean isAprsEnabled(SharedPreferences sharedPreferences) {
         return sharedPreferences.getBoolean(PreferenceKeys.APRS_ENABLED, false);
     }
+
+    public static boolean isVoax25Enabled(SharedPreferences sharedPreferences) {
+        return sharedPreferences.getBoolean(PreferenceKeys.AX25_VOAX25_ENABLE, false) &&
+                !isFreeDvSoundModemModulation(sharedPreferences);   // no voax25 in freedv
+    }
 }

@@ -33,7 +33,6 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.SystemClock;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -479,7 +478,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             status += getString(R.string.aprs_label);
 
             // VoAX25
-            boolean voax25Enabled = _sharedPreferences.getBoolean(PreferenceKeys.AX25_VOAX25_ENABLE, false);
+            boolean voax25Enabled = SettingsWrapper.isVoax25Enabled(_sharedPreferences);
             if (voax25Enabled) {
                 status += getString(R.string.voax25_label);
             }

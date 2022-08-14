@@ -11,6 +11,7 @@ import com.radio.codec2talkie.protocol.ax25.AX25Packet;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class Ax25 implements Protocol {
                 sharedPreferences.getString(PreferenceKeys.AX25_SSID, "0"));
         // NOTE, may need to pass through sendData/sendAudio
         _digipath = sharedPreferences.getString(PreferenceKeys.AX25_DIGIPATH, "").toUpperCase();
-        _isVoax25Enabled = sharedPreferences.getBoolean(PreferenceKeys.AX25_VOAX25_ENABLE, false);
+        _isVoax25Enabled = SettingsWrapper.isVoax25Enabled(sharedPreferences);
         _isDigiRepeaterEnabled = sharedPreferences.getBoolean(PreferenceKeys.AX25_DIGIREPEATER_ENABLED, false);
     }
 
