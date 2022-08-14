@@ -162,8 +162,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         // show/hide S-meter
         FrameLayout frameRssi = findViewById(R.id.frameRssi);
-        if (!SettingsWrapper.isSoundModemEnabled(_sharedPreferences) &&
-             _sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false)) {
+        if (SettingsWrapper.isFreeDvSoundModemModulation(_sharedPreferences) || SettingsWrapper.isKissExtensionEnabled(_sharedPreferences)) {
 
             int sLevelId = RadioTools.getMinimumDecodeSLevelLabel(_sharedPreferences, S_METER_S0_VALUE_DB);
             TextView sLevel = findViewById(sLevelId);

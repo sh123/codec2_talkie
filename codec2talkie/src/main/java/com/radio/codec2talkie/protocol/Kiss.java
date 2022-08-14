@@ -14,6 +14,7 @@ import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -115,7 +116,7 @@ public class Kiss implements Protocol {
         _context = context;
 
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        _isExtendedMode = _sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false);
+        _isExtendedMode = SettingsWrapper.isKissExtensionEnabled(_sharedPreferences);
 
         byte tncCsmaPersistence = (byte) Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_BASIC_P, String.valueOf(CSMA_PERSISTENCE)));
         byte tncCsmaSlotTime = (byte) Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.KISS_BASIC_SLOT_TIME, String.valueOf(CSMA_SLOT_TIME)));
