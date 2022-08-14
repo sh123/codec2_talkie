@@ -777,10 +777,15 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     _btnPtt.setText(R.string.main_status_voice_received);
                     break;
                 case EV_RX_RADIO_LEVEL:
-                    if (msg.arg1 == 0) {
+                    if (msg.arg1 == 0 && msg.arg2 == 0) {
                         _textRssi.setText("");
                         _progressRssi.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN));
                         _progressRssi.setProgress(0);
+                    } else if (msg.arg1 == 0) {
+                        double snr = (double)msg.arg2 / 100.0;
+                        _textRssi.setText(String.format(Locale.getDefault(), "%2.2f", (double)msg.arg2 / 100.0));
+                        _progressRssi.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN));
+                        _progressRssi.setProgress((int) ((-110.0 + snr) - S_METER_S0_VALUE_DB));
                     } else {
                         _textRssi.setText(String.format(Locale.getDefault(), "%3d dBm, %2.2f", msg.arg1, (double)msg.arg2 / 100.0));
                         _progressRssi.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN));

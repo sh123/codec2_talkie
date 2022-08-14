@@ -234,7 +234,7 @@
     <string name="aprs_location_source_smart_fast_speed_summary">Minimum speed for fast position updates</string>
     <string name="aprs_location_source_smart_fast_speed_title">Fast speed [km/h]</string>
     <string name="aprs_location_source_smart_fast_rate_title">Fast rate [s]</string>
-    <string name="aprs_location_source_smart_fast_rate_summary">Beacon rate ast fast speed</string>
+    <string name="aprs_location_source_smart_fast_rate_summary">Beacon rate at fast speed</string>
     <string name="aprs_location_source_smart_slow_speed_title">Slow speed [km/h]</string>
     <string name="aprs_location_source_smart_slow_speed_summary">Maximum speed for slow position updates</string>
     <string name="aprs_location_source_smart_slow_rate_title">Slow rate [s]</string>
