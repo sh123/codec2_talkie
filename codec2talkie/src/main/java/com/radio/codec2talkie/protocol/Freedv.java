@@ -15,6 +15,8 @@ import com.radio.codec2talkie.transport.Transport;
 import com.ustadmobile.codec2.Codec2;
 
 import java.io.IOException;
+import java.nio.BufferOverflowException;
+import java.nio.ShortBuffer;
 import java.util.Arrays;
 
 public class Freedv implements Protocol {
@@ -30,7 +32,10 @@ public class Freedv implements Protocol {
     private short[] _speechRxBuffer;
 
     private short[] _dataSamplesBuffer;
-    private byte[] _dataTxBuffer;
+    private byte[] _dataBuffer;
+
+    ShortBuffer _dataSamples;
+    ShortBuffer _speechSamples;
 
     public Freedv() {
     }
@@ -51,10 +56,12 @@ public class Freedv implements Protocol {
         _freedv = Codec2.freedvCreate(mode, isSquelchEnabled, squelchSnr);
         _modemTxBuffer = new short[Codec2.freedvGetNomModemSamples(_freedv)];
         _speechRxBuffer = new short[Codec2.freedvGetMaxSpeechSamples(_freedv)];
+        _speechSamples  = ShortBuffer.allocate(1024*10);
 
         _freedvData = Codec2.freedvCreate(dataMode, isSquelchEnabled, squelchSnr);
-        _dataTxBuffer = new byte[Codec2.freedvGetBitsPerModemFrame(_freedvData) / 8];
+        _dataBuffer = new byte[Codec2.freedvGetBitsPerModemFrame(_freedvData) / 8];
         _dataSamplesBuffer = new short[Codec2.freedvGetNTxSamples(_freedvData)];
+        _dataSamples  = ShortBuffer.allocate(1024*10);
     }
 
     @Override
@@ -82,16 +89,16 @@ public class Freedv implements Protocol {
 
     @Override
     public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
-        if (dataPacket.length > _dataTxBuffer.length - 2) {
-            Log.e(TAG, "Too large packet " + dataPacket.length + " > " + _dataTxBuffer.length);
+        if (dataPacket.length > _dataBuffer.length - 2) {
+            Log.e(TAG, "Too large packet " + dataPacket.length + " > " + _dataBuffer.length);
             return;
         }
         long cnt = Codec2.freedvRawDataPreambleTx(_freedvData, _dataSamplesBuffer);
         _transport.write(Arrays.copyOf(_dataSamplesBuffer, (int) cnt));
 
-        Arrays.fill(_dataTxBuffer, (byte) 0);
-        System.arraycopy(dataPacket, 0, _dataTxBuffer, 0, dataPacket.length);
-        Codec2.freedvRawDataTx(_freedvData, _dataSamplesBuffer, _dataTxBuffer);
+        Arrays.fill(_dataBuffer, (byte) 0);
+        System.arraycopy(dataPacket, 0, _dataBuffer, 0, dataPacket.length);
+        Codec2.freedvRawDataTx(_freedvData, _dataSamplesBuffer, _dataBuffer);
         _transport.write(_dataSamplesBuffer);
 
         cnt = Codec2.freedvRawDataPostambleTx(_freedvData, _dataSamplesBuffer);
@@ -100,22 +107,55 @@ public class Freedv implements Protocol {
 
     @Override
     public boolean receive() throws IOException {
-        // TODO, distinguish between audio and data and call onReceiveData on parent callback
         int nin = Codec2.freedvNin(_freedv);
-        short[] buf = new short[nin];
-        int bytesRead = _transport.read(buf);
-        if (bytesRead == nin) {
-            //Log.i(TAG, "read " + bytesRead);
-            long cntRead = Codec2.freedvRx(_freedv, _speechRxBuffer, buf);
+        int ninData = Codec2.freedvNin(_freedvData);
+        int cntToReadAll = Math.max(nin, ninData);
+        short[] samples = new short[cntToReadAll];
+        int cntReadAll = _transport.read(samples);
+        if (cntReadAll == 0) return false;
+
+        try {
+            _speechSamples.put(samples);
+            _dataSamples.put(samples);
+        } catch (BufferOverflowException e) {
+            _speechSamples.clear();
+            _dataSamples.clear();
+            return false;
+        }
+
+        boolean isRead = false;
+
+        while (_speechSamples.position() >= nin) {
+            //Log.i(TAG, "read speech " + nin + " " + _speechSamples.position());
+            short[] samplesSpeech = new short[nin];
+            _speechSamples.flip();
+            _speechSamples.get(samplesSpeech);
+            _speechSamples.compact();
+            long cntRead = Codec2.freedvRx(_freedv, _speechRxBuffer, samplesSpeech);
             if (cntRead > 0) {
                 //Log.i(TAG, "receive " + cntRead);
                 _parentProtocolCallback.onReceivePcmAudio(null, null, -1, Arrays.copyOf(_speechRxBuffer, (int) cntRead));
-                return true;
+                isRead = true;
             }
-        } else {
-            //Log.w(TAG, bytesRead + "!=" + nin);
+            nin = Codec2.freedvNin(_freedv);
         }
-        return false;
+
+        while (_dataSamples.position() >= ninData) {
+            //Log.i(TAG, "read data " + ninData + " " + _dataSamples.position());
+            short[] samplesData = new short[ninData];
+            _dataSamples.flip();
+            _dataSamples.get(samplesData);
+            _dataSamples.compact();
+            long cntRead = Codec2.freedvRawDataRx(_freedvData, _dataBuffer, samplesData);
+            if (cntRead > 0) {
+                Log.i(TAG, "receive " + cntRead);
+                //_parentProtocolCallback.onReceiveCompressedAudio(null, null, -1, _dataBuffer);
+                isRead = true;
+            }
+            ninData = Codec2.freedvNin(_freedvData);
+        }
+
+        return isRead;
     }
 
     @Override
@@ -125,6 +165,8 @@ public class Freedv implements Protocol {
 
     @Override
     public void flush() throws IOException {
+        Log.i(TAG, "flush()");
+        // TODO buffers
     }
 
     @Override

@@ -320,9 +320,8 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         ContextFreedv *conFreedv = getContextFreedv(n);
         int nin = freedv_nin(conFreedv->freeDv);
         env->GetShortArrayRegion(inputModemSamples, 0, nin, conFreedv->speechSamples);
-        //int cntRead = freedv_shortrx(conFreedv->freeDv, conFreedv->modemSamples, conFreedv->speechSamples, conFreedv->gain);
         int cntRead = freedv_rx(conFreedv->freeDv, conFreedv->modemSamples, conFreedv->speechSamples);
-        env->SetShortArrayRegion(outputSpeechSamples, 0, nin, conFreedv->modemSamples);
+        env->SetShortArrayRegion(outputSpeechSamples, 0, cntRead, conFreedv->modemSamples);
         return cntRead;
     }
 
@@ -331,7 +330,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         int nin = freedv_nin(conFreedv->freeDv);
         env->GetShortArrayRegion(inputModemSamples, 0, nin, conFreedv->rawDataSamples);
         int cntRead = freedv_rawdatarx(conFreedv->freeDv, conFreedv->rawData, conFreedv->rawDataSamples);
-        env->SetByteArrayRegion(outputRawData, 0, nin,
+        env->SetByteArrayRegion(outputRawData, 0, cntRead,
                                 reinterpret_cast<const jbyte *>(conFreedv->rawData));
         return cntRead;
     }
