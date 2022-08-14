@@ -112,7 +112,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         conFreedv->rawData = static_cast<unsigned char *>(malloc(
                 freedv_get_bits_per_modem_frame(conFreedv->freeDv) / 8));
         conFreedv->rawDataSamples = static_cast<short *>(malloc(
-                freedv_get_n_tx_modem_samples(conFreedv->freeDv)));
+                freedv_get_n_tx_modem_samples(conFreedv->freeDv) * sizeof(short)));
         // squelch
         freedv_set_squelch_en(conFreedv->freeDv, isSquelchEnabled);
         freedv_set_snr_squelch_thresh(conFreedv->freeDv, squelchSnr);
@@ -278,23 +278,21 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         conFreedv->rawData[cntBytes-1] = crc16 & 0xff;
         freedv_rawdatatx(conFreedv->freeDv, conFreedv->rawDataSamples, conFreedv->rawData);
         int cntSamples = freedv_get_n_tx_modem_samples(conFreedv->freeDv);
-        env->SetShortArrayRegion(outputModemSamples, 0, cntSamples, conFreedv->modemSamples);
+        env->SetShortArrayRegion(outputModemSamples, 0, cntSamples, conFreedv->rawDataSamples);
         return cntSamples;
     }
 
     static jlong freedvRawDataPreambleTx(JNIEnv *env, jclass clazz, jlong n, jshortArray outputModemSamples) {
         ContextFreedv *conFreedv = getContextFreedv(n);
-        freedv_rawdatapreambletx(conFreedv->freeDv, conFreedv->rawDataSamples);
-        int cntSamples = freedv_get_n_tx_modem_samples(conFreedv->freeDv);
-        env->SetShortArrayRegion(outputModemSamples, 0, cntSamples, conFreedv->modemSamples);
+        int cntSamples = freedv_rawdatapreambletx(conFreedv->freeDv, conFreedv->rawDataSamples);
+        env->SetShortArrayRegion(outputModemSamples, 0, cntSamples, conFreedv->rawDataSamples);
         return cntSamples;
     }
 
     static jlong freedvRawDataPostambleTx(JNIEnv *env, jclass clazz, jlong n, jshortArray outputModemSamples) {
         ContextFreedv *conFreedv = getContextFreedv(n);
-        freedv_rawdatapostambletx(conFreedv->freeDv, conFreedv->rawDataSamples);
-        int cntSamples = freedv_get_n_tx_modem_samples(conFreedv->freeDv);
-        env->SetShortArrayRegion(outputModemSamples, 0, cntSamples, conFreedv->modemSamples);
+        int cntSamples = freedv_rawdatapostambletx(conFreedv->freeDv, conFreedv->rawDataSamples);
+        env->SetShortArrayRegion(outputModemSamples, 0, cntSamples, conFreedv->rawDataSamples);
         return cntSamples;
     }
 

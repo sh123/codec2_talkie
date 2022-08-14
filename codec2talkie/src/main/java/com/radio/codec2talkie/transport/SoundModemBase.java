@@ -73,7 +73,7 @@ public class SoundModemBase implements Runnable {
     }
 
     private void constructSystemAudioDevices(boolean disableRx, int sampleRate) {
-        int audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
+        int audioRecorderMinBufferSize = 10 * AudioRecord.getMinBufferSize(
                 sampleRate,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
@@ -84,12 +84,13 @@ public class SoundModemBase implements Runnable {
                 sampleRate,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
-                10*audioRecorderMinBufferSize);
+                audioRecorderMinBufferSize);
 
-        int audioPlayerMinBufferSize = AudioTrack.getMinBufferSize(
+        int audioPlayerMinBufferSize = 10 * AudioTrack.getMinBufferSize(
                 sampleRate,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
+
         if (!disableRx)
             _systemAudioRecorder.startRecording();
 
@@ -105,9 +106,11 @@ public class SoundModemBase implements Runnable {
                         .setChannelMask(AudioFormat.CHANNEL_OUT_MONO)
                         .build())
                 .setTransferMode(AudioTrack.MODE_STREAM)
-                .setBufferSizeInBytes(10*audioPlayerMinBufferSize)
+                .setBufferSizeInBytes(audioPlayerMinBufferSize)
                 .build();
         _systemAudioPlayer.setVolume(AudioTrack.getMaxVolume());
+
+        Log.i(TAG, "Play buffer size " + audioPlayerMinBufferSize + ", recorder " + audioRecorderMinBufferSize);
     }
 
     protected int read(short[] sampleBuffer, int samplesToRead) {

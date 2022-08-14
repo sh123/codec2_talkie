@@ -6,7 +6,6 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
-import com.radio.codec2talkie.app.AppWorker;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
@@ -25,9 +24,13 @@ public class Freedv implements Protocol {
     private Transport _transport;
 
     private long _freedv;
+    private long _freedvData;
 
     private short[] _modemTxBuffer;
     private short[] _speechRxBuffer;
+
+    private short[] _dataSamplesBuffer;
+    private byte[] _dataTxBuffer;
 
     public Freedv() {
     }
@@ -48,6 +51,10 @@ public class Freedv implements Protocol {
         _freedv = Codec2.freedvCreate(mode, isSquelchEnabled, squelchSnr);
         _modemTxBuffer = new short[Codec2.freedvGetNomModemSamples(_freedv)];
         _speechRxBuffer = new short[Codec2.freedvGetMaxSpeechSamples(_freedv)];
+
+        _freedvData = Codec2.freedvCreate(dataMode, isSquelchEnabled, squelchSnr);
+        _dataTxBuffer = new byte[Codec2.freedvGetBitsPerModemFrame(_freedvData) / 8];
+        _dataSamplesBuffer = new short[Codec2.freedvGetNTxSamples(_freedvData)];
     }
 
     @Override
@@ -75,7 +82,24 @@ public class Freedv implements Protocol {
 
     @Override
     public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
-        // TODO, send as data
+        Log.v(TAG, "sendData() " + dataPacket.length);
+        if (dataPacket.length > _dataTxBuffer.length - 2) {
+            Log.e(TAG, "Too large packet " + dataPacket.length + " > " + _dataTxBuffer.length);
+            return;
+        }
+        long cnt = Codec2.freedvRawDataPreambleTx(_freedvData, _dataSamplesBuffer);
+        Log.v(TAG, "sendData() write preamble " + cnt);
+        _transport.write(Arrays.copyOf(_dataSamplesBuffer, (int) cnt));
+
+        Arrays.fill(_dataTxBuffer, (byte) 0);
+        System.arraycopy(dataPacket, 0, _dataTxBuffer, 0, dataPacket.length);
+        Codec2.freedvRawDataTx(_freedvData, _dataSamplesBuffer, _dataTxBuffer);
+        Log.v(TAG, "sendData() write data " + _dataSamplesBuffer.length);
+        _transport.write(_dataSamplesBuffer);
+
+        cnt = Codec2.freedvRawDataPostambleTx(_freedvData, _dataSamplesBuffer);
+        Log.v(TAG, "sendData() write postamble " + cnt);
+        _transport.write(Arrays.copyOf(_dataSamplesBuffer, (int) cnt));
     }
 
     @Override
@@ -109,6 +133,7 @@ public class Freedv implements Protocol {
 
     @Override
     public void close() {
+        Codec2.freedvDestroy(_freedvData);
         Codec2.freedvDestroy(_freedv);
     }
 }

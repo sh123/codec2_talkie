@@ -68,7 +68,9 @@ public class ProtocolFactory {
         boolean scramblingEnabled = SettingsWrapper.isKissScramblerEnabled(sharedPreferences);
         String scramblingKey = SettingsWrapper.getKissScramblerKey(sharedPreferences);
         boolean aprsEnabled = SettingsWrapper.isAprsEnabled(sharedPreferences);
+        boolean freedvEnabled = SettingsWrapper.isFreeDvSoundModemModulation(sharedPreferences);
 
+        // "root" protocol
         Protocol proto;
         switch (protocolType) {
             case KISS:
@@ -84,8 +86,8 @@ public class ProtocolFactory {
                 proto = new Hdlc(sharedPreferences);
                 break;
             case FREEDV:
-                // standalone
-                return new Freedv();
+                proto = new Freedv();
+                break;
             case RAW:
             default:
                 proto = new Raw();
@@ -98,12 +100,14 @@ public class ProtocolFactory {
         if (aprsEnabled) {
             proto = new Ax25(proto);
         }
-        if (recordingEnabled) {
-            proto = new Recorder(proto, codec2ModeId);
-        }
+        if (!freedvEnabled) {
+            if (recordingEnabled) {
+                proto = new Recorder(proto, codec2ModeId);
+            }
 
-        proto = new AudioFrameAggregator(proto, codec2ModeId);
-        proto = new AudioCodec2(proto, codec2ModeId);
+            proto = new AudioFrameAggregator(proto, codec2ModeId);
+            proto = new AudioCodec2(proto, codec2ModeId);
+        }
 
         if (aprsEnabled) {
             proto = new Aprs(proto);
