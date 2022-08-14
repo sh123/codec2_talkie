@@ -29,7 +29,6 @@ import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.settings.PreferenceKeys;
-import com.radio.codec2talkie.transport.SoundModemBase;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,10 +39,10 @@ public class UsbConnectActivity extends AppCompatActivity {
     private final int USB_NOT_FOUND = 1;
     private final int USB_CONNECTED = 2;
 
-    private final int USB_BAUD_RATE_DEFAULT = 115200;
-    private final int USB_DATA_BITS_DEFAULT = 8;
-    private final int USB_STOP_BITS_DEFAULT = UsbSerialPort.STOPBITS_1;
-    private final int USB_PARITY_DEFAULT = UsbSerialPort.PARITY_NONE;
+    private static final int USB_BAUD_RATE_DEFAULT = 115200;
+    private static final int USB_DATA_BITS_DEFAULT = 8;
+    private static final int USB_STOP_BITS_DEFAULT = UsbSerialPort.STOPBITS_1;
+    private static final int USB_PARITY_DEFAULT = UsbSerialPort.PARITY_NONE;
 
     private int _baudRate;
     private int _dataBits;
