@@ -159,9 +159,16 @@ public class SoundModemBase implements Runnable {
         _systemAudioPlayer.release();
     }
 
+    protected void pttPurge() {
+        if (_pttOffTimer != null) {
+            _pttOffTimer.cancel();
+            _pttOffTimer.purge();
+            _pttOffTimer = null;
+        }
+    }
     protected void pttOn() {
+        pttPurge();
         if (_isPttOn) return;
-
         try {
             _rigCtl.pttOn();
             _isPttOn = true;
@@ -171,12 +178,7 @@ public class SoundModemBase implements Runnable {
     }
 
     protected void pttOff() {
-        if (!_isPttOn) return;
-        if (_pttOffTimer != null) {
-            _pttOffTimer.cancel();
-            _pttOffTimer.purge();
-            _pttOffTimer = null;
-        }
+        pttPurge();
         _pttOffTimer = new Timer();
         _pttOffTimer.schedule(new TimerTask() {
             @Override

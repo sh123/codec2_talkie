@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -28,11 +29,13 @@ import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.transport.SoundModemBase;
 
 import java.io.IOException;
 import java.util.List;
 
 public class UsbConnectActivity extends AppCompatActivity {
+    private static final String TAG = UsbConnectActivity.class.getSimpleName();
 
     private final int USB_NOT_FOUND = 1;
     private final int USB_CONNECTED = 2;
@@ -121,12 +124,26 @@ public class UsbConnectActivity extends AppCompatActivity {
                 boolean isFound = false;
                 for (int i = 0; i < availableDrivers.size(); i++) {
                     UsbSerialDriver driver = availableDrivers.get(i);
-                    UsbDeviceConnection connection = manager.openDevice(driver.getDevice());
-                    if (connection == null) {
+                    UsbDeviceConnection connection;
+                    try {
+                        connection = manager.openDevice(driver.getDevice());
+                    } catch (SecurityException e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "No rights to open device");
                         continue;
                     }
-                    UsbSerialPort port = driver.getPorts().get(i);
+                    if (connection == null) {
+                        Log.e(TAG, "Cannot get connection");
+                        continue;
+                    }
+                    List<UsbSerialPort> ports = driver.getPorts();
+                    if (ports.size() <= 0) {
+                        Log.e(TAG, "Not enough ports");
+                        continue;
+                    }
+                    UsbSerialPort port = ports.get(0);
                     if (port == null) {
+                        Log.e(TAG, "Cannot get port");
                         continue;
                     }
 
@@ -136,6 +153,8 @@ public class UsbConnectActivity extends AppCompatActivity {
                         port.setDTR(_enableDtr);
                         port.setRTS(_enableRts);
                     } catch (IOException e) {
+                        e.printStackTrace();
+                        Log.e(TAG, "Cannot set port parameters");
                         continue;
                     }
                     _usbPort = port;
