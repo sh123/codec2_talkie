@@ -13,7 +13,7 @@ For more information visit project [Wiki](https://github.com/sh123/codec2_talkie
 ![alt text](images/screenshot.png)
 ![alt text](images/screenshot_settings.png)
 
-This minimalistic Android application is Amateur Radio Walkie-Talkie style digital voice frontend for your radio modem, which uses open source [Codec2](https://github.com/drowe67/codec2) for speech audio frame encoding/decoding with additional AX.25/APRS and FreeDV support.
+This minimalistic Android application is Amateur Radio Walkie-Talkie style digital voice frontend for your radio modem, which uses open source [Codec2](https://github.com/drowe67/codec2) for speech audio frame encoding/decoding with additional AX.25/APRS (HF 300 and AFSK1200) and FreeDV support.
 
 It is mainly intended for Amateur Radio DV experimentation with ultra low cost 3-8 dollar radio modems, such as LoRa and 15-25 dollar ESP32 board flavors with built-in LoRa module: T-Beam,
 LoPy, TTGO, Heltec and others, but could also be used with custom hardware of software (Direwolf) modems and/or analog transceivers (such as HF MCHF or ICOM) or as a test harness for Codec2 frames generation and their playback. It also supports FreeDV modes through OTG USB audio and USB CAT PTT control.
