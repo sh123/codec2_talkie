@@ -2,7 +2,9 @@
 ![APK](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.radio.codec2talkie)
 
 # Introduction
-**Turn your Android phone into real Amateur Radio HF/VHF/UHF APRS enabled Codec2 DV (digital voice) and/or FreeDV handheld transceiver. Requires additional hardware (e.g. AFSK/LoRa), software (e.g. Direwolf) radio modem or analog transceiver with USB audio + VOX/USB CAT PTT control, such as MCHF or ICOM**
+**Turn your Android phone into real Amateur Radio HF/VHF/UHF APRS enabled Codec2 DV (digital voice) and/or FreeDV handheld transceiver. ***
+
+**Requires additional hardware (e.g. AFSK/LoRa), software (e.g. Direwolf) radio modem or analog transceiver with USB audio + VOX/USB CAT PTT control, such as MCHF or ICOM**
 
 For more information visit project [Wiki](https://github.com/sh123/codec2_talkie/wiki)
 
@@ -19,11 +21,13 @@ LoPy, TTGO, Heltec and others, but could also be used with custom hardware of so
 ![alt text](images/tracker.jpg)
 
 Application connects to your radio KISS Bluetooth/BLE/USB/TCPIP modem, records speech from the phone microphone on transmit, encodes audio into Codec2 format, encapsulates into KISS frames (plus into AX.25 frames if enabled in settings) and sends to your modem. 
-On receive, modem sends KISS packets to the phone with Codec2 speech, application decodes Codec2 samples and plays them through phone speaker. Application also supports APRS tracking, so you can submit your position into APRS in plain, compressed or Mic-E format.
+On receive, modem sends KISS packets to the phone with Codec2 speech, application decodes Codec2 samples and plays them through phone speaker. 
+
+Application also supports APRS tracking, so you can submit your position into APRS in plain, compressed or Mic-E format.
 
 It does not deal with radio management, modulation when used in KISS mode, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK, FreeDV or any other modulation scheme. Radio just needs to expose KISS Bluetooth/BLE/USB/TCPIP interface for speech frames and optional radio control.
 
-When used in sound modem mode it supports several modulation schemes and protocols, such as FSK 300, AFSK1200 and FreeDV with USB CAT PTT support for several popular HF transceivers.
+When used in sound modem mode it supports several modulation schemes and protocols, such as FSK 300 (for HF APRS), AFSK1200 (for VHF APRS) and FreeDV with USB CAT PTT support for several popular HF transceivers, it also possible to send APRS frames over FreeDV OFDM data modes.
 
 # Requirements
 - Android 7.0 (API 24) or higher
