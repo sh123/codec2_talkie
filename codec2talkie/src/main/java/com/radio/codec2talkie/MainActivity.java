@@ -633,7 +633,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     public void onBackPressed() {
 
         if (_backPressedTimestamp + BACK_EXIT_MS_DELAY > System.currentTimeMillis()) {
-            super.onBackPressed();
+            //super.onBackPressed();
             exitApplication();
         } else {
             Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_SHORT).show();
@@ -733,17 +733,20 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     _btnPtt.setEnabled(false);
                     // app restart, stop app service and restart ourselves
                     if (_isAppRestart) {
+                        Log.i(TAG, "App restart");
                         unbindAppService();
                         stopAppService();
                         finish();
                         startActivity(getIntent());
                     // app exit, stop app service and finish
                     } else if (_isAppExit) {
+                        Log.i(TAG, "App exit");
                         unbindAppService();
                         stopAppService();
                         finish();
                     // otherwise just reconnect if app is not on pause
                     } else if (!isPaused) {
+                        Log.i(TAG, "App restart transport");
                         Toast.makeText(getBaseContext(), R.string.processor_disconnected, Toast.LENGTH_SHORT).show();
                         startTransportConnection();
                     }
