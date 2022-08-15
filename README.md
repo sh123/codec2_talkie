@@ -13,21 +13,17 @@ For more information visit project [Wiki](https://github.com/sh123/codec2_talkie
 ![alt text](images/screenshot.png)
 ![alt text](images/screenshot_settings.png)
 
-This minimalistic Android application is Amateur Radio Walkie-Talkie style digital voice frontend for your radio modem, which uses open source [Codec2](https://github.com/drowe67/codec2) for speech audio frame encoding/decoding with additional AX.25/APRS (HF 300 and AFSK1200) and FreeDV support.
-
-It is mainly intended for Amateur Radio DV experimentation with ultra low cost 3-8 dollar radio modems, such as LoRa and 15-25 dollar ESP32 board flavors with built-in LoRa module: T-Beam,
-LoPy, TTGO, Heltec and others, but could also be used with custom hardware of software (Direwolf) modems and/or analog transceivers (such as HF MCHF or ICOM) or as a test harness for Codec2 frames generation and their playback. It also supports FreeDV modes through OTG USB audio and USB CAT PTT control.
-
-![alt text](images/tracker.jpg)
-
-Application connects to your radio KISS Bluetooth/BLE/USB/TCPIP modem, records speech from the phone microphone on transmit, encodes audio into Codec2 format, encapsulates into KISS frames (plus into AX.25 frames if enabled in settings) and sends to your modem. 
-On receive, modem sends KISS packets to the phone with Codec2 speech, application decodes Codec2 samples and plays them through phone speaker. 
-
-Application also supports APRS tracking, so you can submit your position into APRS in plain, compressed or Mic-E format.
-
-It does not deal with radio management, modulation when used in KISS mode, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK, FreeDV or any other modulation scheme. Radio just needs to expose KISS Bluetooth/BLE/USB/TCPIP interface for speech frames and optional radio control.
-
-When used in sound modem mode it supports several modulation schemes and protocols, such as FSK 300 (for HF APRS), AFSK1200 (for VHF APRS) and FreeDV with USB CAT PTT support for several popular HF transceivers, it is also possible to send APRS frames over FreeDV OFDM data modes.
+# Short Description
+What you can do with this app:
+- Use it with your KISS Bluetooth/BLE/USB/TCPIP hardware modem, such as LoRa/FSK/AFSK/etc
+- Use it with KISS software modem using TCPIP, such as Direwolf
+- Use it with your HF/VHF/UHF transceiver
+- Use your phone as a software modem by using external USB audio adapter or built-in phone speaker and mic
+- Send and reveive APRS position reports over FSK 300, AFSK1200, FreeDV OFDM
+- Send and receive APRS messages
+- Send and receive raw Codec2 speech frames over KISS or inside APRS/AX.25 UI frames
+- Use your phone for FreeDV protocol voice communication together with HF transceiver
+- Control your external transceiver PTT by using USB serial CAT
 
 # Requirements
 - Android 7.0 (API 24) or higher
