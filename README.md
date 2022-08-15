@@ -15,10 +15,10 @@ For more information visit project [Wiki](https://github.com/sh123/codec2_talkie
 
 # Short Description
 What you can do with this app:
-- Use it with your KISS Bluetooth/BLE/USB/TCPIP hardware modem, such as LoRa/FSK/AFSK/etc
+- Use it with your KISS Bluetooth/BLE/USB/TCPIP hardware modem, such as LoRa/FSK/AFSK/etc, control its parameters by using "set hardware" KISS command
 - Use it with KISS software modem using TCPIP, such as Direwolf
-- Use it with your HF/VHF/UHF transceiver
-- Use your phone as a software modem by using external USB audio adapter or built-in phone speaker and mic
+- Use it with your HF/VHF/UHF transceiver as a sound modem
+- Use your phone as a software sound modem by using external USB audio adapter or built-in phone speaker and mic
 - Send and reveive APRS position reports over FSK 300, AFSK1200, FreeDV OFDM
 - Send and receive APRS messages
 - Send and receive raw Codec2 speech frames over KISS or inside APRS/AX.25 UI frames
