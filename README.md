@@ -18,8 +18,8 @@ What you can do with this app:
 - Use it with your KISS Bluetooth/BLE/USB/TCPIP hardware modem, such as LoRa/FSK/AFSK/etc, control its parameters by using "set hardware" KISS command
 - Use it with KISS software modem using TCPIP, such as Direwolf
 - Use it with your HF/VHF/UHF transceiver as a sound modem
-- Use your phone as a software sound modem by using external USB audio adapter or built-in phone speaker and mic
-- Send and reveive APRS position reports over FSK 300, AFSK1200, FreeDV OFDM
+- Use your phone as a software sound modem by using external USB audio adapter (voice + data) or built-in phone speaker and mic (only data)
+- Send and reveive APRS position reports over FSK 300 (HF), AFSK1200 (VHF), FreeDV OFDM (HF)
 - Send and receive APRS messages
 - Send and receive raw Codec2 speech frames over KISS or inside APRS/AX.25 UI frames
 - Use your phone for FreeDV protocol voice communication together with HF transceiver
