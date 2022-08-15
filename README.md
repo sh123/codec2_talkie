@@ -27,7 +27,7 @@ Application also supports APRS tracking, so you can submit your position into AP
 
 It does not deal with radio management, modulation when used in KISS mode, it is up to your modem and radio, it could be just AFSK1200, GMSK 9600, LoRa, FSK, FreeDV or any other modulation scheme. Radio just needs to expose KISS Bluetooth/BLE/USB/TCPIP interface for speech frames and optional radio control.
 
-When used in sound modem mode it supports several modulation schemes and protocols, such as FSK 300 (for HF APRS), AFSK1200 (for VHF APRS) and FreeDV with USB CAT PTT support for several popular HF transceivers, it also possible to send APRS frames over FreeDV OFDM data modes.
+When used in sound modem mode it supports several modulation schemes and protocols, such as FSK 300 (for HF APRS), AFSK1200 (for VHF APRS) and FreeDV with USB CAT PTT support for several popular HF transceivers, it is also possible to send APRS frames over FreeDV OFDM data modes.
 
 # Requirements
 - Android 7.0 (API 24) or higher
