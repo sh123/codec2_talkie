@@ -64,34 +64,6 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:key="codec2_category"
-        app:title="@string/codec2_category_title">
-
-        <ListPreference
-            app:key="codec2_mode"
-            app:title="@string/codec2_mode_title"
-            app:entries="@array/codec2_modes"
-            app:entryValues="@array/codec2_modes"
-            app:defaultValue="MODE_450=10"
-            app:summary="%s">
-        </ListPreference>
-
-        <EditTextPreference
-            app:key="codec2_tx_frame_max_size"
-            app:title="@string/codec2_tx_frame_max_size_title"
-            app:summary="@string/codec2_tx_frame_max_size_summary"
-            app:defaultValue="48">
-        </EditTextPreference>
-
-        <SwitchPreference
-            app:key="codec2_recording_enabled"
-            app:title="@string/codec2_recorder_title"
-            app:summary="@string/codec2_recorder_summary"
-            app:defaultValue="false">
-        </SwitchPreference>
-    </PreferenceCategory>
-
-    <PreferenceCategory
         app:key="ports_category"
         app:title="@string/ports_category_title">
 
@@ -135,6 +107,34 @@
             app:fragment="com.radio.codec2talkie.settings.SettingsActivity$SettingsSoundModemFragment">
         </Preference>
 
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="codec2_category"
+        app:title="@string/codec2_category_title">
+
+        <ListPreference
+            app:key="codec2_mode"
+            app:title="@string/codec2_mode_title"
+            app:entries="@array/codec2_modes"
+            app:entryValues="@array/codec2_modes"
+            app:defaultValue="MODE_450=10"
+            app:summary="%s">
+        </ListPreference>
+
+        <EditTextPreference
+            app:key="codec2_tx_frame_max_size"
+            app:title="@string/codec2_tx_frame_max_size_title"
+            app:summary="@string/codec2_tx_frame_max_size_summary"
+            app:defaultValue="48">
+        </EditTextPreference>
+
+        <SwitchPreference
+            app:key="codec2_recording_enabled"
+            app:title="@string/codec2_recorder_title"
+            app:summary="@string/codec2_recorder_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
     </PreferenceCategory>
 
     <PreferenceCategory

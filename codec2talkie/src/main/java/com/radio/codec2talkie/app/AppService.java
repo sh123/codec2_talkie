@@ -113,6 +113,7 @@ public class AppService extends Service {
     }
 
     public void stopRunning() {
+        Log.i(TAG, "stopRunning()");
         if (_appWorker != null)
             _appWorker.stopRunning();
     }
