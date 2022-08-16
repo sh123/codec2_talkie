@@ -21,10 +21,10 @@ What you can do with this app:
 - Use your phone as a software sound modem by using external USB OTG audio adapter (voice + data) or built-in phone speaker and mic (only data)
 - Use your phone for FreeDV protocol voice communication together with HF transceiver, which supports USB OTG audio
 - Control your external transceiver PTT by using USB serial CAT (or VOX if CAT PTT is not supported)
-- Send and reveive APRS position reports over FSK 300 (HF, TX only), AFSK1200 (VHF), FreeDV OFDM (HF)
+- Send and receive APRS position reports over FSK 300 (HF, TX only), AFSK1200 (VHF), FreeDV OFDM (HF)
 - Send and receive APRS messages
 - Send and receive raw Codec2 speech frames over KISS or inside APRS/AX.25 UI frames
-- Use it as APRS digirepeater
+- Use application as APRS digirepeater
 - [TODO] use it as APRS RX/TX iGate
 
 # Requirements
