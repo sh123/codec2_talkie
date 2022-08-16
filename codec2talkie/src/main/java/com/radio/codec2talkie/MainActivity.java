@@ -164,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         FrameLayout frameRssi = findViewById(R.id.frameRssi);
         if (SettingsWrapper.isFreeDvSoundModemModulation(_sharedPreferences)) {
             frameRssi.setVisibility(View.VISIBLE);
-        } else if (SettingsWrapper.isKissExtensionEnabled(_sharedPreferences)) {
+        } else if (SettingsWrapper.isKissExtensionEnabled(_sharedPreferences) && !SettingsWrapper.isSoundModemEnabled(_sharedPreferences)) {
             int sLevelId = RadioTools.getMinimumDecodeSLevelLabel(_sharedPreferences, S_METER_S0_VALUE_DB);
             TextView sLevel = findViewById(sLevelId);
             if (sLevel != null) {
