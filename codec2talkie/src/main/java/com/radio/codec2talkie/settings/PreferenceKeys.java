@@ -18,6 +18,8 @@ public final class PreferenceKeys {
     public static String PORTS_TCP_IP_RETRY_DELAY = "ports_tcp_ip_retry_delay";
 
     public static String PORTS_SOUND_MODEM_TYPE = "ports_sound_modem_type";
+    public static String PORTS_SOUND_MODEM_AUDIO_SOURCE = "ports_sound_modem_audio_source";
+    public static String PORTS_SOUND_MODEM_AUDIO_DESTINATION = "ports_sound_modem_audio_destination";
     public static String PORTS_SOUND_MODEM_PREAMBLE = "ports_sound_modem_preamble";
     public static String PORTS_SOUND_MODEM_DISABLE_RX = "ports_sound_modem_disable_rx";
     public static String PORTS_SOUND_MODEM_RIG = "ports_sound_modem_rig";

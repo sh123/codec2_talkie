@@ -464,4 +464,36 @@
         <item>10</item>
         <item>12</item>
     </string-array>
+
+    <string-array name="ports_sound_modem_audio_source_entries">
+        <item>Default</item>
+        <item>Microphone</item>
+        <item>Camcoder</item>
+        <item>Voice recognition</item>
+        <item>Voice communication</item>
+    </string-array>
+
+    <string-array name="ports_sound_modem_audio_source_values">
+        <item>0</item>
+        <item>1</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+
+    <string-array name="ports_sound_modem_audio_destination_entries">
+        <item>Media</item>
+        <item>Voice</item>
+        <item>Alarm</item>
+        <item>Notifications</item>
+        <item>Ringtone</item>
+    </string-array>
+
+    <string-array name="ports_sound_modem_audio_destination_values">
+        <item>1</item>
+        <item>2</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+    </string-array>
 </resources>

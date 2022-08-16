@@ -56,7 +56,9 @@ public class SoundModemBase implements Runnable {
         _isLoopback = _sharedPreferences.getBoolean(PreferenceKeys.PORTS_SOUND_MODEM_LOOPBACK, false);
         if (_isLoopback) _name += "_";
 
-        constructSystemAudioDevices(disableRx, sampleRate);
+        int audioSource = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_AUDIO_SOURCE, "6"));
+        int audioDestination = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_AUDIO_DESTINATION, "1"));
+        constructSystemAudioDevices(disableRx, sampleRate, audioSource, audioDestination);
 
         _rigCtl = RigCtlFactory.create(context);
         try {
@@ -72,13 +74,12 @@ public class SoundModemBase implements Runnable {
             new Thread(this).start();
     }
 
-    private void constructSystemAudioDevices(boolean disableRx, int sampleRate) {
+    private void constructSystemAudioDevices(boolean disableRx, int sampleRate, int audioSource, int audioPlaybackUsage) {
         int audioRecorderMinBufferSize = 10 * AudioRecord.getMinBufferSize(
                 sampleRate,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
 
-        int audioSource = MediaRecorder.AudioSource.VOICE_RECOGNITION;
         _systemAudioRecorder = new AudioRecord(
                 audioSource,
                 sampleRate,
@@ -94,10 +95,9 @@ public class SoundModemBase implements Runnable {
         if (!disableRx)
             _systemAudioRecorder.startRecording();
 
-        int usage = AudioAttributes.USAGE_MEDIA;
         _systemAudioPlayer = new AudioTrack.Builder()
                 .setAudioAttributes(new AudioAttributes.Builder()
-                        .setUsage(usage)
+                        .setUsage(audioPlaybackUsage)
                         .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                         .build())
                 .setAudioFormat(new AudioFormat.Builder()
@@ -108,7 +108,6 @@ public class SoundModemBase implements Runnable {
                 .setTransferMode(AudioTrack.MODE_STREAM)
                 .setBufferSizeInBytes(audioPlayerMinBufferSize)
                 .build();
-        _systemAudioPlayer.setVolume(AudioTrack.getMaxVolume());
 
         Log.i(TAG, "Play buffer size " + audioPlayerMinBufferSize + ", recorder " + audioRecorderMinBufferSize);
     }

@@ -15,6 +15,24 @@
             app:summary="%s">
         </ListPreference>
 
+        <ListPreference
+            app:key="ports_sound_modem_audio_source"
+            app:title="@string/ports_sound_modem_audio_source_title"
+            app:entries="@array/ports_sound_modem_audio_source_entries"
+            app:entryValues="@array/ports_sound_modem_audio_source_values"
+            app:defaultValue="6"
+            app:summary="%s">
+        </ListPreference>
+
+        <ListPreference
+            app:key="ports_sound_modem_audio_destination"
+            app:title="@string/ports_sound_modem_audio_destination_title"
+            app:entries="@array/ports_sound_modem_audio_destination_entries"
+            app:entryValues="@array/ports_sound_modem_audio_destination_values"
+            app:defaultValue="1"
+            app:summary="%s">
+        </ListPreference>
+
         <SwitchPreference
             app:key="ports_sound_modem_disable_rx"
             app:title="@string/ports_sound_modem_disable_rx_title"
