@@ -321,4 +321,6 @@
     <string name="ports_sound_modem_freedv_data_title">Select data mode</string>
     <string name="ports_sound_modem_audio_source_title">Audio source</string>
     <string name="ports_sound_modem_audio_destination_title">Audio output</string>
+    <string name="app_audio_source_title">Audio source for speech</string>
+    <string name="app_audio_destination_title">Audio output for speech</string>
 </resources>

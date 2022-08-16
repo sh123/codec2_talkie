@@ -98,19 +98,16 @@ public class AppWorker extends Thread {
 
         _processPeriodicTimer = new Timer();
 
-        constructSystemAudioDevices(transportType);
+        int audioSource = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.APP_AUDIO_SOURCE, "6"));
+        int audioDestination = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.APP_AUDIO_DESTINATION, "1"));
+        constructSystemAudioDevices(transportType, audioSource, audioDestination);
     }
 
-    private void constructSystemAudioDevices(TransportFactory.TransportType transportType) {
+    private void constructSystemAudioDevices(TransportFactory.TransportType transportType, int audioSource, int audioDestination) {
         int _audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
                 AUDIO_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
-        boolean isVoiceCommunication = _sharedPreferences.getBoolean(PreferenceKeys.APP_AUDIO_INPUT_VOICE_COMMUNICATION, false);
-        int audioSource = MediaRecorder.AudioSource.MIC;
-        if (isVoiceCommunication) {
-            audioSource = MediaRecorder.AudioSource.VOICE_COMMUNICATION;
-        }
         _systemAudioRecorder = new AudioRecord(
                 audioSource,
                 AUDIO_SAMPLE_SIZE,
@@ -122,15 +119,9 @@ public class AppWorker extends Thread {
                 AUDIO_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_OUT_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
-
-        boolean isSpeakerOutput = _sharedPreferences.getBoolean(PreferenceKeys.APP_AUDIO_OUTPUT_SPEAKER, true);
-        int usage = AudioAttributes.USAGE_VOICE_COMMUNICATION;
-        if (isSpeakerOutput) {
-            usage = AudioAttributes.USAGE_MEDIA;
-        }
         _systemAudioPlayer = new AudioTrack.Builder()
                 .setAudioAttributes(new AudioAttributes.Builder()
-                        .setUsage(usage)
+                        .setUsage(audioDestination)
                         .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
                         .build())
                 .setAudioFormat(new AudioFormat.Builder()
@@ -144,7 +135,7 @@ public class AppWorker extends Thread {
 
         // Use built in mic and speaker for speech when sound modem is in use
         if (transportType == TransportFactory.TransportType.SOUND_MODEM) {
-            selectBuiltinMicAndSpeakerEarpiece(isSpeakerOutput);
+            selectBuiltinMicAndSpeakerEarpiece(audioDestination != AudioAttributes.USAGE_VOICE_COMMUNICATION);
         }
     }
 
