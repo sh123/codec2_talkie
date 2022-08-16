@@ -24,6 +24,13 @@
         </ListPreference>
 
         <SwitchPreference
+            app:key="app_notifications_voice"
+            app:title="@string/app_notifications_voice_enable_title"
+            app:summary="@string/app_notifications_voice_enable_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <SwitchPreference
             app:key="app_volume_ptt"
             app:title="@string/app_volume_ptt_title"
             app:summary="@string/app_volume_ptt_summary"
@@ -59,12 +66,6 @@
             app:defaultValue="false">
         </SwitchPreference>
 
-        <SwitchPreference
-            app:key="app_notifications_voice"
-            app:title="@string/app_notifications_voice_enable_title"
-            app:summary="@string/app_notifications_voice_enable_summary"
-            app:defaultValue="false">
-        </SwitchPreference>
     </PreferenceCategory>
 
     <PreferenceCategory
