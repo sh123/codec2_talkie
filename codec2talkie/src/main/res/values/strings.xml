@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Codec2 Talkie</string>
+    <string name="app_name">Codec2Talkie</string>
     <string name="push_to_talk">PUSH TO TALK</string>
 
     <string name="menu_settings">Settings</string>

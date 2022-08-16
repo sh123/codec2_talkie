@@ -38,13 +38,6 @@
         </SwitchPreference>
 
         <SwitchPreference
-            app:key="app_keep_screen_on"
-            app:title="@string/app_keep_screen_on_title"
-            app:summary="@string/app_keep_screen_on_summary"
-            app:defaultValue="false">
-        </SwitchPreference>
-
-        <SwitchPreference
             app:key="app_no_lock"
             app:title="@string/app_no_lock_title"
             app:summary="@string/app_no_lock_summary"
@@ -56,6 +49,13 @@
             app:title="@string/app_turn_screen_on_title"
             app:summary="@string/app_turn_screen_on_summary"
             app:dependency="app_no_lock"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <SwitchPreference
+            app:key="app_keep_screen_on"
+            app:title="@string/app_keep_screen_on_title"
+            app:summary="@string/app_keep_screen_on_summary"
             app:defaultValue="false">
         </SwitchPreference>
 
