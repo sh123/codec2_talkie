@@ -100,80 +100,90 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight=".1"
-                android:textSize="12dp"
-                android:text="S0" />
+                android:textSize="12sp"
+                android:text="S0"
+                tools:ignore="HardcodedText" />
             <TextView
                 android:id="@+id/textViewRssi1"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight=".1"
-                android:textSize="12dp"
-                android:text="S1" />
+                android:textSize="12sp"
+                android:text="S1"
+                tools:ignore="HardcodedText" />
             <TextView
                 android:id="@+id/textViewRssi2"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight=".1"
-                android:textSize="12dp"
-                android:text="S2" />
+                android:textSize="12sp"
+                android:text="S2"
+                tools:ignore="HardcodedText" />
             <TextView
                 android:id="@+id/textViewRssi3"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight=".1"
-                android:textSize="12dp"
-                android:text="S3" />
+                android:textSize="12sp"
+                android:text="S3"
+                tools:ignore="HardcodedText" />
             <TextView
                 android:id="@+id/textViewRssi4"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight=".1"
-                android:textSize="12dp"
-                android:text="S4" />
+                android:textSize="12sp"
+                android:text="S4"
+                tools:ignore="HardcodedText" />
             <TextView
                 android:id="@+id/textViewRssi5"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight=".1"
-                android:textSize="12dp"
-                android:text="S5" />
+                android:textSize="12sp"
+                android:text="S5"
+                tools:ignore="HardcodedText" />
             <TextView
                 android:id="@+id/textViewRssi6"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight=".1"
-                android:textSize="12dp"
-                android:text="S6" />
+                android:textSize="12sp"
+                android:text="S6"
+                tools:ignore="HardcodedText" />
             <TextView
                 android:id="@+id/textViewRssi7"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight=".1"
-                android:textSize="12dp"
-                android:text="S7" />
+                android:textSize="12sp"
+                android:text="S7"
+                tools:ignore="HardcodedText" />
             <TextView
                 android:id="@+id/textViewRssi8"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight=".1"
-                android:textSize="12dp"
-                android:text="S8" />
+                android:textSize="12sp"
+                android:text="S8"
+                tools:ignore="HardcodedText" />
             <TextView
                 android:id="@+id/textViewRssi9"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight=".2"
-                android:textSize="12dp"
-                android:text="S9" />
+                android:textSize="12sp"
+                android:text="S9"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:id="@+id/textViewRssi10"
@@ -181,8 +191,9 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight=".2"
-                android:textSize="12dp"
-                android:text="+10" />
+                android:textSize="12sp"
+                android:text="+10"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:id="@+id/textViewRssi20"
@@ -190,16 +201,18 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight=".2"
-                android:textSize="12dp"
-                android:text="+20" />
+                android:textSize="12sp"
+                android:text="+20"
+                tools:ignore="HardcodedText" />
             <TextView
                 android:id="@+id/textViewRssi30"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight=".2"
-                android:textSize="12dp"
-                android:text="+30" />
+                android:textSize="12sp"
+                android:text="+30"
+                tools:ignore="HardcodedText" />
 
             <TextView
                 android:id="@+id/textViewRssi40"
@@ -207,8 +220,9 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight=".2"
-                android:textSize="12dp"
-                android:text="+40"/>
+                android:textSize="12sp"
+                android:text="+40"
+                tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <ProgressBar
