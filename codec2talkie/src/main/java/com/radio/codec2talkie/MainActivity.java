@@ -40,8 +40,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private TextView _textRssi;
     private ProgressBar _progressAudioLevel;
     private ProgressBar _progressRssi;
-    private Button _btnPtt;
+    private ImageButton _btnPtt;
     private Menu _menu;
 
     public static boolean isPaused = false;
@@ -731,7 +731,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 case EV_DISCONNECTED:
                     Log.i(TAG, "EV_DISCONNECTED");
                     updateMenuItemsAndStatusText();
-                    _btnPtt.setText(R.string.main_status_stop);
+                    _btnPtt.setImageResource(R.drawable.btn_ptt_stop);
                     _btnPtt.setEnabled(false);
                     // app restart, stop app service and restart ourselves
                     if (_isAppRestart) {
@@ -754,17 +754,17 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     }
                     break;
                 case EV_LISTENING:
-                    _btnPtt.setText(R.string.push_to_talk);
+                    _btnPtt.setImageResource(R.drawable.btn_ptt_touch);
                     _textStatus.setText("");
                     break;
                 case EV_TRANSMITTED_VOICE:
                     if (msg.obj != null) {
                         _textStatus.setText((String) msg.obj);
                     }
-                    _btnPtt.setText(R.string.main_status_tx);
+                    _btnPtt.setImageResource(R.drawable.btn_ptt_mic);
                     break;
                 case EV_RECEIVING:
-                    _btnPtt.setText(R.string.main_status_rx);
+                    _btnPtt.setImageResource(R.drawable.btn_ptt_listen);
                     break;
                 case EV_TEXT_MESSAGE_RECEIVED:
                 case EV_DATA_RECEIVED:
@@ -773,13 +773,14 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         String note = (String)msg.obj;
                         _textStatus.setText(note.split(":")[0]);
                     }
-                    _btnPtt.setText(R.string.main_status_data_received);
+                    _btnPtt.setImageResource(R.drawable.btn_ptt_letter);
                     break;
                 case EV_VOICE_RECEIVED:
                     if (msg.obj != null) {
                         _textStatus.setText((String) msg.obj);
                     }
-                    _btnPtt.setText(R.string.main_status_voice_received);
+                    //_btnPtt.setText(R.string.main_status_voice_received);
+                    _btnPtt.setImageResource(R.drawable.btn_ptt_listen);
                     break;
                 case EV_RX_RADIO_LEVEL:
                     if (msg.arg1 == 0 && msg.arg2 == 0) {
@@ -804,10 +805,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     _progressAudioLevel.setProgress(msg.arg1 - AppWorker.getAudioMinLevel());
                     break;
                 case EV_RX_ERROR:
-                    _btnPtt.setText(R.string.main_status_rx_error);
+                    _btnPtt.setImageResource(R.drawable.btn_ptt_err_rx);
                     break;
                 case EV_TX_ERROR:
-                    _btnPtt.setText(R.string.main_status_tx_error);
+                    _btnPtt.setImageResource(R.drawable.btn_ptt_err_tx);
                     break;
                 case EV_STARTED_TRACKING:
                 case EV_STOPPED_TRACKING:
