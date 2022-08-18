@@ -96,4 +96,11 @@ public final class PreferenceKeys {
     public static String APRS_LOCATION_SOURCE_SMART_MIN_TURN_TIME = "aprs_location_source_smart_min_turn_time";
     public static String APRS_LOCATION_SOURCE_SMART_MIN_TURN_ANGLE = "aprs_location_source_smart_min_turn_angle";
     public static String APRS_LOCATION_SOURCE_SMART_TURN_SLOPE = "aprs_location_source_smart_turn_slope";
+
+    public static String APRS_IS_CODE = "aprs_is_code";
+    public static String APRS_IS_TCPIP_SERVER = "aprs_is_tcpip_server";
+    public static String APRS_IS_ENABLE_RX_GATE = "aprs_is_enable_rx_gate";
+    public static String APRS_IS_ENABLE_TX_GATE = "aprs_is_enable_tx_gate";
+    public static String APRS_IS_RADIUS = "aprs_is_radius";
+    public static String APRS_IS_FILTER = "aprs_is_filter";
 }

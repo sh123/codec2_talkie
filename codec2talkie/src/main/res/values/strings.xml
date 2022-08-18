@@ -214,21 +214,26 @@
     <string name="aprs_location_source_manual_auto_send_summary">Perform periodic position posting</string>
     <string name="aprs_location_source_manual_update_time_title">Minimum update time</string>
     <string name="aprs_location_source_manual_update_time_summary">Minutes between beacon transmissions</string>
+    <string name="aprs_location_packet_format_title">Packet format</string>
+    <string name="aprs_location_emic_message_type_title">Mic-E message type</string>
 
     <string name="aprs_privacy_position_ambiguity_title">Position ambiguity</string>
     <string name="aprs_privacy_speed_title">Send speed &amp; bearing</string>
     <string name="aprs_privacy_speed_summary">Include speed and bearing in position reports</string>
     <string name="aprs_privacy_altitude_title">Send altitude</string>
     <string name="aprs_privacy_altitude_summary">Include altitude in position reports</string>
-    <string name="aprs_location_packet_format_title">Packet format</string>
-    <string name="aprs_location_emic_message_type_title">Mic-E message type</string>
+
     <string name="aprs_label">&#127757;</string>
+
     <string name="menu_messages">Messages</string>
     <string name="menu_start_tracking">Start tracking</string>
     <string name="menu_stop_tracking">Stop tracking</string>
     <string name="menu_send_position">Send position</string>
+
     <string name="voax25_label">&#9742;</string>
+
     <string name="menu_aprs_log">View log</string>
+
     <string name="aprs_location_emic_digipath_title">Mic-E digipath</string>
     <string name="aprs_location_source_smart_title">Smartbeaconing&#8482; position</string>
     <string name="aprs_location_source_smart_fast_speed_summary">Minimum speed for fast position updates</string>
@@ -321,6 +326,23 @@
     <string name="ports_sound_modem_freedv_data_title">Select data mode</string>
     <string name="ports_sound_modem_audio_source_title">Audio source</string>
     <string name="ports_sound_modem_audio_destination_title">Audio output</string>
+
     <string name="app_audio_source_title">Audio source for speech</string>
     <string name="app_audio_destination_title">Audio output for speech</string>
+
+    <string name="aprs_is_code_title">APRS-IS passcode</string>
+    <string name="aprs_is_code_summary">APRS-IS validation passcode</string>
+    <string name="aprs_is_title">Internet APRS-IS</string>
+    <string name="aprs_is_settings_title">Internet APRS-IS</string>
+    <string name="aprs_is_settings_summary">Configure internet APRS-IS server connectivity</string>
+    <string name="aprs_is_tcpip_server_title">Server</string>
+    <string name="aprs_is_tcpip_server_summary">APRS-IS TCP server (port 14580) to connect</string>
+    <string name="aprs_is_enable_rx_gate_title">Enable APRS-IS RX gate</string>
+    <string name="aprs_is_enable_tx_gate_title">Enable APRS-IS TX gate</string>
+    <string name="aprs_is_enable_rx_gate_summary">Radio packets will be forwarded to APRS-IS</string>
+    <string name="aprs_is_enable_tx_gate_summary">APRS-IS packets will be forwarded to radio</string>
+    <string name="aprs_is_radius_title">Neighbour radius</string>
+    <string name="aprs_is_radius_summary">Receive APRS-IS packets from stations in this radius (km)</string>
+    <string name="aprs_is_filter_title">Packet filter</string>
+    <string name="aprs_is_filter_summary">Filter for incoming APRS-IS packets</string>
 </resources>

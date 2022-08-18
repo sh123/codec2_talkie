@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        app:key="aprs_is"
+        app:title="@string/aprs_is_title">
+
+        <EditTextPreference
+            app:key="aprs_is_code"
+            app:title="@string/aprs_is_code_title"
+            app:summary="@string/aprs_is_code_summary"
+            app:defaultValue="12345">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="aprs_is_tcpip_server"
+            app:title="@string/aprs_is_tcpip_server_title"
+            app:summary="@string/aprs_is_tcpip_server_summary"
+            app:defaultValue="euro.aprs2.net">
+        </EditTextPreference>
+
+        <SwitchPreference
+            app:key="aprs_is_enable_rx_gate"
+            app:title="@string/aprs_is_enable_rx_gate_title"
+            app:summary="@string/aprs_is_enable_rx_gate_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <SwitchPreference
+            app:key="aprs_is_enable_tx_gate"
+            app:title="@string/aprs_is_enable_tx_gate_title"
+            app:summary="@string/aprs_is_enable_tx_gate_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <EditTextPreference
+            app:key="aprs_is_radius"
+            app:title="@string/aprs_is_radius_title"
+            app:summary="@string/aprs_is_radius_summary"
+            app:defaultValue="10">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="aprs_is_filter"
+            app:title="@string/aprs_is_filter_title"
+            app:summary="@string/aprs_is_filter_summary"
+            app:defaultValue="">
+        </EditTextPreference>
+
+    </PreferenceCategory>
+</PreferenceScreen>

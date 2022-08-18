@@ -159,4 +159,13 @@ public class SettingsActivity extends AppCompatActivity
             setNumberInputType(getPreferenceManager());
         }
     }
+
+    public static class SettingsAprsIsFragment extends PreferenceFragmentCompat
+    {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences_aprs_is, null);
+            setNumberInputType(getPreferenceManager());
+        }
+    }
 }

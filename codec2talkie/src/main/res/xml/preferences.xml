@@ -285,6 +285,13 @@
             app:defaultValue="false">
         </SwitchPreference>
 
+        <Preference
+            android:key="aprs_is_settings"
+            android:title="@string/aprs_is_settings_title"
+            android:summary="@string/aprs_is_settings_summary"
+            app:fragment="com.radio.codec2talkie.settings.SettingsActivity$SettingsAprsIsFragment"
+            app:dependency="aprs_enable">
+        </Preference>
     </PreferenceCategory>
 
 </PreferenceScreen>
