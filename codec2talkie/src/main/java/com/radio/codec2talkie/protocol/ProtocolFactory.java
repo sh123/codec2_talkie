@@ -68,6 +68,7 @@ public class ProtocolFactory {
         boolean scramblingEnabled = SettingsWrapper.isKissScramblerEnabled(sharedPreferences);
         String scramblingKey = SettingsWrapper.getKissScramblerKey(sharedPreferences);
         boolean aprsEnabled = SettingsWrapper.isAprsEnabled(sharedPreferences);
+        boolean aprsIsEnabled = SettingsWrapper.isAprsIsEnabled(sharedPreferences);
         boolean freedvEnabled = SettingsWrapper.isFreeDvSoundModemModulation(sharedPreferences);
 
         // "root" protocol
@@ -110,6 +111,9 @@ public class ProtocolFactory {
         }
 
         if (aprsEnabled) {
+            if (aprsIsEnabled) {
+                proto = new AprsIs(proto);
+            }
             proto = new Aprs(proto);
         }
         return proto;
