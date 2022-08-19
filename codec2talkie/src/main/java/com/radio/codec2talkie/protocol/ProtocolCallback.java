@@ -9,7 +9,7 @@ public abstract class ProtocolCallback {
     abstract protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame);
     abstract protected void onReceiveCompressedAudio(String src, String dst, int codec, byte[] frame);
     abstract protected void onReceiveTextMessage(TextMessage textMessage);
-    abstract protected void onReceiveData(String src, String dst, byte[] data);
+    abstract protected void onReceiveData(String src, String dst, String path, byte[] data);
     abstract protected void onReceiveSignalLevel(short rssi, short snr);
     abstract protected void onReceiveLog(String logData);
 
@@ -18,7 +18,7 @@ public abstract class ProtocolCallback {
     abstract protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame);
     abstract protected void onTransmitTextMessage(TextMessage textMessage);
     abstract protected void onTransmitPosition(Position position);
-    abstract protected void onTransmitData(String src, String dst, byte[] data);
+    abstract protected void onTransmitData(String src, String dst, String path, byte[] data);
     abstract protected void onTransmitLog(String logData);
 
     // errors

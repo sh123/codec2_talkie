@@ -88,7 +88,7 @@ public class Freedv implements Protocol {
     }
 
     @Override
-    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
+    public void sendData(String src, String dst, String path, byte[] dataPacket) throws IOException {
         if (dataPacket.length > _dataBuffer.length - 2) {
             Log.e(TAG, "Too large packet " + dataPacket.length + " > " + _dataBuffer.length);
             return;

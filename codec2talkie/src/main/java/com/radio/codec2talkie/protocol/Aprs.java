@@ -2,7 +2,6 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.provider.Settings;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
@@ -91,7 +90,7 @@ public class Aprs implements Protocol {
         aprsData.fromTextMessage(textMessage);
         if (aprsData.isValid()) {
             textMessage.src = _srcCallsign;
-            sendData(_srcCallsign, _dstCallsign, aprsData.toBinary());
+            sendData(_srcCallsign, _dstCallsign, null, aprsData.toBinary());
             _parentProtocolCallback.onTransmitTextMessage(textMessage);
         } else {
             Log.e(TAG, "Invalid APRS message");
@@ -109,8 +108,8 @@ public class Aprs implements Protocol {
     }
 
     @Override
-    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
-        _childProtocol.sendData(src == null ? _srcCallsign : src, dst == null ? _dstCallsign : dst, dataPacket);
+    public void sendData(String src, String dst, String path, byte[] dataPacket) throws IOException {
+        _childProtocol.sendData(src == null ? _srcCallsign : src, dst == null ? _dstCallsign : dst, path, dataPacket);
     }
 
     @Override
@@ -141,7 +140,7 @@ public class Aprs implements Protocol {
         }
 
         @Override
-        protected void onReceiveData(String src, String dst, byte[] data) {
+        protected void onReceiveData(String src, String dst, String path, byte[] data) {
             if (data.length == 0) return;
             AprsDataType dataType = new AprsDataType((char)data[0]);
             AprsData aprsData = AprsDataFactory.fromBinary(src, dst, data);
@@ -158,7 +157,7 @@ public class Aprs implements Protocol {
                     }
                 }
             }
-            _parentProtocolCallback.onReceiveData(src, dst, data);
+            _parentProtocolCallback.onReceiveData(src, dst, path, data);
         }
 
         @Override
@@ -193,8 +192,8 @@ public class Aprs implements Protocol {
         }
 
         @Override
-        protected void onTransmitData(String src, String dst, byte[] data) {
-            _parentProtocolCallback.onTransmitData(src, dst, data);
+        protected void onTransmitData(String src, String dst, String path, byte[] data) {
+            _parentProtocolCallback.onTransmitData(src, dst, path, data);
         }
 
         @Override
@@ -235,7 +234,7 @@ public class Aprs implements Protocol {
                 return;
             }
             if (aprsData.isValid()) {
-                sendData(position.srcCallsign, position.dstCallsign, aprsData.toBinary());
+                sendData(position.srcCallsign, position.dstCallsign, null, aprsData.toBinary());
                 _parentProtocolCallback.onTransmitPosition(position);
             } else {
                 Log.e(TAG, "Invalid APRS data");

@@ -18,7 +18,7 @@ public interface Protocol {
     // messaging
     void sendTextMessage(TextMessage textMessage) throws IOException;
     // data
-    void sendData(String src, String dst, byte[] dataPacket) throws IOException;
+    void sendData(String src, String dst, String path, byte[] dataPacket) throws IOException;
     // callback
     boolean receive() throws IOException;
     // gps

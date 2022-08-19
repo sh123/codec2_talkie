@@ -70,7 +70,7 @@ public class Hdlc implements Protocol {
     }
 
     @Override
-    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
+    public void sendData(String src, String dst, String path, byte[] dataPacket) throws IOException {
         _transport.write(hdlcEncode(dataPacket));
     }
 

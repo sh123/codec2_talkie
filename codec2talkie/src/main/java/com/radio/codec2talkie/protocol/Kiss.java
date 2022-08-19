@@ -221,7 +221,7 @@ public class Kiss implements Protocol {
     }
 
     @Override
-    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
+    public void sendData(String src, String dst, String path, byte[] dataPacket) throws IOException {
         // NOTE, KISS does not distinguish between audio and data packet, upper layer should decide
         send(dataPacket);
     }

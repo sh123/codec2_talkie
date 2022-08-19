@@ -63,8 +63,8 @@ public class AudioCodec2 implements Protocol {
     }
 
     @Override
-    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
-        _childProtocol.sendData(src, dst, dataPacket);
+    public void sendData(String src, String dst, String path, byte[] dataPacket) throws IOException {
+        _childProtocol.sendData(src, dst, path, dataPacket);
     }
 
     @Override
@@ -95,8 +95,8 @@ public class AudioCodec2 implements Protocol {
         }
 
         @Override
-        protected void onReceiveData(String src, String dst, byte[] data) {
-            _parentProtocolCallback.onReceiveData(src, dst, data);
+        protected void onReceiveData(String src, String dst, String path, byte[] data) {
+            _parentProtocolCallback.onReceiveData(src, dst, path, data);
         }
 
         @Override
@@ -130,8 +130,8 @@ public class AudioCodec2 implements Protocol {
         }
 
         @Override
-        protected void onTransmitData(String src, String dst, byte[] data) {
-            _parentProtocolCallback.onTransmitData(src, dst, data);
+        protected void onTransmitData(String src, String dst, String path, byte[] data) {
+            _parentProtocolCallback.onTransmitData(src, dst, path, data);
         }
 
         @Override

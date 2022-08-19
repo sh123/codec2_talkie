@@ -56,7 +56,7 @@ public class Scrambler implements Protocol {
         if (result == null) {
             _parentProtocolCallback.onProtocolTxError();
         } else {
-            _childProtocol.sendData(src, dst, result);
+            _childProtocol.sendData(src, dst, null, result);
         }
     }
 
@@ -71,12 +71,12 @@ public class Scrambler implements Protocol {
     }
 
     @Override
-    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
+    public void sendData(String src, String dst, String path, byte[] dataPacket) throws IOException {
         byte[] result = scramble(dataPacket);
         if (result == null) {
             _parentProtocolCallback.onProtocolTxError();
         } else {
-            _childProtocol.sendData(src, dst, result);
+            _childProtocol.sendData(src, dst, path, result);
         }
     }
 
@@ -113,12 +113,12 @@ public class Scrambler implements Protocol {
         }
 
         @Override
-        protected void onReceiveData(String src, String dst, byte[] scrambledData) {
+        protected void onReceiveData(String src, String dst, String path, byte[] scrambledData) {
             byte[] data = unscramble(scrambledData);
             if (data == null) {
                 _parentProtocolCallback.onProtocolRxError();
             } else {
-                _parentProtocolCallback.onReceiveData(src, dst, data);
+                _parentProtocolCallback.onReceiveData(src, dst, path, data);
             }
         }
 
@@ -153,8 +153,8 @@ public class Scrambler implements Protocol {
         }
 
         @Override
-        protected void onTransmitData(String src, String dst, byte[] data) {
-            _parentProtocolCallback.onTransmitData(src, dst, data);
+        protected void onTransmitData(String src, String dst, String path, byte[] data) {
+            _parentProtocolCallback.onTransmitData(src, dst, path, data);
         }
 
         @Override

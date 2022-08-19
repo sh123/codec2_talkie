@@ -294,7 +294,7 @@ public class AppWorker extends Thread {
         }
 
         @Override
-        protected void onReceiveData(String src, String dst, byte[] data) {
+        protected void onReceiveData(String src, String dst, String path, byte[] data) {
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
             sendStatusUpdate(AppMessage.EV_DATA_RECEIVED, note);
         }
@@ -336,7 +336,7 @@ public class AppWorker extends Thread {
         }
 
         @Override
-        protected void onTransmitData(String src, String dst, byte[] data) {
+        protected void onTransmitData(String src, String dst, String path, byte[] data) {
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
             sendStatusUpdate(AppMessage.EV_TRANSMITTED_VOICE, note);
         }

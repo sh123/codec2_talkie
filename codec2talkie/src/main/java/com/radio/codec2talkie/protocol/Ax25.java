@@ -85,8 +85,8 @@ public class Ax25 implements Protocol {
     }
 
     @Override
-    public void sendData(String src, String dst, byte[] dataPacket) throws IOException {
-        _parentProtocolCallback.onTransmitData(src, dst, dataPacket);
+    public void sendData(String src, String dst, String path, byte[] dataPacket) throws IOException {
+        _parentProtocolCallback.onTransmitData(src, dst, _digipath, dataPacket);
         AX25Packet ax25Packet = new AX25Packet();
         ax25Packet.src = src;
         ax25Packet.dst = dst;
@@ -98,7 +98,7 @@ public class Ax25 implements Protocol {
             Log.e(TAG, "Cannot convert AX.25 data packet to binary");
             _parentProtocolCallback.onProtocolTxError();
         } else {
-            _childProtocol.sendData(src, dst, ax25Frame);
+            _childProtocol.sendData(src, dst, _digipath, ax25Frame);
             _parentProtocolCallback.onTransmitLog(ax25Packet.toString());
         }
     }
@@ -127,7 +127,7 @@ public class Ax25 implements Protocol {
                 if (ax25Data.isAudio) {
                     _parentProtocolCallback.onReceiveCompressedAudio(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, ax25Data.rawData);
                 } else {
-                    _parentProtocolCallback.onReceiveData(ax25Data.src, ax25Data.dst, ax25Data.rawData);
+                    _parentProtocolCallback.onReceiveData(ax25Data.src, ax25Data.dst, ax25Data.digipath, ax25Data.rawData);
                     _parentProtocolCallback.onReceiveLog(ax25Data.toString());
                     if (_isDigiRepeaterEnabled) digiRepeat(ax25Data);
                 }
@@ -143,8 +143,8 @@ public class Ax25 implements Protocol {
         }
 
         @Override
-        protected void onReceiveData(String src, String dst, byte[] data) {
-            _parentProtocolCallback.onReceiveData(src, dst, data);
+        protected void onReceiveData(String src, String dst, String path, byte[] data) {
+            _parentProtocolCallback.onReceiveData(src, dst, path, data);
         }
 
         @Override
@@ -178,8 +178,8 @@ public class Ax25 implements Protocol {
         }
 
         @Override
-        protected void onTransmitData(String src, String dst, byte[] data) {
-            _parentProtocolCallback.onTransmitData(src, dst, data);
+        protected void onTransmitData(String src, String dst, String path, byte[] data) {
+            _parentProtocolCallback.onTransmitData(src, dst, path, data);
         }
 
         @Override
@@ -222,7 +222,7 @@ public class Ax25 implements Protocol {
             _parentProtocolCallback.onProtocolTxError();
         } else {
             try {
-                _childProtocol.sendData(ax25Packet.src, ax25Packet.dst, ax25Frame);
+                _childProtocol.sendData(ax25Packet.src, ax25Packet.dst, ax25Packet.digipath, ax25Frame);
             } catch (IOException e) {
                 Log.e(TAG, "Cannot send AX.25 digi repeated packet");
                 e.printStackTrace();
