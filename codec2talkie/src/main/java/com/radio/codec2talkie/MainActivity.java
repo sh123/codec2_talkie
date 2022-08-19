@@ -489,6 +489,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             if (isDigirepeaterEnabled) {
                 status += getString(R.string.digirepeater_label);
             }
+
+            boolean aprsisEnabled = SettingsWrapper.isAprsIsEnabled(_sharedPreferences);
+            if (aprsisEnabled) {
+                status += getString(R.string.aprsis_label);
+            }
         }
 
         if (_appService != null) {

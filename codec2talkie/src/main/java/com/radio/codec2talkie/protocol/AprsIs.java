@@ -23,6 +23,7 @@ public class AprsIs implements Protocol {
     private String _passcode;
     private String _server;
 
+    private boolean _isSelfEnabled;
     private boolean _isRxGateEnabled;
     private boolean _isTxGateEnabled;
 
@@ -41,6 +42,7 @@ public class AprsIs implements Protocol {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         _isRxGateEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_RX_GATE, false);
         _isTxGateEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_TX_GATE, false);
+        _isSelfEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_SELF, false);
         _passcode = sharedPreferences.getString(PreferenceKeys.APRS_IS_CODE, "");
         _server = sharedPreferences.getString(PreferenceKeys.APRS_IS_TCPIP_SERVER, "euro.aprs2.net");
         _filterRadius = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_IS_RADIUS, "10"));
@@ -71,6 +73,9 @@ public class AprsIs implements Protocol {
 
     @Override
     public void sendData(String src, String dst, String path, byte[] dataPacket) throws IOException {
+        if (_isSelfEnabled) {
+            // TODO, forward own data to APRS-IS
+        }
         _childProtocol.sendData(src, dst, path, dataPacket);
     }
 
@@ -102,6 +107,9 @@ public class AprsIs implements Protocol {
 
         @Override
         protected void onReceiveData(String src, String dst, String path, byte[] data) {
+            if (_isRxGateEnabled) {
+                // TODO, forward radio data to APRS-IS
+            }
             _parentProtocolCallback.onReceiveData(src, dst, path, data);
         }
 

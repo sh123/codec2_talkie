@@ -90,7 +90,7 @@ public class Ax25 implements Protocol {
         AX25Packet ax25Packet = new AX25Packet();
         ax25Packet.src = src;
         ax25Packet.dst = dst;
-        ax25Packet.digipath = _digipath;
+        ax25Packet.digipath = path == null ? _digipath : path;
         ax25Packet.isAudio = false;
         ax25Packet.rawData = dataPacket;
         byte[] ax25Frame = ax25Packet.toBinary();
@@ -98,7 +98,7 @@ public class Ax25 implements Protocol {
             Log.e(TAG, "Cannot convert AX.25 data packet to binary");
             _parentProtocolCallback.onProtocolTxError();
         } else {
-            _childProtocol.sendData(src, dst, _digipath, ax25Frame);
+            _childProtocol.sendData(src, dst, ax25Packet.digipath, ax25Frame);
             _parentProtocolCallback.onTransmitLog(ax25Packet.toString());
         }
     }
