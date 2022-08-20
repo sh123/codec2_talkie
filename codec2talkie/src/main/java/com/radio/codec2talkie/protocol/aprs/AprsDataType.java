@@ -1,8 +1,5 @@
 package com.radio.codec2talkie.protocol.aprs;
 
-import android.provider.ContactsContract;
-import android.util.Log;
-
 public class AprsDataType {
 
     public enum DataType {

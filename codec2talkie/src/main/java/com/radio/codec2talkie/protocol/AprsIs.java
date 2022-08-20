@@ -2,37 +2,25 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
-import com.radio.codec2talkie.app.AppMessage;
-import com.radio.codec2talkie.protocol.aprs.AprsData;
-import com.radio.codec2talkie.protocol.aprs.AprsDataFactory;
+import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
-import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.tools.TextTools;
 import com.radio.codec2talkie.transport.TcpIp;
 import com.radio.codec2talkie.transport.Transport;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class AprsIs implements Protocol, Runnable {
     private static final String TAG = AprsIs.class.getSimpleName();
@@ -115,7 +103,7 @@ public class AprsIs implements Protocol, Runnable {
 
     @Override
     public boolean receive() throws IOException {
-        String line = "";
+        String line;
         synchronized (_rxQueue) {
             line = TextTools.getString(_rxQueue);
         }
@@ -123,10 +111,9 @@ public class AprsIs implements Protocol, Runnable {
             if (_isTxGateEnabled) {
                 // TODO, forward APRS-IS data to radio
             }
-            AprsData aprsData = AprsDataFactory.fromAprsIs(line);
-            if (aprsData != null && aprsData.isValid()) {
-                // TODO, need to extract src, dst, digipath
-                // _parentProtocolCallback.onReceiveData(aprsData.);
+            AprsIsData aprsIsData = AprsIsData.fromString(line);
+            if (aprsIsData != null) {
+                _parentProtocolCallback.onReceiveData(aprsIsData.src, aprsIsData.dst, aprsIsData.path, aprsIsData.data.getBytes());
             }
             _parentProtocolCallback.onReceiveLog(line);
         }
@@ -278,7 +265,7 @@ public class AprsIs implements Protocol, Runnable {
                 isConnected = true;
             }
             // read data
-            int bytesRead = 0;
+            int bytesRead;
             try {
                 // # aprsc 2.1.11-g80df3b4 20 Aug 2022 11:33:40 GMT T2FINLAND 85.188.1.129:14580
                 // # logresp N0CALL unverified, server T2GYOR<0xd><0xa>
