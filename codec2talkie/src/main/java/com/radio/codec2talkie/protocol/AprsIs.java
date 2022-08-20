@@ -11,6 +11,8 @@ import android.util.Log;
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.app.AppMessage;
+import com.radio.codec2talkie.protocol.aprs.AprsData;
+import com.radio.codec2talkie.protocol.aprs.AprsDataFactory;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
@@ -26,6 +28,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Timer;
@@ -120,9 +123,14 @@ public class AprsIs implements Protocol, Runnable {
             if (_isTxGateEnabled) {
                 // TODO, forward APRS-IS data to radio
             }
+            AprsData aprsData = AprsDataFactory.fromAprsIs(line);
+            if (aprsData != null && aprsData.isValid()) {
+                // TODO, need to extract src, dst, digipath
+                // _parentProtocolCallback.onReceiveData(aprsData.);
+            }
             _parentProtocolCallback.onReceiveLog(line);
         }
-        return _childProtocol.receive() || line.length() > 0;
+        return _childProtocol.receive();
     }
 
     ProtocolCallback _protocolCallback = new ProtocolCallback() {
@@ -284,7 +292,12 @@ public class AprsIs implements Protocol, Runnable {
             }
             if (bytesRead > 0 && buf[0] != '#') {
                 synchronized (_rxQueue) {
-                    _rxQueue.put(Arrays.copyOf(buf, bytesRead));
+                    try {
+                        _rxQueue.put(Arrays.copyOf(buf, bytesRead));
+                    } catch (BufferOverflowException e) {
+                        e.printStackTrace();
+                        _rxQueue.clear();
+                    }
                 }
             }
             // write data
