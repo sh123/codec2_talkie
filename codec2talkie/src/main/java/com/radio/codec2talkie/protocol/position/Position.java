@@ -9,6 +9,7 @@ public class Position {
     public long timestampEpochMs;
     public String srcCallsign;
     public String dstCallsign;
+    public String digipath;
     public double latitude;
     public double longitude;
     public String maidenHead;

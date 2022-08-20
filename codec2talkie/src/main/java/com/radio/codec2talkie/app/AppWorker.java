@@ -9,7 +9,6 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
-import android.media.MediaRecorder;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -64,7 +63,7 @@ public class AppWorker extends Thread {
     private short[] _recordAudioBuffer;
 
     // callbacks
-    private final Handler _onPlayerStateChanged;
+    private final Handler _onWorkerStateChanged;
     private Handler _onMessageReceived;
     private final Timer _processPeriodicTimer;
 
@@ -80,8 +79,8 @@ public class AppWorker extends Thread {
     private final SharedPreferences _sharedPreferences;
 
     public AppWorker(TransportFactory.TransportType transportType,
-                     Handler onPlayerStateChanged, Context context) throws IOException {
-        _onPlayerStateChanged = onPlayerStateChanged;
+                     Handler onWorkerStateChanged, Context context) throws IOException {
+        _onWorkerStateChanged = onWorkerStateChanged;
 
         _context = context;
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
@@ -220,7 +219,7 @@ public class AppWorker extends Thread {
             if (note != null) {
                 msg.obj = note;
             }
-            _onPlayerStateChanged.sendMessage(msg);
+            _onWorkerStateChanged.sendMessage(msg);
         }
         if (newStatus != AppMessage.EV_LISTENING) {
             restartListening();
@@ -232,21 +231,21 @@ public class AppWorker extends Thread {
         msg.what = AppMessage.EV_RX_RADIO_LEVEL.toInt();
         msg.arg1 = rssi;
         msg.arg2 = snr;
-        _onPlayerStateChanged.sendMessage(msg);
+        _onWorkerStateChanged.sendMessage(msg);
     }
 
     private void sendRxAudioLevelUpdate(short [] pcmAudioSamples) {
         Message msg = Message.obtain();
         msg.what = AppMessage.EV_RX_LEVEL.toInt();
         msg.arg1 = AudioTools.getSampleLevelDb(pcmAudioSamples);
-        _onPlayerStateChanged.sendMessage(msg);
+        _onWorkerStateChanged.sendMessage(msg);
     }
 
     private void sendTxAudioLevelUpdate(short [] pcmAudioSamples) {
         Message msg = Message.obtain();
         msg.what = AppMessage.EV_TX_LEVEL.toInt();
         msg.arg1 = AudioTools.getSampleLevelDb(pcmAudioSamples);
-        _onPlayerStateChanged.sendMessage(msg);
+        _onWorkerStateChanged.sendMessage(msg);
     }
 
     private void recordAndSendAudioFrame() throws IOException {

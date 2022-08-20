@@ -2,6 +2,7 @@ package com.radio.codec2talkie.tools;
 
 import android.util.Log;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class TextTools {
@@ -34,5 +35,21 @@ public class TextTools {
         }
         if (i == data.length) return data;
         return Arrays.copyOf(data, i);
+    }
+
+    public static String getString(ByteBuffer byteBuffer) {
+        StringBuilder result = new StringBuilder();
+        if (byteBuffer.position() > 0) {
+            byteBuffer.flip();
+            while (byteBuffer.hasRemaining()) {
+                char c = (char)byteBuffer.get();
+                if (c == '\n') {
+                    break;
+                }
+                result.append(c);
+            }
+            byteBuffer.compact();
+        }
+        return result.toString();
     }
 }

@@ -5,6 +5,7 @@ import com.radio.codec2talkie.storage.message.MessageItem;
 public class TextMessage {
     public String src;
     public String dst;
+    public String digipath;
     public String text;
 
     public MessageItem toMessageItem(boolean isTransmit) {

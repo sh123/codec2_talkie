@@ -22,7 +22,6 @@ import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -31,11 +30,11 @@ public class TcpIpConnectActivity extends AppCompatActivity {
     private final int TCP_IP_CONNECTED = 1;
     private final int TCP_IP_FAILED = 2;
 
-    private final int DEFAULT_MAX_RETRIES = 5;
-    private final int DEFAULT_RETRY_DELAY_MS = 5000;
+    private static final int DEFAULT_MAX_RETRIES = 5;
+    private static final int DEFAULT_RETRY_DELAY_MS = 5000;
 
-    private final String DEFAULT_ADDRESS = "127.0.0.1";
-    private final String DEFAULT_PORT = "8081";
+    private static final String DEFAULT_ADDRESS = "127.0.0.1";
+    private static final String DEFAULT_PORT = "8081";
 
     private String _address;
     private String _port;
@@ -57,7 +56,7 @@ public class TcpIpConnectActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         _address = sharedPreferences.getString(PreferenceKeys.PORTS_TCP_IP_ADDRESS, DEFAULT_ADDRESS);
         _port = sharedPreferences.getString(PreferenceKeys.PORTS_TCP_IP_PORT, DEFAULT_PORT);
-        _maxRetries = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_TCP_IP_RETRY_COUNT, String.valueOf(DEFAULT_MAX_RETRIES)));;
+        _maxRetries = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_TCP_IP_RETRY_COUNT, String.valueOf(DEFAULT_MAX_RETRIES)));
         _retryDelayMs = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_TCP_IP_RETRY_DELAY, String.valueOf(DEFAULT_RETRY_DELAY_MS)));
 
         ProgressBar progressBarTcpIp = findViewById(R.id.progressBarTcpIp);

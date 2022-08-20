@@ -48,11 +48,12 @@ public class AprsDataPositionReport implements AprsData {
     }
 
     @Override
-    public void fromBinary(String srcCallsign, String dstCallsign, byte[] infoData) {
+    public void fromBinary(String srcCallsign, String dstCallsign, String digipath, byte[] infoData) {
         _isValid = false;
         _position = new Position();
         _position.srcCallsign = srcCallsign;
         _position.dstCallsign = dstCallsign;
+        _position.digipath = digipath;
         _position.status = "";
         _position.comment = "";
         _position.privacyLevel = 0;

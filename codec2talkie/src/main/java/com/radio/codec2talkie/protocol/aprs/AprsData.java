@@ -8,7 +8,7 @@ public interface AprsData {
     void fromTextMessage(TextMessage textMessage);
     Position toPosition();
     TextMessage toTextMessage();
-    void fromBinary(String srcCallsign, String dstCallsign, byte[] infoData);
+    void fromBinary(String srcCallsign, String dstCallsign, String digipath, byte[] infoData);
     byte[] toBinary();
     boolean isValid();
 }

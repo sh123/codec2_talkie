@@ -9,6 +9,7 @@ public class AprsDataTextMessage implements AprsData {
 
     public String srcCallsign;
     public String dstCallsign;
+    public String digipath;
     public String textMessage;
 
     private boolean _isValid;
@@ -22,6 +23,7 @@ public class AprsDataTextMessage implements AprsData {
     public void fromTextMessage(TextMessage textMessage) {
         this.dstCallsign = textMessage.dst;
         this.textMessage = textMessage.text;
+        this.digipath = textMessage.digipath;
         _isValid = true;
     }
 
@@ -35,14 +37,16 @@ public class AprsDataTextMessage implements AprsData {
         TextMessage textMessage = new TextMessage();
         textMessage.src = this.srcCallsign;
         textMessage.dst = this.dstCallsign;
+        textMessage.digipath = this.digipath;
         textMessage.text = this.textMessage;
         return textMessage;
     }
 
     @Override
-    public void fromBinary(String srcCallsign, String dstCallsign, byte[] infoData) {
+    public void fromBinary(String srcCallsign, String dstCallsign, String digipath, byte[] infoData) {
         _isValid = false;
         if (infoData.length < 10) return;
+        this.digipath = digipath;
         this.srcCallsign = srcCallsign;
         ByteBuffer buffer = ByteBuffer.wrap(infoData);
         // callsign, trim ending spaces
