@@ -252,6 +252,7 @@ public class AprsIs implements Protocol, Runnable {
                     tcpIp.write(loginCmd.getBytes());
                     Log.i(TAG, "Connected to " + _server);
                 } catch (IOException e) {
+                    // TODO, notify parent
                     Log.w(TAG, "Failed to connect");
                     e.printStackTrace();
                     try {
@@ -262,6 +263,7 @@ public class AprsIs implements Protocol, Runnable {
                     isConnected = false;
                     continue;
                 }
+                // TODO, notify user
                 isConnected = true;
             }
             // read data

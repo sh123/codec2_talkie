@@ -46,7 +46,7 @@ public class AprsDataType {
     }
 
     private DataType getDataTypeFromIdent(char ident) {
-        if (ident == '`') {
+        if (ident == '`' || ident == '\'') {
             return DataType.MIC_E;
         } else if (ident == ':') {
             return DataType.MESSAGE;
