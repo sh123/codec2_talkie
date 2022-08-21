@@ -7,6 +7,7 @@ import android.util.Xml;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.protocol.aprs.AprsCallsign;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
@@ -113,7 +114,7 @@ public class AprsIs implements Protocol, Runnable {
             AprsIsData aprsIsData = AprsIsData.fromString(line);
             if (aprsIsData != null) {
                 _parentProtocolCallback.onReceiveData(aprsIsData.src, aprsIsData.dst, aprsIsData.path, aprsIsData.data.getBytes());
-                if (_isTxGateEnabled) {
+                if (_isTxGateEnabled && new AprsCallsign(aprsIsData.src).isValid) {
                     sendData(aprsIsData.src, aprsIsData.dst, aprsIsData.path, aprsIsData.data.getBytes());
                 }
             }
@@ -298,7 +299,7 @@ public class AprsIs implements Protocol, Runnable {
             synchronized (_txQueue) {
                 String line = TextTools.getString(_txQueue);
                 if (line.length() > 0) {
-                    Log.v(TAG, line);
+                    Log.v(TAG, "APRS-IS TX: " + line);
                     try {
                         tcpIp.write(line.getBytes());
                     } catch (IOException e) {
