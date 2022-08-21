@@ -348,4 +348,8 @@
     <string name="aprs_is_filter_summary">Filter for incoming APRS-IS packets</string>
     <string name="aprs_is_enable_title">Enable APRS-IS</string>
     <string name="aprs_is_enable_summary">Enable APRS-IS internet gateway</string>
+    <string name="aprsis_connected">APRS-IS connected</string>
+    <string name="aprsis_connect_failed">APRS-IS connect failed</string>
+    <string name="aprsis_disconnected">APRS-IS disconnected</string>
+    <string name="aprsis_wrong_pass">APRS-IS wrong pass</string>
 </resources>

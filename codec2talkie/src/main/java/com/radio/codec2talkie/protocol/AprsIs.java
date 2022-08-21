@@ -2,11 +2,15 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Looper;
 import android.util.Log;
 import android.util.Xml;
+import android.widget.Toast;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.MainActivity;
+import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.aprs.AprsCallsign;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
 import com.radio.codec2talkie.protocol.message.TextMessage;
@@ -26,11 +30,18 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 
+import kotlin.text.MatchGroup;
+import kotlin.text.MatchResult;
+import kotlin.text.Regex;
+
 public class AprsIs implements Protocol, Runnable {
     private static final String TAG = AprsIs.class.getSimpleName();
 
-    private final Protocol _childProtocol;
+    private static final int APRSIS_RETRY_WAIT_MS = 10000;
+    private static final int APRSIS_DEFAULT_PORT = 14580;
 
+    private final Protocol _childProtocol;
+    private Context _context;
     private ProtocolCallback _parentProtocolCallback;
 
     private String _passcode;
@@ -47,18 +58,22 @@ public class AprsIs implements Protocol, Runnable {
 
     private final ByteBuffer _rxQueue;
     private final ByteBuffer _txQueue;
+    private final byte[] _rxBuf;
 
     protected boolean _isRunning = true;
+    private boolean _isConnected = false;
 
     public AprsIs(Protocol childProtocol) {
         _childProtocol = childProtocol;
         _rxQueue = ByteBuffer.allocate(4096);
         _txQueue = ByteBuffer.allocate(4096);
+        _rxBuf = new byte[4096];
     }
 
     @Override
     public void initialize(Transport transport, Context context, ProtocolCallback protocolCallback) throws IOException {
         _parentProtocolCallback = protocolCallback;
+        _context = context;
         _childProtocol.initialize(transport, context, _protocolCallback);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -228,6 +243,33 @@ public class AprsIs implements Protocol, Runnable {
         _childProtocol.close();
     }
 
+    @Override
+    public void run() {
+        Looper.prepare();
+        TcpIp tcpIp = null;
+        Log.i(TAG, "Started APRS-IS thread");
+        while (_isRunning) {
+            // connect
+            if (!_isConnected) {
+                tcpIp = runConnect();
+            }
+            if (tcpIp == null) {
+                _isConnected = false;
+                continue;
+            }
+            runRead(tcpIp);
+            runWrite(tcpIp);
+        }
+        if (tcpIp != null) {
+            try {
+                tcpIp.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Log.i(TAG, "Stopped APRS-IS thread");
+    }
+
     private String getLoginCommand() {
         String cmd = "user " + _callsign + "-" + _ssid + " pass " + _passcode + " vers " + "C2T 1.0";
         if (_filterRadius > 0) {
@@ -243,88 +285,98 @@ public class AprsIs implements Protocol, Runnable {
         return cmd;
     }
 
-    @Override
-    public void run() {
-        Socket socket;
-        boolean isConnected = false;
-        TcpIp tcpIp = null;
-        byte[] buf = new byte[4096];
-
-        Log.i(TAG, "Started APRS-IS thread");
-        while (_isRunning) {
-            // connect
-            if (!isConnected) {
-                socket = new Socket();
-                try {
-                    socket.connect(new InetSocketAddress(_server, 14580));
-                    tcpIp = new TcpIp(socket, "aprsis");
-                    String loginCmd = getLoginCommand();
-                    Log.i(TAG, "Login command " + loginCmd);
-                    tcpIp.write(loginCmd.getBytes());
-                    Log.i(TAG, "Connected to " + _server);
-                } catch (IOException e) {
-                    // TODO, notify parent
-                    Log.w(TAG, "Failed to connect");
-                    e.printStackTrace();
-                    try {
-                        Thread.sleep(10000);
-                    } catch (InterruptedException interruptedException) {
-                        interruptedException.printStackTrace();
-                    }
-                    isConnected = false;
-                    continue;
-                }
-                // TODO, notify user
-                isConnected = true;
-            }
-            // read data
-            int bytesRead;
+    private TcpIp runConnect() {
+        Socket socket = new Socket();
+        try {
+            socket.connect(new InetSocketAddress(_server, APRSIS_DEFAULT_PORT));
+            TcpIp tcpIp = new TcpIp(socket, "aprsis");
+            String loginCmd = getLoginCommand();
+            Log.i(TAG, "Login command " + loginCmd);
+            tcpIp.write(loginCmd.getBytes());
+            Log.i(TAG, "Connected to " + _server);
+            Toast.makeText(_context, _context.getString(R.string.aprsis_connected), Toast.LENGTH_LONG).show();
+            _isConnected = true;
+            return tcpIp;
+        } catch (IOException e) {
+            Log.w(TAG, "Failed to connect");
+            Toast.makeText(_context, _context.getString(R.string.aprsis_connect_failed), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
             try {
-                // # aprsc 2.1.11-g80df3b4 20 Aug 2022 11:33:40 GMT T2FINLAND 85.188.1.129:14580
-                // # logresp N0CALL unverified, server T2GYOR<0xd><0xa>
-                bytesRead = tcpIp.read(buf);
-            } catch (IOException e) {
-                // TODO, notify parent
-                Log.w(TAG, "Lost connection on receive");
-                e.printStackTrace();
-                isConnected = false;
-                continue;
+                Thread.sleep(APRSIS_RETRY_WAIT_MS);
+            } catch (InterruptedException interruptedException) {
+                interruptedException.printStackTrace();
             }
-            if (bytesRead > 0 && buf[0] != '#') {
+            _isConnected = false;
+            return null;
+        }
+    }
+
+    private void runWrite(TcpIp tcpIp) {
+        synchronized (_txQueue) {
+            String line = TextTools.getString(_txQueue);
+            if (line.length() > 0) {
+                Log.d(TAG, "APRS-IS TX: " + DebugTools.bytesToDebugString(line.getBytes()));
+                try {
+                    tcpIp.write(line.getBytes());
+                } catch (IOException e) {
+                    Log.w(TAG, "Lost connection on transmit");
+                    Toast.makeText(_context, _context.getString(R.string.aprsis_disconnected), Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                    _isConnected = false;
+                }
+            }
+        }
+    }
+
+    private void runRead(TcpIp tcpIp) {
+        // read data
+        int bytesRead;
+        try {
+            // # aprsc 2.1.11-g80df3b4 20 Aug 2022 11:33:40 GMT T2FINLAND 85.188.1.129:14580
+            // # logresp N0CALL unverified, server T2GYOR<0xd><0xa>
+            bytesRead = tcpIp.read(_rxBuf);
+        } catch (IOException e) {
+            Log.w(TAG, "Lost connection on receive");
+            Toast.makeText(_context, _context.getString(R.string.aprsis_disconnected), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+            _isConnected = false;
+            return;
+        }
+        if (bytesRead > 0) {
+            // server message
+            if (_rxBuf[0] == '#') {
+                String srvMsg = new String(Arrays.copyOf(_rxBuf, bytesRead));
+                Log.d(TAG, "APRSIS: " + srvMsg);
+                // wrong password
+                if (srvMsg.matches("# logresp .+ unverified")) {
+                    Toast.makeText(_context, _context.getString(R.string.aprsis_wrong_pass), Toast.LENGTH_LONG).show();
+                    try {
+                        tcpIp.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    _isConnected = false;
+                }
+                // update status
+                Regex statusRegex = new Regex(".+ (\\S+ \\d{1,3}[.]\\d{1,3}[.]\\d{1,3}[.]\\d{1,3}:\\d+)");
+                MatchResult matchResult = statusRegex.find(srvMsg, 0);
+                if (matchResult != null) {
+                    MatchGroup matchGroup = matchResult.getGroups().get(1);
+                    if (matchGroup != null) {
+                        Toast.makeText(_context, matchGroup.getValue(), Toast.LENGTH_LONG).show();
+                    }
+                }
+            // data
+            } else {
                 synchronized (_rxQueue) {
                     try {
-                        _rxQueue.put(Arrays.copyOf(buf, bytesRead));
+                        _rxQueue.put(Arrays.copyOf(_rxBuf, bytesRead));
                     } catch (BufferOverflowException e) {
                         e.printStackTrace();
                         _rxQueue.clear();
                     }
                 }
             }
-            // write data
-            synchronized (_txQueue) {
-                String line = TextTools.getString(_txQueue);
-                if (line.length() > 0) {
-                    Log.d(TAG, "APRS-IS TX: " + DebugTools.bytesToDebugString(line.getBytes()));
-                    try {
-                        tcpIp.write(line.getBytes());
-                    } catch (IOException e) {
-                        // TODO, notify parent
-                        Log.w(TAG, "Lost connection on transmit");
-                        e.printStackTrace();
-                        isConnected = false;
-                    }
-                }
-            }
         }
-
-        if (tcpIp != null) {
-            try {
-                tcpIp.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        Log.i(TAG, "Stopped APRS-IS thread");
     }
 }
