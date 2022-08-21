@@ -54,7 +54,7 @@ public class LogItemGroupHolder extends RecyclerView.ViewHolder {
         }
         _logItemViewTitle.setText(String.format(Locale.US, "%s",
                 group.getSrcCallsign()));
-        _logItemViewMessage.setText(String.format(Locale.US, "%s %f %f %03d° %03dkm/h %04dm %s %s",
+        String status = String.format(Locale.US, "%s %f %f %03d° %03dkm/h %04dm %s %s",
                 group.getMaidenHead(),
                 group.getLatitude(),
                 group.getLongitude(),
@@ -62,11 +62,14 @@ public class LogItemGroupHolder extends RecyclerView.ViewHolder {
                 UnitTools.metersPerSecondToKilometersPerHour((int)group.getSpeedMetersPerSecond()),
                 (int)group.getAltitudeMeters(),
                 group.getStatus(),
-                group.getComment()));
+                group.getComment());
+        if (group.getMaidenHead() != null) {
+            _logItemViewMessage.setText(status);
+        }
         String symbol = group.getSymbolCode();
         Bitmap iconBitmap = _symbolTable.bitmapFromSymbol(symbol == null ? "/." : symbol, false);
         if (iconBitmap == null) {
-            Log.w(TAG, "Cannot load bitmap for " + symbol);
+            Log.e(TAG, "Cannot load bitmap for " + symbol);
         } else {
             _symbolIcon.setImageBitmap(iconBitmap);
         }

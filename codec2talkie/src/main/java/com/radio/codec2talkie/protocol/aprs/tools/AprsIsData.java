@@ -2,6 +2,8 @@ package com.radio.codec2talkie.protocol.aprs.tools;
 
 import android.util.Log;
 
+import com.radio.codec2talkie.protocol.aprs.AprsCallsign;
+
 import kotlin.text.Regex;
 import kotlin.text.RegexOption;
 
@@ -37,7 +39,7 @@ public class AprsIsData {
         String sep = "";
         Regex regex = new Regex(filterRegex, RegexOption.DOT_MATCHES_ALL);
         for (String p : tail) {
-            if (regex.matches(filterRegex)) {
+            if (regex.matches(p)) {
                 result.append(sep);
                 result.append(p);
                 sep = separator;

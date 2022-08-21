@@ -108,12 +108,12 @@ public class AprsIs implements Protocol, Runnable {
             line = TextTools.getString(_rxQueue);
         }
         if (line.length() > 0) {
-            if (_isTxGateEnabled) {
-                // TODO, forward APRS-IS data to radio
-            }
             AprsIsData aprsIsData = AprsIsData.fromString(line);
             if (aprsIsData != null) {
                 _parentProtocolCallback.onReceiveData(aprsIsData.src, aprsIsData.dst, aprsIsData.path, aprsIsData.data.getBytes());
+                if (_isTxGateEnabled) {
+                    sendData(aprsIsData.src, aprsIsData.dst, aprsIsData.path, aprsIsData.data.getBytes());
+                }
             }
             _parentProtocolCallback.onReceiveLog(line);
         }
