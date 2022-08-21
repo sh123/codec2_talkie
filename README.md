@@ -25,7 +25,7 @@ What you can do with this app:
 - Send and receive APRS messages
 - Send and receive raw Codec2 speech frames over KISS or inside APRS/AX.25 UI frames
 - Use application as APRS digirepeater
-- [TODO] use it as APRS RX/TX iGate
+- Use application as APRS-IS RX/TX iGate
 
 # Requirements
 - Android 7.0 (API 24) or higher
