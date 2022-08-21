@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.radio.codec2talkie.MainActivity;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsSymbolTable;
 import com.radio.codec2talkie.protocol.position.Position;
@@ -65,7 +64,7 @@ public class LogItemGroupHolder extends RecyclerView.ViewHolder {
                 group.getStatus(),
                 group.getComment()));
         String symbol = group.getSymbolCode();
-        Bitmap iconBitmap = _symbolTable.bitmapFromSymbol(symbol, false);
+        Bitmap iconBitmap = _symbolTable.bitmapFromSymbol(symbol == null ? "/." : symbol, false);
         if (iconBitmap == null) {
             Log.w(TAG, "Cannot load bitmap for " + symbol);
         } else {
