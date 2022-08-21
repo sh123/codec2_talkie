@@ -3,6 +3,7 @@ package com.radio.codec2talkie.protocol;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.util.Xml;
 
 import androidx.preference.PreferenceManager;
 
@@ -20,6 +21,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 
 public class AprsIs implements Protocol, Runnable {
@@ -144,7 +146,10 @@ public class AprsIs implements Protocol, Runnable {
         @Override
         protected void onReceiveData(String src, String dst, String path, byte[] data) {
             if (_isRxGateEnabled) {
-                // TODO, forward radio data to APRS-IS
+                AprsIsData aprsIsData = new AprsIsData(src, dst, path, new String(data));
+                synchronized (_txQueue) {
+                    _txQueue.put(aprsIsData.toString().getBytes());
+                }
             }
             _parentProtocolCallback.onReceiveData(src, dst, path, data);
         }

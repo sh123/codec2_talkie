@@ -2,7 +2,7 @@ package com.radio.codec2talkie.protocol.aprs.tools;
 
 import android.util.Log;
 
-import com.radio.codec2talkie.protocol.aprs.AprsCallsign;
+import androidx.annotation.NonNull;
 
 import kotlin.text.Regex;
 import kotlin.text.RegexOption;
@@ -12,6 +12,27 @@ public class AprsIsData {
     public String dst;
     public String path;
     public String data;
+
+    public AprsIsData() {
+    }
+
+    public AprsIsData(String src, String dst, String path, String data) {
+        this.src = src;
+        this.dst = dst;
+        this.path = path;
+        this.data = data;
+    }
+
+    @NonNull
+    public String toString() {
+        String result = src + ">";
+        if (dst != null && dst.length() > 0)
+            result += dst;
+        if (path != null && path.length() > 0)
+            result += "," + path;
+        result += ":" + data;
+        return result;
+    }
 
     public static AprsIsData fromString(String textData) {
         AprsIsData aprsIsData = new AprsIsData();
