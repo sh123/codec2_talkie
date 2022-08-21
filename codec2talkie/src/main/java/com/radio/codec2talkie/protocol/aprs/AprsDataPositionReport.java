@@ -218,7 +218,7 @@ public class AprsDataPositionReport implements AprsData {
         String strTail = new String(tail);
         Pattern latLonPattern = Pattern.compile(
                 "^" +
-                "(?:\\d{6}z*)?" +                   // optional timestamp
+                "(?:.*)?" +                         // optional timestamp
                 "([\\d ]{4}[.][\\d ]{2})(N|S)" +    // latitude "
                 "([\\S])" +                         // symbol table
                 "([\\d ]{5}[.][\\d ]{2})(E|W)" +    // longitude

@@ -1,5 +1,10 @@
 package com.radio.codec2talkie.protocol.aprs.tools;
 
+import android.util.Log;
+
+import kotlin.text.Regex;
+import kotlin.text.RegexOption;
+
 public class AprsIsData {
     public String src;
     public String dst;
@@ -8,27 +13,36 @@ public class AprsIsData {
 
     public static AprsIsData fromString(String textData) {
         AprsIsData aprsIsData = new AprsIsData();
+        // N0CALL>PATH:DATA
         String[] callsignData = textData.split(">");
         if (callsignData.length < 2) return null;
         aprsIsData.src = callsignData[0];
-        String[] digipathData = callsignData[1].split(":");
+        // PATH:DATA
+        String[] digipathData = joinTail(callsignData, ">", ".*").split(":");
         if (digipathData.length < 2) return null;
+        // DST,PATH1,PATH2,...
         String[] path = digipathData[0].split(",");
         if (path.length == 0) return null;
         aprsIsData.dst = path[0];
-        aprsIsData.data = digipathData[1];
-        String[] filteredPath = new String[path.length - 1];
-        System.arraycopy(path, 1, filteredPath, 0, path.length - 1);
-        StringBuilder digipath = new StringBuilder();
+        aprsIsData.path = joinTail(path, ",", "^WIDE.+$");
+        aprsIsData.data = joinTail(digipathData, ":", ".*");
+        return aprsIsData;
+    }
+
+    private static String joinTail(String[] data, String separator, String filterRegex) {
+        StringBuilder result = new StringBuilder();
+        if (data.length < 2) return result.toString();
+        String[] tail = new String[data.length - 1];
+        System.arraycopy(data, 1, tail, 0, data.length - 1);
         String sep = "";
-        for (String p : filteredPath) {
-            if (p.startsWith("WIDE")) {
-                digipath.append(sep);
-                digipath.append(p);
-                sep = ",";
+        Regex regex = new Regex(filterRegex, RegexOption.DOT_MATCHES_ALL);
+        for (String p : tail) {
+            if (regex.matches(filterRegex)) {
+                result.append(sep);
+                result.append(p);
+                sep = separator;
             }
         }
-        aprsIsData.path = digipath.toString();
-        return aprsIsData;
+        return result.toString();
     }
 }

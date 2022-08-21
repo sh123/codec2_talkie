@@ -9,7 +9,8 @@ public class AprsDataType {
         POSITION_WITH_TIMESTAMP_MSG,
         POSITION_WITHOUT_TIMESTAMP_MSG,
         POSITION_WITH_TIMESTAMP_NO_MSG,
-        POSITION_WITHOUT_TIMESTAMP_NO_MSG
+        POSITION_WITHOUT_TIMESTAMP_NO_MSG,
+        OBJECT
     }
 
     private final DataType _dataType;
@@ -58,6 +59,8 @@ public class AprsDataType {
             return DataType.POSITION_WITH_TIMESTAMP_MSG;
         } else if (ident == '/') {
             return DataType.POSITION_WITH_TIMESTAMP_NO_MSG;
+        } else if (ident == ';') {
+            return DataType.OBJECT;
         } else {
             return DataType.UNKNOWN;
         }
@@ -76,6 +79,8 @@ public class AprsDataType {
             return '@';
         } else if (dataType == DataType.POSITION_WITH_TIMESTAMP_NO_MSG) {
             return '/';
+        } else if (dataType == DataType.OBJECT) {
+            return ';';
         } else {
             return 0;
         }
