@@ -305,7 +305,7 @@ public class AppWorker extends Thread {
 
         @Override
         protected void onReceiveLog(String logData) {
-            Log.i(TAG, "RX: " + logData);
+            Log.i(TAG, "RX-LOG: " + logData);
             storeLogData(logData, false);
         }
 
@@ -342,7 +342,7 @@ public class AppWorker extends Thread {
 
         @Override
         protected void onTransmitLog(String logData) {
-            Log.i(TAG, "TX: " + logData);
+            Log.i(TAG, "TX-LOG: " + logData);
             storeLogData(logData, true);
         }
 

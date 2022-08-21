@@ -12,6 +12,7 @@ import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.tools.TextTools;
 import com.radio.codec2talkie.transport.TcpIp;
 import com.radio.codec2talkie.transport.Transport;
@@ -97,11 +98,14 @@ public class AprsIs implements Protocol, Runnable {
     }
 
     @Override
-    public void sendData(String src, String dst, String path, byte[] dataPacket) throws IOException {
+    public void sendData(String src, String dst, String path, byte[] data) throws IOException {
         if (_isSelfEnabled) {
-            // TODO, forward own data to APRS-IS
+            AprsIsData aprsIsData = new AprsIsData(src, dst, path, new String(data));
+            synchronized (_txQueue) {
+                _txQueue.put(aprsIsData.toString().getBytes());
+            }
         }
-        _childProtocol.sendData(src, dst, path, dataPacket);
+        _childProtocol.sendData(src, dst, path, data);
     }
 
     @Override
@@ -111,6 +115,7 @@ public class AprsIs implements Protocol, Runnable {
             line = TextTools.getString(_rxQueue);
         }
         if (line.length() > 0) {
+            Log.d(TAG, "APRS-RX: " + DebugTools.bytesToDebugString(line.getBytes()));
             AprsIsData aprsIsData = AprsIsData.fromString(line);
             if (aprsIsData != null) {
                 _parentProtocolCallback.onReceiveData(aprsIsData.src, aprsIsData.dst, aprsIsData.path, aprsIsData.data.getBytes());
@@ -299,7 +304,7 @@ public class AprsIs implements Protocol, Runnable {
             synchronized (_txQueue) {
                 String line = TextTools.getString(_txQueue);
                 if (line.length() > 0) {
-                    Log.v(TAG, "APRS-IS TX: " + line);
+                    Log.d(TAG, "APRS-IS TX: " + DebugTools.bytesToDebugString(line.getBytes()));
                     try {
                         tcpIp.write(line.getBytes());
                     } catch (IOException e) {

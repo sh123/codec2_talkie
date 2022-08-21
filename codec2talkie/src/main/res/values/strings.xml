@@ -346,4 +346,6 @@
     <string name="aprs_is_radius_summary">Receive APRS-IS packets from stations in this radius (km)</string>
     <string name="aprs_is_filter_title">Packet filter</string>
     <string name="aprs_is_filter_summary">Filter for incoming APRS-IS packets</string>
+    <string name="aprs_is_enable_title">Enable APRS-IS</string>
+    <string name="aprs_is_enable_summary">Enable APRS-IS internet gateway</string>
 </resources>

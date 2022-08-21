@@ -94,7 +94,6 @@ public class SettingsWrapper {
     }
 
     public static boolean isAprsIsEnabled(SharedPreferences sharedPreferences) {
-        return sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_RX_GATE, false) ||
-                sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_TX_GATE, false);
+        return sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE, false);
     }
 }
