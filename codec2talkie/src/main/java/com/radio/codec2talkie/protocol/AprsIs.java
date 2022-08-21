@@ -363,7 +363,7 @@ public class AprsIs implements Protocol, Runnable {
                 if (matchResult != null) {
                     MatchGroup matchGroup = matchResult.getGroups().get(1);
                     if (matchGroup != null) {
-                        Toast.makeText(_context, matchGroup.getValue(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(_context, matchGroup.getValue(), Toast.LENGTH_SHORT).show();
                     }
                 }
             // data

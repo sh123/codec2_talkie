@@ -104,7 +104,7 @@
     <string name="bt_connect_failed">Bluetooth connect failed</string>
     <string name="bt_socket_failed">Bluetooth socket failed</string>
     <string name="bt_adapter_not_found">Bluetooth adapter is not found</string>
-    <string name="bt_connected">Connected</string>
+    <string name="bt_connected">BT connected</string>
     <string name="bt_connecting_to">Connecting to %1$s</string>
     <string name="bt_turned_on">Bluetooth turned on</string>
     <string name="menu_reconnect">Reconnect to TNC</string>
@@ -138,8 +138,8 @@
     <string name="permissions_denied">Permissions denied</string>
     <string name="usb_detached">USB detached</string>
     <string name="bt_disconnected">Bluetooth disconnected</string>
-    <string name="processor_connected">Connected</string>
-    <string name="processor_disconnected">Disconnected</string>
+    <string name="processor_connected">TNC connected</string>
+    <string name="processor_disconnected">TNC disconnected</string>
     <string name="worker_failed_to_start_processing">Failed to start application worker</string>
 
     <string name="kiss_scrambler_label">&#128274;</string>
