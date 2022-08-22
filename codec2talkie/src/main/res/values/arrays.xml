@@ -352,7 +352,7 @@
     </string-array>
 
     <string-array name="ports_type_labels">
-        <item>[Debug] Loopback/Echo</item>
+        <item>Loopback</item>
         <item>Bluetooth</item>
         <item>Bluetooth LE (BLE)</item>
         <item>TCP/IP</item>
