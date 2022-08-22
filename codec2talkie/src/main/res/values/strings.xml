@@ -352,4 +352,6 @@
     <string name="aprsis_connect_failed">APRS-IS connect failed</string>
     <string name="aprsis_disconnected">APRS-IS disconnected</string>
     <string name="aprsis_wrong_pass">APRS-IS wrong pass</string>
+    <string name="aprs_is_enable_self_title">Enable own APRS to APRS-IS</string>
+    <string name="aprs_is_enable_self_summary">Send own APRS data to APRS-IS in addition to currently selected transport</string>
 </resources>

@@ -32,6 +32,13 @@
             app:defaultValue="false">
         </SwitchPreference>
 
+        <SwitchPreference
+            app:key="aprs_is_enable_self"
+            app:title="@string/aprs_is_enable_self_title"
+            app:summary="@string/aprs_is_enable_self_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
         <EditTextPreference
             app:key="aprs_is_radius"
             app:title="@string/aprs_is_radius_title"
