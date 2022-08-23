@@ -68,7 +68,7 @@ public class SoundModemBase implements Runnable {
             Log.e(TAG, "Failed to initialize RigCtl");
         }
 
-        _recordAudioSampleBuffer = ShortBuffer.allocate(_isLoopback ? 1024*100 : 1024*10);
+        _recordAudioSampleBuffer = ShortBuffer.allocate(1024*100);
 
         if (!disableRx && !_isLoopback)
             new Thread(this).start();
@@ -142,6 +142,7 @@ public class SoundModemBase implements Runnable {
                         _recordAudioSampleBuffer.put(sample);
                     } catch (BufferOverflowException e) {
                         // user is probably transmitting and cannot consume, just discard
+                        e.printStackTrace();
                         _recordAudioSampleBuffer.clear();
                     }
                 }
