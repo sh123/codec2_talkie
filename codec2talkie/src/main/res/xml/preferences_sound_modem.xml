@@ -123,5 +123,4 @@
         app:dependency="ports_sound_modem_freedv_enable_squelch"
         app:defaultValue="0.0">
     </ListPreference>
-
 </PreferenceScreen>

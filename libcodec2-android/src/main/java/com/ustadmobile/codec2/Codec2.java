@@ -63,7 +63,7 @@ public class Codec2 {
     public native static long fskDemodulate(long conFsk, short[] inputSamples, byte[] outputBits);
 
     // freedv
-    public native static long freedvCreate(int mode, boolean isSquelchEnabled, float squelchSnr);
+    public native static long freedvCreate(int mode, boolean isSquelchEnabled, float squelchSnr, long framesPerBurst);
     public native static int freedvDestroy(long conFreedv);
 
     public native static int freedvGetMaxSpeechSamples(long conFreedv);

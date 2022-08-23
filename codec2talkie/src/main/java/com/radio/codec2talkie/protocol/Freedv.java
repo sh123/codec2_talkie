@@ -53,12 +53,12 @@ public class Freedv implements Protocol {
 
         Log.i(TAG, "Using freedv mode " + AudioTools.getFreedvModeAsText(sharedPreferences));
 
-        _freedv = Codec2.freedvCreate(mode, isSquelchEnabled, squelchSnr);
+        _freedv = Codec2.freedvCreate(mode, isSquelchEnabled, squelchSnr, 0);   // unset for speech
         _modemTxBuffer = new short[Codec2.freedvGetNomModemSamples(_freedv)];
         _speechRxBuffer = new short[Codec2.freedvGetMaxSpeechSamples(_freedv)];
         _speechSamples  = ShortBuffer.allocate(1024*10);
 
-        _freedvData = Codec2.freedvCreate(dataMode, isSquelchEnabled, squelchSnr);
+        _freedvData = Codec2.freedvCreate(dataMode, isSquelchEnabled, squelchSnr, 1);
         _dataBuffer = new byte[Codec2.freedvGetBitsPerModemFrame(_freedvData) / 8];
         _dataSamplesBuffer = new short[Codec2.freedvGetNTxSamples(_freedvData)];
         _dataSamples  = ShortBuffer.allocate(1024*10);

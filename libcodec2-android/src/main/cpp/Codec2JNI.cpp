@@ -99,7 +99,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         return reinterpret_cast<jlong>(conFsk);
     }
 
-    static jlong freedvCreate(JNIEnv *env, jclass clazz, int mode, jboolean isSquelchEnabled, jfloat squelchSnr) {
+    static jlong freedvCreate(JNIEnv *env, jclass clazz, int mode, jboolean isSquelchEnabled, jfloat squelchSnr, jlong framesPerBurst) {
         struct ContextFreedv *conFreedv;
         conFreedv = (struct ContextFreedv *) malloc(sizeof(struct ContextFreedv));
         conFreedv->freeDv = freedv_open(mode);
@@ -114,8 +114,14 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         conFreedv->rawDataSamples = static_cast<short *>(malloc(
                 freedv_get_n_tx_modem_samples(conFreedv->freeDv) * sizeof(short)));
         // squelch
-        freedv_set_squelch_en(conFreedv->freeDv, isSquelchEnabled);
-        freedv_set_snr_squelch_thresh(conFreedv->freeDv, squelchSnr);
+        if (isSquelchEnabled) {
+            freedv_set_squelch_en(conFreedv->freeDv, isSquelchEnabled);
+            freedv_set_snr_squelch_thresh(conFreedv->freeDv, squelchSnr);
+        }
+        // frames per single burst, 0 - not specified
+        if (framesPerBurst > 0) {
+            freedv_set_frames_per_burst(conFreedv->freeDv, framesPerBurst);
+        }
         return reinterpret_cast<jlong>(conFreedv);
     }
 
@@ -362,7 +368,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         {"fskSamplesPerSymbol", "(J)I",         (void *) fskSamplesPerSymbol},
         {"fskNin", "(J)I",                      (void *) fskNin},
         // freedv
-        {"freedvCreate", "(IZF)J",              (void *)freedvCreate},
+        {"freedvCreate", "(IZFJ)J",             (void *)freedvCreate},
         {"freedvDestroy", "(J)I",               (void *)freedvDestroy},
         {"freedvGetMaxSpeechSamples", "(J)I",   (void *)freedvGetMaxSpeechSamples},
         {"freedvGetMaxModemSamples", "(J)I",    (void *)freedvGetMaxModemSamples},
