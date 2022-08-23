@@ -122,6 +122,7 @@ namespace Java_com_ustadmobile_codec2_Codec2 {
         if (framesPerBurst > 0) {
             freedv_set_frames_per_burst(conFreedv->freeDv, framesPerBurst);
         }
+        //freedv_set_tx_amp(conFreedv->freeDv, FSK_SCALE);
         return reinterpret_cast<jlong>(conFreedv);
     }
 
