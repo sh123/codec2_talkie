@@ -36,7 +36,7 @@ public class LogItemGroupAdapter extends ListAdapter<LogItemGroup, LogItemGroupH
 
         @Override
         public boolean areItemsTheSame(@NonNull LogItemGroup oldItem, @NonNull LogItemGroup newItem) {
-            return oldItem == newItem;
+            return oldItem.getSrcCallsign().equals(newItem.getSrcCallsign());
         }
 
         @Override

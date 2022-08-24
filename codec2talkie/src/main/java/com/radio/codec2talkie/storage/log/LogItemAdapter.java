@@ -31,12 +31,12 @@ public class LogItemAdapter extends ListAdapter<LogItem, LogItemHolder> {
 
         @Override
         public boolean areItemsTheSame(@NonNull LogItem oldItem, @NonNull LogItem newItem) {
-            return oldItem == newItem;
+            return oldItem.getTimestampEpoch() == newItem.getTimestampEpoch();
         }
 
         @Override
         public boolean areContentsTheSame(@NonNull LogItem oldItem, @NonNull LogItem newItem) {
-            return oldItem.getLogLine().equals(newItem.getLogLine());
+            return oldItem.getTimestampEpoch() == newItem.getTimestampEpoch();
         }
     }
 }

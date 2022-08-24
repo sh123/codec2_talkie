@@ -35,10 +35,10 @@ public interface LogItemDao {
             "GROUP BY log.srcCallsign")
     LiveData<List<LogItemGroup>> getGroups();
 
-    @Query("SELECT * FROM LogItem ORDER by timestampEpoch DESC")
+    @Query("SELECT * FROM LogItem ORDER by timestampEpoch ASC")
     LiveData<List<LogItem>> getAllLogItems();
 
-    @Query("SELECT * FROM LogItem WHERE srcCallsign = :srcCallsign ORDER BY timestampEpoch DESC")
+    @Query("SELECT * FROM LogItem WHERE srcCallsign = :srcCallsign ORDER BY timestampEpoch ASC")
     LiveData<List<LogItem>> getLogItems(String srcCallsign);
 
     @Query("DELETE FROM LogItem WHERE srcCallsign = :srcCallsign")

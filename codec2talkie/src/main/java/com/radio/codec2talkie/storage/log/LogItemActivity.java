@@ -3,6 +3,7 @@ package com.radio.codec2talkie.storage.log;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,11 +17,13 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.radio.codec2talkie.MainActivity;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.storage.log.group.LogItemGroupAdapter;
 import com.radio.codec2talkie.storage.position.PositionItemViewModel;
 
 public class LogItemActivity extends AppCompatActivity {
+    private static final String TAG = LogItemActivity.class.getSimpleName();
 
     private String _groupName;
     private LogItemViewModel _logItemViewModel;
@@ -52,6 +55,7 @@ public class LogItemActivity extends AppCompatActivity {
         final LogItemAdapter adapter = new LogItemAdapter(new LogItemAdapter.LogItemDiff(), _groupName == null);
         logItemRecyclerView.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setReverseLayout(true);
         logItemRecyclerView.setLayoutManager(linearLayoutManager);
         logItemRecyclerView.addItemDecoration(new DividerItemDecoration(logItemRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
@@ -85,6 +89,19 @@ public class LogItemActivity extends AppCompatActivity {
             _logItemViewModel.getData(_groupName).observe(this, adapter::submitList);
             setTitle(_groupName);
         }
+
+        // register live scroll
+        adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                int msgCount = adapter.getItemCount();
+                int lastVisiblePosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
+                Log.i(TAG, "" + msgCount + " " + lastVisiblePosition + " " + positionStart);
+                if (lastVisiblePosition == RecyclerView.NO_POSITION || positionStart == msgCount - 1 && lastVisiblePosition == positionStart - 1) {
+                    logItemRecyclerView.scrollToPosition(positionStart);
+                }
+            }
+        });
     }
 
     @Override
