@@ -96,7 +96,6 @@ public class LogItemActivity extends AppCompatActivity {
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 int msgCount = adapter.getItemCount();
                 int lastVisiblePosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
-                Log.i(TAG, "" + msgCount + " " + lastVisiblePosition + " " + positionStart);
                 if (lastVisiblePosition == RecyclerView.NO_POSITION || positionStart == msgCount - 1 && lastVisiblePosition == positionStart - 1) {
                     logItemRecyclerView.scrollToPosition(positionStart);
                 }
