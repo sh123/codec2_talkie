@@ -24,7 +24,7 @@ What you can do with this app:
   - Send and receive APRS messages
   - Use application as APRS digirepeater
   - Use application as APRS-IS RX/TX iGate
-- Integrate with hardware
+- Integrate with hardware/software
   - Use it with your KISS Bluetooth/BLE/USB/TCPIP hardware modem, such as LoRa/FSK/AFSK/etc, control its parameters by using "set hardware" KISS command
   - Use it with KISS software modem using TCPIP, such as Direwolf
   - Use it with your HF/VHF/UHF transceiver as a sound modem
