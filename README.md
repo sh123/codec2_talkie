@@ -45,10 +45,14 @@ What you can do with this app:
   - Android USB serial: https://github.com/mik3y/usb-serial-for-android
 
 # Other similar or related projects
-- ESP32 LoRa APRS modem (used with this application for testing): https://github.com/sh123/esp32_loraprs
-- Version adopted for M17 protocol usage: https://github.com/mobilinkd/m17-kiss-ht
-- iOS Codec2 wrapper: https://github.com/Beartooth/codec2-ios
-- Minimal Arduino LoRa KISS modem: https://github.com/sh123/lora_arduino_kiss_modem
-- Minimal Arduino NRF24 KISS modem: https://github.com/sh123/nrf24l01_arduino_kiss_modem
+- Hardware
+  - ESP32 LoRa APRS modem (used with this application for testing): https://github.com/sh123/esp32_loraprs
+  - Minimal Arduino LoRa KISS modem: https://github.com/sh123/lora_arduino_kiss_modem
+  - Minimal Arduino NRF24 KISS modem: https://github.com/sh123/nrf24l01_arduino_kiss_modem
+- Software:
+  - FreeDV TNC: https://github.com/xssfox/freedv-tnc
+  - FreeDV data modem UI: https://github.com/DJ2LS/FreeDATA
+  - Version adopted for M17 protocol usage: https://github.com/mobilinkd/m17-kiss-ht
+  - Codec2 iOS wrapper: https://github.com/Beartooth/codec2-ios
 - Other interesting projects:
   - LoRa mesh text GPS communicator: https://github.com/meshtastic/Meshtastic-device
