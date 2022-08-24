@@ -269,12 +269,13 @@ public class AprsDataPositionReport implements AprsData {
         if (strTail == null) return true;
 
         // read altitude (could be anywhere inside the comment)
-        Pattern altitudePattern = Pattern.compile("/A=(\\d{6})");
+        Pattern altitudePattern = Pattern.compile("^.*(/A=\\d{6}).*$", Pattern.DOTALL);
         Matcher altitudeMatcher = altitudePattern.matcher(strTail);
         if (altitudeMatcher.matches()) {
             String altitude = altitudeMatcher.group(1);
             if (altitude != null) {
-                strTail = altitudeMatcher.replaceAll("");
+                strTail = strTail.replaceAll(altitude, "");
+                altitude = altitude.split("=")[1];
                 _position.altitudeMeters = UnitTools.feetToMeters(Long.parseLong(altitude));
                 _position.isAltitudeEnabled = true;
                 _position.hasAltitude = true;
