@@ -55,6 +55,7 @@ What you can do with this app:
 - Software:
   - FreeDV TNC: https://github.com/xssfox/freedv-tnc
   - FreeDV data modem UI: https://github.com/DJ2LS/FreeDATA
+  - FreeDV official UI: https://github.com/drowe67/freedv-gui
   - Version adopted for M17 protocol usage: https://github.com/mobilinkd/m17-kiss-ht
   - Codec2 iOS wrapper: https://github.com/Beartooth/codec2-ios
 - Other interesting projects:
