@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -22,12 +23,16 @@ import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.storage.log.group.LogItemGroupAdapter;
 import com.radio.codec2talkie.storage.position.PositionItemViewModel;
 
+import java.util.List;
+
 public class LogItemActivity extends AppCompatActivity {
     private static final String TAG = LogItemActivity.class.getSimpleName();
 
     private String _groupName;
     private LogItemViewModel _logItemViewModel;
     private PositionItemViewModel _positionItemViewModel;
+
+    private LiveData<List<LogItem>> _logItemLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +72,11 @@ public class LogItemActivity extends AppCompatActivity {
         final LogItemGroupAdapter adapterGroup = new LogItemGroupAdapter(new LogItemGroupAdapter.LogItemGroupDiff());
         adapterGroup.setClickListener(v -> {
             TextView itemView = v.findViewById(R.id.log_view_group_item_title);
+            //_logItemLiveData.removeObserver(adapter::submitList);
+            _logItemLiveData.removeObservers(this);
             _groupName = itemView.getText().toString();
-            _logItemViewModel.getData(_groupName).observe(this, adapter::submitList);
+            _logItemLiveData = _logItemViewModel.getData(_groupName);
+            _logItemLiveData.observe(this, adapter::submitList);
             setTitle(_groupName);
         });
         logItemGroupRecyclerView.setAdapter(adapterGroup);
@@ -83,10 +91,12 @@ public class LogItemActivity extends AppCompatActivity {
             logItemGroupRecyclerView.setVisibility(View.GONE);
             findViewById(R.id.log_item_textview).setVisibility(View.GONE);
             findViewById(R.id.log_item_group_textview).setVisibility(View.GONE);
-            _logItemViewModel.getAllData().observe(this, adapter::submitList);
+            _logItemLiveData = _logItemViewModel.getAllData();
+            _logItemLiveData.observe(this, adapter::submitList);
             setTitle(R.string.aprs_log_view_title);
         } else {
-            _logItemViewModel.getData(_groupName).observe(this, adapter::submitList);
+            _logItemLiveData = _logItemViewModel.getData(_groupName);
+            _logItemLiveData.observe(this, adapter::submitList);
             setTitle(_groupName);
         }
 
