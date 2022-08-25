@@ -170,7 +170,8 @@ public class Freedv implements Protocol {
 
     @Override
     public void flush() throws IOException {
-        // TODO, check if need to flush buffers
+        _speechSamples.clear();
+        _dataSamples.clear();
     }
 
     @Override
