@@ -72,7 +72,6 @@ public class LogItemActivity extends AppCompatActivity {
         final LogItemGroupAdapter adapterGroup = new LogItemGroupAdapter(new LogItemGroupAdapter.LogItemGroupDiff());
         adapterGroup.setClickListener(v -> {
             TextView itemView = v.findViewById(R.id.log_view_group_item_title);
-            //_logItemLiveData.removeObserver(adapter::submitList);
             _logItemLiveData.removeObservers(this);
             _groupName = itemView.getText().toString();
             _logItemLiveData = _logItemViewModel.getData(_groupName);
