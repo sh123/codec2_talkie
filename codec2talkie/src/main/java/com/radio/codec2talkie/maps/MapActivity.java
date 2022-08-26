@@ -1,6 +1,8 @@
 package com.radio.codec2talkie.maps;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -11,6 +13,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.protocol.aprs.tools.AprsSymbolTable;
 import com.radio.codec2talkie.storage.log.LogItemViewModel;
 import com.radio.codec2talkie.storage.log.group.LogItemGroup;
 
@@ -39,8 +42,11 @@ public class MapActivity extends AppCompatActivity {
     private IMapController _mapController;
     private CompassOverlay _compassOverlay;
     private MyLocationNewOverlay _myLocationNewOverlay;
+    private ItemizedIconOverlay<OverlayItem> _objectOverlay;
+    private ArrayList<OverlayItem> _objectOverlayItems;
 
     private LogItemViewModel _logItemViewModel;
+    private AprsSymbolTable _aprsSymbolTable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +59,14 @@ public class MapActivity extends AppCompatActivity {
 
         Context context = getApplicationContext();
         Configuration.getInstance().setUserAgentValue("C2T");
+        _aprsSymbolTable = AprsSymbolTable.getInstance(context);
 
+        // map
         _map = findViewById(R.id.map);
         _map.setTileSource(TileSourceFactory.MAPNIK);
         _map.setMultiTouchControls(true);
 
+        // controller
         _mapController = _map.getController();
         _mapController.zoomTo(5.0);
 
@@ -75,11 +84,30 @@ public class MapActivity extends AppCompatActivity {
         }));
         _map.getOverlays().add(_myLocationNewOverlay);
 
+        // objects
+        _objectOverlayItems = new ArrayList<OverlayItem>();
+        _objectOverlay = new ItemizedIconOverlay<OverlayItem>(_objectOverlayItems, new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+            @Override
+            public boolean onItemSingleTapUp(int index, OverlayItem item) {
+                return false;
+            }
+
+            @Override
+            public boolean onItemLongPress(int index, OverlayItem item) {
+                return false;
+            }
+        }, context);
+        _map.getOverlays().add(_objectOverlay);
+
         // add data listener
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
         _logItemViewModel.getGroups().observe(this, logItemGroups -> {
             for (LogItemGroup group : logItemGroups) {
-
+                OverlayItem overlayItem = new OverlayItem(group.getSrcCallsign(), "", new GeoPoint(group.getLatitude(), group.getLongitude()));
+                Bitmap bitmapIcon = _aprsSymbolTable.bitmapFromSymbol(group.getSymbolCode(), false);
+                BitmapDrawable drawableIcon = new BitmapDrawable(getResources(), bitmapIcon);
+                overlayItem.setMarker(drawableIcon);
+                _objectOverlay.addItem(overlayItem);
             }
         });
     }
