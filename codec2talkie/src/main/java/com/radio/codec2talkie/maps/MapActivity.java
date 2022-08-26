@@ -1,6 +1,7 @@
 package com.radio.codec2talkie.maps;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -11,9 +12,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsSymbolTable;
+import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.storage.log.LogItemViewModel;
 import com.radio.codec2talkie.storage.log.group.LogItemGroup;
 
@@ -48,6 +51,8 @@ public class MapActivity extends AppCompatActivity {
     private LogItemViewModel _logItemViewModel;
     private AprsSymbolTable _aprsSymbolTable;
 
+    private String _mySymbolCode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +64,10 @@ public class MapActivity extends AppCompatActivity {
 
         Context context = getApplicationContext();
         Configuration.getInstance().setUserAgentValue("C2T");
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
         _aprsSymbolTable = AprsSymbolTable.getInstance(context);
+        _mySymbolCode = sharedPreferences.getString(PreferenceKeys.APRS_SYMBOL, "/[");
 
         // map
         _map = findViewById(R.id.map);
@@ -77,6 +85,10 @@ public class MapActivity extends AppCompatActivity {
 
         // my location
         _myLocationNewOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), _map);
+        Bitmap myBitmapIcon = _aprsSymbolTable.bitmapFromSymbol(_mySymbolCode, true);
+        _myLocationNewOverlay.setDirectionIcon(myBitmapIcon);
+        _myLocationNewOverlay.setPersonIcon(myBitmapIcon);
+
         _myLocationNewOverlay.enableMyLocation();
         _myLocationNewOverlay.runOnFirstFix(() -> runOnUiThread(() -> {
             _mapController.setCenter(_myLocationNewOverlay.getMyLocation());
