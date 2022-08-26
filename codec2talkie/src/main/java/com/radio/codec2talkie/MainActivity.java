@@ -53,6 +53,7 @@ import com.radio.codec2talkie.connect.BleConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothSocketHandler;
 import com.radio.codec2talkie.connect.TcpIpConnectActivity;
+import com.radio.codec2talkie.maps.MapActivity;
 import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.storage.log.LogItemActivity;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
@@ -379,6 +380,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         _logViewActivityLauncher.launch(new Intent(this, LogItemActivity.class));
     }
 
+    protected void startMapViewActivity() {
+        _logViewActivityLauncher.launch(new Intent(this, MapActivity.class));
+    }
     private final ActivityResultLauncher<Intent> _settingsActivityLauncher  = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(), result -> restartApplication());
 
@@ -603,6 +607,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
         else if (itemId == R.id.aprs_log) {
             startLogViewActivity();
+            return true;
+        }
+        else if (itemId == R.id.aprs_map) {
+            startMapViewActivity();
             return true;
         }
         return super.onOptionsItemSelected(item);

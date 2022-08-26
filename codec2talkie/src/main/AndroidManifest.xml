@@ -60,6 +60,9 @@
             android:name=".storage.message.MessageItemActivity"
             android:configChanges="orientation|screenSize" />
         <activity
+            android:name=".maps.MapActivity"
+            android:configChanges="orientation|screenSize" />
+        <activity
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize">
             <intent-filter>

@@ -13,6 +13,9 @@
         <item
             android:id="@+id/aprs_log"
             android:title="@string/menu_aprs_log" />
+        <item
+            android:id="@+id/aprs_map"
+            android:title="@string/menu_aprs_map" />
     </group>
     <group android:id="@+id/group_main">
         <item
