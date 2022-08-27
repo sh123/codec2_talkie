@@ -22,6 +22,7 @@ What you can do with this app:
 - Data communication
   - Send and receive APRS position reports over FSK 300 (HF, TX only), AFSK1200 (VHF), FreeDV OFDM (HF)
   - Send and receive APRS messages
+  - APRS log, station hub and map
   - Use application as APRS digirepeater
   - Use application as APRS-IS RX/TX iGate
 - Integrate with hardware/software
