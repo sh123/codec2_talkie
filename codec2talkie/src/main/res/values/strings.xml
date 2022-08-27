@@ -355,4 +355,5 @@
     <string name="aprs_is_enable_self_title">Enable own APRS to APRS-IS</string>
     <string name="aprs_is_enable_self_summary">Send own APRS data to APRS-IS in addition to currently selected transport</string>
     <string name="menu_aprs_map">Map</string>
+    <string name="map_menu_clear_cache_title">Clear map title cache</string>
 </resources>
