@@ -3,8 +3,13 @@ package com.radio.codec2talkie.maps;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.ActionBar;
@@ -115,11 +120,41 @@ public class MapActivity extends AppCompatActivity {
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
         _logItemViewModel.getGroups().observe(this, logItemGroups -> {
             for (LogItemGroup group : logItemGroups) {
-                OverlayItem overlayItem = new OverlayItem(group.getSrcCallsign(), "", new GeoPoint(group.getLatitude(), group.getLongitude()));
+                String callsign = group.getSrcCallsign();
                 Bitmap bitmapIcon = _aprsSymbolTable.bitmapFromSymbol(group.getSymbolCode(), false);
-                BitmapDrawable drawableIcon = new BitmapDrawable(getResources(), bitmapIcon);
-                overlayItem.setMarker(drawableIcon);
-                _objectOverlay.addItem(overlayItem);
+                if (bitmapIcon == null) continue;
+
+                Paint paint = new Paint();
+                paint.setStyle(Paint.Style.FILL);
+
+                Rect bounds = new Rect();
+                paint.getTextBounds(callsign, 0, callsign.length(), bounds);
+
+                int width = Math.max(bitmapIcon.getWidth(), bounds.width());
+                int height = bitmapIcon.getHeight() + bounds.height();
+
+                Bitmap bitmap = Bitmap.createBitmap(width, height, null);
+                bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
+
+                Canvas canvas = new Canvas(bitmap);
+                float bitmapLeft = width > bitmapIcon.getWidth() ? width / 2.0f - bitmapIcon.getWidth() / 2.0f : 0;
+                canvas.drawBitmap(bitmapIcon, bitmapLeft, 0, null);
+
+                paint.setColor(Color.WHITE);
+                paint.setAlpha(120);
+                bounds.set(0, bitmapIcon.getHeight(), width, height);
+                canvas.drawRect(bounds, paint);
+
+                paint.setColor(Color.BLACK);
+                paint.setAlpha(255);
+                paint.setTextSize(12);
+                paint.setFlags(Paint.ANTI_ALIAS_FLAG);
+                canvas.drawText(callsign, 0, height, paint);
+
+                BitmapDrawable drawableText = new BitmapDrawable(getResources(), bitmap);
+                OverlayItem overlayItemText = new OverlayItem(callsign, "", new GeoPoint(group.getLatitude(), group.getLongitude()));
+                overlayItemText.setMarker(drawableText);
+                _objectOverlay.addItem(overlayItemText);
             }
         });
     }
