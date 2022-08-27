@@ -24,6 +24,8 @@ import com.radio.codec2talkie.protocol.aprs.tools.AprsSymbolTable;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.storage.log.LogItemViewModel;
 import com.radio.codec2talkie.storage.log.group.LogItemGroup;
+import com.radio.codec2talkie.tools.DateTools;
+import com.radio.codec2talkie.tools.UnitTools;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -40,7 +42,10 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Observable;
 
 public class MapActivity extends AppCompatActivity {
@@ -50,8 +55,8 @@ public class MapActivity extends AppCompatActivity {
     private IMapController _mapController;
     private CompassOverlay _compassOverlay;
     private MyLocationNewOverlay _myLocationNewOverlay;
-    private ItemizedIconOverlay<OverlayItem> _objectOverlay;
-    private ArrayList<OverlayItem> _objectOverlayItems;
+    private ItemizedOverlayWithFocus<OverlayItem> _objectOverlay;
+    private final HashMap<String, OverlayItem> _objectOverlayItems = new HashMap<>();
 
     private LogItemViewModel _logItemViewModel;
     private AprsSymbolTable _aprsSymbolTable;
@@ -102,63 +107,97 @@ public class MapActivity extends AppCompatActivity {
         _map.getOverlays().add(_myLocationNewOverlay);
 
         // objects
-        _objectOverlayItems = new ArrayList<OverlayItem>();
-        _objectOverlay = new ItemizedIconOverlay<OverlayItem>(_objectOverlayItems, new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
+        _objectOverlay = new ItemizedOverlayWithFocus<>(new ArrayList<>(), new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
             @Override
             public boolean onItemSingleTapUp(int index, OverlayItem item) {
-                return false;
+                return true;
             }
 
             @Override
             public boolean onItemLongPress(int index, OverlayItem item) {
-                return false;
+                return true;
             }
         }, context);
+        _objectOverlay.setMarkerBackgroundColor(Color.WHITE);
+        _objectOverlay.setFocusItemsOnTap(true);
         _map.getOverlays().add(_objectOverlay);
 
         // add data listener
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
         _logItemViewModel.getGroups().observe(this, logItemGroups -> {
             for (LogItemGroup group : logItemGroups) {
-                String callsign = group.getSrcCallsign();
-                Bitmap bitmapIcon = _aprsSymbolTable.bitmapFromSymbol(group.getSymbolCode(), false);
-                if (bitmapIcon == null) continue;
-
-                Paint paint = new Paint();
-                paint.setStyle(Paint.Style.FILL);
-
-                Rect bounds = new Rect();
-                paint.getTextBounds(callsign, 0, callsign.length(), bounds);
-
-                int width = Math.max(bitmapIcon.getWidth(), bounds.width());
-                int height = bitmapIcon.getHeight() + bounds.height();
-
-                Bitmap bitmap = Bitmap.createBitmap(width, height, null);
-                bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
-
-                Canvas canvas = new Canvas(bitmap);
-                float bitmapLeft = width > bitmapIcon.getWidth() ? width / 2.0f - bitmapIcon.getWidth() / 2.0f : 0;
-                canvas.drawBitmap(bitmapIcon, bitmapLeft, 0, null);
-
-                paint.setColor(Color.WHITE);
-                paint.setAlpha(120);
-                bounds.set(0, bitmapIcon.getHeight(), width, height);
-                canvas.drawRect(bounds, paint);
-
-                paint.setColor(Color.BLACK);
-                paint.setAlpha(255);
-                paint.setTextSize(12);
-                paint.setFlags(Paint.ANTI_ALIAS_FLAG);
-                canvas.drawText(callsign, 0, height, paint);
-
-                BitmapDrawable drawableText = new BitmapDrawable(getResources(), bitmap);
-                OverlayItem overlayItemText = new OverlayItem(callsign, "", new GeoPoint(group.getLatitude(), group.getLongitude()));
-                overlayItemText.setMarker(drawableText);
-                _objectOverlay.addItem(overlayItemText);
+                addIcon(group);
             }
         });
     }
 
+    private boolean addIcon(LogItemGroup group) {
+        String callsign = group.getSrcCallsign();
+
+        // remove from old position
+        if (_objectOverlayItems.containsKey(callsign)) {
+            OverlayItem oldOverlayItem = _objectOverlayItems.get(callsign);
+            _objectOverlay.removeItem(oldOverlayItem);
+            _objectOverlayItems.remove(callsign);
+        }
+
+        // icon from symbol
+        Bitmap bitmapIcon = _aprsSymbolTable.bitmapFromSymbol(group.getSymbolCode(), false);
+        if (bitmapIcon == null) return false;
+
+        // construct and calculate bounds
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+
+        Rect bounds = new Rect();
+        paint.getTextBounds(callsign, 0, callsign.length(), bounds);
+
+        int width = Math.max(bitmapIcon.getWidth(), bounds.width());
+        int height = bitmapIcon.getHeight() + bounds.height();
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, null);
+        bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
+
+        // draw bitmap
+        Canvas canvas = new Canvas(bitmap);
+        float bitmapLeft = width > bitmapIcon.getWidth() ? width / 2.0f - bitmapIcon.getWidth() / 2.0f : 0;
+        canvas.drawBitmap(bitmapIcon, bitmapLeft, 0, null);
+
+        // draw background and text
+        paint.setColor(Color.WHITE);
+        paint.setAlpha(120);
+        bounds.set(0, bitmapIcon.getHeight(), width, height);
+        canvas.drawRect(bounds, paint);
+
+        paint.setColor(Color.BLACK);
+        paint.setAlpha(255);
+        paint.setTextSize(12);
+        paint.setFlags(Paint.ANTI_ALIAS_FLAG);
+        canvas.drawText(callsign, 0, height, paint);
+
+        // set marker
+        BitmapDrawable drawableText = new BitmapDrawable(getResources(), bitmap);
+        OverlayItem overlayItemText = new OverlayItem(DateTools.epochToIso8601(group.getTimestampEpoch()) + " " + callsign,
+                getStatus(group),
+                new GeoPoint(group.getLatitude(), group.getLongitude()));
+        overlayItemText.setMarker(drawableText);
+        _objectOverlay.addItem(overlayItemText);
+        _objectOverlayItems.put(callsign, overlayItemText);
+
+        return true;
+    }
+
+    private String getStatus(LogItemGroup group) {
+        return String.format(Locale.US, "%s %f %f\n%03d° %03dkm/h %04dm\n%s %s",
+                group.getMaidenHead(),
+                group.getLatitude(),
+                group.getLongitude(),
+                (int)group.getBearingDegrees(),
+                UnitTools.metersPerSecondToKilometersPerHour((int)group.getSpeedMetersPerSecond()),
+                (int)group.getAltitudeMeters(),
+                group.getStatus(),
+                group.getComment());
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
