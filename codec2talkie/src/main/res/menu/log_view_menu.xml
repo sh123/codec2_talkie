@@ -5,5 +5,23 @@
         android:title="@string/log_view_menu_stations" />
     <item
         android:id="@+id/log_view_menu_clear"
-        android:title="@string/log_view_menu_clear" />
+        android:title="@string/log_view_menu_clear_title">
+        <menu>
+            <item
+                android:id="@+id/log_view_menu_clear_1h"
+                android:title="@string/log_view_menu_clear_1h" />
+            <item
+                android:id="@+id/log_view_menu_clear_12h"
+                android:title="@string/log_view_menu_clear_12h" />
+            <item
+                android:id="@+id/log_view_menu_clear_1d"
+                android:title="@string/log_view_menu_clear_1d" />
+            <item
+                android:id="@+id/log_view_menu_clear_7d"
+                android:title="@string/log_view_menu_clear_7d" />
+            <item
+                android:id="@+id/log_view_menu_clear_all"
+                android:title="@string/log_view_menu_clear_all" />
+        </menu>
+    </item>
 </menu>

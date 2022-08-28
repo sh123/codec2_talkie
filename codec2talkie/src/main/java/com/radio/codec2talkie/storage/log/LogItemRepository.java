@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 
 import com.radio.codec2talkie.storage.AppDatabase;
 import com.radio.codec2talkie.storage.log.group.LogItemGroup;
+import com.radio.codec2talkie.tools.DateTools;
 
 import java.util.List;
 
@@ -43,5 +44,9 @@ public class LogItemRepository {
 
     public void deleteLogItems(String groupName) {
         AppDatabase.getDatabaseExecutor().execute(() -> _logItemDao.deleteLogItems(groupName));
+    }
+
+    public void deleteLogItemsOlderThanHours(int hours) {
+        AppDatabase.getDatabaseExecutor().execute(() -> _logItemDao.deleteLogItemsOlderThanTimestamp(DateTools.currentTimestampMinusHours(hours)));
     }
 }

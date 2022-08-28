@@ -28,6 +28,9 @@ public interface PositionItemDao {
     @Query("DELETE FROM PositionItem WHERE srcCallsign = :srcCallsign")
     void deletePositionItems(String srcCallsign);
 
+    @Query("DELETE FROM PositionItem WHERE timestampEpoch < :timestamp")
+    void deletePositionItemsOlderThanTimestamp(long timestamp);
+
     @Query("DELETE FROM PositionItem")
     void deleteAllPositionItems();
 }

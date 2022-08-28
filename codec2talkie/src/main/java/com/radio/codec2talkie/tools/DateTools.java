@@ -12,4 +12,8 @@ public class DateTools {
         sdf.setTimeZone(TimeZone.getDefault());
         return sdf.format(new Date(timeMilliseconds));
     }
+
+    public static long currentTimestampMinusHours(int hours) {
+        return System.currentTimeMillis() - (hours * 60L * 60L * 1000L);
+    }
 }

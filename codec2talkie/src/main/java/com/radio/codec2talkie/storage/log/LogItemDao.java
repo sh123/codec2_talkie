@@ -46,4 +46,7 @@ public interface LogItemDao {
 
     @Query("DELETE FROM LogItem")
     void deleteAllLogItems();
+
+    @Query("DELETE FROM LogItem WHERE timestampEpoch < :timestampEpoch")
+    void deleteLogItemsOlderThanTimestamp(long timestampEpoch);
 }

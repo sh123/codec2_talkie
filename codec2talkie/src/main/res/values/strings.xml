@@ -356,4 +356,11 @@
     <string name="aprs_is_enable_self_summary">Send own APRS data to APRS-IS in addition to currently selected transport</string>
     <string name="menu_aprs_map">Map</string>
     <string name="map_menu_clear_cache_title">Clear map tile cache</string>
+    <string name="log_view_menu_clear_title">Clear log</string>
+    <string name="log_view_menu_clear_1h">Older than 1 hour</string>
+    <string name="log_view_menu_clear_12h">Older than 12 hours</string>
+    <string name="log_view_menu_clear_1d">Older than 1 day</string>
+    <string name="log_view_menu_clear_7d">Older than 7 days</string>
+    <string name="log_view_menu_clear_all">Clear all</string>
+    <string name="log_item_activity_delete_hours_title">This will remove everything older than %d hours. Are you sure?</string>
 </resources>

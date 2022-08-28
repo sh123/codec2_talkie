@@ -39,4 +39,6 @@ public class LogItemViewModel extends AndroidViewModel {
     public void deleteLogItems(String groupName) {
         _logItemRepository.deleteLogItems(groupName);
     }
+
+    public void deleteLogItemsOlderThanHours(int hours) { _logItemRepository.deleteLogItemsOlderThanHours(hours); }
 }

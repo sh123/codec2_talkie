@@ -3,7 +3,6 @@ package com.radio.codec2talkie.storage.log;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.radio.codec2talkie.MainActivity;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.storage.log.group.LogItemGroupAdapter;
 import com.radio.codec2talkie.storage.position.PositionItemViewModel;
@@ -135,9 +133,20 @@ public class LogItemActivity extends AppCompatActivity {
         if (itemId == android.R.id.home) {
             finish();
             return true;
-        }
-        else if (itemId == R.id.log_view_menu_clear) {
-            deleteAll();
+        }  else if (itemId == R.id.log_view_menu_clear_all) {
+            deleteLogItems(-1);
+            return true;
+        }  else if (itemId == R.id.log_view_menu_clear_1h) {
+            deleteLogItems(1);
+            return true;
+        }  else if (itemId == R.id.log_view_menu_clear_12h) {
+            deleteLogItems(12);
+            return true;
+        }  else if (itemId == R.id.log_view_menu_clear_1d) {
+            deleteLogItems(24);
+            return true;
+        }  else if (itemId == R.id.log_view_menu_clear_7d) {
+            deleteLogItems(24*7);
             return true;
         } else if (itemId == R.id.log_view_menu_stations) {
             Intent logItemIntent = new Intent(this, LogItemActivity.class);
@@ -148,12 +157,17 @@ public class LogItemActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void deleteAll() {
+    private void deleteLogItems(int hours) {
         DialogInterface.OnClickListener deleteAllDialogClickListener = (dialog, which) -> {
             if (which == DialogInterface.BUTTON_POSITIVE) {
                 if (_groupName == null) {
-                    _logItemViewModel.deleteAllLogItems();
-                    _positionItemViewModel.deleteAllPositionItems();
+                    if (hours == -1) {
+                        _logItemViewModel.deleteAllLogItems();
+                        _positionItemViewModel.deleteAllPositionItems();
+                    } else {
+                        _logItemViewModel.deleteLogItemsOlderThanHours(hours);
+                        _positionItemViewModel.deletePositionItemsOlderThanHours(hours);
+                    }
                 } else {
                     _logItemViewModel.deleteLogItems(_groupName);
                     _positionItemViewModel.deletePositionItems(_groupName);
@@ -161,6 +175,9 @@ public class LogItemActivity extends AppCompatActivity {
             }
         };
         String alertMessage = getString(R.string.log_item_activity_delete_all_title);
+        if (hours != -1) {
+            alertMessage = String.format(getString(R.string.log_item_activity_delete_hours_title), hours);
+        }
         if (_groupName != null) {
             alertMessage = getString(R.string.log_item_activity_delete_group_title);
             alertMessage = String.format(alertMessage, _groupName);

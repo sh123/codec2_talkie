@@ -5,6 +5,7 @@ import android.app.Application;
 import androidx.lifecycle.LiveData;
 
 import com.radio.codec2talkie.storage.AppDatabase;
+import com.radio.codec2talkie.tools.DateTools;
 
 import java.util.List;
 
@@ -27,5 +28,9 @@ public class PositionItemRepository {
 
     public void deletePositionItems(String srcCallsign) {
         AppDatabase.getDatabaseExecutor().execute(() -> _positionItemDao.deletePositionItems(srcCallsign));
+    }
+
+    public void deletePositionItemsOlderThanTimestamp(long timestamp) {
+        AppDatabase.getDatabaseExecutor().execute(() -> _positionItemDao.deletePositionItemsOlderThanTimestamp(timestamp));
     }
 }
