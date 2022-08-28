@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/map_menu_rotate_map"
+        android:title="@string/map_menu_rotate_map"
+        android:checkable="true"
+        android:checked="false"/>
+    <item
         android:id="@+id/map_menu_clear_cache"
         android:title="@string/map_menu_clear_cache_title" />
 </menu>

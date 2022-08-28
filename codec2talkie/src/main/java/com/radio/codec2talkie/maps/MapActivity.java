@@ -8,8 +8,11 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -57,6 +60,7 @@ public class MapActivity extends AppCompatActivity {
     private AprsSymbolTable _aprsSymbolTable;
 
     private String _mySymbolCode;
+    private boolean _rotateMap = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +88,16 @@ public class MapActivity extends AppCompatActivity {
         _mapController.zoomTo(5.0);
 
         // compass
-        _compassOverlay = new CompassOverlay(context, new InternalCompassOrientationProvider(context), _map);
+        InternalCompassOrientationProvider compassOrientationProvider = new InternalCompassOrientationProvider(context) {
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                if (_rotateMap) {
+                    _map.setMapOrientation(-sensorEvent.values[0]);
+                }
+                super.onSensorChanged(sensorEvent);
+            }
+        };
+        _compassOverlay = new CompassOverlay(context, compassOrientationProvider, _map);
         _compassOverlay.enableCompass();
         _map.getOverlays().add(_compassOverlay);
 
@@ -208,6 +221,16 @@ public class MapActivity extends AppCompatActivity {
             return true;
         } else if (itemId == R.id.map_menu_clear_cache) {
             _map.getTileProvider().clearTileCache();
+            return true;
+        } else if (itemId == R.id.map_menu_rotate_map) {
+            if (item.isChecked()) {
+                item.setChecked(false);
+                _rotateMap = false;
+                _map.setMapOrientation(0);
+            } else {
+                item.setChecked(true);
+                _rotateMap = true;
+            }
             return true;
         }
 
