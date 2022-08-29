@@ -110,6 +110,7 @@ public class MapActivity extends AppCompatActivity {
         _myLocationNewOverlay.setDirectionIcon(myBitmapIcon);
         _myLocationNewOverlay.setPersonIcon(myBitmapIcon);
 
+        // my location overlay
         _myLocationNewOverlay.enableMyLocation();
         _myLocationNewOverlay.runOnFirstFix(() -> runOnUiThread(() -> {
             _mapController.setCenter(_myLocationNewOverlay.getMyLocation());
@@ -121,7 +122,9 @@ public class MapActivity extends AppCompatActivity {
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
         _logItemViewModel.getGroups().observe(this, logItemGroups -> {
             for (LogItemGroup group : logItemGroups) {
-                addIcon(group);
+                if (!addIcon(group)) {
+                    Log.e(TAG, "Failed to add APRS icon");
+                }
             }
         });
     }
@@ -152,13 +155,12 @@ public class MapActivity extends AppCompatActivity {
         // construct and calculate bounds
         Paint paint = new Paint();
         paint.setStyle(Paint.Style.FILL);
-
         Rect bounds = new Rect();
         paint.getTextBounds(callsign, 0, callsign.length(), bounds);
-
         int width = Math.max(bitmapIcon.getWidth(), bounds.width());
         int height = bitmapIcon.getHeight() + bounds.height();
 
+        // create overlay bitmap
         Bitmap bitmap = Bitmap.createBitmap(width, height, null);
         bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
 
