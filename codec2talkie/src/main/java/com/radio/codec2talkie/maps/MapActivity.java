@@ -15,6 +15,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,9 +37,11 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
+import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
+import org.osmdroid.views.overlay.infowindow.InfoWindow;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -53,8 +56,8 @@ public class MapActivity extends AppCompatActivity {
     private IMapController _mapController;
     private CompassOverlay _compassOverlay;
     private MyLocationNewOverlay _myLocationNewOverlay;
-    private ItemizedOverlayWithFocus<OverlayItem> _objectOverlay;
-    private final HashMap<String, OverlayItem> _objectOverlayItems = new HashMap<>();
+    private ItemizedIconOverlay<OverlayItem> _objectOverlay;
+    private final HashMap<String, Marker> _objectOverlayItems = new HashMap<>();
 
     private LogItemViewModel _logItemViewModel;
     private AprsSymbolTable _aprsSymbolTable;
@@ -114,22 +117,6 @@ public class MapActivity extends AppCompatActivity {
         }));
         _map.getOverlays().add(_myLocationNewOverlay);
 
-        // objects
-        _objectOverlay = new ItemizedOverlayWithFocus<>(new ArrayList<>(), new ItemizedIconOverlay.OnItemGestureListener<OverlayItem>() {
-            @Override
-            public boolean onItemSingleTapUp(int index, OverlayItem item) {
-                return true;
-            }
-
-            @Override
-            public boolean onItemLongPress(int index, OverlayItem item) {
-                return true;
-            }
-        }, context);
-        _objectOverlay.setMarkerBackgroundColor(Color.WHITE);
-        _objectOverlay.setFocusItemsOnTap(true);
-        _map.getOverlays().add(_objectOverlay);
-
         // add data listener
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
         _logItemViewModel.getGroups().observe(this, logItemGroups -> {
@@ -150,14 +137,17 @@ public class MapActivity extends AppCompatActivity {
 
         // remove from old position
         if (_objectOverlayItems.containsKey(callsign)) {
-            OverlayItem oldOverlayItem = _objectOverlayItems.get(callsign);
-            _objectOverlay.removeItem(oldOverlayItem);
+            Marker oldMarker = _objectOverlayItems.get(callsign);
+            assert oldMarker != null;
+            oldMarker.remove(_map);
             _objectOverlayItems.remove(callsign);
         }
 
         // icon from symbol
         Bitmap bitmapIcon = _aprsSymbolTable.bitmapFromSymbol(group.getSymbolCode(), false);
         if (bitmapIcon == null) return false;
+        Bitmap bitmapInfoIcon = _aprsSymbolTable.bitmapFromSymbol(group.getSymbolCode(), true);
+        if (bitmapInfoIcon == null) return false;
 
         // construct and calculate bounds
         Paint paint = new Paint();
@@ -172,37 +162,41 @@ public class MapActivity extends AppCompatActivity {
         Bitmap bitmap = Bitmap.createBitmap(width, height, null);
         bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
 
-        // draw bitmap
+        // draw APRS icon
         Canvas canvas = new Canvas(bitmap);
         float bitmapLeft = width > bitmapIcon.getWidth() ? width / 2.0f - bitmapIcon.getWidth() / 2.0f : 0;
         canvas.drawBitmap(bitmapIcon, bitmapLeft, 0, null);
 
-        // draw background and text
+        // draw background
         paint.setColor(Color.WHITE);
         paint.setAlpha(120);
         bounds.set(0, bitmapIcon.getHeight(), width, height);
         canvas.drawRect(bounds, paint);
 
+        // draw text
         paint.setColor(Color.BLACK);
         paint.setAlpha(255);
         paint.setTextSize(12);
         paint.setFlags(Paint.ANTI_ALIAS_FLAG);
         canvas.drawText(callsign, 0, height, paint);
 
-        // set marker
+        // add marker
         BitmapDrawable drawableText = new BitmapDrawable(getResources(), bitmap);
-        OverlayItem overlayItemText = new OverlayItem(DateTools.epochToIso8601(group.getTimestampEpoch()) + " " + callsign,
-                getStatus(group),
-                new GeoPoint(group.getLatitude(), group.getLongitude()));
-        overlayItemText.setMarker(drawableText);
-        _objectOverlay.addItem(overlayItemText);
-        _objectOverlayItems.put(callsign, overlayItemText);
+        BitmapDrawable drawableInfoIcon = new BitmapDrawable(getResources(), bitmapInfoIcon);
+        Marker marker = new Marker(_map);
+        marker.setPosition(new GeoPoint(group.getLatitude(), group.getLongitude()));
+        marker.setIcon(drawableText);
+        marker.setImage(drawableInfoIcon);
+        marker.setTitle(DateTools.epochToIso8601(group.getTimestampEpoch()) + " " + callsign);
+        marker.setSnippet(getStatus(group));
+        _map.getOverlays().add(marker);
+        _objectOverlayItems.put(callsign, marker);
 
         return true;
     }
 
     private String getStatus(LogItemGroup group) {
-        return String.format(Locale.US, "%s %f %f\n%03d° %03dkm/h %04dm\n%s %s",
+        return String.format(Locale.US, "%s %f %f<br>%03d° %03dkm/h %04dm<br>%s %s",
                 group.getMaidenHead(),
                 group.getLatitude(),
                 group.getLongitude(),
@@ -212,6 +206,7 @@ public class MapActivity extends AppCompatActivity {
                 group.getStatus(),
                 group.getComment());
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
