@@ -3,6 +3,7 @@ package com.radio.codec2talkie.storage.log;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -104,8 +105,9 @@ public class LogItemActivity extends AppCompatActivity {
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 int msgCount = adapter.getItemCount();
                 int lastVisiblePosition = linearLayoutManager.findLastCompletelyVisibleItemPosition();
-                if (lastVisiblePosition == RecyclerView.NO_POSITION || positionStart == msgCount - 1 && lastVisiblePosition == positionStart - 1) {
-                    logItemRecyclerView.scrollToPosition(positionStart);
+                //Log.i(TAG, " " + positionStart + " " + itemCount + " " + lastVisiblePosition + " " + msgCount);
+                if (lastVisiblePosition == RecyclerView.NO_POSITION || (positionStart == msgCount - itemCount && lastVisiblePosition == positionStart - 1)) {
+                    logItemRecyclerView.scrollToPosition(msgCount - 1);
                 }
             }
         });
