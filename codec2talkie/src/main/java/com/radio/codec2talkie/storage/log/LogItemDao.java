@@ -18,6 +18,7 @@ public interface LogItemDao {
 
     @Query("SELECT pos.timestampEpoch AS timestampEpoch, " +
             "log.srcCallsign AS srcCallsign, " +
+            "log.logLine AS logLine," +
             "pos.dstCallsign AS dstCallsign, " +
             "pos.latitude AS latitude, " +
             "pos.longitude AS longitude, " +

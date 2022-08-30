@@ -13,6 +13,7 @@ public class LogItemGroup {
     public String status;
     public String comment;
     public String symbolCode;
+    public String logLine;
     public int privacyLevel;
 
     public long getTimestampEpoch() { return timestampEpoch; }
@@ -38,6 +39,8 @@ public class LogItemGroup {
     public String getComment() { return comment; };
 
     public String getSymbolCode() { return symbolCode; }
+
+    public String getLogLine() { return logLine; }
 
     public int getPrivacyLevel() { return privacyLevel; }
 
@@ -66,4 +69,6 @@ public class LogItemGroup {
     public void setSymbolCode(String symbolCode) { this.symbolCode = symbolCode; }
 
     public void setPrivacyLevel(int privacyLevel) { this.privacyLevel = privacyLevel; }
+
+    public void setLogLine(String logLine) { this.logLine = logLine; }
 }
