@@ -63,9 +63,7 @@ public class LogItemGroupHolder extends RecyclerView.ViewHolder {
                 (int)group.getAltitudeMeters(),
                 group.getStatus(),
                 group.getComment());
-        if (group.getMaidenHead() != null) {
-            _logItemViewMessage.setText(status);
-        }
+        _logItemViewMessage.setText(group.getMaidenHead() == null ? "" : status);
         String symbol = group.getSymbolCode();
         Bitmap iconBitmap = _symbolTable.bitmapFromSymbol(symbol == null ? "/." : symbol, false);
         if (iconBitmap == null) {
