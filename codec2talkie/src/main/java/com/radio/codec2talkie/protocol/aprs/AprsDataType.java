@@ -40,7 +40,12 @@ public class AprsDataType {
                 _dataType == DataType.POSITION_WITH_TIMESTAMP_MSG ||
                 _dataType == DataType.POSITION_WITHOUT_TIMESTAMP_MSG ||
                 _dataType == DataType.POSITION_WITH_TIMESTAMP_NO_MSG ||
-                _dataType == DataType.POSITION_WITHOUT_TIMESTAMP_NO_MSG);
+                _dataType == DataType.POSITION_WITHOUT_TIMESTAMP_NO_MSG ||
+                _dataType == DataType.OBJECT);
+    }
+
+    public boolean isObject() {
+        return _dataType == DataType.OBJECT;
     }
 
     public boolean isTextMessage() {

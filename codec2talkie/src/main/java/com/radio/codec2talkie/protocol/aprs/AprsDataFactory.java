@@ -16,6 +16,8 @@ public class AprsDataFactory {
                 return new AprsDataPositionReport();
             case MESSAGE:
                 return new AprsDataTextMessage();
+            case OBJECT:
+                return new AprsObject();
         }
         return null;
     }

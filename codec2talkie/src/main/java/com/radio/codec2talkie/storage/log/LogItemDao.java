@@ -32,8 +32,28 @@ public interface LogItemDao {
             "pos.privacyLevel AS privacyLevel, " +
             "MAX(pos.timestampEpoch)" +
             "FROM LogItem log " +
-            "LEFT OUTER JOIN PositionItem pos ON (log.srcCallsign = pos.srcCallsign)" +
-            "GROUP BY log.srcCallsign")
+            "LEFT OUTER JOIN PositionItem pos ON (log.srcCallsign = pos.srcCallsign) " +
+            "GROUP BY log.srcCallsign " +
+            "UNION " +
+            "SELECT pos.timestampEpoch AS timestampEpoch, " +
+            "pos.srcCallsign AS srcCallsign, " +
+            "log.logLine AS logLine," +
+            "pos.dstCallsign AS dstCallsign, " +
+            "pos.latitude AS latitude, " +
+            "pos.longitude AS longitude, " +
+            "pos.maidenHead AS maidenHead, " +
+            "pos.altitudeMeters AS altitudeMeters, " +
+            "pos.bearingDegrees AS bearingDegrees, " +
+            "pos.speedMetersPerSecond AS speedMetersPerSecond, " +
+            "pos.status AS status, " +
+            "pos.comment AS comment, " +
+            "pos.symbolCode AS symbolCode, " +
+            "pos.privacyLevel AS privacyLevel, " +
+            "MAX(pos.timestampEpoch)" +
+            "FROM PositionItem pos " +
+            "LEFT OUTER JOIN LogItem log ON (log.srcCallsign = pos.srcCallsign) " +
+            "GROUP BY pos.srcCallsign " +
+            "ORDER BY srcCallsign ASC")
     LiveData<List<LogItemGroup>> getGroups();
 
     @Query("SELECT * FROM LogItem ORDER by timestampEpoch ASC")

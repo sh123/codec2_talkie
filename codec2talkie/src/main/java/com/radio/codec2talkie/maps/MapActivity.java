@@ -137,62 +137,65 @@ public class MapActivity extends AppCompatActivity {
 
     private boolean addIcon(LogItemGroup group) {
         String callsign = group.getSrcCallsign();
+        Marker marker = null;
 
-        // remove from old position
+        // find old marker
         if (_objectOverlayItems.containsKey(callsign)) {
-            Marker oldMarker = _objectOverlayItems.get(callsign);
-            assert oldMarker != null;
-            oldMarker.remove(_map);
-            _objectOverlayItems.remove(callsign);
+            marker = _objectOverlayItems.get(callsign);
+            assert marker != null;
         }
 
-        // icon from symbol
-        Bitmap bitmapIcon = _aprsSymbolTable.bitmapFromSymbol(group.getSymbolCode(), false);
-        if (bitmapIcon == null) return false;
-        Bitmap bitmapInfoIcon = _aprsSymbolTable.bitmapFromSymbol(group.getSymbolCode(), true);
-        if (bitmapInfoIcon == null) return false;
+        // create new marker
+        if (marker == null) {
+            // icon from symbol
+            Bitmap bitmapIcon = _aprsSymbolTable.bitmapFromSymbol(group.getSymbolCode(), false);
+            if (bitmapIcon == null) return false;
+            Bitmap bitmapInfoIcon = _aprsSymbolTable.bitmapFromSymbol(group.getSymbolCode(), true);
+            if (bitmapInfoIcon == null) return false;
 
-        // construct and calculate bounds
-        Paint paint = new Paint();
-        paint.setStyle(Paint.Style.FILL);
-        Rect bounds = new Rect();
-        paint.getTextBounds(callsign, 0, callsign.length(), bounds);
-        int width = Math.max(bitmapIcon.getWidth(), bounds.width());
-        int height = bitmapIcon.getHeight() + bounds.height();
+            // construct and calculate bounds
+            Paint paint = new Paint();
+            paint.setStyle(Paint.Style.FILL);
+            Rect bounds = new Rect();
+            paint.getTextBounds(callsign, 0, callsign.length(), bounds);
+            int width = Math.max(bitmapIcon.getWidth(), bounds.width());
+            int height = bitmapIcon.getHeight() + bounds.height();
 
-        // create overlay bitmap
-        Bitmap bitmap = Bitmap.createBitmap(width, height, null);
-        bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
+            // create overlay bitmap
+            Bitmap bitmap = Bitmap.createBitmap(width, height, null);
+            bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
 
-        // draw APRS icon
-        Canvas canvas = new Canvas(bitmap);
-        float bitmapLeft = width > bitmapIcon.getWidth() ? width / 2.0f - bitmapIcon.getWidth() / 2.0f : 0;
-        canvas.drawBitmap(bitmapIcon, bitmapLeft, 0, null);
+            // draw APRS icon
+            Canvas canvas = new Canvas(bitmap);
+            float bitmapLeft = width > bitmapIcon.getWidth() ? width / 2.0f - bitmapIcon.getWidth() / 2.0f : 0;
+            canvas.drawBitmap(bitmapIcon, bitmapLeft, 0, null);
 
-        // draw background
-        paint.setColor(Color.WHITE);
-        paint.setAlpha(120);
-        bounds.set(0, bitmapIcon.getHeight(), width, height);
-        canvas.drawRect(bounds, paint);
+            // draw background
+            paint.setColor(Color.WHITE);
+            paint.setAlpha(120);
+            bounds.set(0, bitmapIcon.getHeight(), width, height);
+            canvas.drawRect(bounds, paint);
 
-        // draw text
-        paint.setColor(Color.BLACK);
-        paint.setAlpha(255);
-        paint.setTextSize(12);
-        paint.setFlags(Paint.ANTI_ALIAS_FLAG);
-        canvas.drawText(callsign, 0, height, paint);
+            // draw text
+            paint.setColor(Color.BLACK);
+            paint.setAlpha(255);
+            paint.setTextSize(12);
+            paint.setFlags(Paint.ANTI_ALIAS_FLAG);
+            canvas.drawText(callsign, 0, height, paint);
 
-        // add marker
-        BitmapDrawable drawableText = new BitmapDrawable(getResources(), bitmap);
-        BitmapDrawable drawableInfoIcon = new BitmapDrawable(getResources(), bitmapInfoIcon);
-        Marker marker = new Marker(_map);
+            // add marker
+            BitmapDrawable drawableText = new BitmapDrawable(getResources(), bitmap);
+            BitmapDrawable drawableInfoIcon = new BitmapDrawable(getResources(), bitmapInfoIcon);
+            marker = new Marker(_map);
+            marker.setIcon(drawableText);
+            marker.setImage(drawableInfoIcon);
+
+            _map.getOverlays().add(marker);
+            _objectOverlayItems.put(callsign, marker);
+        }
         marker.setPosition(new GeoPoint(group.getLatitude(), group.getLongitude()));
-        marker.setIcon(drawableText);
-        marker.setImage(drawableInfoIcon);
         marker.setTitle(DateTools.epochToIso8601(group.getTimestampEpoch()) + " " + callsign);
         marker.setSnippet(getStatus(group));
-        _map.getOverlays().add(marker);
-        _objectOverlayItems.put(callsign, marker);
 
         return true;
     }

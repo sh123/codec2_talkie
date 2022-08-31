@@ -256,8 +256,8 @@ public class AppWorker extends Thread {
     private final ProtocolCallback _protocolCallback = new ProtocolCallback() {
         @Override
         protected void onReceivePosition(Position position) {
-            Log.i(TAG, String.format("Position received: %s, lat: %f, lon: %f, course: %f, speed: %f, alt: %f, sym: %s, status: %s, comment: %s",
-                    position.maidenHead, position.latitude, position.longitude,
+            Log.i(TAG, String.format("Position received: %s, %s, lat: %f, lon: %f, course: %f, speed: %f, alt: %f, sym: %s, status: %s, comment: %s",
+                    position.srcCallsign, position.maidenHead, position.latitude, position.longitude,
                     position.bearingDegrees, position.speedMetersPerSecond, position.altitudeMeters,
                     position.symbolCode, position.status, position.comment));
             _positionItemRepository.insertPositionItem(position.toPositionItem(false));
