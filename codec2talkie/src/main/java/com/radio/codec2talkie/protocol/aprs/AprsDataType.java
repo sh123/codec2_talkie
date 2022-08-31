@@ -11,6 +11,7 @@ public class AprsDataType {
         POSITION_WITH_TIMESTAMP_NO_MSG,
         POSITION_WITHOUT_TIMESTAMP_NO_MSG,
         OBJECT,
+        ITEM,
         STATUS
     }
 
@@ -67,6 +68,8 @@ public class AprsDataType {
             return DataType.POSITION_WITH_TIMESTAMP_NO_MSG;
         } else if (ident == ';') {
             return DataType.OBJECT;
+        } else if (ident == ')') {
+            return DataType.ITEM;
         } else if (ident == '>') {
             return DataType.STATUS;
         } else {
@@ -89,6 +92,8 @@ public class AprsDataType {
             return '/';
         } else if (dataType == DataType.OBJECT) {
             return ';';
+        } else if (dataType == DataType.ITEM) {
+            return ')';
         } else if (dataType == DataType.STATUS) {
             return '>';
         } else {

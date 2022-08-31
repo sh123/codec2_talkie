@@ -18,6 +18,8 @@ public class AprsDataFactory {
                 return new AprsDataTextMessage();
             case OBJECT:
                 return new AprsObject();
+            case ITEM:
+                return new AprsItem();
         }
         return null;
     }

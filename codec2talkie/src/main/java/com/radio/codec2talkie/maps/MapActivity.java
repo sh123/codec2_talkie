@@ -122,8 +122,10 @@ public class MapActivity extends AppCompatActivity {
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
         _logItemViewModel.getGroups().observe(this, logItemGroups -> {
             for (LogItemGroup group : logItemGroups) {
+                // do not add items without coordinate
+                if (group.getMaidenHead() == null) continue;
                 if (!addIcon(group)) {
-                    Log.e(TAG, "Failed to add APRS icon");
+                    Log.e(TAG, "Failed to add APRS icon for " + group.getSrcCallsign() + ", " + group.getSymbolCode());
                 }
             }
         });
