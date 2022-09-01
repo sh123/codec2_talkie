@@ -30,6 +30,8 @@ public interface LogItemDao {
             "pos.comment AS comment, " +
             "pos.symbolCode AS symbolCode, " +
             "pos.privacyLevel AS privacyLevel, " +
+            "pos.rangeMiles AS rangeMiles, " +
+            "pos.directivityDeg AS directivityDeg, " +
             "MAX(pos.timestampEpoch)" +
             "FROM LogItem log " +
             "LEFT OUTER JOIN PositionItem pos ON (log.srcCallsign = pos.srcCallsign) " +
@@ -49,6 +51,8 @@ public interface LogItemDao {
             "pos.comment AS comment, " +
             "pos.symbolCode AS symbolCode, " +
             "pos.privacyLevel AS privacyLevel, " +
+            "pos.rangeMiles AS rangeMiles, " +
+            "pos.directivityDeg AS directivityDeg, " +
             "MAX(pos.timestampEpoch)" +
             "FROM PositionItem pos " +
             "LEFT OUTER JOIN LogItem log ON (log.srcCallsign = pos.srcCallsign) " +

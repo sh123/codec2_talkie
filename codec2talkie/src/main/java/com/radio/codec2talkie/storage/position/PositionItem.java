@@ -22,6 +22,8 @@ public class PositionItem {
     public String comment;
     public String symbolCode;
     public int privacyLevel;
+    public double rangeMiles;
+    public int directivityDeg;
 
     public long getId() {
         return id;
@@ -59,6 +61,10 @@ public class PositionItem {
 
     public boolean getIsTransmit() { return isTransmit; }
 
+    public int getDirectivityDeg() { return directivityDeg; }
+
+    public double getRangeMiles() { return rangeMiles; }
+
     public void setId(long id) {
         this.id = id;
     }
@@ -92,4 +98,8 @@ public class PositionItem {
     public void setSymbolCode(String symbolCode) { this.symbolCode = symbolCode; }
 
     public void setPrivacyLevel(int privacyLevel) { this.privacyLevel = privacyLevel; }
+
+    public void setDirectivityDeg(int directivityDeg) { this.directivityDeg = directivityDeg; }
+
+    public void setRangeMiles(double rangeMiles) { this.rangeMiles = rangeMiles; }
 }

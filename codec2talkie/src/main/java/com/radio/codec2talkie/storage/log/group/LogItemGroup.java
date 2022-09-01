@@ -15,6 +15,8 @@ public class LogItemGroup {
     public String symbolCode;
     public String logLine;
     public int privacyLevel;
+    public double rangeMiles;
+    public int directivityDeg;
 
     public long getTimestampEpoch() { return timestampEpoch; }
 
@@ -44,6 +46,10 @@ public class LogItemGroup {
 
     public int getPrivacyLevel() { return privacyLevel; }
 
+    public double getRangeMiles() { return rangeMiles; }
+
+    public int getDirectivityDeg() { return directivityDeg; }
+
     public void setTimestampEpoch(long timestampEpoch) { this.timestampEpoch = timestampEpoch; }
 
     public void setSrcCallsign(String srcCallsign) { this.srcCallsign = srcCallsign; }
@@ -71,4 +77,8 @@ public class LogItemGroup {
     public void setPrivacyLevel(int privacyLevel) { this.privacyLevel = privacyLevel; }
 
     public void setLogLine(String logLine) { this.logLine = logLine; }
+
+    public void setRangeMiles(double rangeMiles) { this.rangeMiles = rangeMiles; }
+
+    public void setDirectivityDeg(int directivityDeg) { this.directivityDeg = directivityDeg; }
 }

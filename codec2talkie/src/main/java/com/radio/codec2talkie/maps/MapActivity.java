@@ -24,6 +24,7 @@ import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsSymbolTable;
+import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.storage.log.LogItemViewModel;
 import com.radio.codec2talkie.storage.log.group.LogItemGroup;
@@ -39,6 +40,7 @@ import org.osmdroid.views.overlay.ItemizedIconOverlay;
 import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.OverlayItem;
+import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.infowindow.InfoWindow;
@@ -56,14 +58,15 @@ public class MapActivity extends AppCompatActivity {
     private IMapController _mapController;
     private CompassOverlay _compassOverlay;
     private MyLocationNewOverlay _myLocationNewOverlay;
-    private ItemizedIconOverlay<OverlayItem> _objectOverlay;
     private final HashMap<String, Marker> _objectOverlayItems = new HashMap<>();
+    private final HashMap<String, Polygon> _objectOverlayRangeCircles = new HashMap<>();
 
     private LogItemViewModel _logItemViewModel;
     private AprsSymbolTable _aprsSymbolTable;
 
     private String _mySymbolCode;
     private boolean _rotateMap = false;
+    private boolean _showCircles = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +127,9 @@ public class MapActivity extends AppCompatActivity {
             for (LogItemGroup group : logItemGroups) {
                 // do not add items without coordinate
                 if (group.getMaidenHead() == null) continue;
-                if (!addIcon(group)) {
+                if (addIcon(group)) {
+                    addRangeCircle(group);
+                } else {
                     Log.e(TAG, "Failed to add APRS icon for " + group.getSrcCallsign() + ", " + group.getSymbolCode());
                 }
             }
@@ -135,6 +140,39 @@ public class MapActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.map_menu, menu);
         return true;
+    }
+
+    private void showRangeCircles(boolean isVisible) {
+        for (Polygon polygon : _objectOverlayRangeCircles.values()) {
+            polygon.setVisible(isVisible);
+        }
+    }
+
+    private void addRangeCircle(LogItemGroup group) {
+        if (group.getRangeMiles() == 0) return;
+        String callsign = group.getSrcCallsign();
+        Polygon polygon = null;
+
+        if (_objectOverlayRangeCircles.containsKey(callsign)) {
+            polygon = _objectOverlayRangeCircles.get(callsign);
+            assert polygon != null;
+        }
+
+        if (polygon == null) {
+            polygon = new Polygon();
+            polygon.setVisible(_showCircles);
+
+            Paint p = polygon.getOutlinePaint();
+            p.setStrokeWidth(1);
+
+            _map.getOverlayManager().add(0, polygon);
+            _objectOverlayRangeCircles.put(callsign, polygon);
+        }
+        ArrayList<GeoPoint> circlePoints = new ArrayList<>();
+        for (float f = 0; f < 360; f += 6) {
+            circlePoints.add(new GeoPoint(group.getLatitude(), group.getLongitude()).destinationPoint(1000 * UnitTools.milesToKilometers(group.getRangeMiles()), f));
+        }
+        polygon.setPoints(circlePoints);
     }
 
     private boolean addIcon(LogItemGroup group) {
@@ -203,13 +241,15 @@ public class MapActivity extends AppCompatActivity {
     }
 
     private String getStatus(LogItemGroup group) {
-        return String.format(Locale.US, "%s %f %f<br>%03d° %03dkm/h %04dm<br>%s %s",
+        double range = UnitTools.milesToKilometers(group.getRangeMiles());
+        return String.format(Locale.US, "%s %f %f<br>%03d° %03dkm/h %04dm %.2fkm<br>%s %s",
                 group.getMaidenHead(),
                 group.getLatitude(),
                 group.getLongitude(),
                 (int)group.getBearingDegrees(),
                 UnitTools.metersPerSecondToKilometersPerHour((int)group.getSpeedMetersPerSecond()),
                 (int)group.getAltitudeMeters(),
+                range == 0 ? UnitTools.milesToKilometers(Position.DEFAULT_RANGE_MILES): range,
                 group.getStatus(),
                 group.getComment());
     }
@@ -234,7 +274,19 @@ public class MapActivity extends AppCompatActivity {
                 _rotateMap = true;
             }
             return true;
+        } else if (itemId == R.id.map_menu_show_range) {
+            if (item.isChecked()) {
+                item.setChecked(false);
+                _showCircles = false;
+                _map.setMapOrientation(0);
+            } else {
+                item.setChecked(true);
+                _showCircles = true;
+            }
+            showRangeCircles(_showCircles);
+            return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }

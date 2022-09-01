@@ -6,6 +6,9 @@ import com.radio.codec2talkie.storage.position.PositionItem;
 import com.radio.codec2talkie.tools.UnitTools;
 
 public class Position {
+
+    public final static double DEFAULT_RANGE_MILES = 6.0;
+
     public long timestampEpochMs;
     public String srcCallsign;
     public String dstCallsign;
@@ -26,6 +29,8 @@ public class Position {
     public boolean isAltitudeEnabled;
     public boolean hasBearing;
     public boolean hasAltitude;
+    public double rangeMiles;
+    public int directivityDeg;
     public boolean hasSpeed;
 
     public static Position fromLocation(Location location) {
@@ -40,6 +45,8 @@ public class Position {
         position.hasAltitude = location.hasAltitude();
         position.hasSpeed = location.hasSpeed();
         position.maidenHead = UnitTools.decimalToMaidenhead(position.latitude, position.longitude);
+        position.rangeMiles = 0.0;
+        position.directivityDeg = 0;    // 0 - omni
         return position;
     }
 
@@ -102,6 +109,8 @@ public class Position {
         positionItem.setComment(comment);
         positionItem.setSymbolCode(symbolCode);
         positionItem.setPrivacyLevel(privacyLevel);
+        positionItem.setDirectivityDeg(directivityDeg);
+        positionItem.setRangeMiles(rangeMiles);
         return positionItem;
     }
 }

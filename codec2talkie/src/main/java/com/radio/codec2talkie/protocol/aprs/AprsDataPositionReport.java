@@ -284,6 +284,31 @@ public class AprsDataPositionReport implements AprsData {
             _position.isAltitudeEnabled = false;
             _position.hasAltitude = false;
         }
+
+        // read PHG range
+        Pattern phgPattern = Pattern.compile("^.*(PHG\\d{4}).*$", Pattern.DOTALL);
+        Matcher phgMatcher = phgPattern.matcher(strTail);
+        if (phgMatcher.matches()) {
+            String phg = phgMatcher.group(1);
+            if (phg != null) {
+                strTail = strTail.replaceAll(phg, "");
+                _position.directivityDeg = AprsTools.phgToDirectivityDegrees(phg);
+                _position.rangeMiles = AprsTools.phgToRangeMiles(phg);
+            }
+        }
+
+        // read RNG range
+        Pattern rngPattern = Pattern.compile("^.*(RNG\\d{4}).*$", Pattern.DOTALL);
+        Matcher rngMatcher = rngPattern.matcher(strTail);
+        if (rngMatcher.matches()) {
+            String rng = rngMatcher.group(1);
+            if (rng != null) {
+                strTail = strTail.replaceAll(rng, "");
+                _position.rangeMiles = Double.parseDouble(rng.substring(3));
+                _position.directivityDeg = 0;
+            }
+        }
+
         // read comment until the end
         _position.comment = TextTools.stripNulls(strTail);
         return true;

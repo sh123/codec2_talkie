@@ -81,4 +81,8 @@ public class UnitTools {
     public static int metersPerSecondToKilometersPerHour(int speedMetersPerSecond) {
         return (int) (speedMetersPerSecond * 3.6);
     }
+
+    public static double milesToKilometers(double rangeMiles) {
+        return rangeMiles * 1.609344;
+    }
 }
