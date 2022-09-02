@@ -3,8 +3,12 @@ package com.radio.codec2talkie.storage.position;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import com.radio.codec2talkie.protocol.position.Position;
+
 @Entity
 public class PositionItem {
+
+    private static final double MIN_COORDINATE_CHANGE_DELTA = 0.003;
 
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -105,15 +109,7 @@ public class PositionItem {
 
     public static boolean equalTo(PositionItem positionItem1, PositionItem positionItem2) {
         return positionItem1.getSrcCallsign().equals(positionItem2.getSrcCallsign()) &
-               positionItem1.getDstCallsign().equals(positionItem2.getDstCallsign()) &
-               positionItem1.getComment().equals(positionItem2.getComment()) &
-               positionItem1.getStatus().equals(positionItem2.getStatus()) &
-               positionItem1.getSymbolCode().equals(positionItem2.getSymbolCode()) &
-               positionItem1.getAltitudeMeters() == positionItem2.getAltitudeMeters() &
-               positionItem1.getBearingDegrees() == positionItem2.getBearingDegrees() &
-               positionItem1.getSpeedMetersPerSecond() == positionItem2.getSpeedMetersPerSecond() &
-               positionItem1.getLongitude() == positionItem2.getLongitude() &
-               positionItem1.getAltitudeMeters() == positionItem2.getAltitudeMeters() &
-               positionItem1.getBearingDegrees() == positionItem2.getBearingDegrees();
+               Math.abs(positionItem1.getLongitude() - positionItem2.getLongitude()) <= MIN_COORDINATE_CHANGE_DELTA &
+               Math.abs(positionItem1.getLatitude() - positionItem2.getLatitude()) <= MIN_COORDINATE_CHANGE_DELTA;
     }
 }

@@ -12,6 +12,8 @@ import com.radio.codec2talkie.R;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 public class AprsSymbolTable {
@@ -38,6 +40,10 @@ public class AprsSymbolTable {
     private static final double _selectionIconScale = 2.0;
 
     private static AprsSymbolTable _symbolTable;
+
+    private static List<String> _symbolsToRotate = Arrays.asList("/'", "/(", "/*", "/<", "/=",
+            "/C", "/F", "/P", "/U", "/X", "/Y", "/[", "/^", "/a", "/b", "/e", "/f", "/g", "/j",
+            "/k", "/p", "/s", "/u", "/v", "\\k", "\\u", "\\v", "\\>");
 
     public static AprsSymbolTable getInstance(Context context) {
         if (_symbolTable == null) {
@@ -168,5 +174,9 @@ public class AprsSymbolTable {
             }
         }
         return bmOverlay;
+    }
+
+    public static boolean needsRotation(String symbol) {
+        return _symbolsToRotate.contains(symbol);
     }
 }

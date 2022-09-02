@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -208,7 +209,25 @@ public class MapActivity extends AppCompatActivity {
             // draw APRS icon
             Canvas canvas = new Canvas(bitmap);
             float bitmapLeft = width > bitmapIcon.getWidth() ? width / 2.0f - bitmapIcon.getWidth() / 2.0f : 0;
-            canvas.drawBitmap(bitmapIcon, bitmapLeft, 0, null);
+            // do not rotate
+            if (group.getBearingDegrees() == 0 || !AprsSymbolTable.needsRotation(group.getSymbolCode())) {
+                canvas.drawBitmap(bitmapIcon, bitmapLeft, 0, null);
+            // rotate
+            } else {
+                float rotationDeg = (float) (group.getBearingDegrees() - 90.0f);
+                Matrix m = new Matrix();
+                // flip/rotate
+                if (group.getBearingDegrees() > 180) {
+                    m.postScale(-1, 1);
+                    m.postTranslate(bitmapIcon.getWidth(), 0);
+                    m.postRotate(rotationDeg - 180, bitmapIcon.getWidth() / 2.0f, bitmapIcon.getHeight() / 2.0f);
+                // rotate
+                } else {
+                    m.postRotate(rotationDeg, bitmapIcon.getWidth() / 2.0f, bitmapIcon.getHeight() / 2.0f);
+                }
+                m.postTranslate(bitmapLeft, 0);
+                canvas.drawBitmap(bitmapIcon, m, null);
+            }
 
             // draw background
             paint.setColor(Color.WHITE);
