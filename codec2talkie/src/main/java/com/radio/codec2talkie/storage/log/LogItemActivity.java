@@ -3,7 +3,6 @@ package com.radio.codec2talkie.storage.log;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -83,7 +82,7 @@ public class LogItemActivity extends AppCompatActivity {
         logItemGroupRecyclerView.setLayoutManager(linearLayoutManagerGroup);
         logItemGroupRecyclerView.addItemDecoration(new DividerItemDecoration(logItemGroupRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
-        _logItemViewModel.getGroups().observe(this, adapterGroup::submitList);
+        _logItemViewModel.getLastPositions().observe(this, adapterGroup::submitList);
 
         // launch with filter if group name is provided
         if (_groupName == null) {

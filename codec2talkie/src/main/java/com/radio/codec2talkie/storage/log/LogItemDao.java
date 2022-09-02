@@ -58,7 +58,7 @@ public interface LogItemDao {
             "LEFT OUTER JOIN LogItem log ON (log.srcCallsign = pos.srcCallsign) " +
             "GROUP BY pos.srcCallsign " +
             "ORDER BY srcCallsign ASC")
-    LiveData<List<LogItemGroup>> getGroups();
+    LiveData<List<LogItemGroup>> getLastPositions();
 
     @Query("SELECT * FROM LogItem ORDER by timestampEpoch ASC")
     LiveData<List<LogItem>> getAllLogItems();

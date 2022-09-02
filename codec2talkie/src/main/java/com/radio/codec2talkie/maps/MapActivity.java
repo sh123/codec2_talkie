@@ -9,14 +9,12 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
-import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,14 +35,10 @@ import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.ItemizedIconOverlay;
-import org.osmdroid.views.overlay.ItemizedOverlayWithFocus;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.OverlayItem;
 import org.osmdroid.views.overlay.Polygon;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
-import org.osmdroid.views.overlay.infowindow.InfoWindow;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
@@ -124,14 +118,14 @@ public class MapActivity extends AppCompatActivity {
 
         // add data listener
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
-        _logItemViewModel.getGroups().observe(this, logItemGroups -> {
-            for (LogItemGroup group : logItemGroups) {
+        _logItemViewModel.getLastPositions().observe(this, lastPositions -> {
+            for (LogItemGroup lastPosition : lastPositions) {
                 // do not add items without coordinate
-                if (group.getMaidenHead() == null) continue;
-                if (addIcon(group)) {
-                    addRangeCircle(group);
+                if (lastPosition.getMaidenHead() == null) continue;
+                if (addStationPositionIcon(lastPosition)) {
+                    addRangeCircle(lastPosition);
                 } else {
-                    Log.e(TAG, "Failed to add APRS icon for " + group.getSrcCallsign() + ", " + group.getSymbolCode());
+                    Log.e(TAG, "Failed to add APRS icon for " + lastPosition.getSrcCallsign() + ", " + lastPosition.getSymbolCode());
                 }
             }
         });
@@ -176,7 +170,7 @@ public class MapActivity extends AppCompatActivity {
         polygon.setPoints(circlePoints);
     }
 
-    private boolean addIcon(LogItemGroup group) {
+    private boolean addStationPositionIcon(LogItemGroup group) {
         String callsign = group.getSrcCallsign();
         Marker marker = null;
 

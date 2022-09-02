@@ -15,20 +15,20 @@ public class LogItemRepository {
     private final LogItemDao _logItemDao;
     private final LiveData<List<LogItem>> _logItemLiveData;
     private LiveData<List<LogItem>> _logItemGroupLiveData;
-    private final LiveData<List<LogItemGroup>> _logItemGroups;
+    private final LiveData<List<LogItemGroup>> _lastPositions;
 
     public LogItemRepository(Application application) {
         AppDatabase appDatabase = AppDatabase.getDatabase(application);
         _logItemDao = appDatabase.logItemDao();
         _logItemLiveData = _logItemDao.getAllLogItems();
-        _logItemGroups = _logItemDao.getGroups();
+        _lastPositions = _logItemDao.getLastPositions();
     }
 
     public LiveData<List<LogItem>> getAllLogItems() {
         return _logItemLiveData;
     }
 
-    public LiveData<List<LogItemGroup>> getGroups() { return _logItemGroups; }
+    public LiveData<List<LogItemGroup>> getLastPositions() { return _lastPositions; }
 
     public LiveData<List<LogItem>> getLogItems(String groupName) {
         return _logItemDao.getLogItems(groupName);
