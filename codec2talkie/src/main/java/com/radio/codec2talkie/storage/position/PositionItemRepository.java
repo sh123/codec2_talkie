@@ -33,10 +33,10 @@ public class PositionItemRepository {
                 positionItem.setId(oldPosition.getId());
                 positionItem.setLatitude(oldPosition.getLatitude());
                 positionItem.setLongitude(oldPosition.getLongitude());
-                Log.i(TAG, "UPDATE " + positionItem.getSrcCallsign());
+                //Log.i(TAG, "UPDATE " + positionItem.getSrcCallsign());
                 _positionItemDao.updatePositionItem(positionItem);
             } else {
-                Log.i(TAG, "INSERT " + positionItem.getSrcCallsign());
+                //Log.i(TAG, "INSERT " + positionItem.getSrcCallsign());
                 _positionItemDao.insertPositionItem(positionItem);
             }
         });

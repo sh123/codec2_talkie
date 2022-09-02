@@ -41,7 +41,7 @@ public class AprsSymbolTable {
 
     private static AprsSymbolTable _symbolTable;
 
-    private static List<String> _symbolsToRotate = Arrays.asList("/'", "/(", "/*", "/<", "/=",
+    private static final List<String> _symbolsToRotate = Arrays.asList("/'", "/(", "/*", "/<", "/=",
             "/C", "/F", "/P", "/U", "/X", "/Y", "/[", "/^", "/a", "/b", "/e", "/f", "/g", "/j",
             "/k", "/p", "/s", "/u", "/v", "\\k", "\\u", "\\v", "\\>");
 
