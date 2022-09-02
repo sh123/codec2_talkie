@@ -5,6 +5,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.radio.codec2talkie.storage.message.MessageItem;
 
@@ -15,6 +16,12 @@ public interface PositionItemDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertPositionItem(PositionItem logItem);
+
+    @Update(onConflict = OnConflictStrategy.IGNORE)
+    void updatePositionItem(PositionItem logItem);
+
+    @Query("SELECT * FROM PositionItem WHERE srcCallsign = :srcCallsign ORDER BY timestampEpoch DESC LIMIT 1")
+    PositionItem getLastPositionItem(String srcCallsign);
 
     @Query("SELECT srcCallsign from PositionItem GROUP BY srcCallsign")
     LiveData<List<String>> getGroups();

@@ -1,6 +1,7 @@
 package com.radio.codec2talkie.storage.position;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -20,6 +21,18 @@ public class PositionItemRepository {
 
     public void insertPositionItem(PositionItem positionItem) {
         AppDatabase.getDatabaseExecutor().execute(() -> _positionItemDao.insertPositionItem(positionItem));
+    }
+
+    public void upsertPositionItem(PositionItem positionItem) {
+        AppDatabase.getDatabaseExecutor().execute(() -> {
+            PositionItem oldPosition = _positionItemDao.getLastPositionItem(positionItem.getSrcCallsign());
+            if (oldPosition != null && PositionItem.equalTo(positionItem, oldPosition)) {
+                positionItem.setId(oldPosition.getId());
+                _positionItemDao.updatePositionItem(positionItem);
+            } else {
+                _positionItemDao.insertPositionItem(positionItem);
+            }
+        });
     }
 
     public void deleteAllPositionItems() {

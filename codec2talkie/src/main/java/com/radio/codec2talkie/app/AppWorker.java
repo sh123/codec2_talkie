@@ -260,7 +260,7 @@ public class AppWorker extends Thread {
                     position.srcCallsign, position.maidenHead, position.latitude, position.longitude,
                     position.bearingDegrees, position.speedMetersPerSecond, position.altitudeMeters,
                     position.symbolCode, position.rangeMiles, position.status, position.comment));
-            _positionItemRepository.insertPositionItem(position.toPositionItem(false));
+            _positionItemRepository.upsertPositionItem(position.toPositionItem(false));
 
             String note = (position.srcCallsign == null ? "UNK" : position.srcCallsign) + "→" +
                     (position.dstCallsign == null ? "UNK" : position.dstCallsign);
