@@ -1,6 +1,6 @@
 package com.radio.codec2talkie.storage.station;
 
-public class Station {
+public class StationItem {
     private long timestampEpoch;
     private String srcCallsign;
     public String dstCallsign;

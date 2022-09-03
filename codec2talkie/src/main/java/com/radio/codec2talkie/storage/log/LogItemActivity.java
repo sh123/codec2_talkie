@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
-import com.radio.codec2talkie.storage.station.StationAdapter;
+import com.radio.codec2talkie.storage.station.StationItemAdapter;
 import com.radio.codec2talkie.storage.position.PositionItemViewModel;
 
 import java.util.List;
@@ -68,7 +68,7 @@ public class LogItemActivity extends AppCompatActivity {
         logItemGroupRecyclerView.setHasFixedSize(true);
 
         // groups adapter
-        final StationAdapter adapterGroup = new StationAdapter(new StationAdapter.LogItemGroupDiff());
+        final StationItemAdapter adapterGroup = new StationItemAdapter(new StationItemAdapter.LogItemGroupDiff());
         adapterGroup.setClickListener(v -> {
             TextView itemView = v.findViewById(R.id.log_view_group_item_title);
             _logItemLiveData.removeObservers(this);

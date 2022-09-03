@@ -21,7 +21,7 @@ import com.radio.codec2talkie.tools.UnitTools;
 
 import java.util.Locale;
 
-public class StationHolder extends RecyclerView.ViewHolder {
+public class StationItemHolder extends RecyclerView.ViewHolder {
 
     private static final String TAG = RecyclerView.class.getSimpleName();
 
@@ -32,7 +32,7 @@ public class StationHolder extends RecyclerView.ViewHolder {
     private final LocationManager _locationManager;
     private final AprsSymbolTable _symbolTable;
 
-    private StationHolder(View itemView) {
+    private StationItemHolder(View itemView) {
         super(itemView);
         _logItemViewTitle = itemView.findViewById(R.id.log_view_group_item_title);
         _logItemViewDistance = itemView.findViewById(R.id.log_view_group_item_distance);
@@ -42,7 +42,7 @@ public class StationHolder extends RecyclerView.ViewHolder {
         _locationManager = (LocationManager) itemView.getContext().getSystemService(Context.LOCATION_SERVICE);
     }
 
-    public void bind(Station group) {
+    public void bind(StationItem group) {
         @SuppressLint("MissingPermission") Location loc = _locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (loc == null) {
             _logItemViewDistance.setText("");
@@ -73,9 +73,9 @@ public class StationHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    static StationHolder create(ViewGroup parent) {
+    static StationItemHolder create(ViewGroup parent) {
         View view = LayoutInflater.from(parent.getContext()).inflate(
                 R.layout.activity_log_view_group_item, parent, false);
-        return new StationHolder(view);
+        return new StationItemHolder(view);
     }
 }
