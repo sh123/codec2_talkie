@@ -2,12 +2,9 @@ package com.radio.codec2talkie.storage.position;
 
 import android.app.Application;
 import android.util.Log;
-
 import androidx.lifecycle.LiveData;
-
-import com.radio.codec2talkie.maps.MapActivity;
 import com.radio.codec2talkie.storage.AppDatabase;
-import com.radio.codec2talkie.tools.DateTools;
+
 
 import java.util.List;
 
@@ -23,18 +20,7 @@ public class PositionItemRepository {
 
     public void upsertPositionItem(PositionItem positionItem) {
         AppDatabase.getDatabaseExecutor().execute(() -> {
-            PositionItem oldPosition = _positionItemDao.getLastPositionItem(positionItem.getSrcCallsign());
-            if (oldPosition != null && PositionItem.equalTo(positionItem, oldPosition)) {
-                // update id and coordinates from existing position
-                positionItem.setId(oldPosition.getId());
-                positionItem.setLatitude(oldPosition.getLatitude());
-                positionItem.setLongitude(oldPosition.getLongitude());
-                //Log.i(TAG, "UPDATE " + positionItem.getSrcCallsign());
-                _positionItemDao.updatePositionItem(positionItem);
-            } else {
-                //Log.i(TAG, "INSERT " + positionItem.getSrcCallsign());
-                _positionItemDao.insertPositionItem(positionItem);
-            }
+            _positionItemDao.updatePositionItem(positionItem);
         });
     }
 
