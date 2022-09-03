@@ -4,6 +4,8 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
+import com.radio.codec2talkie.storage.station.StationItem;
+
 @Entity
 public class LogItem {
 
@@ -45,4 +47,13 @@ public class LogItem {
     public void setLogLine(String logLine) { this.logLine = logLine; }
 
     public void setIsTransmit(boolean isTransmit) { this.isTransmit = isTransmit; }
+
+    public StationItem toStationItem() {
+        StationItem stationItem = new StationItem();
+        stationItem.setTimestampEpoch(System.currentTimeMillis());
+        stationItem.setSrcCallsign(srcCallsign);
+        stationItem.setDstCallsign(stationItem.dstCallsign);
+        stationItem.setLogLine(logLine);
+        return stationItem;
+    }
 }

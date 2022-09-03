@@ -20,15 +20,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.storage.station.StationItemAdapter;
 import com.radio.codec2talkie.storage.position.PositionItemViewModel;
+import com.radio.codec2talkie.storage.station.StationItemViewModel;
 
 import java.util.List;
 
 public class LogItemActivity extends AppCompatActivity {
     private static final String TAG = LogItemActivity.class.getSimpleName();
 
-    private String _groupName;
+    private String _stationName;
     private LogItemViewModel _logItemViewModel;
     private PositionItemViewModel _positionItemViewModel;
+    private StationItemViewModel _stationItemViewModel;
 
     private LiveData<List<LogItem>> _logItemLiveData;
 
@@ -40,62 +42,63 @@ public class LogItemActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
-        // get group name to decide if filtering should be enabled
+        // get station name to decide if filtering should be enabled
         Bundle bundle = getIntent().getExtras();
-        _groupName = null;
+        _stationName = null;
         if (bundle != null) {
-            _groupName = (String)bundle.get("groupName");
+            _stationName = (String)bundle.get("stationName");
         }
 
         // view models
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
         _positionItemViewModel = new ViewModelProvider(this).get(PositionItemViewModel.class);
+        _stationItemViewModel = new ViewModelProvider(this).get(StationItemViewModel.class);
 
         // log items
         RecyclerView logItemRecyclerView = findViewById(R.id.log_item_recyclerview);
         logItemRecyclerView.setHasFixedSize(true);
 
         // log lines list adapter
-        final LogItemAdapter adapter = new LogItemAdapter(new LogItemAdapter.LogItemDiff(), _groupName == null);
+        final LogItemAdapter adapter = new LogItemAdapter(new LogItemAdapter.LogItemDiff(), _stationName == null);
         logItemRecyclerView.setAdapter(adapter);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setReverseLayout(true);
         logItemRecyclerView.setLayoutManager(linearLayoutManager);
         logItemRecyclerView.addItemDecoration(new DividerItemDecoration(logItemRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
-        // log groups
-        RecyclerView logItemGroupRecyclerView = findViewById(R.id.log_item_group_recyclerview);
-        logItemGroupRecyclerView.setHasFixedSize(true);
+        // stations
+        RecyclerView stationsRecyclerView = findViewById(R.id.log_item_group_recyclerview);
+        stationsRecyclerView.setHasFixedSize(true);
 
-        // groups adapter
-        final StationItemAdapter adapterGroup = new StationItemAdapter(new StationItemAdapter.LogItemGroupDiff());
-        adapterGroup.setClickListener(v -> {
+        // stations adapter
+        final StationItemAdapter stationsAdapter = new StationItemAdapter(new StationItemAdapter.LogItemGroupDiff());
+        stationsAdapter.setClickListener(v -> {
             TextView itemView = v.findViewById(R.id.log_view_group_item_title);
             _logItemLiveData.removeObservers(this);
-            _groupName = itemView.getText().toString();
-            _logItemLiveData = _logItemViewModel.getData(_groupName);
+            _stationName = itemView.getText().toString();
+            _logItemLiveData = _logItemViewModel.getData(_stationName);
             _logItemLiveData.observe(this, adapter::submitList);
-            setTitle(_groupName);
+            setTitle(_stationName);
         });
-        logItemGroupRecyclerView.setAdapter(adapterGroup);
-        LinearLayoutManager linearLayoutManagerGroup = new LinearLayoutManager(this);
-        logItemGroupRecyclerView.setLayoutManager(linearLayoutManagerGroup);
-        logItemGroupRecyclerView.addItemDecoration(new DividerItemDecoration(logItemGroupRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
+        stationsRecyclerView.setAdapter(stationsAdapter);
+        LinearLayoutManager linearLayoutManagerStations = new LinearLayoutManager(this);
+        stationsRecyclerView.setLayoutManager(linearLayoutManagerStations);
+        stationsRecyclerView.addItemDecoration(new DividerItemDecoration(stationsRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
-        _logItemViewModel.getLastPositions().observe(this, adapterGroup::submitList);
+        _stationItemViewModel.getAllStationItems().observe(this, stationsAdapter::submitList);
 
-        // launch with filter if group name is provided
-        if (_groupName == null) {
-            logItemGroupRecyclerView.setVisibility(View.GONE);
+        // launch with filter if station name is provided
+        if (_stationName == null) {
+            stationsRecyclerView.setVisibility(View.GONE);
             findViewById(R.id.log_item_textview).setVisibility(View.GONE);
             findViewById(R.id.log_item_group_textview).setVisibility(View.GONE);
             _logItemLiveData = _logItemViewModel.getAllData();
             _logItemLiveData.observe(this, adapter::submitList);
             setTitle(R.string.aprs_log_view_title);
         } else {
-            _logItemLiveData = _logItemViewModel.getData(_groupName);
+            _logItemLiveData = _logItemViewModel.getData(_stationName);
             _logItemLiveData.observe(this, adapter::submitList);
-            setTitle(_groupName);
+            setTitle(_stationName);
         }
 
         // register live scroll
@@ -120,7 +123,7 @@ public class LogItemActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (_groupName != null) {
+        if (_stationName != null) {
             menu.findItem(R.id.log_view_menu_stations).setVisible(false);
         }
         return super.onPrepareOptionsMenu(menu);
@@ -151,7 +154,7 @@ public class LogItemActivity extends AppCompatActivity {
             return true;
         } else if (itemId == R.id.log_view_menu_stations) {
             Intent logItemIntent = new Intent(this, LogItemActivity.class);
-            logItemIntent.putExtra("groupName", getString(R.string.log_view_station_history));
+            logItemIntent.putExtra("stationName", getString(R.string.log_view_station_history));
             startActivity(logItemIntent);
             return true;
         }
@@ -161,17 +164,23 @@ public class LogItemActivity extends AppCompatActivity {
     private void deleteLogItems(int hours) {
         DialogInterface.OnClickListener deleteAllDialogClickListener = (dialog, which) -> {
             if (which == DialogInterface.BUTTON_POSITIVE) {
-                if (_groupName == null) {
+                if (_stationName == null) {
                     if (hours == -1) {
                         _logItemViewModel.deleteAllLogItems();
                         _positionItemViewModel.deleteAllPositionItems();
+                        // TODO delete stations
+                        // _stationItemViewModel.deleteAllStationItems()
                     } else {
                         _logItemViewModel.deleteLogItemsOlderThanHours(hours);
                         _positionItemViewModel.deletePositionItemsOlderThanHours(hours);
+                        // TODO delete stations
+                        // _stationItemViewModel.deleteAllStationItemsOlderThanHours(hours)
                     }
                 } else {
-                    _logItemViewModel.deleteLogItems(_groupName);
-                    _positionItemViewModel.deletePositionItems(_groupName);
+                    _logItemViewModel.deleteLogItems(_stationName);
+                    _positionItemViewModel.deletePositionItems(_stationName);
+                    // TODO delete stations
+                    // _stationItemViewModel.deleteStationItem(_stationName)
                 }
             }
         };
@@ -179,9 +188,9 @@ public class LogItemActivity extends AppCompatActivity {
         if (hours != -1) {
             alertMessage = String.format(getString(R.string.log_item_activity_delete_hours_title), hours);
         }
-        if (_groupName != null) {
+        if (_stationName != null) {
             alertMessage = getString(R.string.log_item_activity_delete_group_title);
-            alertMessage = String.format(alertMessage, _groupName);
+            alertMessage = String.format(alertMessage, _stationName);
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(alertMessage)

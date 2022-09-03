@@ -14,7 +14,6 @@ public class LogItemViewModel extends AndroidViewModel {
 
     private final LogItemRepository _logItemRepository;
     private final LiveData<List<LogItem>> _logItemLiveData;
-    private LiveData<List<LogItem>> _logItemGroupLiveData;
     private final LiveData<List<StationItem>> _lastPositions;
 
     public LogItemViewModel(@NonNull Application application) {

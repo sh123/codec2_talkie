@@ -20,4 +20,6 @@ public class StationItemViewModel extends AndroidViewModel {
         super(application);
         _stationItemRepository = new StationItemRepository(application);
     }
+
+    public LiveData<List<StationItem>> getAllStationItems() { return _stationItemRepository.getAllStationItems(); }
 }

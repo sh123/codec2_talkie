@@ -1,15 +1,11 @@
 package com.radio.codec2talkie.storage.position;
 
 import android.app.Application;
-import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
 
 import com.radio.codec2talkie.tools.DateTools;
-
-import java.util.List;
 
 public class PositionItemViewModel extends AndroidViewModel {
 
@@ -23,7 +19,7 @@ public class PositionItemViewModel extends AndroidViewModel {
     public void deleteAllPositionItems() { _positionItemRepository.deleteAllPositionItems(); }
 
     public void deletePositionItems(String srcCallsign) {
-        _positionItemRepository.deletePositionItems(srcCallsign);
+        _positionItemRepository.deletePositionItemsFromCallsign(srcCallsign);
     }
 
     public void deletePositionItemsOlderThanHours(int hours) {

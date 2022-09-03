@@ -32,6 +32,7 @@ import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.storage.message.MessageItemRepository;
 import com.radio.codec2talkie.storage.position.PositionItemRepository;
+import com.radio.codec2talkie.storage.station.StationItemRepository;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.radio.codec2talkie.transport.TransportFactory;
@@ -74,6 +75,7 @@ public class AppWorker extends Thread {
     private final LogItemRepository _logItemRepository;
     private final MessageItemRepository _messageItemRepository;
     private final PositionItemRepository _positionItemRepository;
+    private final StationItemRepository _stationItemRepository;
 
     private final Context _context;
     private final SharedPreferences _sharedPreferences;
@@ -91,6 +93,7 @@ public class AppWorker extends Thread {
         _logItemRepository = new LogItemRepository((Application)context);
         _messageItemRepository = new MessageItemRepository((Application)context);
         _positionItemRepository = new PositionItemRepository((Application)context);
+        _stationItemRepository = new StationItemRepository((Application)context);
 
         _transport = TransportFactory.create(transportType, context);
         _protocol = ProtocolFactory.create(_codec2Mode, context);
@@ -261,6 +264,7 @@ public class AppWorker extends Thread {
                     position.bearingDegrees, position.speedMetersPerSecond, position.altitudeMeters,
                     position.symbolCode, position.rangeMiles, position.status, position.comment));
             _positionItemRepository.upsertPositionItem(position.toPositionItem(false));
+            _stationItemRepository.upsertStationItem(position.toStationItem());
 
             String note = (position.srcCallsign == null ? "UNK" : position.srcCallsign) + "→" +
                     (position.dstCallsign == null ? "UNK" : position.dstCallsign);
@@ -332,6 +336,7 @@ public class AppWorker extends Thread {
         @Override
         protected void onTransmitPosition(Position position) {
             _positionItemRepository.upsertPositionItem(position.toPositionItem(true));
+            _stationItemRepository.upsertStationItem(position.toStationItem());
         }
 
         @Override
@@ -369,6 +374,7 @@ public class AppWorker extends Thread {
             logItem.setLogLine(logData);
             logItem.setIsTransmit(isTransmit);
             _logItemRepository.insertLogItem(logItem);
+            _stationItemRepository.upsertStationItem(logItem.toStationItem());
         }
     }
 

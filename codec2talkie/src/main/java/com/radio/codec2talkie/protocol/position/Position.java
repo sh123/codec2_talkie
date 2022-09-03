@@ -3,6 +3,7 @@ package com.radio.codec2talkie.protocol.position;
 import android.location.Location;
 
 import com.radio.codec2talkie.storage.position.PositionItem;
+import com.radio.codec2talkie.storage.station.StationItem;
 import com.radio.codec2talkie.tools.UnitTools;
 
 public class Position {
@@ -112,5 +113,25 @@ public class Position {
         positionItem.setDirectivityDeg(directivityDeg);
         positionItem.setRangeMiles(rangeMiles);
         return positionItem;
+    }
+
+    public StationItem toStationItem() {
+        StationItem stationItem = new StationItem();
+        stationItem.setTimestampEpoch(System.currentTimeMillis());
+        stationItem.setSrcCallsign(srcCallsign);
+        stationItem.setDstCallsign(dstCallsign);
+        stationItem.setLatitude(latitude);
+        stationItem.setLongitude(longitude);
+        stationItem.setMaidenHead(maidenHead);
+        stationItem.setAltitudeMeters(altitudeMeters);
+        stationItem.setBearingDegrees(bearingDegrees);
+        stationItem.setSpeedMetersPerSecond(speedMetersPerSecond);
+        stationItem.setStatus(status);
+        stationItem.setComment(comment);
+        stationItem.setSymbolCode(symbolCode);
+        stationItem.setPrivacyLevel(privacyLevel);
+        stationItem.setDirectivityDeg(directivityDeg);
+        stationItem.setRangeMiles(rangeMiles);
+        return stationItem;
     }
 }

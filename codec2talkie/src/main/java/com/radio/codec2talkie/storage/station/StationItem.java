@@ -96,4 +96,29 @@ public class StationItem {
     public void setRangeMiles(double rangeMiles) { this.rangeMiles = rangeMiles; }
 
     public void setDirectivityDeg(int directivityDeg) { this.directivityDeg = directivityDeg; }
+
+    public void updateFrom(StationItem stationItem) {
+        setTimestampEpoch(stationItem.getTimestampEpoch());
+        setDstCallsign(stationItem.getDstCallsign());
+        // position item has maidenhead
+        if (stationItem.getMaidenHead() != null) {
+            setMaidenHead(stationItem.getMaidenHead());
+            setLatitude(stationItem.getLatitude());
+            setLongitude(stationItem.getLongitude());
+            setAltitudeMeters(stationItem.getAltitudeMeters());
+            setBearingDegrees(stationItem.getBearingDegrees());
+            setSpeedMetersPerSecond(stationItem.getSpeedMetersPerSecond());
+            setPrivacyLevel(stationItem.getPrivacyLevel());
+            setRangeMiles(stationItem.getRangeMiles());
+            setDirectivityDeg(stationItem.getDirectivityDeg());
+        }
+        if (stationItem.getStatus() != null)
+            setStatus(stationItem.getStatus());
+        if (stationItem.getComment() != null)
+            setComment(stationItem.getComment());
+        if (stationItem.getSymbolCode() != null)
+            setSymbolCode(stationItem.getSymbolCode());
+        if (stationItem.getLogLine() != null)
+            setLogLine(stationItem.getLogLine());
+    }
 }

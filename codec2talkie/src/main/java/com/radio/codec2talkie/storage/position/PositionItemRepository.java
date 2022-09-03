@@ -21,10 +21,6 @@ public class PositionItemRepository {
         _positionItemDao = appDatabase.positionItemDao();
     }
 
-    public void insertPositionItem(PositionItem positionItem) {
-        AppDatabase.getDatabaseExecutor().execute(() -> _positionItemDao.insertPositionItem(positionItem));
-    }
-
     public void upsertPositionItem(PositionItem positionItem) {
         AppDatabase.getDatabaseExecutor().execute(() -> {
             PositionItem oldPosition = _positionItemDao.getLastPositionItem(positionItem.getSrcCallsign());
@@ -46,7 +42,7 @@ public class PositionItemRepository {
         AppDatabase.getDatabaseExecutor().execute(_positionItemDao::deleteAllPositionItems);
     }
 
-    public void deletePositionItems(String srcCallsign) {
+    public void deletePositionItemsFromCallsign(String srcCallsign) {
         AppDatabase.getDatabaseExecutor().execute(() -> _positionItemDao.deletePositionItems(srcCallsign));
     }
 
