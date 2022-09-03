@@ -49,9 +49,8 @@ public class LogItem {
     public void setIsTransmit(boolean isTransmit) { this.isTransmit = isTransmit; }
 
     public StationItem toStationItem() {
-        StationItem stationItem = new StationItem();
+        StationItem stationItem = new StationItem(srcCallsign);
         stationItem.setTimestampEpoch(System.currentTimeMillis());
-        stationItem.setSrcCallsign(srcCallsign);
         stationItem.setDstCallsign(stationItem.dstCallsign);
         stationItem.setLogLine(logLine);
         return stationItem;

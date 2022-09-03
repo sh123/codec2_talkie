@@ -1,16 +1,16 @@
 package com.radio.codec2talkie.storage.station;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(indices = {@Index(value = {"id", "srcCallsign"}, unique = true)})
+@Entity(indices = {@Index(value = {"srcCallsign"}, unique = true)})
 public class StationItem {
-
-    @PrimaryKey(autoGenerate = true)
-    private long id;
-    private long timestampEpoch;
+    @NonNull
+    @PrimaryKey
     private String srcCallsign;
+    private long timestampEpoch;
     public String dstCallsign;
     private String maidenHead;
     public double latitude;
@@ -26,8 +26,8 @@ public class StationItem {
     public double rangeMiles;
     public int directivityDeg;
 
-    public long getId() {
-        return id;
+    public StationItem(@NonNull String srcCallsign) {
+        this.srcCallsign = srcCallsign;
     }
 
     public long getTimestampEpoch() { return timestampEpoch; }
@@ -61,10 +61,6 @@ public class StationItem {
     public double getRangeMiles() { return rangeMiles; }
 
     public int getDirectivityDeg() { return directivityDeg; }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public void setTimestampEpoch(long timestampEpoch) { this.timestampEpoch = timestampEpoch; }
 

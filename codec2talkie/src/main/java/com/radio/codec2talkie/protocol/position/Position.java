@@ -116,9 +116,8 @@ public class Position {
     }
 
     public StationItem toStationItem() {
-        StationItem stationItem = new StationItem();
+        StationItem stationItem = new StationItem(srcCallsign);
         stationItem.setTimestampEpoch(System.currentTimeMillis());
-        stationItem.setSrcCallsign(srcCallsign);
         stationItem.setDstCallsign(dstCallsign);
         stationItem.setLatitude(latitude);
         stationItem.setLongitude(longitude);
