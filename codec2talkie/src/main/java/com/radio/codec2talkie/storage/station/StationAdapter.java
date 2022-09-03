@@ -1,4 +1,4 @@
-package com.radio.codec2talkie.storage.log.group;
+package com.radio.codec2talkie.storage.station;
 
 import android.view.View;
 import android.view.ViewGroup;

@@ -24,7 +24,7 @@ public interface PositionItemDao {
     PositionItem getLastPositionItem(String srcCallsign);
 
     @Query("SELECT srcCallsign from PositionItem GROUP BY srcCallsign")
-    LiveData<List<String>> getGroups();
+    LiveData<List<String>> getStationNames();
 
     @Query("SELECT * FROM PositionItem ORDER by timestampEpoch DESC")
     LiveData<List<PositionItem>> getAllPositionItems();

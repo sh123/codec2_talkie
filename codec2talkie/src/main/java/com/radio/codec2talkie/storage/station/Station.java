@@ -1,4 +1,4 @@
-package com.radio.codec2talkie.storage.log.group;
+package com.radio.codec2talkie.storage.station;
 
 public class Station {
     private long timestampEpoch;

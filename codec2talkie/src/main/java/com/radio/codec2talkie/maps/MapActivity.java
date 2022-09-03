@@ -28,7 +28,7 @@ import com.radio.codec2talkie.protocol.aprs.tools.AprsSymbolTable;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.storage.log.LogItemViewModel;
-import com.radio.codec2talkie.storage.log.group.Station;
+import com.radio.codec2talkie.storage.station.Station;
 import com.radio.codec2talkie.tools.DateTools;
 import com.radio.codec2talkie.tools.UnitTools;
 

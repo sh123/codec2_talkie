@@ -6,7 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.radio.codec2talkie.storage.log.group.Station;
+import com.radio.codec2talkie.storage.station.Station;
 
 import java.util.List;
 

@@ -5,7 +5,7 @@ import android.app.Application;
 import androidx.lifecycle.LiveData;
 
 import com.radio.codec2talkie.storage.AppDatabase;
-import com.radio.codec2talkie.storage.log.group.Station;
+import com.radio.codec2talkie.storage.station.Station;
 import com.radio.codec2talkie.tools.DateTools;
 
 import java.util.List;

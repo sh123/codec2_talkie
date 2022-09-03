@@ -6,7 +6,7 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import com.radio.codec2talkie.storage.log.group.Station;
+import com.radio.codec2talkie.storage.station.Station;
 
 import java.util.List;
 
