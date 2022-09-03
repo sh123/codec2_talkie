@@ -1,6 +1,7 @@
 package com.radio.codec2talkie.storage.station;
 
 import android.app.Application;
+import android.database.sqlite.SQLiteConstraintException;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -27,12 +28,17 @@ public class StationItemRepository {
         AppDatabase.getDatabaseExecutor().execute(() -> {
             StationItem oldStationItem  = _stationItemDao.getStationItem(stationItem.getSrcCallsign());
             if (oldStationItem == null) {
-                _stationItemDao.insertStationItem(stationItem);
-                Log.i(TAG, "INSERT " + stationItem.getSrcCallsign());
-            } else {
+                try {
+                    _stationItemDao.insertStationItem(stationItem);
+                    Log.i(TAG, "INSERT " + stationItem.getSrcCallsign() + " '" + stationItem.getMaidenHead() + "'");
+                } catch (SQLiteConstraintException ex) {
+                    oldStationItem  = _stationItemDao.getStationItem(stationItem.getSrcCallsign());
+                }
+            }
+            if (oldStationItem != null) {
                 oldStationItem.updateFrom(stationItem);
                 _stationItemDao.updateStationItem(oldStationItem);
-                Log.i(TAG, "UPDATE " + oldStationItem.getSrcCallsign());
+                Log.i(TAG, "UPDATE " + oldStationItem.getSrcCallsign() + " '" + oldStationItem.getMaidenHead() + "'");
             }
         });
     }

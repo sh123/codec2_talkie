@@ -12,10 +12,10 @@ import java.util.List;
 @Dao
 public interface StationItemDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert
     void insertStationItem(StationItem stationItem);
 
-    @Update(onConflict = OnConflictStrategy.IGNORE)
+    @Update
     void updateStationItem(StationItem stationItem);
 
     @Query("SELECT * FROM StationItem WHERE srcCallsign = :srcCallsign")

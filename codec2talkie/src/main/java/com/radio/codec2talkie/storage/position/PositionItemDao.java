@@ -14,10 +14,10 @@ import java.util.List;
 @Dao
 public interface PositionItemDao {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert
     void insertPositionItem(PositionItem logItem);
 
-    @Update(onConflict = OnConflictStrategy.IGNORE)
+    @Update
     void updatePositionItem(PositionItem logItem);
 
     @Query("SELECT * FROM PositionItem WHERE srcCallsign = :srcCallsign ORDER BY timestampEpoch DESC LIMIT 1")
