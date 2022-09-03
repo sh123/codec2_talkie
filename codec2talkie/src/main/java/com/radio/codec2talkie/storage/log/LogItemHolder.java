@@ -46,7 +46,7 @@ public class LogItemHolder extends RecyclerView.ViewHolder implements View.OnCli
     public void onClick(View v) {
         if (!_isClickable) return;
         Intent logItemIntent = new Intent(v.getContext(), LogItemActivity.class);
-        logItemIntent.putExtra("groupName", _srcCallsign);
+        logItemIntent.putExtra("stationName", _srcCallsign);
         v.getContext().startActivity(logItemIntent);
     }
 }
