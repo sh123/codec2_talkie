@@ -14,13 +14,11 @@ public class LogItemViewModel extends AndroidViewModel {
 
     private final LogItemRepository _logItemRepository;
     private final LiveData<List<LogItem>> _logItemLiveData;
-    private final LiveData<List<StationItem>> _lastPositions;
 
     public LogItemViewModel(@NonNull Application application) {
         super(application);
         _logItemRepository = new LogItemRepository(application);
         _logItemLiveData = _logItemRepository.getAllLogItems();
-        _lastPositions = _logItemRepository.getLastPositions();
     }
 
     public LiveData<List<LogItem>> getAllData() {
@@ -30,10 +28,6 @@ public class LogItemViewModel extends AndroidViewModel {
     public LiveData<List<LogItem>> getData(String groupName) {
         return _logItemRepository.getLogItems(groupName);
     }
-
-    public LiveData<List<StationItem>> getLastPositions() { return _lastPositions; }
-
-    public LiveData<List<StationItem>> getLastPositions(String callsign) { return _logItemRepository.getStationPositions(callsign); }
 
     public void deleteAllLogItems() { _logItemRepository.deleteAllLogItems(); }
 

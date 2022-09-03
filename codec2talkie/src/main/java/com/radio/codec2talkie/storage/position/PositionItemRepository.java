@@ -38,6 +38,10 @@ public class PositionItemRepository {
         });
     }
 
+    public LiveData<List<PositionItem>> getPositionItems(String srcCallsign) {
+        return _positionItemDao.getPositionItems(srcCallsign);
+    }
+
     public void deleteAllPositionItems() {
         AppDatabase.getDatabaseExecutor().execute(_positionItemDao::deleteAllPositionItems);
     }

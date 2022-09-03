@@ -5,7 +5,6 @@ import android.app.Application;
 import androidx.lifecycle.LiveData;
 
 import com.radio.codec2talkie.storage.AppDatabase;
-import com.radio.codec2talkie.storage.station.StationItem;
 import com.radio.codec2talkie.tools.DateTools;
 
 import java.util.List;
@@ -14,24 +13,15 @@ public class LogItemRepository {
 
     private final LogItemDao _logItemDao;
     private final LiveData<List<LogItem>> _logItemLiveData;
-    private LiveData<List<LogItem>> _logItemGroupLiveData;
-    private final LiveData<List<StationItem>> _lastPositions;
 
     public LogItemRepository(Application application) {
         AppDatabase appDatabase = AppDatabase.getDatabase(application);
         _logItemDao = appDatabase.logItemDao();
         _logItemLiveData = _logItemDao.getAllLogItems();
-        _lastPositions = _logItemDao.getLastPositions();
     }
 
     public LiveData<List<LogItem>> getAllLogItems() {
         return _logItemLiveData;
-    }
-
-    public LiveData<List<StationItem>> getLastPositions() { return _lastPositions; }
-
-    public LiveData<List<StationItem>> getStationPositions(String srcCallsign) {
-        return _logItemDao.getStationPositions(srcCallsign);
     }
 
     public LiveData<List<LogItem>> getLogItems(String groupName) {

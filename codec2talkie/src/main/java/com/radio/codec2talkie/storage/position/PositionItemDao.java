@@ -29,7 +29,7 @@ public interface PositionItemDao {
     @Query("SELECT * FROM PositionItem ORDER by timestampEpoch DESC")
     LiveData<List<PositionItem>> getAllPositionItems();
 
-    @Query("SELECT * FROM PositionItem WHERE srcCallsign = :srcCallsign ORDER BY timestampEpoch DESC")
+    @Query("SELECT * FROM PositionItem WHERE srcCallsign = :srcCallsign ORDER BY timestampEpoch ASC")
     LiveData<List<PositionItem>> getPositionItems(String srcCallsign);
 
     @Query("DELETE FROM PositionItem WHERE srcCallsign = :srcCallsign")

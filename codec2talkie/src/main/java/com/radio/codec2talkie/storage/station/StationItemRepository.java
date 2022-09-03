@@ -28,8 +28,10 @@ public class StationItemRepository {
             if (oldStationItem != null) {
                 oldStationItem.updateFrom(stationItem);
                 _stationItemDao.updateStationItem(oldStationItem);
+                Log.i(TAG, "UPDATE " + oldStationItem.getSrcCallsign());
             } else {
                 _stationItemDao.insertStationItem(stationItem);
+                Log.i(TAG, "INSERT " + stationItem.getSrcCallsign());
             }
         });
     }

@@ -27,8 +27,10 @@ import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsSymbolTable;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
-import com.radio.codec2talkie.storage.log.LogItemViewModel;
+import com.radio.codec2talkie.storage.position.PositionItem;
+import com.radio.codec2talkie.storage.position.PositionItemViewModel;
 import com.radio.codec2talkie.storage.station.StationItem;
+import com.radio.codec2talkie.storage.station.StationItemViewModel;
 import com.radio.codec2talkie.tools.DateTools;
 import com.radio.codec2talkie.tools.UnitTools;
 
@@ -60,14 +62,15 @@ public class MapActivity extends AppCompatActivity {
     private final HashMap<String, Marker> _objectOverlayItems = new HashMap<>();
     private final HashMap<String, Polygon> _objectOverlayRangeCircles = new HashMap<>();
 
-    private LogItemViewModel _logItemViewModel;
+    private StationItemViewModel _stationItemViewModel;
+    private PositionItemViewModel _positionItemViewModel;
     private AprsSymbolTable _aprsSymbolTable;
 
     private String _mySymbolCode;
     private boolean _rotateMap = false;
     private boolean _showCircles = false;
 
-    private LiveData<List<StationItem>> _stationTrack;
+    private LiveData<List<PositionItem>> _stationTrack;
     List<GeoPoint> _stationTrackPoints = new ArrayList<>();
     Polyline _stationTrackLine = new Polyline();   //see note below!
 
@@ -124,17 +127,20 @@ public class MapActivity extends AppCompatActivity {
         }));
         _map.getOverlays().add(_myLocationNewOverlay);
 
-        // add data listener
-        _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
-        _logItemViewModel.getLastPositions().observe(this, lastPositions -> {
-            for (StationItem lastPosition : lastPositions) {
-                Log.i(TAG, "new position " + lastPosition.getLatitude() + " " + lastPosition.getLongitude());
+        // position items
+        _positionItemViewModel = new ViewModelProvider(this).get(PositionItemViewModel.class);
+
+        // station items, add data listener
+        _stationItemViewModel = new ViewModelProvider(this).get(StationItemViewModel.class);
+        _stationItemViewModel.getAllStationItems().observe(this, allStations -> {
+            for (StationItem station : allStations) {
+                Log.i(TAG, "new position " + station.getLatitude() + " " + station.getLongitude());
                 // do not add items without coordinate
-                if (lastPosition.getMaidenHead() == null) continue;
-                if (addStationPositionIcon(lastPosition)) {
-                    addRangeCircle(lastPosition);
+                if (station.getMaidenHead() == null) continue;
+                if (addStationPositionIcon(station)) {
+                    addRangeCircle(station);
                 } else {
-                    Log.e(TAG, "Failed to add APRS icon for " + lastPosition.getSrcCallsign() + ", " + lastPosition.getSymbolCode());
+                    Log.e(TAG, "Failed to add APRS icon for " + station.getSrcCallsign() + ", " + station.getSymbolCode());
                 }
             }
         });
@@ -187,8 +193,8 @@ public class MapActivity extends AppCompatActivity {
         polygon.setPoints(circlePoints);
     }
 
-    private void addTrack(List<StationItem> positions) {
-        for (StationItem trackPoint : positions) {
+    private void addTrack(List<PositionItem> positions) {
+        for (PositionItem trackPoint : positions) {
             Log.i(TAG, "addPoint " + trackPoint.getLatitude() + " " + trackPoint.getLongitude());
             _stationTrackPoints.add(new GeoPoint(trackPoint.getLatitude(), trackPoint.getLongitude()));
         }
@@ -275,7 +281,7 @@ public class MapActivity extends AppCompatActivity {
                 _stationTrackPoints.clear();
                 _stationTrackLine.setPoints(_stationTrackPoints);
                 _map.getOverlays().add(_stationTrackLine);
-                _stationTrack = _logItemViewModel.getLastPositions(monitoredMarker.getId());
+                _stationTrack = _positionItemViewModel.getPositionItems(monitoredMarker.getId());
                 _stationTrack.observe(this, this::addTrack);
                 return false;
             });
