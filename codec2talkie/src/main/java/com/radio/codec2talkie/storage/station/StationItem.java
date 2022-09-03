@@ -97,7 +97,7 @@ public class StationItem {
     public void updateFrom(StationItem stationItem) {
         setTimestampEpoch(stationItem.getTimestampEpoch());
         setDstCallsign(stationItem.getDstCallsign());
-        // position item has maidenhead
+        // update position if known
         if (stationItem.getMaidenHead() != null) {
             setMaidenHead(stationItem.getMaidenHead());
             setLatitude(stationItem.getLatitude());
