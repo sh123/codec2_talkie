@@ -331,7 +331,7 @@ public class AppWorker extends Thread {
 
         @Override
         protected void onTransmitPosition(Position position) {
-            _positionItemRepository.insertPositionItem(position.toPositionItem(true));
+            _positionItemRepository.upsertPositionItem(position.toPositionItem(true));
         }
 
         @Override

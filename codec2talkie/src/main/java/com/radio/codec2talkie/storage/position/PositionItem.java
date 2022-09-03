@@ -109,6 +109,7 @@ public class PositionItem {
 
     public static boolean equalTo(PositionItem positionItem1, PositionItem positionItem2) {
         return positionItem1.getSrcCallsign().equals(positionItem2.getSrcCallsign()) &
+               positionItem1.getIsTransmit() == positionItem2.getIsTransmit() &&
                Math.abs(positionItem1.getLongitude() - positionItem2.getLongitude()) <= MIN_COORDINATE_CHANGE_DELTA &
                Math.abs(positionItem1.getLatitude() - positionItem2.getLatitude()) <= MIN_COORDINATE_CHANGE_DELTA;
     }

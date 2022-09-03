@@ -9,8 +9,8 @@ import androidx.room.Update;
 public interface StationItemDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insertStation(StationItem stationItem);
+    void insertStationItem(StationItem stationItem);
 
     @Update(onConflict = OnConflictStrategy.IGNORE)
-    void updateStation(StationItem stationItem);
+    void updateStationItem(StationItem stationItem);
 }
