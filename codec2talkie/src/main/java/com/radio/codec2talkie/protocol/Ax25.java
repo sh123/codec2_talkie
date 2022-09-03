@@ -127,8 +127,8 @@ public class Ax25 implements Protocol {
                 if (ax25Data.isAudio) {
                     _parentProtocolCallback.onReceiveCompressedAudio(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, ax25Data.rawData);
                 } else {
-                    _parentProtocolCallback.onReceiveData(ax25Data.src, ax25Data.dst, ax25Data.digipath, ax25Data.rawData);
                     _parentProtocolCallback.onReceiveLog(ax25Data.toString());
+                    _parentProtocolCallback.onReceiveData(ax25Data.src, ax25Data.dst, ax25Data.digipath, ax25Data.rawData);
                     if (_isDigiRepeaterEnabled) digiRepeat(ax25Data);
                 }
             } else {

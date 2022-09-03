@@ -26,20 +26,7 @@ public class StationItemRepository {
 
     public void upsertStationItem(StationItem stationItem) {
         AppDatabase.getDatabaseExecutor().execute(() -> {
-            StationItem oldStationItem  = _stationItemDao.getStationItem(stationItem.getSrcCallsign());
-            if (oldStationItem == null) {
-                try {
-                    _stationItemDao.insertStationItem(stationItem);
-                    Log.i(TAG, "INSERT " + stationItem.getSrcCallsign() + " '" + stationItem.getMaidenHead() + "'");
-                } catch (SQLiteConstraintException ex) {
-                    oldStationItem  = _stationItemDao.getStationItem(stationItem.getSrcCallsign());
-                }
-            }
-            if (oldStationItem != null) {
-                oldStationItem.updateFrom(stationItem);
-                _stationItemDao.updateStationItem(oldStationItem);
-                Log.i(TAG, "UPDATE " + oldStationItem.getSrcCallsign() + " '" + oldStationItem.getMaidenHead() + "'");
-            }
+            _stationItemDao.upsertStationItem(stationItem);
         });
     }
 
