@@ -134,7 +134,7 @@ public class MapActivity extends AppCompatActivity {
         _stationItemViewModel = new ViewModelProvider(this).get(StationItemViewModel.class);
         _stationItemViewModel.getAllStationItems().observe(this, allStations -> {
             for (StationItem station : allStations) {
-                Log.i(TAG, "new position " + station.getLatitude() + " " + station.getLongitude());
+                //Log.i(TAG, "new position " + station.getLatitude() + " " + station.getLongitude());
                 // do not add items without coordinate
                 if (station.getMaidenHead() == null) continue;
                 if (addStationPositionIcon(station)) {
@@ -341,8 +341,6 @@ public class MapActivity extends AppCompatActivity {
             showRangeCircles(_showCircles);
             return true;
         }
-
-
         return super.onOptionsItemSelected(item);
     }
 }

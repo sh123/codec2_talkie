@@ -19,9 +19,7 @@ public class PositionItemRepository {
     }
 
     public void upsertPositionItem(PositionItem positionItem) {
-        AppDatabase.getDatabaseExecutor().execute(() -> {
-            _positionItemDao.updatePositionItem(positionItem);
-        });
+        AppDatabase.getDatabaseExecutor().execute(() -> _positionItemDao.updatePositionItem(positionItem));
     }
 
     public LiveData<List<PositionItem>> getPositionItems(String srcCallsign) {
