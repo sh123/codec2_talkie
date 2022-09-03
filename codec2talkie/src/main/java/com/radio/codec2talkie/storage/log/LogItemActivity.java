@@ -71,7 +71,7 @@ public class LogItemActivity extends AppCompatActivity {
         stationsRecyclerView.setHasFixedSize(true);
 
         // stations adapter
-        final StationItemAdapter stationsAdapter = new StationItemAdapter(new StationItemAdapter.LogItemGroupDiff());
+        final StationItemAdapter stationsAdapter = new StationItemAdapter(new StationItemAdapter.StationItemDiff());
         stationsAdapter.setClickListener(v -> {
             TextView itemView = v.findViewById(R.id.log_view_group_item_title);
             _logItemLiveData.removeObservers(this);

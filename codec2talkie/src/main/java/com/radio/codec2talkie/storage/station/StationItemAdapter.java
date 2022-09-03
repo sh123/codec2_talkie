@@ -7,6 +7,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
+import java.util.Objects;
+
 public class StationItemAdapter extends ListAdapter<StationItem, StationItemHolder> {
 
     private View.OnClickListener _clickListener;
@@ -32,7 +34,7 @@ public class StationItemAdapter extends ListAdapter<StationItem, StationItemHold
         holder.bind(current);
     }
 
-    public static class LogItemGroupDiff extends DiffUtil.ItemCallback<StationItem> {
+    public static class StationItemDiff extends DiffUtil.ItemCallback<StationItem> {
 
         @Override
         public boolean areItemsTheSame(@NonNull StationItem oldItem, @NonNull StationItem newItem) {
@@ -41,7 +43,10 @@ public class StationItemAdapter extends ListAdapter<StationItem, StationItemHold
 
         @Override
         public boolean areContentsTheSame(@NonNull StationItem oldItem, @NonNull StationItem newItem) {
-            return oldItem.getSrcCallsign().equals(newItem.getSrcCallsign());
+            return oldItem.getSrcCallsign().equals(newItem.getSrcCallsign()) &&
+                    oldItem.getLatitude() == newItem.getLatitude() &&
+                    oldItem.getLongitude() == newItem.getLongitude() &&
+                    Objects.equals(oldItem.getComment(), newItem.getComment());
         }
     }
 }
