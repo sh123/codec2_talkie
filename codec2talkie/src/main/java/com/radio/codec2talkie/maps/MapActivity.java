@@ -195,7 +195,7 @@ public class MapActivity extends AppCompatActivity {
 
     private void addTrack(List<PositionItem> positions) {
         for (PositionItem trackPoint : positions) {
-            Log.i(TAG, "addPoint " + trackPoint.getLatitude() + " " + trackPoint.getLongitude());
+            //Log.i(TAG, "addPoint " + trackPoint.getLatitude() + " " + trackPoint.getLongitude());
             _stationTrackPoints.add(new GeoPoint(trackPoint.getLatitude(), trackPoint.getLongitude()));
         }
         _stationTrackLine.setPoints(_stationTrackPoints);
@@ -274,6 +274,7 @@ public class MapActivity extends AppCompatActivity {
             marker.setId(callsign);
             marker.setIcon(drawableText);
             marker.setImage(drawableInfoIcon);
+            /*
             marker.setOnMarkerClickListener((monitoredMarker, mapView) -> {
                 if (_stationTrack != null)
                     _stationTrack.removeObservers(this);
@@ -285,6 +286,7 @@ public class MapActivity extends AppCompatActivity {
                 _stationTrack.observe(this, this::addTrack);
                 return false;
             });
+             */
             _map.getOverlays().add(marker);
             _objectOverlayItems.put(callsign, marker);
         }
