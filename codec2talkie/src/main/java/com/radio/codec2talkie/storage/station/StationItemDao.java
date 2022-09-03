@@ -23,4 +23,13 @@ public interface StationItemDao {
 
     @Query("SELECT * FROM StationItem ORDER BY srcCallsign ASC")
     LiveData<List<StationItem>> getAllStationItems();
+
+    @Query("DELETE FROM StationItem WHERE srcCallsign = :srcCallsign")
+    void deleteStationItemsFromCallsign(String srcCallsign);
+
+    @Query("DELETE FROM StationItem WHERE timestampEpoch < :timestamp")
+    void deleteStationItemsOlderThanTimestamp(long timestamp);
+
+    @Query("DELETE FROM StationItem")
+    void deleteAllStationItems();
 }

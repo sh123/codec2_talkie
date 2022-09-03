@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.radio.codec2talkie.storage.AppDatabase;
 import com.radio.codec2talkie.storage.station.StationItemRepository;
 import com.radio.codec2talkie.tools.DateTools;
 
@@ -22,4 +23,16 @@ public class StationItemViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<StationItem>> getAllStationItems() { return _stationItemRepository.getAllStationItems(); }
+
+    public void deleteAllStationItems() {
+        _stationItemRepository.deleteAllStationItems();
+    }
+
+    public void deleteAllStationItemsOlderThanHours(int hours) {
+        _stationItemRepository.deleteAllStationItemsOlderThanHours(hours);
+    }
+
+    public void deleteStationItem(String srcCallsign) {
+        _stationItemRepository.deleteStationItemsFromCallsign(srcCallsign);
+    }
 }

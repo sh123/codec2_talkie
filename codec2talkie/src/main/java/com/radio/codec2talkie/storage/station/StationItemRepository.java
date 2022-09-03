@@ -36,4 +36,16 @@ public class StationItemRepository {
             }
         });
     }
+
+    public void deleteAllStationItems() {
+        AppDatabase.getDatabaseExecutor().execute(_stationItemDao::deleteAllStationItems);
+    }
+
+    public void deleteStationItemsFromCallsign(String srcCallsign) {
+        AppDatabase.getDatabaseExecutor().execute(() -> _stationItemDao.deleteStationItemsFromCallsign(srcCallsign));
+    }
+
+    public void deleteAllStationItemsOlderThanHours(long timestamp) {
+        AppDatabase.getDatabaseExecutor().execute(() -> _stationItemDao.deleteStationItemsOlderThanTimestamp(timestamp));
+    }
 }

@@ -168,19 +168,16 @@ public class LogItemActivity extends AppCompatActivity {
                     if (hours == -1) {
                         _logItemViewModel.deleteAllLogItems();
                         _positionItemViewModel.deleteAllPositionItems();
-                        // TODO delete stations
-                        // _stationItemViewModel.deleteAllStationItems()
+                        _stationItemViewModel.deleteAllStationItems();
                     } else {
                         _logItemViewModel.deleteLogItemsOlderThanHours(hours);
                         _positionItemViewModel.deletePositionItemsOlderThanHours(hours);
-                        // TODO delete stations
-                        // _stationItemViewModel.deleteAllStationItemsOlderThanHours(hours)
+                        _stationItemViewModel.deleteAllStationItemsOlderThanHours(hours);
                     }
                 } else {
                     _logItemViewModel.deleteLogItems(_stationName);
                     _positionItemViewModel.deletePositionItems(_stationName);
-                    // TODO delete stations
-                    // _stationItemViewModel.deleteStationItem(_stationName)
+                    _stationItemViewModel.deleteStationItem(_stationName);
                 }
             }
         };
