@@ -17,6 +17,7 @@ public interface LogItemDao {
     void insertLogItem(LogItem logItem);
 
     @Query("SELECT pos.timestampEpoch AS timestampEpoch, " +
+            "pos.id AS id, " +
             "log.srcCallsign AS srcCallsign, " +
             "log.logLine AS logLine," +
             "pos.dstCallsign AS dstCallsign, " +
@@ -38,6 +39,7 @@ public interface LogItemDao {
             "GROUP BY log.srcCallsign " +
             "UNION " +
             "SELECT pos.timestampEpoch AS timestampEpoch, " +
+            "pos.id AS id, " +
             "pos.srcCallsign AS srcCallsign, " +
             "log.logLine AS logLine," +
             "pos.dstCallsign AS dstCallsign, " +
@@ -61,6 +63,7 @@ public interface LogItemDao {
     LiveData<List<StationItem>> getLastPositions();
 
     @Query("SELECT pos.timestampEpoch AS timestampEpoch, " +
+            "pos.id AS id, " +
             "pos.srcCallsign AS srcCallsign, " +
             "pos.dstCallsign AS dstCallsign, " +
             "pos.latitude AS latitude, " +

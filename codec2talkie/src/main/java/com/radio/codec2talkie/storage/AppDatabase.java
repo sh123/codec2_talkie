@@ -13,13 +13,15 @@ import com.radio.codec2talkie.storage.message.MessageItem;
 import com.radio.codec2talkie.storage.message.MessageItemDao;
 import com.radio.codec2talkie.storage.position.PositionItem;
 import com.radio.codec2talkie.storage.position.PositionItemDao;
+import com.radio.codec2talkie.storage.station.StationItem;
+import com.radio.codec2talkie.storage.station.StationItemDao;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @androidx.room.Database(
     version = 6,
-    entities = {LogItem.class, MessageItem.class, PositionItem.class},
+    entities = {LogItem.class, MessageItem.class, PositionItem.class, StationItem.class},
     exportSchema = false
 )
 public abstract class AppDatabase extends RoomDatabase {
@@ -29,6 +31,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract LogItemDao logItemDao();
     public abstract MessageItemDao messageItemDao();
     public abstract PositionItemDao positionItemDao();
+    public abstract StationItemDao stationitemDao();
 
     private static AppDatabase _db;
     private static ExecutorService _executor;
