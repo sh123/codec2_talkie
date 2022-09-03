@@ -16,11 +16,9 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
@@ -30,7 +28,7 @@ import com.radio.codec2talkie.protocol.aprs.tools.AprsSymbolTable;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.storage.log.LogItemViewModel;
-import com.radio.codec2talkie.storage.log.group.LogItemGroup;
+import com.radio.codec2talkie.storage.log.group.Station;
 import com.radio.codec2talkie.tools.DateTools;
 import com.radio.codec2talkie.tools.UnitTools;
 
@@ -69,7 +67,7 @@ public class MapActivity extends AppCompatActivity {
     private boolean _rotateMap = false;
     private boolean _showCircles = false;
 
-    private LiveData<List<LogItemGroup>> _stationTrack;
+    private LiveData<List<Station>> _stationTrack;
     List<GeoPoint> _stationTrackPoints = new ArrayList<>();
     Polyline _stationTrackLine = new Polyline();   //see note below!
 
@@ -129,7 +127,7 @@ public class MapActivity extends AppCompatActivity {
         // add data listener
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
         _logItemViewModel.getLastPositions().observe(this, lastPositions -> {
-            for (LogItemGroup lastPosition : lastPositions) {
+            for (Station lastPosition : lastPositions) {
                 Log.i(TAG, "new position " + lastPosition.getLatitude() + " " + lastPosition.getLongitude());
                 // do not add items without coordinate
                 if (lastPosition.getMaidenHead() == null) continue;
@@ -162,7 +160,7 @@ public class MapActivity extends AppCompatActivity {
         }
     }
 
-    private void addRangeCircle(LogItemGroup group) {
+    private void addRangeCircle(Station group) {
         if (group.getRangeMiles() == 0) return;
         String callsign = group.getSrcCallsign();
         Polygon polygon = null;
@@ -189,15 +187,15 @@ public class MapActivity extends AppCompatActivity {
         polygon.setPoints(circlePoints);
     }
 
-    private void addTrack(List<LogItemGroup> positions) {
-        for (LogItemGroup trackPoint : positions) {
+    private void addTrack(List<Station> positions) {
+        for (Station trackPoint : positions) {
             Log.i(TAG, "addPoint " + trackPoint.getLatitude() + " " + trackPoint.getLongitude());
             _stationTrackPoints.add(new GeoPoint(trackPoint.getLatitude(), trackPoint.getLongitude()));
         }
         _stationTrackLine.setPoints(_stationTrackPoints);
     }
 
-    private boolean addStationPositionIcon(LogItemGroup group) {
+    private boolean addStationPositionIcon(Station group) {
         String callsign = group.getSrcCallsign();
         Marker marker = null;
 
@@ -291,7 +289,7 @@ public class MapActivity extends AppCompatActivity {
         return true;
     }
 
-    private String getStatus(LogItemGroup group) {
+    private String getStatus(Station group) {
         double range = UnitTools.milesToKilometers(group.getRangeMiles());
         return String.format(Locale.US, "%s %f %f<br>%03d° %03dkm/h %04dm %.2fkm<br>%s %s",
                 group.getMaidenHead(),

@@ -1,6 +1,6 @@
 package com.radio.codec2talkie.storage.log.group;
 
-public class LogItemGroup {
+public class Station {
     private long timestampEpoch;
     private String srcCallsign;
     public String dstCallsign;

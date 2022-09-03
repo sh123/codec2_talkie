@@ -6,7 +6,7 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import com.radio.codec2talkie.storage.log.group.LogItemGroup;
+import com.radio.codec2talkie.storage.log.group.Station;
 
 import java.util.List;
 
@@ -58,7 +58,7 @@ public interface LogItemDao {
             "LEFT OUTER JOIN LogItem log ON (log.srcCallsign = pos.srcCallsign) " +
             "GROUP BY pos.srcCallsign " +
             "ORDER BY srcCallsign ASC")
-    LiveData<List<LogItemGroup>> getLastPositions();
+    LiveData<List<Station>> getLastPositions();
 
     @Query("SELECT pos.timestampEpoch AS timestampEpoch, " +
             "pos.srcCallsign AS srcCallsign, " +
@@ -77,7 +77,7 @@ public interface LogItemDao {
             "pos.directivityDeg AS directivityDeg " +
             "FROM PositionItem AS pos WHERE pos.srcCallsign = :srcCallsign " +
             "ORDER BY pos.timestampEpoch DESC")
-    LiveData<List<LogItemGroup>> getStationPositions(String srcCallsign);
+    LiveData<List<Station>> getStationPositions(String srcCallsign);
 
     @Query("SELECT * FROM LogItem ORDER by timestampEpoch ASC")
     LiveData<List<LogItem>> getAllLogItems();

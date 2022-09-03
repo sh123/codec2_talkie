@@ -3,10 +3,9 @@ package com.radio.codec2talkie.storage.log;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Transformations;
 
 import com.radio.codec2talkie.storage.AppDatabase;
-import com.radio.codec2talkie.storage.log.group.LogItemGroup;
+import com.radio.codec2talkie.storage.log.group.Station;
 import com.radio.codec2talkie.tools.DateTools;
 
 import java.util.List;
@@ -16,7 +15,7 @@ public class LogItemRepository {
     private final LogItemDao _logItemDao;
     private final LiveData<List<LogItem>> _logItemLiveData;
     private LiveData<List<LogItem>> _logItemGroupLiveData;
-    private final LiveData<List<LogItemGroup>> _lastPositions;
+    private final LiveData<List<Station>> _lastPositions;
 
     public LogItemRepository(Application application) {
         AppDatabase appDatabase = AppDatabase.getDatabase(application);
@@ -29,9 +28,9 @@ public class LogItemRepository {
         return _logItemLiveData;
     }
 
-    public LiveData<List<LogItemGroup>> getLastPositions() { return _lastPositions; }
+    public LiveData<List<Station>> getLastPositions() { return _lastPositions; }
 
-    public LiveData<List<LogItemGroup>> getStationPositions(String srcCallsign) {
+    public LiveData<List<Station>> getStationPositions(String srcCallsign) {
         return _logItemDao.getStationPositions(srcCallsign);
     }
 

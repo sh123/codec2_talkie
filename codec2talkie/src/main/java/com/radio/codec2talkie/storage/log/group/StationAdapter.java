@@ -7,11 +7,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
-public class LogItemGroupAdapter extends ListAdapter<LogItemGroup, LogItemGroupHolder> {
+public class StationAdapter extends ListAdapter<Station, StationHolder> {
 
     private View.OnClickListener _clickListener;
 
-    public LogItemGroupAdapter(@NonNull DiffUtil.ItemCallback<LogItemGroup> diffCallback) {
+    public StationAdapter(@NonNull DiffUtil.ItemCallback<Station> diffCallback) {
         super(diffCallback);
     }
 
@@ -21,26 +21,26 @@ public class LogItemGroupAdapter extends ListAdapter<LogItemGroup, LogItemGroupH
 
     @NonNull
     @Override
-    public LogItemGroupHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return LogItemGroupHolder.create(parent);
+    public StationHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        return StationHolder.create(parent);
     }
 
     @Override
-    public void onBindViewHolder(LogItemGroupHolder holder, int position) {
-        LogItemGroup current = getItem(position);
+    public void onBindViewHolder(StationHolder holder, int position) {
+        Station current = getItem(position);
         holder.itemView.setOnClickListener(_clickListener);
         holder.bind(current);
     }
 
-    public static class LogItemGroupDiff extends DiffUtil.ItemCallback<LogItemGroup> {
+    public static class LogItemGroupDiff extends DiffUtil.ItemCallback<Station> {
 
         @Override
-        public boolean areItemsTheSame(@NonNull LogItemGroup oldItem, @NonNull LogItemGroup newItem) {
+        public boolean areItemsTheSame(@NonNull Station oldItem, @NonNull Station newItem) {
             return oldItem.getSrcCallsign().equals(newItem.getSrcCallsign());
         }
 
         @Override
-        public boolean areContentsTheSame(@NonNull LogItemGroup oldItem, @NonNull LogItemGroup newItem) {
+        public boolean areContentsTheSame(@NonNull Station oldItem, @NonNull Station newItem) {
             return oldItem.getSrcCallsign().equals(newItem.getSrcCallsign());
         }
     }
