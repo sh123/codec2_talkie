@@ -3,6 +3,7 @@ package com.radio.codec2talkie.storage.log;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 
 import com.radio.codec2talkie.storage.AppDatabase;
 import com.radio.codec2talkie.storage.log.group.LogItemGroup;
@@ -29,6 +30,10 @@ public class LogItemRepository {
     }
 
     public LiveData<List<LogItemGroup>> getLastPositions() { return _lastPositions; }
+
+    public LiveData<List<LogItemGroup>> getStationPositions(String srcCallsign) {
+        return _logItemDao.getStationPositions(srcCallsign);
+    }
 
     public LiveData<List<LogItem>> getLogItems(String groupName) {
         return _logItemDao.getLogItems(groupName);

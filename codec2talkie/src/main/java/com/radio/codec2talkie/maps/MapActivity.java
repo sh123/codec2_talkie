@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -15,9 +16,12 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintSet;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
@@ -37,6 +41,7 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polygon;
+import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
@@ -44,6 +49,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 public class MapActivity extends AppCompatActivity {
@@ -62,6 +68,10 @@ public class MapActivity extends AppCompatActivity {
     private String _mySymbolCode;
     private boolean _rotateMap = false;
     private boolean _showCircles = false;
+
+    private LiveData<List<LogItemGroup>> _stationTrack;
+    List<GeoPoint> _stationTrackPoints = new ArrayList<>();
+    Polyline _stationTrackLine = new Polyline();   //see note below!
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,6 +130,7 @@ public class MapActivity extends AppCompatActivity {
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
         _logItemViewModel.getLastPositions().observe(this, lastPositions -> {
             for (LogItemGroup lastPosition : lastPositions) {
+                Log.i(TAG, "new position " + lastPosition.getLatitude() + " " + lastPosition.getLongitude());
                 // do not add items without coordinate
                 if (lastPosition.getMaidenHead() == null) continue;
                 if (addStationPositionIcon(lastPosition)) {
@@ -129,6 +140,14 @@ public class MapActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // add track
+        Paint p = _stationTrackLine.getOutlinePaint();
+        p.setStrokeWidth(8);
+        p.setColor(Color.RED);
+        p.setStyle(Paint.Style.STROKE);
+        p.setPathEffect(new DashPathEffect(new float[] {10f, 10f}, 0f));
+        _map.getOverlayManager().add(_stationTrackLine);
     }
 
     @Override
@@ -168,6 +187,14 @@ public class MapActivity extends AppCompatActivity {
             circlePoints.add(new GeoPoint(group.getLatitude(), group.getLongitude()).destinationPoint(1000 * UnitTools.milesToKilometers(group.getRangeMiles()), f));
         }
         polygon.setPoints(circlePoints);
+    }
+
+    private void addTrack(List<LogItemGroup> positions) {
+        for (LogItemGroup trackPoint : positions) {
+            Log.i(TAG, "addPoint " + trackPoint.getLatitude() + " " + trackPoint.getLongitude());
+            _stationTrackPoints.add(new GeoPoint(trackPoint.getLatitude(), trackPoint.getLongitude()));
+        }
+        _stationTrackLine.setPoints(_stationTrackPoints);
     }
 
     private boolean addStationPositionIcon(LogItemGroup group) {
@@ -240,9 +267,20 @@ public class MapActivity extends AppCompatActivity {
             BitmapDrawable drawableText = new BitmapDrawable(getResources(), bitmap);
             BitmapDrawable drawableInfoIcon = new BitmapDrawable(getResources(), bitmapInfoIcon);
             marker = new Marker(_map);
+            marker.setId(callsign);
             marker.setIcon(drawableText);
             marker.setImage(drawableInfoIcon);
-
+            marker.setOnMarkerClickListener((monitoredMarker, mapView) -> {
+                if (_stationTrack != null)
+                    _stationTrack.removeObservers(this);
+                _map.getOverlays().remove(_stationTrackLine);
+                _stationTrackPoints.clear();
+                _stationTrackLine.setPoints(_stationTrackPoints);
+                _map.getOverlays().add(_stationTrackLine);
+                _stationTrack = _logItemViewModel.getLastPositions(monitoredMarker.getId());
+                _stationTrack.observe(this, this::addTrack);
+                return false;
+            });
             _map.getOverlays().add(marker);
             _objectOverlayItems.put(callsign, marker);
         }

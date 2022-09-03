@@ -60,6 +60,25 @@ public interface LogItemDao {
             "ORDER BY srcCallsign ASC")
     LiveData<List<LogItemGroup>> getLastPositions();
 
+    @Query("SELECT pos.timestampEpoch AS timestampEpoch, " +
+            "pos.srcCallsign AS srcCallsign, " +
+            "pos.dstCallsign AS dstCallsign, " +
+            "pos.latitude AS latitude, " +
+            "pos.longitude AS longitude, " +
+            "pos.maidenHead AS maidenHead, " +
+            "pos.altitudeMeters AS altitudeMeters, " +
+            "pos.bearingDegrees AS bearingDegrees, " +
+            "pos.speedMetersPerSecond AS speedMetersPerSecond, " +
+            "pos.status AS status, " +
+            "pos.comment AS comment, " +
+            "pos.symbolCode AS symbolCode, " +
+            "pos.privacyLevel AS privacyLevel, " +
+            "pos.rangeMiles AS rangeMiles, " +
+            "pos.directivityDeg AS directivityDeg " +
+            "FROM PositionItem AS pos WHERE pos.srcCallsign = :srcCallsign " +
+            "ORDER BY pos.timestampEpoch DESC")
+    LiveData<List<LogItemGroup>> getStationPositions(String srcCallsign);
+
     @Query("SELECT * FROM LogItem ORDER by timestampEpoch ASC")
     LiveData<List<LogItem>> getAllLogItems();
 

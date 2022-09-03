@@ -34,6 +34,8 @@ public class LogItemViewModel extends AndroidViewModel {
 
     public LiveData<List<LogItemGroup>> getLastPositions() { return _lastPositions; }
 
+    public LiveData<List<LogItemGroup>> getLastPositions(String callsign) { return _logItemRepository.getStationPositions(callsign); }
+
     public void deleteAllLogItems() { _logItemRepository.deleteAllLogItems(); }
 
     public void deleteLogItems(String groupName) {
