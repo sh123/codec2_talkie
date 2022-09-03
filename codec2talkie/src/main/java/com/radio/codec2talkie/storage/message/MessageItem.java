@@ -1,9 +1,10 @@
 package com.radio.codec2talkie.storage.message;
 
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity
+@Entity(indices = {@Index(value = {"id", "srcCallsign"}, unique = true)})
 public class MessageItem {
 
     @PrimaryKey(autoGenerate = true)

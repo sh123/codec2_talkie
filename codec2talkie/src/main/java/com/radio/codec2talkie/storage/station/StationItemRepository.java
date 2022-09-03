@@ -26,13 +26,13 @@ public class StationItemRepository {
     public void upsertStationItem(StationItem stationItem) {
         AppDatabase.getDatabaseExecutor().execute(() -> {
             StationItem oldStationItem  = _stationItemDao.getStationItem(stationItem.getSrcCallsign());
-            if (oldStationItem != null) {
+            if (oldStationItem == null) {
+                _stationItemDao.insertStationItem(stationItem);
+                Log.i(TAG, "INSERT " + stationItem.getSrcCallsign());
+            } else {
                 oldStationItem.updateFrom(stationItem);
                 _stationItemDao.updateStationItem(oldStationItem);
                 Log.i(TAG, "UPDATE " + oldStationItem.getSrcCallsign());
-            } else {
-                _stationItemDao.insertStationItem(stationItem);
-                Log.i(TAG, "INSERT " + stationItem.getSrcCallsign());
             }
         });
     }

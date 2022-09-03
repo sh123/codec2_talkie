@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey;
 
 import com.radio.codec2talkie.storage.station.StationItem;
 
-@Entity
+@Entity(indices = {@Index(value = {"id", "srcCallsign"}, unique = true)})
 public class LogItem {
 
     @PrimaryKey(autoGenerate = true)

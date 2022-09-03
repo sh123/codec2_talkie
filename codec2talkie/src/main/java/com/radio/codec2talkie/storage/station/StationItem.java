@@ -1,9 +1,10 @@
 package com.radio.codec2talkie.storage.station;
 
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity
+@Entity(indices = {@Index(value = {"id", "srcCallsign"}, unique = true)})
 public class StationItem {
 
     @PrimaryKey(autoGenerate = true)
@@ -45,11 +46,11 @@ public class StationItem {
 
     public double getBearingDegrees() { return bearingDegrees; }
 
-    public double getSpeedMetersPerSecond() { return speedMetersPerSecond; };
+    public double getSpeedMetersPerSecond() { return speedMetersPerSecond; }
 
     public String getStatus() { return status; }
 
-    public String getComment() { return comment; };
+    public String getComment() { return comment; }
 
     public String getSymbolCode() { return symbolCode; }
 

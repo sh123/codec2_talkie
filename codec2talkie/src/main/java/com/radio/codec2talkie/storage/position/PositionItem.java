@@ -1,11 +1,12 @@
 package com.radio.codec2talkie.storage.position;
 
 import androidx.room.Entity;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 import com.radio.codec2talkie.protocol.position.Position;
 
-@Entity
+@Entity(indices = {@Index(value = {"id", "srcCallsign"}, unique = true)})
 public class PositionItem {
 
     private static final double MIN_COORDINATE_CHANGE_DELTA = 0.003;
