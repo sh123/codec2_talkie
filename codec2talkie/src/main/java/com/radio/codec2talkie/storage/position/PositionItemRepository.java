@@ -3,6 +3,8 @@ package com.radio.codec2talkie.storage.position;
 import android.app.Application;
 import android.util.Log;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
+
 import com.radio.codec2talkie.storage.AppDatabase;
 
 
@@ -23,7 +25,7 @@ public class PositionItemRepository {
     }
 
     public LiveData<List<PositionItem>> getPositionItems(String srcCallsign) {
-        return _positionItemDao.getPositionItems(srcCallsign);
+        return Transformations.distinctUntilChanged(_positionItemDao.getPositionItems(srcCallsign));
     }
 
     public void deleteAllPositionItems() {

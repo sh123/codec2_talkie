@@ -1,9 +1,13 @@
 package com.radio.codec2talkie.storage.station;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
+
+import java.util.Objects;
 
 @Entity(indices = {@Index(value = {"srcCallsign"}, unique = true)})
 public class StationItem {
@@ -117,5 +121,16 @@ public class StationItem {
             setSymbolCode(stationItem.getSymbolCode());
         if (stationItem.getLogLine() != null)
             setLogLine(stationItem.getLogLine());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        StationItem stationItem = (StationItem)o;
+        return srcCallsign.equals(stationItem.getSrcCallsign()) &&
+                timestampEpoch == stationItem.getTimestampEpoch() &&
+                Objects.equals(comment, stationItem.getComment()) &&
+                Objects.equals(dstCallsign, stationItem.getDstCallsign()) &&
+                latitude == stationItem.getLatitude() &&
+                longitude == stationItem.getLongitude();
     }
 }

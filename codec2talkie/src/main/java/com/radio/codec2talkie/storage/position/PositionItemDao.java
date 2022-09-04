@@ -24,7 +24,7 @@ public abstract class PositionItemDao {
     @Transaction
     public void upsertPositionItem(PositionItem positionItem) {
         PositionItem oldPosition = getLastPositionItem(positionItem.getSrcCallsign());
-        if (oldPosition != null && PositionItem.equalTo(positionItem, oldPosition)) {
+        if (oldPosition != null && oldPosition.equals(positionItem)) {
             // update id and coordinates from existing position
             positionItem.setId(oldPosition.getId());
             positionItem.setLatitude(oldPosition.getLatitude());

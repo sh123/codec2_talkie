@@ -108,10 +108,12 @@ public class PositionItem {
 
     public void setRangeMiles(double rangeMiles) { this.rangeMiles = rangeMiles; }
 
-    public static boolean equalTo(PositionItem positionItem1, PositionItem positionItem2) {
-        return positionItem1.getSrcCallsign().equals(positionItem2.getSrcCallsign()) &
-               positionItem1.getIsTransmit() == positionItem2.getIsTransmit() &&
-               Math.abs(positionItem1.getLongitude() - positionItem2.getLongitude()) <= MIN_COORDINATE_CHANGE_DELTA &
-               Math.abs(positionItem1.getLatitude() - positionItem2.getLatitude()) <= MIN_COORDINATE_CHANGE_DELTA;
+    @Override
+    public boolean equals(Object o) {
+        PositionItem positionItem = (PositionItem) o;
+        return getSrcCallsign().equals(positionItem.getSrcCallsign()) &
+               getIsTransmit() == positionItem.getIsTransmit() &&
+               Math.abs(getLongitude() - positionItem.getLongitude()) <= MIN_COORDINATE_CHANGE_DELTA &
+               Math.abs(getLatitude() - positionItem.getLatitude()) <= MIN_COORDINATE_CHANGE_DELTA;
     }
 }

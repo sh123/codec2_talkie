@@ -5,6 +5,7 @@ import android.database.sqlite.SQLiteConstraintException;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Transformations;
 
 import com.radio.codec2talkie.storage.AppDatabase;
 
@@ -19,7 +20,7 @@ public class StationItemRepository {
     public StationItemRepository(Application application) {
         AppDatabase appDatabase = AppDatabase.getDatabase(application);
         _stationItemDao = appDatabase.stationitemDao();
-        _stationItems = _stationItemDao.getAllStationItems();
+        _stationItems = Transformations.distinctUntilChanged(_stationItemDao.getAllStationItems());
     }
 
     public LiveData<List<StationItem>> getAllStationItems() { return _stationItems; }
