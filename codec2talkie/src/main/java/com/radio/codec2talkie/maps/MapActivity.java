@@ -36,6 +36,7 @@ import com.radio.codec2talkie.tools.UnitTools;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.modules.SqlTileWriter;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
@@ -347,7 +348,15 @@ public class MapActivity extends AppCompatActivity {
             finish();
             return true;
         } else if (itemId == R.id.map_menu_clear_cache) {
-            _map.getTileProvider().clearTileCache();
+            new Thread(() -> {
+                _map.getTileProvider().clearTileCache();
+                SqlTileWriter sqlTileWriter = new SqlTileWriter();
+                boolean isCleared = sqlTileWriter.purgeCache(_map.getTileProvider().getTileSource().name());
+                if (isCleared)
+                    Log.i(TAG, "Cleanup completed");
+                else
+                    Log.e(TAG, "Cache was not cleared");
+            }).start();
             return true;
         } else if (itemId == R.id.map_menu_rotate_map) {
             if (item.isChecked()) {
