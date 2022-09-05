@@ -1,11 +1,22 @@
 package com.radio.codec2talkie.storage.station;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
+
+import com.radio.codec2talkie.protocol.aprs.tools.AprsSymbolTable;
 
 import java.util.Objects;
 
@@ -139,5 +150,63 @@ public class StationItem {
                 Objects.equals(dstCallsign, stationItem.getDstCallsign()) &&
                 latitude == stationItem.getLatitude() &&
                 longitude == stationItem.getLongitude();
+    }
+
+    public BitmapDrawable drawLabelWithIcon(Context context, float textSize) {
+        String callsign = getSrcCallsign();
+
+        Bitmap bitmapIcon = AprsSymbolTable.getInstance(context).bitmapFromSymbol(getSymbolCode(), false);
+        if (bitmapIcon == null) return null;
+
+        // construct and calculate bounds
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL);
+        paint.setTextSize(textSize);
+        Rect bounds = new Rect();
+        paint.getTextBounds(callsign, 0, callsign.length(), bounds);
+        int width = Math.max(bitmapIcon.getWidth(), bounds.width());
+        int height = bitmapIcon.getHeight() + bounds.height();
+
+        // create overlay bitmap
+        Bitmap bitmap = Bitmap.createBitmap(width, height, null);
+        bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
+
+        // draw APRS icon
+        Canvas canvas = new Canvas(bitmap);
+        float bitmapLeft = width > bitmapIcon.getWidth() ? width / 2.0f - bitmapIcon.getWidth() / 2.0f : 0;
+        // do not rotate
+        if (getBearingDegrees() == 0 || !AprsSymbolTable.needsRotation(getSymbolCode())) {
+            canvas.drawBitmap(bitmapIcon, bitmapLeft, 0, null);
+            // rotate
+        } else {
+            float rotationDeg = (float) (getBearingDegrees() - 90.0f);
+            Matrix m = new Matrix();
+            // flip/rotate
+            if (getBearingDegrees() > 180) {
+                m.postScale(-1, 1);
+                m.postTranslate(bitmapIcon.getWidth(), 0);
+                m.postRotate(rotationDeg - 180, bitmapIcon.getWidth() / 2.0f, bitmapIcon.getHeight() / 2.0f);
+                // rotate
+            } else {
+                m.postRotate(rotationDeg, bitmapIcon.getWidth() / 2.0f, bitmapIcon.getHeight() / 2.0f);
+            }
+            m.postTranslate(bitmapLeft, 0);
+            canvas.drawBitmap(bitmapIcon, m, null);
+        }
+
+        // draw background
+        paint.setColor(Color.WHITE);
+        paint.setAlpha(120);
+        bounds.set(0, bitmapIcon.getHeight(), width, height);
+        canvas.drawRect(bounds, paint);
+
+        // draw text
+        paint.setColor(Color.BLACK);
+        paint.setAlpha(255);
+        paint.setFlags(Paint.ANTI_ALIAS_FLAG);
+        canvas.drawText(callsign, 0, height, paint);
+
+        // add marker
+        return new BitmapDrawable(context.getResources(), bitmap);
     }
 }

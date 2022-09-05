@@ -62,7 +62,7 @@ public class MapStations {
 
         _aprsSymbolTable = AprsSymbolTable.getInstance(context);
         _infoWindow = new MarkerInfoWindow(R.layout.bonuspack_bubble, _mapView);
-        _activeTrack = new MapTrack(_mapView, _owner);
+        _activeTrack = new MapTrack(_context, _mapView, _owner);
 
         StationItemViewModel _stationItemViewModel = new ViewModelProvider(_owner).get(StationItemViewModel.class);
         // FIXME, room livedata sends all list if one item changed event with distinctUntilChanged
@@ -138,70 +138,22 @@ public class MapStations {
 
         // create new marker
         if (marker == null) {
-            // icon from symbol
-            Bitmap bitmapIcon = _aprsSymbolTable.bitmapFromSymbol(group.getSymbolCode(), false);
-            if (bitmapIcon == null) return false;
             Bitmap bitmapInfoIcon = _aprsSymbolTable.bitmapFromSymbol(group.getSymbolCode(), true);
             if (bitmapInfoIcon == null) return false;
 
-            // construct and calculate bounds
-            Paint paint = new Paint();
-            paint.setStyle(Paint.Style.FILL);
-            Rect bounds = new Rect();
-            paint.getTextBounds(callsign, 0, callsign.length(), bounds);
-            int width = Math.max(bitmapIcon.getWidth(), bounds.width());
-            int height = bitmapIcon.getHeight() + bounds.height();
-
-            // create overlay bitmap
-            Bitmap bitmap = Bitmap.createBitmap(width, height, null);
-            bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
-
-            // draw APRS icon
-            Canvas canvas = new Canvas(bitmap);
-            float bitmapLeft = width > bitmapIcon.getWidth() ? width / 2.0f - bitmapIcon.getWidth() / 2.0f : 0;
-            // do not rotate
-            if (group.getBearingDegrees() == 0 || !AprsSymbolTable.needsRotation(group.getSymbolCode())) {
-                canvas.drawBitmap(bitmapIcon, bitmapLeft, 0, null);
-                // rotate
-            } else {
-                float rotationDeg = (float) (group.getBearingDegrees() - 90.0f);
-                Matrix m = new Matrix();
-                // flip/rotate
-                if (group.getBearingDegrees() > 180) {
-                    m.postScale(-1, 1);
-                    m.postTranslate(bitmapIcon.getWidth(), 0);
-                    m.postRotate(rotationDeg - 180, bitmapIcon.getWidth() / 2.0f, bitmapIcon.getHeight() / 2.0f);
-                    // rotate
-                } else {
-                    m.postRotate(rotationDeg, bitmapIcon.getWidth() / 2.0f, bitmapIcon.getHeight() / 2.0f);
-                }
-                m.postTranslate(bitmapLeft, 0);
-                canvas.drawBitmap(bitmapIcon, m, null);
-            }
-
-            // draw background
-            paint.setColor(Color.WHITE);
-            paint.setAlpha(120);
-            bounds.set(0, bitmapIcon.getHeight(), width, height);
-            canvas.drawRect(bounds, paint);
-
-            // draw text
-            paint.setColor(Color.BLACK);
-            paint.setAlpha(255);
-            paint.setTextSize(12);
-            paint.setFlags(Paint.ANTI_ALIAS_FLAG);
-            canvas.drawText(callsign, 0, height, paint);
-
             // add marker
-            BitmapDrawable drawableText = new BitmapDrawable(_context.getResources(), bitmap);
+            BitmapDrawable drawableText = group.drawLabelWithIcon(_context, 12);
             BitmapDrawable drawableInfoIcon = new BitmapDrawable(_context.getResources(), bitmapInfoIcon);
             marker = new Marker(_mapView);
             marker.setId(callsign);
-            marker.setIcon(drawableText);
+            if (drawableText == null)
+                Log.e(TAG, "Cannot load icon for " + callsign);
+            else
+                marker.setIcon(drawableText);
             marker.setImage(drawableInfoIcon);
             marker.setOnMarkerClickListener((monitoredStationMarker, mapView) -> {
                 GeoPoint markerPoint = monitoredStationMarker.getPosition();
-                _infoWindow.open(monitoredStationMarker, new GeoPoint(markerPoint.getLatitude(), markerPoint.getLongitude()), 0, -2*height);
+                _infoWindow.open(monitoredStationMarker, new GeoPoint(markerPoint.getLatitude(), markerPoint.getLongitude()), 0, -64);
                 _activeTrack.drawForStationMarker(monitoredStationMarker);
                 return false;
             });

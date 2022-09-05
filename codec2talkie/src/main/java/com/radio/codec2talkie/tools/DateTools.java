@@ -13,6 +13,13 @@ public class DateTools {
         return sdf.format(new Date(timeMilliseconds));
     }
 
+    public static String epochToIso8601Time(long timeMilliseconds) {
+        String format = "HH:mm:ss";
+        SimpleDateFormat sdf = new SimpleDateFormat(format, Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getDefault());
+        return sdf.format(new Date(timeMilliseconds));
+    }
+
     public static long currentTimestampMinusHours(int hours) {
         return System.currentTimeMillis() - (hours * 60L * 60L * 1000L);
     }
