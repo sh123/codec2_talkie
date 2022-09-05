@@ -1,7 +1,5 @@
 package com.radio.codec2talkie.protocol.aprs.tools;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 
 import kotlin.text.Regex;
@@ -10,7 +8,8 @@ import kotlin.text.RegexOption;
 public class AprsIsData {
     public String src;
     public String dst;
-    public String path;
+    public String digipath;
+    public String rawDigipath;
     public String data;
 
     public AprsIsData() {
@@ -19,7 +18,7 @@ public class AprsIsData {
     public AprsIsData(String src, String dst, String path, String data) {
         this.src = src;
         this.dst = dst;
-        this.path = path;
+        this.digipath = path;
         this.data = data;
     }
 
@@ -28,8 +27,8 @@ public class AprsIsData {
         String result = src + ">";
         if (dst != null && dst.length() > 0)
             result += dst;
-        if (path != null && path.length() > 0)
-            result += "," + path;
+        if (digipath != null && digipath.length() > 0)
+            result += "," + digipath;
         result += ":" + data;
         return result;
     }
@@ -47,7 +46,8 @@ public class AprsIsData {
         String[] path = digipathData[0].split(",");
         if (path.length == 0) return null;
         aprsIsData.dst = path[0];
-        aprsIsData.path = joinTail(path, ",", "^WIDE.+$");
+        aprsIsData.digipath = joinTail(path, ",", "^WIDE.+$");
+        aprsIsData.rawDigipath = joinTail(path, ",", ".*");
         aprsIsData.data = joinTail(digipathData, ":", ".*");
         return aprsIsData;
     }

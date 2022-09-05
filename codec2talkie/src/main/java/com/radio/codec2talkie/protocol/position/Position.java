@@ -100,6 +100,7 @@ public class Position {
         positionItem.setIsTransmit(isTransmit);
         positionItem.setSrcCallsign(srcCallsign);
         positionItem.setDstCallsign(dstCallsign);
+        positionItem.setDigipath(digipath);
         positionItem.setLatitude(latitude);
         positionItem.setLongitude(longitude);
         positionItem.setMaidenHead(maidenHead);
@@ -119,6 +120,7 @@ public class Position {
         StationItem stationItem = new StationItem(srcCallsign);
         stationItem.setTimestampEpoch(System.currentTimeMillis());
         stationItem.setDstCallsign(dstCallsign);
+        stationItem.setDigipath(digipath);
         stationItem.setLatitude(latitude);
         stationItem.setLongitude(longitude);
         stationItem.setMaidenHead(maidenHead);

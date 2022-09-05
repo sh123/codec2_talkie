@@ -4,12 +4,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Looper;
 import android.util.Log;
-import android.util.Xml;
 import android.widget.Toast;
 
 import androidx.preference.PreferenceManager;
 
-import com.radio.codec2talkie.MainActivity;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.aprs.AprsCallsign;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
@@ -27,7 +25,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
 import java.util.Arrays;
 
 import kotlin.text.MatchGroup;
@@ -133,9 +130,9 @@ public class AprsIs implements Protocol, Runnable {
             Log.d(TAG, "APRS-RX: " + DebugTools.bytesToDebugString(line.getBytes()));
             AprsIsData aprsIsData = AprsIsData.fromString(line);
             if (aprsIsData != null) {
-                _parentProtocolCallback.onReceiveData(aprsIsData.src, aprsIsData.dst, aprsIsData.path, aprsIsData.data.getBytes());
+                _parentProtocolCallback.onReceiveData(aprsIsData.src, aprsIsData.dst, aprsIsData.rawDigipath, aprsIsData.data.getBytes());
                 if (_isTxGateEnabled && new AprsCallsign(aprsIsData.src).isValid) {
-                    sendData(aprsIsData.src, aprsIsData.dst, aprsIsData.path, aprsIsData.data.getBytes());
+                    sendData(aprsIsData.src, aprsIsData.dst, aprsIsData.digipath, aprsIsData.data.getBytes());
                 }
             }
             _parentProtocolCallback.onReceiveLog(line);

@@ -16,6 +16,7 @@ public class StationItem {
     private String srcCallsign;
     private long timestampEpoch;
     public String dstCallsign;
+    public String digipath;
     private String maidenHead;
     public double latitude;
     public double longitude;
@@ -39,6 +40,8 @@ public class StationItem {
     public String getSrcCallsign() { return srcCallsign; }
 
     public String getDstCallsign() { return dstCallsign; }
+
+    public String getDigipath() { return digipath; }
 
     public double getLatitude() { return latitude; }
 
@@ -68,7 +71,9 @@ public class StationItem {
 
     public void setTimestampEpoch(long timestampEpoch) { this.timestampEpoch = timestampEpoch; }
 
-    public void setSrcCallsign(String srcCallsign) { this.srcCallsign = srcCallsign; }
+    public void setSrcCallsign(@NonNull String srcCallsign) { this.srcCallsign = srcCallsign; }
+
+    public void setDigipath(String digipath) { this.digipath = digipath; }
 
     public void setMaidenHead(String maidenHead) { this.maidenHead = maidenHead; }
 
@@ -121,6 +126,8 @@ public class StationItem {
             setSymbolCode(stationItem.getSymbolCode());
         if (stationItem.getLogLine() != null)
             setLogLine(stationItem.getLogLine());
+        if (stationItem.getDigipath() != null)
+            setDigipath(stationItem.getDigipath());
     }
 
     @Override

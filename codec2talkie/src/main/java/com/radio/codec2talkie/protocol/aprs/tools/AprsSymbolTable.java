@@ -26,11 +26,11 @@ public class AprsSymbolTable {
     private final ArrayList<Bitmap> _secondaryTableIconsLarge;
     private final ArrayList<Bitmap> _overlayTableIconsLarge;
 
-    private final int _cellWidth = 24;
-    private final int _cellHeight = 24;
+    private static final int _cellWidth = 24;
+    private static final int _cellHeight = 24;
 
-    private final int _cellWidthLarge = 64;
-    private final int _cellHeightLarge = 64;
+    private static final int _cellWidthLarge = 64;
+    private static final int _cellHeightLarge = 64;
 
     private static final int _cntWidth = 16;
     private static final int _cntHeight = 6;

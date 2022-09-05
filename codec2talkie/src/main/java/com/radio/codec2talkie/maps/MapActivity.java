@@ -326,18 +326,17 @@ public class MapActivity extends AppCompatActivity {
         return true;
     }
 
-    private String getStatus(StationItem group) {
-        double range = UnitTools.milesToKilometers(group.getRangeMiles());
-        return String.format(Locale.US, "%s %f %f<br>%03d° %03dkm/h %04dm %.2fkm<br>%s %s",
-                group.getMaidenHead(),
-                group.getLatitude(),
-                group.getLongitude(),
-                (int)group.getBearingDegrees(),
-                UnitTools.metersPerSecondToKilometersPerHour((int)group.getSpeedMetersPerSecond()),
-                (int)group.getAltitudeMeters(),
+    private String getStatus(StationItem station) {
+        double range = UnitTools.milesToKilometers(station.getRangeMiles());
+        return String.format(Locale.US, "%s<br>%s %f %f<br>%03d° %03dkm/h %04dm %.2fkm<br>%s %s",
+                station.getDigipath(),
+                station.getMaidenHead(), station.getLatitude(), station.getLongitude(),
+                (int)station.getBearingDegrees(),
+                UnitTools.metersPerSecondToKilometersPerHour((int)station.getSpeedMetersPerSecond()),
+                (int)station.getAltitudeMeters(),
                 range == 0 ? UnitTools.milesToKilometers(Position.DEFAULT_RANGE_MILES): range,
-                group.getStatus(),
-                group.getComment());
+                station.getStatus(),
+                station.getComment());
     }
 
     @Override

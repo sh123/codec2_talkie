@@ -17,6 +17,7 @@ public class PositionItem {
     private boolean isTransmit;
     public String srcCallsign;
     public String dstCallsign;
+    public String digipath;
     public double latitude;
     public double longitude;
     public String maidenHead;
@@ -43,6 +44,8 @@ public class PositionItem {
     }
 
     public String getDstCallsign() { return dstCallsign; }
+
+    public String getDigipath() { return digipath; }
 
     public double getLatitude() { return latitude; }
 
@@ -83,6 +86,8 @@ public class PositionItem {
     public void setSrcCallsign(String srcCallsign) { this.srcCallsign = srcCallsign; }
 
     public void setDstCallsign(String dstCallsign) { this.dstCallsign = dstCallsign; }
+
+    public void setDigipath(String digipath) { this.digipath = digipath; }
 
     public void setLatitude(double latitude) { this.latitude = latitude; }
 
