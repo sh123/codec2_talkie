@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.DashPathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -19,7 +18,6 @@ import android.view.MenuItem;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
@@ -27,7 +25,6 @@ import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsSymbolTable;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
-import com.radio.codec2talkie.storage.position.PositionItem;
 import com.radio.codec2talkie.storage.position.PositionItemViewModel;
 import com.radio.codec2talkie.storage.station.StationItem;
 import com.radio.codec2talkie.storage.station.StationItemViewModel;
@@ -42,7 +39,6 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polygon;
-import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
@@ -51,8 +47,6 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 
 public class MapActivity extends AppCompatActivity {
@@ -73,11 +67,8 @@ public class MapActivity extends AppCompatActivity {
     private final HashMap<String, Marker> _objectOverlayItems = new HashMap<>();
     private final HashMap<String, Polygon> _objectOverlayRangeCircles = new HashMap<>();
 
-    // track
-    private LiveData<List<PositionItem>> _activeTrackLiveData;
-    private final HashSet<Long> _activeTrackTimestamps = new HashSet<>();
-    private final List<GeoPoint> _activeTrackPoints = new ArrayList<>();
-    private final Polyline _activeTrackLine = new Polyline();
+    // selected track
+    private MapTrack _activeTrack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,6 +95,9 @@ public class MapActivity extends AppCompatActivity {
         // controller
         _mapController = _map.getController();
         _mapController.zoomTo(5.0);
+
+        // track
+        _activeTrack = new MapTrack(_map, this);
 
         // compass
         InternalCompassOrientationProvider compassOrientationProvider = new InternalCompassOrientationProvider(context) {
@@ -150,14 +144,6 @@ public class MapActivity extends AppCompatActivity {
                 }
             }
         });
-
-        // add track
-        Paint p = _activeTrackLine.getOutlinePaint();
-        p.setStrokeWidth(8);
-        p.setColor(Color.RED);
-        p.setStyle(Paint.Style.STROKE);
-        p.setPathEffect(new DashPathEffect(new float[] {10f, 10f}, 0f));
-        _map.getOverlayManager().add(_activeTrackLine);
     }
 
     @Override
@@ -197,21 +183,6 @@ public class MapActivity extends AppCompatActivity {
             circlePoints.add(new GeoPoint(group.getLatitude(), group.getLongitude()).destinationPoint(1000 * UnitTools.milesToKilometers(group.getRangeMiles()), f));
         }
         polygon.setPoints(circlePoints);
-    }
-
-    private void addTrack(List<PositionItem> positions) {
-        boolean shouldSet = false;
-        for (PositionItem trackPoint : positions) {
-            if (!_activeTrackTimestamps.contains(trackPoint.getTimestampEpoch())) {
-                Log.i(TAG, "addPoint " + trackPoint.getTimestampEpoch() + " " + trackPoint.getLatitude() + " " + trackPoint.getLongitude());
-                GeoPoint point = new GeoPoint(trackPoint.getLatitude(), trackPoint.getLongitude());
-                _activeTrackPoints.add(point);
-                _activeTrackTimestamps.add(trackPoint.getTimestampEpoch());
-                shouldSet = true;
-            }
-        }
-        if (shouldSet)
-            _activeTrackLine.setPoints(_activeTrackPoints);
     }
 
     private boolean addStationPositionIcon(StationItem group) {
@@ -300,19 +271,10 @@ public class MapActivity extends AppCompatActivity {
             marker.setId(callsign);
             marker.setIcon(drawableText);
             marker.setImage(drawableInfoIcon);
-            marker.setOnMarkerClickListener((monitoredMarker, mapView) -> {
-                GeoPoint markerPoint = monitoredMarker.getPosition();
-                _infoWindow.open(monitoredMarker, new GeoPoint(markerPoint.getLatitude(), markerPoint.getLongitude()), 0, -2*height);
-                if (_activeTrackLiveData != null)
-                    _activeTrackLiveData.removeObservers(this);
-                _map.getOverlays().remove(_activeTrackLine);
-                _activeTrackPoints.clear();
-                _activeTrackTimestamps.clear();
-                _activeTrackLine.setPoints(_activeTrackPoints);
-                _map.getOverlays().add(_activeTrackLine);
-                // FIXME, room livedata sends all list if one item changed event with distinctUntilChanged
-                _activeTrackLiveData = _positionItemViewModel.getPositionItems(monitoredMarker.getId());
-                _activeTrackLiveData.observe(this, this::addTrack);
+            marker.setOnMarkerClickListener((monitoredStationMarker, mapView) -> {
+                GeoPoint markerPoint = monitoredStationMarker.getPosition();
+                _infoWindow.open(monitoredStationMarker, new GeoPoint(markerPoint.getLatitude(), markerPoint.getLongitude()), 0, -2*height);
+                _activeTrack.drawForStationMarker(monitoredStationMarker);
                 return false;
             });
             _map.getOverlays().add(marker);
