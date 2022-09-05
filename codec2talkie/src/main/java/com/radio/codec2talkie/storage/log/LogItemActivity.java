@@ -164,21 +164,9 @@ public class LogItemActivity extends AppCompatActivity {
     private void deleteLogItems(int hours) {
         DialogInterface.OnClickListener deleteAllDialogClickListener = (dialog, which) -> {
             if (which == DialogInterface.BUTTON_POSITIVE) {
-                if (_stationName == null) {
-                    if (hours == -1) {
-                        _logItemViewModel.deleteAllLogItems();
-                        _positionItemViewModel.deleteAllPositionItems();
-                        _stationItemViewModel.deleteAllStationItems();
-                    } else {
-                        _logItemViewModel.deleteLogItemsOlderThanHours(hours);
-                        _positionItemViewModel.deletePositionItemsOlderThanHours(hours);
-                        _stationItemViewModel.deleteAllStationItemsOlderThanHours(hours);
-                    }
-                } else {
-                    _logItemViewModel.deleteLogItems(_stationName);
-                    _positionItemViewModel.deletePositionItems(_stationName);
-                    _stationItemViewModel.deleteStationItem(_stationName);
-                }
+                _logItemViewModel.deleteLogItems(_stationName, hours);
+                _positionItemViewModel.deletePositionItems(_stationName, hours);
+                _stationItemViewModel.deleteStationItems(_stationName, hours);
             }
         };
         String alertMessage = getString(R.string.log_item_activity_delete_all_title);

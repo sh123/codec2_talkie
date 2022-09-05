@@ -32,15 +32,16 @@ public class LogItemRepository {
         AppDatabase.getDatabaseExecutor().execute(() -> _logItemDao.insertLogItem(logItem));
     }
 
-    public void deleteAllLogItems() {
-        AppDatabase.getDatabaseExecutor().execute(_logItemDao::deleteAllLogItems);
-    }
-
-    public void deleteLogItems(String groupName) {
-        AppDatabase.getDatabaseExecutor().execute(() -> _logItemDao.deleteLogItems(groupName));
-    }
-
-    public void deleteLogItemsOlderThanHours(int hours) {
-        AppDatabase.getDatabaseExecutor().execute(() -> _logItemDao.deleteLogItemsOlderThanTimestamp(DateTools.currentTimestampMinusHours(hours)));
+    public void deleteLogItems(String srcCallsign, int hours) {
+        AppDatabase.getDatabaseExecutor().execute(() -> {
+            if (srcCallsign == null && hours == -1)
+                _logItemDao.deleteAllLogItems();
+            else if (srcCallsign == null)
+                _logItemDao.deleteLogItemsOlderThanTimestamp(DateTools.currentTimestampMinusHours(hours));
+            else if (hours == -1)
+                _logItemDao.deleteLogItemsFromCallsign(srcCallsign);
+            else
+                _logItemDao.deleteLogItems(srcCallsign, DateTools.currentTimestampMinusHours(hours));
+        });
     }
 }

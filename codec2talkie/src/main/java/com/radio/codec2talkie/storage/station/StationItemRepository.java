@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
 import com.radio.codec2talkie.storage.AppDatabase;
+import com.radio.codec2talkie.tools.DateTools;
 
 import java.util.List;
 
@@ -31,15 +32,18 @@ public class StationItemRepository {
         });
     }
 
-    public void deleteAllStationItems() {
-        AppDatabase.getDatabaseExecutor().execute(_stationItemDao::deleteAllStationItems);
-    }
-
-    public void deleteStationItemsFromCallsign(String srcCallsign) {
-        AppDatabase.getDatabaseExecutor().execute(() -> _stationItemDao.deleteStationItemsFromCallsign(srcCallsign));
-    }
-
-    public void deleteAllStationItemsOlderThanHours(long timestamp) {
-        AppDatabase.getDatabaseExecutor().execute(() -> _stationItemDao.deleteStationItemsOlderThanTimestamp(timestamp));
+    public void deleteStationItems(String srcCallsign, int hours) {
+        AppDatabase.getDatabaseExecutor().execute(() -> {
+            AppDatabase.getDatabaseExecutor().execute(() -> {
+                if (srcCallsign == null && hours == -1)
+                    _stationItemDao.deleteAllStationItems();
+                else if (srcCallsign == null)
+                    _stationItemDao.deleteStationItemsOlderThanTimestamp(DateTools.currentTimestampMinusHours(hours));
+                else if (hours == -1)
+                    _stationItemDao.deleteStationItemsFromCallsign(srcCallsign);
+                else
+                    _stationItemDao.deleteStationItems(srcCallsign, DateTools.currentTimestampMinusHours(hours));
+            });
+        });
     }
 }

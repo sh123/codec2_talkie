@@ -29,11 +29,7 @@ public class LogItemViewModel extends AndroidViewModel {
         return _logItemRepository.getLogItems(groupName);
     }
 
-    public void deleteAllLogItems() { _logItemRepository.deleteAllLogItems(); }
-
-    public void deleteLogItems(String groupName) {
-        _logItemRepository.deleteLogItems(groupName);
+    public void deleteLogItems(String srcCallsign, int hours) {
+        _logItemRepository.deleteLogItems(srcCallsign, hours);
     }
-
-    public void deleteLogItemsOlderThanHours(int hours) { _logItemRepository.deleteLogItemsOlderThanHours(hours); }
 }

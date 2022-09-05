@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
 import com.radio.codec2talkie.storage.AppDatabase;
+import com.radio.codec2talkie.tools.DateTools;
 
 
 import java.util.List;
@@ -28,15 +29,18 @@ public class PositionItemRepository {
         return Transformations.distinctUntilChanged(_positionItemDao.getPositionItems(srcCallsign));
     }
 
-    public void deleteAllPositionItems() {
-        AppDatabase.getDatabaseExecutor().execute(_positionItemDao::deleteAllPositionItems);
-    }
-
-    public void deletePositionItemsFromCallsign(String srcCallsign) {
-        AppDatabase.getDatabaseExecutor().execute(() -> _positionItemDao.deletePositionItems(srcCallsign));
-    }
-
-    public void deletePositionItemsOlderThanTimestamp(long timestamp) {
-        AppDatabase.getDatabaseExecutor().execute(() -> _positionItemDao.deletePositionItemsOlderThanTimestamp(timestamp));
+    public void deletePositionItems(String srcCallsign, int hours) {
+        AppDatabase.getDatabaseExecutor().execute(() -> {
+            AppDatabase.getDatabaseExecutor().execute(() -> {
+                if (srcCallsign == null && hours == -1)
+                    _positionItemDao.deleteAllPositionItems();
+                else if (srcCallsign == null)
+                    _positionItemDao.deletePositionItemsOlderThanTimestamp(DateTools.currentTimestampMinusHours(hours));
+                else if (hours == -1)
+                    _positionItemDao.deletePositionItemsFromCallsign(srcCallsign);
+                else
+                    _positionItemDao.deletePositionItems(srcCallsign, DateTools.currentTimestampMinusHours(hours));
+            });
+        });
     }
 }

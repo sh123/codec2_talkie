@@ -50,10 +50,13 @@ public abstract class PositionItemDao {
     public abstract LiveData<List<PositionItem>> getPositionItems(String srcCallsign);
 
     @Query("DELETE FROM PositionItem WHERE srcCallsign = :srcCallsign")
-    public abstract void deletePositionItems(String srcCallsign);
+    public abstract void deletePositionItemsFromCallsign(String srcCallsign);
 
     @Query("DELETE FROM PositionItem WHERE timestampEpoch < :timestamp")
     public abstract void deletePositionItemsOlderThanTimestamp(long timestamp);
+
+    @Query("DELETE FROM PositionItem WHERE timestampEpoch < :timestamp AND srcCallsign = :srcCallsign")
+    public abstract void deletePositionItems(String srcCallsign, long timestamp);
 
     @Query("DELETE FROM PositionItem")
     public abstract void deleteAllPositionItems();

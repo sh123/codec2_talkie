@@ -23,13 +23,7 @@ public class PositionItemViewModel extends AndroidViewModel {
         return _positionItemRepository.getPositionItems(srcCallsign);
     }
 
-    public void deleteAllPositionItems() { _positionItemRepository.deleteAllPositionItems(); }
-
-    public void deletePositionItems(String srcCallsign) {
-        _positionItemRepository.deletePositionItemsFromCallsign(srcCallsign);
-    }
-
-    public void deletePositionItemsOlderThanHours(int hours) {
-        _positionItemRepository.deletePositionItemsOlderThanTimestamp(DateTools.currentTimestampMinusHours(hours));
+    public void deletePositionItems(String srcCallsign, int hours) {
+        _positionItemRepository.deletePositionItems(srcCallsign, hours);
     }
 }

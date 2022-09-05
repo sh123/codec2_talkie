@@ -49,6 +49,9 @@ public abstract class StationItemDao {
     @Query("DELETE FROM StationItem WHERE timestampEpoch < :timestamp")
     public abstract void deleteStationItemsOlderThanTimestamp(long timestamp);
 
+    @Query("DELETE FROM StationItem WHERE timestampEpoch < :timestamp AND srcCallsign = :srcCallsign")
+    public abstract void deleteStationItems(String srcCallsign, long timestamp);
+
     @Query("DELETE FROM StationItem")
     public abstract void deleteAllStationItems();
 }
