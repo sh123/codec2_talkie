@@ -50,7 +50,6 @@ public class MapTrack {
     }
 
     public void drawForStationMarker(Marker marker) {
-        GeoPoint markerPoint = marker.getPosition();
         if (_activeTrackLiveData != null)
             _activeTrackLiveData.removeObservers((LifecycleOwner) _owner);
         _mapView.getOverlays().remove(_activeTrackLine);

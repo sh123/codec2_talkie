@@ -80,7 +80,7 @@ public class MapStations {
     }
 
     public void showRangeCircles(boolean isVisible) {
-        _showCircles = true;
+        _showCircles = isVisible;
         for (Polygon polygon : _objectOverlayRangeCircles.values()) {
             polygon.setVisible(isVisible);
         }
