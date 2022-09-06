@@ -60,7 +60,7 @@ public class AprsDataTextMessage implements AprsData {
         // message
         byte[] message = new byte[buffer.remaining()];
         buffer.get(message);
-        textMessage = new String(message);
+        textMessage = new String(message, StandardCharsets.UTF_8);
         // TODO, message id: {xxxxx
         _isValid = true;
     }

@@ -22,6 +22,9 @@ import java.util.Arrays;
 public class Freedv implements Protocol {
     private static final String TAG = Freedv.class.getSimpleName();
 
+    private static final int CRC_LENGTH = 2;
+    private static final int PKT_SIZE_LENGTH = 2;
+
     private ProtocolCallback _parentProtocolCallback;
     private Transport _transport;
 
@@ -89,7 +92,7 @@ public class Freedv implements Protocol {
 
     @Override
     public void sendData(String src, String dst, String path, byte[] dataPacket) throws IOException {
-        if (dataPacket.length > _dataBuffer.length - 2) {
+        if (dataPacket.length > _dataBuffer.length - CRC_LENGTH - PKT_SIZE_LENGTH) {
             Log.e(TAG, "Too large packet " + dataPacket.length + " > " + _dataBuffer.length);
             return;
         }
@@ -97,7 +100,10 @@ public class Freedv implements Protocol {
         _transport.write(Arrays.copyOf(_dataSamplesBuffer, (int) cnt));
 
         Arrays.fill(_dataBuffer, (byte) 0);
-        System.arraycopy(dataPacket, 0, _dataBuffer, 0, dataPacket.length);
+        // transmit packet size first
+        _dataBuffer[0] = (byte)((dataPacket.length >> 8) & 0xff);
+        _dataBuffer[1] = (byte)(dataPacket.length & 0xff);
+        System.arraycopy(dataPacket, 0, _dataBuffer, 2, dataPacket.length);
         Codec2.freedvRawDataTx(_freedvData, _dataSamplesBuffer, _dataBuffer);
         _transport.write(_dataSamplesBuffer);
 
@@ -151,8 +157,12 @@ public class Freedv implements Protocol {
             long cntRead = Codec2.freedvRawDataRx(_freedvData, _dataBuffer, samplesData);
             if (cntRead > 0) {
                 Log.i(TAG, "receive " + cntRead);
+                // extract packet length
+                int pktLen = (((int)_dataBuffer[0] & 0xff) << 8) | ((int)_dataBuffer[1] & 0xff);
+                byte [] pkt = new byte[pktLen];
+                System.arraycopy(_dataBuffer, 2, pkt, 0, pktLen);
                 // TODO, refactor, use onReceiveData
-                _parentProtocolCallback.onReceiveCompressedAudio(null, null, -1, _dataBuffer);
+                _parentProtocolCallback.onReceiveCompressedAudio(null, null, -1, pkt);
                 float snr = Codec2.freedvGetModemStat(_freedvData);
                 _parentProtocolCallback.onReceiveSignalLevel((short) 0, (short)(100 * snr));
                 isRead = true;
