@@ -7,6 +7,7 @@ import com.radio.codec2talkie.tools.TextTools;
 import com.radio.codec2talkie.tools.UnitTools;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
@@ -222,9 +223,9 @@ public class AprsDataPositionReportMicE implements AprsData {
         if (infoData.length > 11 && infoData[11] == '}') {
             _position.hasAltitude = true;
             _position.altitudeMeters = ((infoData[8] - 33) * 91 * 91 + (infoData[9] - 33) * 91 + (infoData[10] - 33)) - 10000;
-            _position.comment = TextTools.stripNulls(new String(Arrays.copyOfRange(infoData, 12, infoData.length)));
+            _position.comment = TextTools.stripNulls(new String(Arrays.copyOfRange(infoData, 12, infoData.length), StandardCharsets.UTF_8));
         } else {
-            _position.comment = TextTools.stripNulls(new String(Arrays.copyOfRange(infoData, 8, infoData.length)));
+            _position.comment = TextTools.stripNulls(new String(Arrays.copyOfRange(infoData, 8, infoData.length), StandardCharsets.UTF_8));
         }
 
         _position.maidenHead = UnitTools.decimalToMaidenhead(_position.latitude, _position.longitude);

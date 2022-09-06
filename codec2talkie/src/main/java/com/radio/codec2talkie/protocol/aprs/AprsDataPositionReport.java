@@ -11,6 +11,7 @@ import com.radio.codec2talkie.tools.TextTools;
 import com.radio.codec2talkie.tools.UnitTools;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -143,7 +144,7 @@ public class AprsDataPositionReport implements AprsData {
 
         byte[] tail = new byte[buffer.remaining()];
         buffer.get(tail);
-        String strTail = new String(tail);
+        String strTail = new String(tail, StandardCharsets.UTF_8);
         Pattern latLonPattern = Pattern.compile("^([\\\\/])(\\S{4})(\\S{4})(\\S)(.\\S)?(\\S)?(.*)$", Pattern.DOTALL);
         Matcher latLonMatcher = latLonPattern.matcher(strTail);
         if (!latLonMatcher.matches()) {
@@ -215,7 +216,7 @@ public class AprsDataPositionReport implements AprsData {
         // read latitude/symbol_table/longitude/symbol
         byte[] tail = new byte[buffer.remaining()];
         buffer.get(tail);
-        String strTail = new String(tail);
+        String strTail = new String(tail, StandardCharsets.UTF_8);
         Pattern latLonPattern = Pattern.compile(
                 "^" +
                 "(?:.*)?" +                         // optional timestamp

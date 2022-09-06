@@ -4,6 +4,7 @@ import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class AprsDataTextMessage implements AprsData {
 
