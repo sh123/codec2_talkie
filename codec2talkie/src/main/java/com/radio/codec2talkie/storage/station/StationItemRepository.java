@@ -15,16 +15,22 @@ import java.util.List;
 public class StationItemRepository {
     private static final String TAG = StationItemRepository.class.getSimpleName();
 
+    private static final int MIN_POSITION_COUNT = 2;
+
     private final StationItemDao _stationItemDao;
     private final LiveData<List<StationItem>> _stationItems;
+    private final LiveData<List<StationItem>> _stationItemsMoving;
 
     public StationItemRepository(Application application) {
         AppDatabase appDatabase = AppDatabase.getDatabase(application);
         _stationItemDao = appDatabase.stationitemDao();
         _stationItems = Transformations.distinctUntilChanged(_stationItemDao.getAllStationItems());
+        _stationItemsMoving = Transformations.distinctUntilChanged(_stationItemDao.getMovingStationItems(MIN_POSITION_COUNT));
     }
 
-    public LiveData<List<StationItem>> getAllStationItems() { return _stationItems; }
+    public LiveData<List<StationItem>> getAllStationItems(boolean movingOnly) {
+        return movingOnly ? _stationItemsMoving : _stationItems;
+    }
 
     public void upsertStationItem(StationItem stationItem) {
         AppDatabase.getDatabaseExecutor().execute(() -> {

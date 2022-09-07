@@ -365,4 +365,5 @@
     <string name="log_item_activity_delete_hours_title">This will remove everything older than %d hours. Are you sure?</string>
     <string name="map_menu_rotate_map">Rotate map with compass</string>
     <string name="map_menu_show_range">Show range circles</string>
+    <string name="map_menu_show_moving">Show moving stations</string>
 </resources>

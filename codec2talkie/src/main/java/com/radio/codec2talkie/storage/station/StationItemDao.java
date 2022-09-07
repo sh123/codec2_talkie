@@ -43,6 +43,11 @@ public abstract class StationItemDao {
     @Query("SELECT * FROM StationItem ORDER BY srcCallsign ASC")
     public abstract LiveData<List<StationItem>> getAllStationItems();
 
+    @Query("SELECT *, (SELECT count(*) FROM PositionItem pos WHERE st.srcCallsign = pos.srcCallsign) AS positionCount " +
+            "FROM StationItem st " +
+            "WHERE positionCount > :minCount")
+    public abstract LiveData<List<StationItem>> getMovingStationItems(int minCount);
+
     @Query("DELETE FROM StationItem WHERE srcCallsign = :srcCallsign")
     public abstract void deleteStationItemsFromCallsign(String srcCallsign);
 

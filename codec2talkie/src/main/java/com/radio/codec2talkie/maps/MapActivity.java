@@ -133,12 +133,21 @@ public class MapActivity extends AppCompatActivity {
             boolean showCircles = false;
             if (item.isChecked()) {
                 item.setChecked(false);
-                _mapView.setMapOrientation(0);
             } else {
                 item.setChecked(true);
                 showCircles = true;
             }
             _mapStations.showRangeCircles(showCircles);
+            return true;
+        } else if (itemId == R.id.map_menu_show_moving) {
+            boolean showMoving = false;
+            if (item.isChecked()) {
+                item.setChecked(false);
+            } else {
+                item.setChecked(true);
+                showMoving = true;
+            }
+            _mapStations.showMovingStations(showMoving);
             return true;
         }
         return super.onOptionsItemSelected(item);

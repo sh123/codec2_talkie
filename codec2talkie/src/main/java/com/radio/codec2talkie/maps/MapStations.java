@@ -12,6 +12,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 
@@ -32,6 +33,7 @@ import org.osmdroid.views.overlay.infowindow.MarkerInfoWindow;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 public class MapStations {
@@ -47,10 +49,14 @@ public class MapStations {
 
     private final MarkerInfoWindow _infoWindow;
 
+    private LiveData<List<StationItem>> _stationItemLiveData;
+    private final StationItemViewModel _stationItemViewModel;
+
     private final HashMap<String, Marker> _objectOverlayItems = new HashMap<>();
     private final HashMap<String, Polygon> _objectOverlayRangeCircles = new HashMap<>();
 
     private boolean _showCircles = false;
+    private boolean _showMoving = false;
 
     private final MapTrack _activeTrack;
 
@@ -64,9 +70,17 @@ public class MapStations {
         _infoWindow = new MarkerInfoWindow(R.layout.bonuspack_bubble, _mapView);
         _activeTrack = new MapTrack(_context, _mapView, _owner);
 
-        StationItemViewModel _stationItemViewModel = new ViewModelProvider(_owner).get(StationItemViewModel.class);
+        _stationItemViewModel = new ViewModelProvider(_owner).get(StationItemViewModel.class);
+        loadStations(_showMoving);
+    }
+
+    private void loadStations(boolean movingOnly) {
+        if (_stationItemLiveData != null)
+            _stationItemLiveData.removeObservers((LifecycleOwner) _owner);
+        removePositionMarkers();
+        _stationItemLiveData = _stationItemViewModel.getAllStationItems(movingOnly);
         // FIXME, room livedata sends all list if one item changed event with distinctUntilChanged
-        _stationItemViewModel.getAllStationItems().observe((LifecycleOwner) _owner, allStations -> {
+        _stationItemLiveData.observe((LifecycleOwner) _owner, allStations -> {
             Log.i(TAG, "add stations " + allStations.size());
             for (StationItem station : allStations) {
                 //Log.i(TAG, "new position " + station.getLatitude() + " " + station.getLongitude());
@@ -77,6 +91,22 @@ public class MapStations {
                 }
             }
         });
+    }
+
+    private void removePositionMarkers() {
+        for (Marker marker : _objectOverlayItems.values()) {
+            marker.remove(_mapView);
+        }
+        _objectOverlayItems.clear();
+        for (Polygon circle : _objectOverlayRangeCircles.values()) {
+            _mapView.getOverlays().remove(circle);
+        }
+        _objectOverlayRangeCircles.clear();
+    }
+
+    public void showMovingStations(boolean isMoving) {
+        _showMoving = isMoving;
+        loadStations(_showMoving);
     }
 
     public void showRangeCircles(boolean isVisible) {

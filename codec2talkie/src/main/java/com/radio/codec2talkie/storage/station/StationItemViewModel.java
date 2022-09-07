@@ -19,7 +19,7 @@ public class StationItemViewModel extends AndroidViewModel {
         _stationItemRepository = new StationItemRepository(application);
     }
 
-    public LiveData<List<StationItem>> getAllStationItems() { return _stationItemRepository.getAllStationItems(); }
+    public LiveData<List<StationItem>> getAllStationItems(boolean movingOnly) { return _stationItemRepository.getAllStationItems(movingOnly); }
 
     public void deleteStationItems(String srcCallsign, int hours) {
         _stationItemRepository.deleteStationItems(srcCallsign, hours);

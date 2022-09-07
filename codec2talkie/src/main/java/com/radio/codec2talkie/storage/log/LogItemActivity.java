@@ -85,7 +85,7 @@ public class LogItemActivity extends AppCompatActivity {
         stationsRecyclerView.setLayoutManager(linearLayoutManagerStations);
         stationsRecyclerView.addItemDecoration(new DividerItemDecoration(stationsRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
-        _stationItemViewModel.getAllStationItems().observe(this, stationsAdapter::submitList);
+        _stationItemViewModel.getAllStationItems(false).observe(this, stationsAdapter::submitList);
 
         // launch with filter if station name is provided
         if (_stationName == null) {

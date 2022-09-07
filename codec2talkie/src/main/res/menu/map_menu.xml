@@ -11,6 +11,11 @@
         android:checkable="true"
         android:checked="false"/>
     <item
+        android:id="@+id/map_menu_show_moving"
+        android:title="@string/map_menu_show_moving"
+        android:checkable="true"
+        android:checked="false"/>
+    <item
         android:id="@+id/map_menu_clear_cache"
         android:title="@string/map_menu_clear_cache_title" />
 </menu>
