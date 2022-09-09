@@ -20,15 +20,15 @@ What you can do with this app:
   - Send and receive Codec2 voice over KISS
   - Send and receive Codec2 voice encapsulated into APRS UI frames
 - Data communication
-  - Use APRS over FSK 300 (HF, TX only), AFSK1200 (VHF), FreeDV OFDM (HF) or APRS-IS
+  - Use APRS over FSK 300 (HF, TX only), AFSK1200 (VHF), FreeDV OFDM (HF) or APRS-IS (Internet)
   - Send and receive APRS position reports
   - Send and receive APRS messages
-  - APRS log
-  - APRS station hub
-  - APRS map with ability to see station info and station track
+  - APRS log with raw APRS data
+  - APRS station hub with stations grouped by callsign and their log is shown
+  - APRS map with ability to see station info, station track with information about each geo position
   - Use application as APRS digirepeater
-  - Use application as APRS-IS RX/TX iGate
-  - Use application as APRS-IS internet tracker
+  - Use application as APRS-IS RX/TX iGate to forward packets to/from APRS-IS (Internet)
+  - Use application as APRS-IS internet tracker to send/receive APRS data over Internet
 - Integrate with hardware/software
   - Use it with your KISS Bluetooth/BLE/USB/TCPIP hardware modem, such as LoRa/FSK/AFSK/etc, control its parameters by using "set hardware" KISS command
   - Use it with KISS software modem using TCPIP, such as Direwolf
