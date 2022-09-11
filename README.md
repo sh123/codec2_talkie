@@ -24,7 +24,7 @@ What you can do with this app:
   - Send and receive APRS position reports
   - Send and receive APRS messages
   - APRS log with raw APRS data
-  - APRS station hub with stations grouped by callsign and their log is shown
+  - APRS station hub with stations grouped by callsign and their log
   - APRS map with ability to see station info, station track with information about each geo position
   - Use application as APRS digirepeater
   - Use application as APRS-IS RX/TX iGate to forward packets to/from APRS-IS (Internet)
