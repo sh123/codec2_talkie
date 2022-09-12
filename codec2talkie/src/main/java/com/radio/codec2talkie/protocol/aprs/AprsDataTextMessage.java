@@ -5,6 +5,8 @@ import com.radio.codec2talkie.protocol.position.Position;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AprsDataTextMessage implements AprsData {
 
@@ -61,8 +63,9 @@ public class AprsDataTextMessage implements AprsData {
         byte[] message = new byte[buffer.remaining()];
         buffer.get(message);
         textMessage = new String(message, StandardCharsets.UTF_8);
-        // TODO, message id: {xxxxx
-        _isValid = true;
+        // TODO, message id: {xxxxx (for auto ack)
+        // TODO, telemetry, make subclass from message, extend and extract values
+        _isValid = !isTelemetry(textMessage);
     }
 
     @Override
@@ -73,5 +76,11 @@ public class AprsDataTextMessage implements AprsData {
     @Override
     public boolean isValid() {
         return _isValid;
+    }
+
+    private boolean isTelemetry(String textMessage) {
+        Pattern p = Pattern.compile("^(EQNS|PARM|UNIT|BITS)[.].+$");
+        Matcher m = p.matcher(textMessage);
+        return m.matches();
     }
 }
