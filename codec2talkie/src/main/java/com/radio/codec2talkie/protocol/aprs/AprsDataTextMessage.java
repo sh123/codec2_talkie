@@ -79,7 +79,7 @@ public class AprsDataTextMessage implements AprsData {
     }
 
     private boolean isTelemetry(String textMessage) {
-        Pattern p = Pattern.compile("^(EQNS|PARM|UNIT|BITS)[.].+$");
+        Pattern p = Pattern.compile("^(EQNS|PARM|UNIT|BITS)[.].+$", Pattern.DOTALL);
         Matcher m = p.matcher(textMessage);
         return m.matches();
     }
