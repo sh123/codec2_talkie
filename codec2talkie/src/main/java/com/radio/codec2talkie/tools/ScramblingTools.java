@@ -24,18 +24,18 @@ public class ScramblingTools {
     private static final String SCRAMBLING_ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final String PBE_ALGORITHM = "PBEwithSHA256and128BITAES-CBC-BC";
 
+    private static final SecureRandom _randomGenerator = new SecureRandom();
+
     public static ScrambledData scramble(String masterKey, byte[] rawData, int iterations)
             throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeySpecException,
             InvalidKeyException, BadPaddingException, IllegalBlockSizeException, InvalidAlgorithmParameterException {
-
-        SecureRandom rnd = new SecureRandom();
 
         ScrambledData encData = new ScrambledData();
         encData.salt = new byte[SALT_BYTES];
         encData.iv = new byte[BLOCK_SIZE];
 
-        rnd.nextBytes(encData.salt);
-        rnd.nextBytes(encData.iv);
+        _randomGenerator.nextBytes(encData.salt);
+        _randomGenerator.nextBytes(encData.iv);
 
         PBEKeySpec keySpec = new PBEKeySpec(masterKey.toCharArray(), encData.salt, iterations);
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(PBE_ALGORITHM);
