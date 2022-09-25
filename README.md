@@ -40,8 +40,6 @@ What you can do with this app:
 # Requirements
 - Android 7.0 (API 24) or higher
   - Application could also be used with your Android network radio, such as Inrico TM-7, apk just needs to be installed over USB, see [Discussion](https://github.com/sh123/codec2_talkie/issues/4)
-- Android 5.0, 5.1, 6.0 (API 21, 22, 23)
-  - Separate apk package is released with "legacy" suffix from legacy branch
 - Modem, radio module or transceiver which supports [KISS protocol](https://en.wikipedia.org/wiki/KISS_(TNC)) or can process KISS or raw Codec2 audio frames over serial Bluetooth, BLE, USB or TCP/IP
 - Analog transceiver with built-in or external USB audio adapter and VOX or USB CAT PTT control (such as MCHF or iCom IC-7x00 series)
 
