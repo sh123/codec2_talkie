@@ -26,6 +26,8 @@ public class BleGattWrapper extends BluetoothGattCallback {
     public static final UUID BT_KISS_CHARACTERISTIC_RX_UUID = UUID.fromString("00000003-ba2a-46c9-ae49-01b0961f68bb");
     public static final UUID BT_NOTIFY_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
+    private static final int DefaultMtuSize = 16;
+
     private BluetoothGatt _gatt;
     private BluetoothGattCharacteristic _rxCharacteristic;
     private BluetoothGattCharacteristic _txCharacteristic;
@@ -63,9 +65,7 @@ public class BleGattWrapper extends BluetoothGattCallback {
         synchronized (_readBuffer) {
             // nothing to read
             if (_readBuffer.position() == 0) return 0;
-
             _readBuffer.flip();
-
             int countRead = 0;
             try {
                 for (int i = 0; i < data.length; i++) {
@@ -85,25 +85,32 @@ public class BleGattWrapper extends BluetoothGattCallback {
 
     public int write(byte[] data) throws IOException {
         if (!_isConnected) throw new IOException();
-
         synchronized (_writeBuffer) {
             _writeBuffer.put(data);
-            _writeBuffer.flip();
-
-            byte[] arr = new byte[_writeBuffer.limit()];
-            _writeBuffer.get(arr);
-            _txCharacteristic.setValue(arr);
-
-            if (_gatt.writeCharacteristic(_txCharacteristic)) {
-                // written successfully
-                _writeBuffer.clear();
-            } else {
-                // redo
-                _writeBuffer.position(_writeBuffer.limit());
-                _writeBuffer.limit(_writeBuffer.capacity());
-            }
+            writeCharacteristic(_txCharacteristic);
             return data.length;
         }
+    }
+
+    private void writeCharacteristic(BluetoothGattCharacteristic characteristic) {
+        _writeBuffer.flip();
+        int cntRemaining = _writeBuffer.remaining();
+        if (cntRemaining > 0) {
+            int cntWrite = Math.min(cntRemaining, DefaultMtuSize);
+            byte[] arr = new byte[cntWrite];
+            _writeBuffer.get(arr);
+            characteristic.setValue(arr);
+            if (!_gatt.writeCharacteristic(characteristic)) {
+                Log.d(TAG, "GATT write delayed");
+                _writeBuffer.position(_writeBuffer.position() - cntWrite);
+            }
+        }
+        _writeBuffer.compact();
+    }
+
+    @Override
+    public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
+        super.onMtuChanged(gatt, mtu, status);
     }
 
     @Override
@@ -129,18 +136,12 @@ public class BleGattWrapper extends BluetoothGattCallback {
     @Override
     public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         super.onCharacteristicWrite(gatt, characteristic, status);
-
-        if (status == BluetoothGatt.GATT_SUCCESS && _writeBuffer.position() > 0) {
+        if (status == BluetoothGatt.GATT_SUCCESS) {
             synchronized (_writeBuffer) {
-                _writeBuffer.flip();
-
-                byte[] arr = new byte[_writeBuffer.limit()];
-                _writeBuffer.get(arr);
-                characteristic.setValue(arr);
-
-                _gatt.writeCharacteristic(characteristic);
-                _writeBuffer.clear();
+                writeCharacteristic(_txCharacteristic);
             }
+        } else {
+            Log.e(TAG, "GATT write failure " + status);
         }
     }
 
