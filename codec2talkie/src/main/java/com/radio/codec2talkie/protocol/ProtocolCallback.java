@@ -11,6 +11,7 @@ public abstract class ProtocolCallback {
     abstract protected void onReceiveTextMessage(TextMessage textMessage);
     abstract protected void onReceiveData(String src, String dst, String path, byte[] data);
     abstract protected void onReceiveSignalLevel(short rssi, short snr);
+    abstract protected void onReceiveTelemetry(int batVoltage);
     abstract protected void onReceiveLog(String logData);
 
     // transmit

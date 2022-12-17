@@ -178,6 +178,11 @@ public class AprsIs implements Protocol, Runnable {
         }
 
         @Override
+        protected void onReceiveTelemetry(int batVoltage) {
+            _parentProtocolCallback.onReceiveTelemetry(batVoltage);
+        }
+
+        @Override
         protected void onReceiveLog(String logData) {
             _parentProtocolCallback.onReceiveLog(logData);
         }

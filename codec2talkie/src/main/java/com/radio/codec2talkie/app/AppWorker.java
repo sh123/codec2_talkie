@@ -237,6 +237,12 @@ public class AppWorker extends Thread {
         _onWorkerStateChanged.sendMessage(msg);
     }
 
+    private void sendTelemetryUpdate(int batVoltage) {
+        Message msg = Message.obtain();
+        msg.what = AppMessage.EV_TELEMETRY.toInt();
+        msg.arg1 = batVoltage;
+        _onWorkerStateChanged.sendMessage(msg);
+    }
     private void sendRxAudioLevelUpdate(short [] pcmAudioSamples) {
         Message msg = Message.obtain();
         msg.what = AppMessage.EV_RX_LEVEL.toInt();
@@ -305,6 +311,11 @@ public class AppWorker extends Thread {
         @Override
         protected void onReceiveSignalLevel(short rssi, short snr) {
             sendRxRadioLevelUpdate(rssi, snr);
+        }
+
+        @Override
+        protected void onReceiveTelemetry(int batVoltage) {
+            sendTelemetryUpdate(batVoltage);
         }
 
         @Override

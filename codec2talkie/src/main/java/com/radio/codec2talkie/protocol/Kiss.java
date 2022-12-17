@@ -46,6 +46,7 @@ public class Kiss implements Protocol {
     private static final byte KISS_CMD_SET_HARDWARE = (byte)0x06;
     private static final byte KISS_CMD_SIGNAL_REPORT = (byte)0x07;
     private static final byte KISS_CMD_REBOOT = (byte)0x08;
+    private static final byte KISS_CMD_TELEMETRY = (byte)0x09;
     private static final byte KISS_CMD_NOCMD = (byte)0x80;
 
     private static final byte CSMA_PERSISTENCE = (byte)0xff;
@@ -54,6 +55,7 @@ public class Kiss implements Protocol {
     private static final byte TX_TAIL_10MS_UNITS = (byte)(500 / 10);
 
     private static final int SIGNAL_LEVEL_EVENT_SIZE = 4;
+    private static final int TELEMETRY_EVENT_SIZE = 2;
 
     private enum State {
         GET_START,
@@ -65,7 +67,8 @@ public class Kiss implements Protocol {
 
     private enum DataType {
         RAW,
-        SIGNAL_REPORT
+        SIGNAL_REPORT,
+        TELEMETRY
     }
 
     private DataType _kissDataType = DataType.RAW;
@@ -280,6 +283,11 @@ public class Kiss implements Protocol {
                 _kissDataType = DataType.SIGNAL_REPORT;
                 _kissCmdBufferPos = 0;
                 break;
+            case KISS_CMD_TELEMETRY:
+                _kissState = State.GET_DATA;
+                _kissDataType = DataType.TELEMETRY;
+                _kissCmdBufferPos = 0;
+                break;
             case KISS_FEND:
                 break;
             default:
@@ -311,13 +319,24 @@ public class Kiss implements Protocol {
                         Log.e(TAG, "Signal event of wrong size");
                     }
                     _kissCmdBufferPos = 0;
+                } else if (_kissDataType == DataType.TELEMETRY && _isExtendedMode) {
+                    byte[] telemetryRaw = Arrays.copyOf(_kissCmdBuffer, _kissCmdBufferPos);
+                    ByteBuffer data = ByteBuffer.wrap(telemetryRaw);
+                    if (telemetryRaw.length == TELEMETRY_EVENT_SIZE) {
+                        short batVoltage = data.getShort();
+                        protocolCallback.onReceiveTelemetry(batVoltage);
+                    } else {
+                        protocolCallback.onProtocolRxError();
+                        Log.e(TAG, "Telemetry event of wrong size " + telemetryRaw.length + " vs " + TELEMETRY_EVENT_SIZE);
+                    }
+                    _kissCmdBufferPos = 0;
                 }
                 resetState();
                 break;
             default:
                 if (_kissDataType == DataType.RAW) {
                     receiveFrameByte(b);
-                } else if (_kissDataType == DataType.SIGNAL_REPORT) {
+                } else if (_kissDataType == DataType.SIGNAL_REPORT || _kissDataType == DataType.TELEMETRY) {
                     _kissCmdBuffer[_kissCmdBufferPos++] = b;
                 }
                 break;

@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private TextView _textConnInfo;
     private TextView _textStatus;
+    private TextView _textTelemetry;
     private TextView _textCodecMode;
     private TextView _textRssi;
     private ProgressBar _progressAudioLevel;
@@ -133,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         _textConnInfo = findViewById(R.id.textBtName);
         _textStatus = findViewById(R.id.textStatus);
+        _textTelemetry = findViewById(R.id.textTelemetry);
         _textRssi = findViewById(R.id.textRssi);
 
         // UV bar
@@ -810,6 +812,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         _textRssi.setText(String.format(Locale.getDefault(), "%3d dBm, %2.2f", msg.arg1, (double)msg.arg2 / 100.0));
                         _progressRssi.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN));
                         _progressRssi.setProgress(msg.arg1 - S_METER_S0_VALUE_DB);
+                    }
+                    break;
+                case EV_TELEMETRY:
+                    if (msg.arg1 > 0) {
+                        // NOTE, reuse status indicator for voltage
+                        _textTelemetry.setText(String.format(Locale.getDefault(), "%2.2fV", (double)msg.arg1 / 100.0));
                     }
                     break;
                 // same progress bar is reused for rx and tx levels

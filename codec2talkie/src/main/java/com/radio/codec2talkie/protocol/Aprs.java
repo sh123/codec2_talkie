@@ -166,6 +166,11 @@ public class Aprs implements Protocol {
         }
 
         @Override
+        protected void onReceiveTelemetry(int batVoltage) {
+            _parentProtocolCallback.onReceiveTelemetry(batVoltage);
+        }
+
+        @Override
         protected void onReceiveLog(String logData) {
             _parentProtocolCallback.onReceiveLog(logData);
         }
