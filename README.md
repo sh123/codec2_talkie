@@ -6,7 +6,9 @@
 
 **Requires additional hardware (e.g. AFSK/LoRa), software (e.g. Direwolf) radio modem or analog transceiver with USB audio + VOX/USB CAT PTT control, such as MCHF or ICOM**
 
-For more information visit project [Wiki](https://github.com/sh123/codec2_talkie/wiki)
+For more information about FreeDV and Codec2 visit https://github.com/drowe67/codec2
+
+For detailed information about project [Wiki](https://github.com/sh123/codec2_talkie/wiki)
 
 ![alt text](images/diagram.png)
 
