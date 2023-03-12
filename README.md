@@ -6,7 +6,9 @@
 
 **Requires additional hardware (e.g. AFSK/LoRa), software (e.g. Direwolf) radio modem or analog transceiver with USB audio + VOX/USB CAT PTT control, such as MCHF or ICOM**
 
-For more information visit project [Wiki](https://github.com/sh123/codec2_talkie/wiki)
+For more information about FreeDV and Codec2 visit https://github.com/drowe67/codec2
+
+For detailed information about project [Wiki](https://github.com/sh123/codec2_talkie/wiki)
 
 ![alt text](images/diagram.png)
 
@@ -53,6 +55,7 @@ What you can do with this app:
 # Other similar or related projects
 - Hardware
   - ESP32 LoRa APRS modem (used with this application for testing): https://github.com/sh123/esp32_loraprs
+  - ESP32 LoRa DV transceiver: https://github.com/sh123/esp32_loradv
   - ESP32 Arduino Codec2 library (ESP32 i2s walkie talkie example interoperable with this application): https://github.com/sh123/esp32_codec2_arduino
   - Minimal Arduino LoRa KISS modem: https://github.com/sh123/lora_arduino_kiss_modem
   - Minimal Arduino NRF24 KISS modem: https://github.com/sh123/nrf24l01_arduino_kiss_modem
