@@ -10,8 +10,8 @@ android {
         applicationId "com.radio.codec2talkie"
         minSdkVersion 23
         targetSdkVersion 30
-        versionCode 150
-        versionName "1.50"
+        versionCode 151
+        versionName "1.51"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
