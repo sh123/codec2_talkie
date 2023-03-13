@@ -15,12 +15,11 @@
     <!-- 0x067B / 0x2303: Prolific PL2303 -->
     <usb-device vendor-id="1659" product-id="8963" />
 
-    <!-- 0x1a86 / 0x?523: Qinheng CH34x -->
+    <!-- 0x1a86 / 0x?523: Qinheng CH34x (Arduino) -->
     <usb-device vendor-id="6790" product-id="21795" /> <!-- 0x5523: CH341A -->
     <usb-device vendor-id="6790" product-id="29987" /> <!-- 0x7523: CH340 -->
 
     <!-- CDC driver -->
-    <usb-device vendor-id="9025" />                   <!-- 0x2341 / ......: Arduino -->
     <usb-device vendor-id="5824" product-id="1155" /> <!-- 0x16C0 / 0x0483: Teensyduino  -->
     <usb-device vendor-id="1003" product-id="8260" /> <!-- 0x03EB / 0x2044: Atmel Lufa -->
     <usb-device vendor-id="7855" product-id="4"    /> <!-- 0x1eaf / 0x0004: Leaflabs Maple -->
@@ -28,6 +27,9 @@
 
     <!-- spark fun -->
     <usb-device vendor-id="6991" />                   <!-- 0x1b4f / ......: Spark Fun -->
+
+    <!-- arduino -->
+    <usb-device vendor-id="9025" />                   <!-- 0x2341 / ......: Arduino -->
 
     <!-- RIG CAT control -->
     <usb-device vendor-id="1155" product-id="22322" /> <!-- 0x0483 / 0x5732: STM, MCHF -->

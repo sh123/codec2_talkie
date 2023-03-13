@@ -22,7 +22,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
 import com.hoho.android.usbserial.driver.CdcAcmSerialDriver;
+import com.hoho.android.usbserial.driver.Ch34xSerialDriver;
 import com.hoho.android.usbserial.driver.Cp21xxSerialDriver;
+import com.hoho.android.usbserial.driver.FtdiSerialDriver;
 import com.hoho.android.usbserial.driver.ProbeTable;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
@@ -96,10 +98,21 @@ public class UsbConnectActivity extends AppCompatActivity {
         customTable.addProduct(0x1b4f, 0x9204, CdcAcmSerialDriver.class);
         // Arduino Due
         customTable.addProduct(0x2341, 0x003d, CdcAcmSerialDriver.class);
+        // Arduino Uno/Nano (CH34x)
+        customTable.addProduct(0x1a86, 0x5523, Ch34xSerialDriver.class);
+        customTable.addProduct(0x1a86, 0x7523, Ch34xSerialDriver.class);
         // STM, MCHF
         customTable.addProduct(0x0483, 0x5732, CdcAcmSerialDriver.class);
         // CP2102/2109, iCom
         customTable.addProduct(0x10c4, 0xea60, Cp21xxSerialDriver.class);
+        customTable.addProduct(0x10c4, 0xea70, Cp21xxSerialDriver.class);
+        customTable.addProduct(0x10c4, 0xea71, Cp21xxSerialDriver.class);
+        // FTDI
+        customTable.addProduct(0x0403, 0x6001, FtdiSerialDriver.class);
+        customTable.addProduct(0x0403, 0x6010, FtdiSerialDriver.class);
+        customTable.addProduct(0x0403, 0x6011, FtdiSerialDriver.class);
+        customTable.addProduct(0x0403, 0x6014, FtdiSerialDriver.class);
+        customTable.addProduct(0x0403, 0x6015, FtdiSerialDriver.class);
         return new UsbSerialProber(customTable);
     }
 
