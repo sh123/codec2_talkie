@@ -70,9 +70,9 @@ What you can do with this app:
   - LoRa mesh text GPS communicator: https://github.com/meshtastic/Meshtastic-device
 
 # Prototypes used with this application
- - ESP32 LoRa Bluetooth APRS modem (used with this application for testing): https://github.com/sh123/esp32_loraprs
- - ESP32 LoRa DV handheld transceiver: https://github.com/sh123/esp32_loradv
- - Arduno Micro USB KISS modem and APRS AX.25 digirepeater: https://github.com/sh123/micro_loraprs
+ - ESP32 LoRa Bluetooth headless APRS modem (no screen and external controls): https://github.com/sh123/esp32_loraprs
+ - ESP32 LoRa DV handheld transceiver (with screen and controls): https://github.com/sh123/esp32_loradv
+ - Arduno Micro USB KISS modem (no screen and external controls): https://github.com/sh123/micro_loraprs
   
 ![alt text](images/modems.png)
 
