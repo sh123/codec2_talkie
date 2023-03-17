@@ -69,6 +69,6 @@ What you can do with this app:
 - Other interesting projects:
   - LoRa mesh text GPS communicator: https://github.com/meshtastic/Meshtastic-device
 
-# Prototype modems and transceivers used with this application
+# Prototypes used with this application
 ![alt text](images/modems.png)
 
