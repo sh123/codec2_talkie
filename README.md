@@ -68,3 +68,7 @@ What you can do with this app:
   - Codec2 iOS wrapper: https://github.com/Beartooth/codec2-ios
 - Other interesting projects:
   - LoRa mesh text GPS communicator: https://github.com/meshtastic/Meshtastic-device
+
+# Prototype modems and transceivers used with this application
+![alt text](images/modems.png)
+
