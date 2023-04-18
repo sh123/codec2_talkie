@@ -93,6 +93,10 @@ public class SettingsWrapper {
                 !isFreeDvSoundModemModulation(sharedPreferences);   // no voax25 in freedv
     }
 
+    public static boolean isTextPacketsEnabled(SharedPreferences sharedPreferences) {
+        return sharedPreferences.getBoolean(PreferenceKeys.AX25_TEXT_PACKETS_ENABLE, false);
+    }
+
     public static boolean isAprsIsEnabled(SharedPreferences sharedPreferences) {
         return sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE, false);
     }

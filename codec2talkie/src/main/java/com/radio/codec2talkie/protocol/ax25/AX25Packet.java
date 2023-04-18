@@ -2,11 +2,14 @@ package com.radio.codec2talkie.protocol.ax25;
 
 import androidx.annotation.NonNull;
 
+import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
 import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.tools.TextTools;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 public class AX25Packet {
 
@@ -28,6 +31,21 @@ public class AX25Packet {
     public void fromBinary(byte[] data) {
         isValid = false;
         if (data == null) return;
+        // lora text packet with 0x3c,0xff,0x01 prefix
+        if (data.length > 3 && data[0] == (byte)0x3c && data[1] == (byte)0xff && data[2] == (byte)0x01) {
+            String rawText = new String(Arrays.copyOfRange(data, 3, data.length), StandardCharsets.US_ASCII);
+            AprsIsData textPacket = AprsIsData.fromString(rawText);
+            if (textPacket != null) {
+                src = textPacket.src;
+                dst = textPacket.dst;
+                digipath = textPacket.rawDigipath;
+                rawData = textPacket.data.getBytes(StandardCharsets.US_ASCII);
+                isAudio = false;
+                isValid = true;
+                return;
+            }
+        }
+        // binary packet
         ByteBuffer buffer = ByteBuffer.wrap(data);
         try {
             // dst
@@ -79,6 +97,18 @@ public class AX25Packet {
         } catch (BufferUnderflowException e) {
             //e.printStackTrace();
         }
+    }
+
+    public byte[] toTextBinary() {
+        byte[] packetContent = toString().getBytes(StandardCharsets.US_ASCII);
+        // lora aprs prefix 0x3c,0xff,0x01
+        ByteBuffer textPacketBuffer = ByteBuffer.allocateDirect(packetContent.length + 3);
+        textPacketBuffer.put((byte)0x3c).put((byte)0xff).put((byte)0x01);
+        textPacketBuffer.put(packetContent);
+        textPacketBuffer.flip();
+        byte[] ax25Frame = new byte[textPacketBuffer.remaining()];
+        textPacketBuffer.get(ax25Frame);
+        return ax25Frame;
     }
 
     public byte[] toBinary() {

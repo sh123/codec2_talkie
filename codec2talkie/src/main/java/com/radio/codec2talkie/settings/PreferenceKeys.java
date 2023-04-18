@@ -67,6 +67,7 @@ public final class PreferenceKeys {
     public static String APP_AUDIO_DESTINATION = "app_audio_destination";
 
     public static String AX25_VOAX25_ENABLE = "aprs_voax25_enable";
+    public static String AX25_TEXT_PACKETS_ENABLE = "aprs_text_packets_enable";
     public static String AX25_CALLSIGN = "aprs_callsign";
     public static String AX25_SSID = "aprs_ssid";
     public static String AX25_DIGIPATH = "aprs_digipath";

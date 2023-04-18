@@ -15,6 +15,8 @@ import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 
 public class Ax25 implements Protocol {
 
@@ -26,6 +28,7 @@ public class Ax25 implements Protocol {
     private String _digipath;
     private boolean _isVoax25Enabled;
     private boolean _isDigiRepeaterEnabled;
+    private boolean _useTextPackets;
 
     private ProtocolCallback _parentProtocolCallback;
 
@@ -44,6 +47,7 @@ public class Ax25 implements Protocol {
         // NOTE, may need to pass through sendData/sendAudio
         _digipath = sharedPreferences.getString(PreferenceKeys.AX25_DIGIPATH, "").toUpperCase();
         _isVoax25Enabled = SettingsWrapper.isVoax25Enabled(sharedPreferences);
+        _useTextPackets = SettingsWrapper.isTextPacketsEnabled(sharedPreferences);
         _isDigiRepeaterEnabled = sharedPreferences.getBoolean(PreferenceKeys.AX25_DIGIREPEATER_ENABLED, false);
     }
 
@@ -93,7 +97,7 @@ public class Ax25 implements Protocol {
         ax25Packet.digipath = path == null ? _digipath : path;
         ax25Packet.isAudio = false;
         ax25Packet.rawData = dataPacket;
-        byte[] ax25Frame = ax25Packet.toBinary();
+        byte[] ax25Frame = _useTextPackets ? ax25Packet.toTextBinary() : ax25Packet.toBinary();
         if (ax25Frame == null) {
             Log.e(TAG, "Cannot convert AX.25 data packet to binary");
             _parentProtocolCallback.onProtocolTxError();

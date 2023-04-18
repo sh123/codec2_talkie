@@ -491,12 +491,18 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 status += getString(R.string.voax25_label);
             }
 
+            // Lora aprs text packets
+            boolean textPacketsEnabled = SettingsWrapper.isTextPacketsEnabled(_sharedPreferences);
+            if (textPacketsEnabled) {
+                status += getString(R.string.text_packets_label);
+            }
             // Digirepeater
             boolean isDigirepeaterEnabled = _sharedPreferences.getBoolean(PreferenceKeys.AX25_DIGIREPEATER_ENABLED, false);
             if (isDigirepeaterEnabled) {
                 status += getString(R.string.digirepeater_label);
             }
 
+            // APRSIS
             boolean aprsisEnabled = SettingsWrapper.isAprsIsEnabled(_sharedPreferences);
             if (aprsisEnabled) {
                 status += getString(R.string.aprsis_label);

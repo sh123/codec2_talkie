@@ -232,6 +232,7 @@
     <string name="menu_send_position">Send position</string>
 
     <string name="voax25_label">&#9742;</string>
+    <string name="text_packets_label">&#128276;</string>
 
     <string name="menu_aprs_log">View log</string>
 
@@ -366,4 +367,6 @@
     <string name="map_menu_rotate_map">Rotate map with compass</string>
     <string name="map_menu_show_range">Show range circles</string>
     <string name="map_menu_show_moving">Show moving stations</string>
+    <string name="aprs_text_packets_enable_title">Enable text packets</string>
+    <string name="aprs_text_packets_enable_summary">Send lora aprs compatible text packets (0x3c,0xff,0x01 prefix)</string>
 </resources>

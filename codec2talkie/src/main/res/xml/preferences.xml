@@ -215,6 +215,14 @@
             app:defaultValue="true">
         </SwitchPreference>
 
+        <SwitchPreference
+            app:key="aprs_text_packets_enable"
+            app:title="@string/aprs_text_packets_enable_title"
+            app:summary="@string/aprs_text_packets_enable_summary"
+            app:dependency="aprs_enable"
+            app:defaultValue="false">
+        </SwitchPreference>
+
         <EditTextPreference
             app:key="aprs_callsign"
             app:title="@string/aprs_callsign_title"
