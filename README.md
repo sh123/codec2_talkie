@@ -31,6 +31,7 @@ What you can do with this app:
   - Use application as APRS digirepeater
   - Use application as APRS-IS RX/TX iGate to forward packets to/from APRS-IS (Internet)
   - Use application as APRS-IS internet tracker to send/receive APRS data over Internet
+  - Send and receive text packets in lora-aprs format over KISS
 - Integrate with hardware/software
   - Use it with your KISS Bluetooth/BLE/USB/TCPIP hardware modem, such as LoRa/FSK/AFSK/etc, control its parameters by using "set hardware" KISS command
   - Use it with KISS software modem using TCPIP, such as Direwolf
