@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.audiofx.DynamicsProcessing;
 import android.util.DisplayMetrics;
 import android.widget.ImageView;
 
@@ -110,7 +111,7 @@ public class AprsSymbolTable {
 
         Bitmap icon = _secondaryTable.get(symbolIconIndex);
         Bitmap overlayIcon = _overlayTable.get(overlayIconIndex);
-        Bitmap bmOverlay = Bitmap.createBitmap(icon.getWidth(), icon.getHeight(), null);
+        Bitmap bmOverlay = Bitmap.createBitmap(icon.getWidth(), icon.getHeight(), Bitmap.Config.ARGB_8888);
         bmOverlay.setDensity(DisplayMetrics.DENSITY_DEFAULT);
 
         Canvas canvas = new Canvas(bmOverlay);
@@ -165,7 +166,7 @@ public class AprsSymbolTable {
         ArrayList<Bitmap> secondaryTableIcons = Load(imageViewSecondary, _selectorIconDim, _selectorIconDim, _cntWidth, _cntHeight);
         primaryTableIcons.addAll(secondaryTableIcons);
 
-        Bitmap bmOverlay = Bitmap.createBitmap(_selectorIconDim*cntX, _selectorIconDim*cntY*2, null);
+        Bitmap bmOverlay = Bitmap.createBitmap(_selectorIconDim*cntX, _selectorIconDim*cntY*2, Bitmap.Config.ARGB_8888);
         bmOverlay.setDensity(DisplayMetrics.DENSITY_DEFAULT);
         Canvas canvas = new Canvas(bmOverlay);
         Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);

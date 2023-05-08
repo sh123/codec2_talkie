@@ -168,7 +168,7 @@ public class StationItem {
         int height = bitmapIcon.getHeight() + bounds.height();
 
         // create overlay bitmap
-        Bitmap bitmap = Bitmap.createBitmap(width, height, null);
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
 
         // draw APRS icon
