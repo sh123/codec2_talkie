@@ -18,9 +18,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.protocol.AudioFrameAggregator;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsSymbolTable;
 
 public class AprsSymbolSelectionActivity extends AppCompatActivity {
+
+    private static final String TAG = AprsSymbolSelectionActivity.class.getSimpleName();
 
     private SharedPreferences _sharedPreferences;
 
@@ -68,9 +71,12 @@ public class AprsSymbolSelectionActivity extends AppCompatActivity {
             float y = event.getY();
             _currentSymbolCode = AprsSymbolTable.getSymbolFromCoordinate(x, y, v.getWidth(), v.getHeight());
             _currentSelectionText.setText(_currentSymbolCode);
-            Log.i("---", _currentSymbolCode);
+            Log.i(TAG, "Selected symbol: " + _currentSymbolCode);
             Bitmap currentSymbolBitmap = AprsSymbolTable.getInstance(this).bitmapFromSymbol(_currentSymbolCode, true);
-            _currentSelectionView.setImageBitmap(currentSymbolBitmap);
+            if (currentSymbolBitmap == null)
+                Log.e(TAG, "Cannot select symbol");
+            else
+                _currentSelectionView.setImageBitmap(currentSymbolBitmap);
             v.performClick();
         }
         return true;

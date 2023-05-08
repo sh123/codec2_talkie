@@ -95,10 +95,15 @@ public class AprsSymbolTable {
 
         if (symbolIconIndex < 0 || symbolIconIndex >= (_cntWidth * _cntHeight)) return null;
 
-        if (table == '/') {
-            return _primaryTable.get(symbolIconIndex);
-        } else if (table == '\\') {
-            return _secondaryTable.get(symbolIconIndex);
+        try {
+            if (table == '/') {
+                return _primaryTable.get(symbolIconIndex);
+            } else if (table == '\\') {
+                return _secondaryTable.get(symbolIconIndex);
+            }
+        } catch (IndexOutOfBoundsException e) {
+            e.printStackTrace();
+            return null;
         }
 
         if (overlayIconIndex < 0 || overlayIconIndex >= (_cntWidth * _cntHeight)) return null;
