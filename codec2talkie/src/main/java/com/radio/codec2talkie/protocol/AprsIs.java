@@ -273,7 +273,7 @@ public class AprsIs implements Protocol, Runnable {
     }
 
     private String getLoginCommand() {
-        String cmd = "user " + _callsign + "-" + _ssid + " pass " + _passcode + " vers " + "C2T 1.0";
+        String cmd = "user " + _callsign + "-" + _ssid + " pass " + _passcode + " vers " + "C2T 1.56";
         if (_filterRadius > 0) {
             cmd += " filter m/" + _filterRadius;
         }
