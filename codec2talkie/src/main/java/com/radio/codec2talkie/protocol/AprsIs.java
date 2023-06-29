@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.BuildConfig;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.aprs.AprsCallsign;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
@@ -273,7 +274,7 @@ public class AprsIs implements Protocol, Runnable {
     }
 
     private String getLoginCommand() {
-        String cmd = "user " + _callsign + "-" + _ssid + " pass " + _passcode + " vers " + "C2T 1.56";
+        String cmd = "user " + _callsign + "-" + _ssid + " pass " + _passcode + " vers " + "C2T " + BuildConfig.VERSION_NAME;
         if (_filterRadius > 0) {
             cmd += " filter m/" + _filterRadius;
         }
