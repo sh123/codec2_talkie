@@ -132,7 +132,7 @@ public class AprsIs implements Protocol, Runnable {
             if (aprsIsData != null) {
                 _parentProtocolCallback.onReceiveData(aprsIsData.src, aprsIsData.dst, aprsIsData.rawDigipath, aprsIsData.data.getBytes());
                 if (_isTxGateEnabled && new AprsCallsign(aprsIsData.src).isValid) {
-                    sendData(aprsIsData.src, aprsIsData.dst, aprsIsData.digipath, aprsIsData.data.getBytes());
+                    _childProtocol.sendData(aprsIsData.src, aprsIsData.dst, aprsIsData.digipath, aprsIsData.data.getBytes());
                 }
             }
             _parentProtocolCallback.onReceiveLog(line);
