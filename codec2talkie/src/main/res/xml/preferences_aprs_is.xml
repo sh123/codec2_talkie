@@ -27,6 +27,7 @@
 
         <SwitchPreference
             app:key="aprs_is_enable_tx_gate"
+            app:enabled="false"
             app:title="@string/aprs_is_enable_tx_gate_title"
             app:summary="@string/aprs_is_enable_tx_gate_summary"
             app:defaultValue="false">
