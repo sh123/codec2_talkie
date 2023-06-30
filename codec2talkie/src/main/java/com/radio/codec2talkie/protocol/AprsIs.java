@@ -56,8 +56,8 @@ public class AprsIs implements Protocol, Runnable {
     private int _filterRadius;
     private String _filter;
 
-    private final ByteBuffer _rxQueue;
-    private final ByteBuffer _txQueue;
+    private final ByteBuffer _fromAprsIsQueue;
+    private final ByteBuffer _toAprsIsQueue;
     private final byte[] _rxBuf;
 
     protected boolean _isRunning = true;
@@ -65,8 +65,8 @@ public class AprsIs implements Protocol, Runnable {
 
     public AprsIs(Protocol childProtocol) {
         _childProtocol = childProtocol;
-        _rxQueue = ByteBuffer.allocate(4096);
-        _txQueue = ByteBuffer.allocate(4096);
+        _fromAprsIsQueue = ByteBuffer.allocate(4096);
+        _toAprsIsQueue = ByteBuffer.allocate(4096);
         _rxBuf = new byte[4096];
     }
 
@@ -117,8 +117,9 @@ public class AprsIs implements Protocol, Runnable {
     public void sendData(String src, String dst, String path, byte[] data) throws IOException {
         if (_isSelfEnabled) {
             AprsIsData aprsIsData = new AprsIsData(src, dst, path, new String(data));
-            synchronized (_txQueue) {
-                _txQueue.put(aprsIsData.toString().getBytes());
+            synchronized (_toAprsIsQueue) {
+                String rawData = aprsIsData.toString() + "\n";
+                _toAprsIsQueue.put(rawData.getBytes());
             }
         }
         _childProtocol.sendData(src, dst, path, data);
@@ -127,8 +128,8 @@ public class AprsIs implements Protocol, Runnable {
     @Override
     public boolean receive() throws IOException {
         String line;
-        synchronized (_rxQueue) {
-            line = TextTools.getString(_rxQueue);
+        synchronized (_fromAprsIsQueue) {
+            line = TextTools.getString(_fromAprsIsQueue);
         }
         if (line.length() > 0) {
             Log.d(TAG, "APRS-RX: " + DebugTools.bytesToDebugString(line.getBytes()));
@@ -170,11 +171,11 @@ public class AprsIs implements Protocol, Runnable {
         @Override
         protected void onReceiveData(String src, String dst, String path, byte[] data) {
             if (_isRxGateEnabled && !_isLoopbackTransport) {
-                // TODO, additional RX filter https://aprs-is.net/IGateDetails.aspx
                 AprsIsData aprsIsData = new AprsIsData(src, dst, path, new String(data));
                 if (aprsIsData.isEligibleForRxGate()) {
-                    synchronized (_txQueue) {
-                        _txQueue.put(aprsIsData.toString().getBytes());
+                    synchronized (_toAprsIsQueue) {
+                        String rawData = aprsIsData.toString() + "\n";
+                        _toAprsIsQueue.put(rawData.getBytes());
                     }
                 }
             }
@@ -323,11 +324,12 @@ public class AprsIs implements Protocol, Runnable {
     }
 
     private void runWrite(TcpIp tcpIp) {
-        synchronized (_txQueue) {
-            String line = TextTools.getString(_txQueue);
+        synchronized (_toAprsIsQueue) {
+            String line = TextTools.getString(_toAprsIsQueue);
             if (line.length() > 0) {
                 Log.d(TAG, "APRS-IS TX: " + DebugTools.bytesToDebugString(line.getBytes()));
                 try {
+                    line += "\n";
                     tcpIp.write(line.getBytes());
                 } catch (IOException e) {
                     Log.w(TAG, "Lost connection on transmit");
@@ -379,12 +381,12 @@ public class AprsIs implements Protocol, Runnable {
                 }
             // data
             } else {
-                synchronized (_rxQueue) {
+                synchronized (_fromAprsIsQueue) {
                     try {
-                        _rxQueue.put(Arrays.copyOf(_rxBuf, bytesRead));
+                        _fromAprsIsQueue.put(Arrays.copyOf(_rxBuf, bytesRead));
                     } catch (BufferOverflowException e) {
                         e.printStackTrace();
-                        _rxQueue.clear();
+                        _fromAprsIsQueue.clear();
                     }
                 }
             }
