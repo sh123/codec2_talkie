@@ -15,6 +15,7 @@ import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.tools.TextTools;
 import com.radio.codec2talkie.transport.TcpIp;
@@ -48,6 +49,7 @@ public class AprsIs implements Protocol, Runnable {
     private boolean _isSelfEnabled;
     private boolean _isRxGateEnabled;
     private boolean _isTxGateEnabled;
+    private boolean _isLoopbackTransport;
 
     private String _callsign;
     private String _ssid;
@@ -84,6 +86,7 @@ public class AprsIs implements Protocol, Runnable {
         _server = sharedPreferences.getString(PreferenceKeys.APRS_IS_TCPIP_SERVER, "euro.aprs2.net");
         _filterRadius = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_IS_RADIUS, "10"));
         _filter = sharedPreferences.getString(PreferenceKeys.APRS_IS_FILTER, "");
+        _isLoopbackTransport = SettingsWrapper.isLoopbackTransport(sharedPreferences);
 
         Log.i(TAG, "AprsIs RX gate: " + _isTxGateEnabled + ", TX gate: " + _isTxGateEnabled + ", server: " + _server);
 
@@ -132,7 +135,8 @@ public class AprsIs implements Protocol, Runnable {
             AprsIsData aprsIsData = AprsIsData.fromString(line);
             if (aprsIsData != null) {
                 _parentProtocolCallback.onReceiveData(aprsIsData.src, aprsIsData.dst, aprsIsData.rawDigipath, aprsIsData.data.getBytes());
-                if (_isTxGateEnabled && new AprsCallsign(aprsIsData.src).isValid) {
+                if (_isTxGateEnabled && new AprsCallsign(aprsIsData.src).isValid && !_isLoopbackTransport) {
+                    // TODO, add tx aprs filter https://aprs-is.net/IGating.aspx
                     _childProtocol.sendData(aprsIsData.src, aprsIsData.dst, aprsIsData.digipath, aprsIsData.data.getBytes());
                 }
             }
@@ -164,7 +168,8 @@ public class AprsIs implements Protocol, Runnable {
 
         @Override
         protected void onReceiveData(String src, String dst, String path, byte[] data) {
-            if (_isRxGateEnabled) {
+            if (_isRxGateEnabled && !_isLoopbackTransport) {
+                // TODO, additional RX filter https://aprs-is.net/IGateDetails.aspx
                 AprsIsData aprsIsData = new AprsIsData(src, dst, path, new String(data));
                 synchronized (_txQueue) {
                     _txQueue.put(aprsIsData.toString().getBytes());
