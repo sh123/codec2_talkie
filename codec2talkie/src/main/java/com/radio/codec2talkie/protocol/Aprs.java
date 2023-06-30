@@ -20,6 +20,8 @@ import com.radio.codec2talkie.transport.Transport;
 import java.io.IOException;
 
 public class Aprs implements Protocol {
+    public static final String APRS_ID = "APCTLK";
+
     private static final String TAG = Aprs.class.getSimpleName();
 
     private final Protocol _childProtocol;
@@ -55,7 +57,7 @@ public class Aprs implements Protocol {
         _srcCallsign = AX25Callsign.formatCallsign(
                 sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "NOCALL").toUpperCase(),
                 sharedPreferences.getString(PreferenceKeys.AX25_SSID, "0"));
-        _dstCallsign = "APZMDM";
+        _dstCallsign = APRS_ID;
 
         _symbolCode = sharedPreferences.getString(PreferenceKeys.APRS_SYMBOL, "/[");
         String packetFormat = sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_PACKET_FORMAT, "uncompressed");
