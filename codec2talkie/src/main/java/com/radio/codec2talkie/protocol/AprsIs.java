@@ -135,7 +135,8 @@ public class AprsIs implements Protocol, Runnable {
             AprsIsData aprsIsData = AprsIsData.fromString(line);
             if (aprsIsData != null) {
                 _parentProtocolCallback.onReceiveData(aprsIsData.src, aprsIsData.dst, aprsIsData.rawDigipath, aprsIsData.data.getBytes());
-                if (_isTxGateEnabled && new AprsCallsign(aprsIsData.src).isValid && !_isLoopbackTransport) {
+                AprsCallsign aprsCallsign = new AprsCallsign(aprsIsData.src);
+                if (_isTxGateEnabled && aprsCallsign.isValid && !_isLoopbackTransport && aprsIsData.isEligibleForTxGate()) {
                     // TODO, add tx aprs filter https://aprs-is.net/IGating.aspx
                     _childProtocol.sendData(aprsIsData.src, aprsIsData.dst, aprsIsData.digipath, aprsIsData.data.getBytes());
                 }
@@ -171,8 +172,10 @@ public class AprsIs implements Protocol, Runnable {
             if (_isRxGateEnabled && !_isLoopbackTransport) {
                 // TODO, additional RX filter https://aprs-is.net/IGateDetails.aspx
                 AprsIsData aprsIsData = new AprsIsData(src, dst, path, new String(data));
-                synchronized (_txQueue) {
-                    _txQueue.put(aprsIsData.toString().getBytes());
+                if (aprsIsData.isEligibleForRxGate()) {
+                    synchronized (_txQueue) {
+                        _txQueue.put(aprsIsData.toString().getBytes());
+                    }
                 }
             }
             _parentProtocolCallback.onReceiveData(src, dst, path, data);

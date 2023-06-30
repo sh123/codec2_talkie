@@ -33,6 +33,22 @@ public class AprsIsData {
         return result;
     }
 
+    public boolean isEligibleForRxGate() {
+        boolean hasNoGate = rawDigipath.contains("TCPIP") ||
+                rawDigipath.contains("TCPXX") ||
+                rawDigipath.contains("NOGATE") ||
+                rawDigipath.contains("RFONLY");
+
+        // do not gate TCPIP/NOGATE and queries
+        return !hasNoGate && !data.startsWith("?");
+    }
+
+    public boolean isEligibleForTxGate() {
+        return !(rawDigipath.contains("TCPXX") ||
+                rawDigipath.contains("NOGATE") ||
+                rawDigipath.contains("RFONLY"));
+    }
+
     public static AprsIsData fromString(String textData) {
         AprsIsData aprsIsData = new AprsIsData();
         // N0CALL>PATH:DATA
