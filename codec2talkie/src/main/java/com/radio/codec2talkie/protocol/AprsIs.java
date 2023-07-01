@@ -28,6 +28,7 @@ import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Locale;
 
 import kotlin.text.MatchGroup;
 import kotlin.text.MatchResult;
@@ -52,6 +53,7 @@ public class AprsIs implements Protocol, Runnable {
     private boolean _isLoopbackTransport;
 
     private String _callsign;
+    private String _digipath;
     private String _ssid;
     private int _filterRadius;
     private String _filter;
@@ -80,7 +82,8 @@ public class AprsIs implements Protocol, Runnable {
         _isRxGateEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_RX_GATE, false);
         _isTxGateEnabled = false; // sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_TX_GATE, false);
         _isSelfEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_SELF, false);
-        _callsign = sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "N0CALL");
+        _callsign = sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "N0CALL").toLowerCase(Locale.ROOT);
+        _digipath = sharedPreferences.getString(PreferenceKeys.AX25_DIGIPATH, "").toUpperCase();
         _ssid = sharedPreferences.getString(PreferenceKeys.AX25_SSID, "0");
         _passcode = sharedPreferences.getString(PreferenceKeys.APRS_IS_CODE, "");
         _server = sharedPreferences.getString(PreferenceKeys.APRS_IS_TCPIP_SERVER, "euro.aprs2.net");
@@ -138,8 +141,10 @@ public class AprsIs implements Protocol, Runnable {
                 _parentProtocolCallback.onReceiveData(aprsIsData.src, aprsIsData.dst, aprsIsData.rawDigipath, aprsIsData.data.getBytes());
                 AprsCallsign aprsCallsign = new AprsCallsign(aprsIsData.src);
                 if (_isTxGateEnabled && aprsCallsign.isValid && !_isLoopbackTransport && aprsIsData.isEligibleForTxGate()) {
-                    // TODO, add tx aprs filter https://aprs-is.net/IGating.aspx
-                    _childProtocol.sendData(aprsIsData.src, aprsIsData.dst, aprsIsData.digipath, aprsIsData.data.getBytes());
+                    // wrap into third party, https://aprs-is.net/IGateDetails.aspx
+                    aprsIsData.digipath = "TCPIP," + _callsign + "*";
+                    String txData = "}" + aprsIsData.toString();
+                    _childProtocol.sendData(_callsign, Aprs.APRS_ID, _digipath, txData.getBytes());
                 }
             }
             _parentProtocolCallback.onReceiveLog(line);
