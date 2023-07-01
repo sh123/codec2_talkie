@@ -179,12 +179,12 @@ public class AprsIs implements Protocol, Runnable {
                 // NOTE, https://aprs-is.net/IGateDetails.aspx
                 AprsIsData aprsIsData = new AprsIsData(src, dst, path, new String(data));
                 if (aprsIsData.isEligibleForRxGate()) {
+                    // strip "rf header" for third party packets before gating
+                    if (aprsIsData.hasThirdParty()) {
+                        aprsIsData = aprsIsData.thirdParty;
+                    }
+                    String rawData = aprsIsData.toString() + "\n";
                     synchronized (_toAprsIsQueue) {
-                        // strip "rf header" for third party packets before gating
-                        if (aprsIsData.hasThirdParty()) {
-                            aprsIsData = aprsIsData.thirdParty;
-                        }
-                        String rawData = aprsIsData.toString() + "\n";
                         _toAprsIsQueue.put(rawData.getBytes());
                     }
                 }
