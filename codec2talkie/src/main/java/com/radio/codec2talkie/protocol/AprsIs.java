@@ -171,9 +171,14 @@ public class AprsIs implements Protocol, Runnable {
         @Override
         protected void onReceiveData(String src, String dst, String path, byte[] data) {
             if (_isRxGateEnabled && !_isLoopbackTransport) {
+                // NOTE, https://aprs-is.net/IGateDetails.aspx
                 AprsIsData aprsIsData = new AprsIsData(src, dst, path, new String(data));
                 if (aprsIsData.isEligibleForRxGate()) {
                     synchronized (_toAprsIsQueue) {
+                        // strip "rf header" for third party packets before gating
+                        if (aprsIsData.hasThirdParty()) {
+                            aprsIsData = aprsIsData.thirdParty;
+                        }
                         String rawData = aprsIsData.toString() + "\n";
                         _toAprsIsQueue.put(rawData.getBytes());
                     }

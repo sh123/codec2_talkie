@@ -11,6 +11,7 @@ public class AprsIsData {
     public String digipath;
     public String rawDigipath;
     public String data;
+    public AprsIsData thirdParty;
 
     public AprsIsData() {
     }
@@ -20,6 +21,14 @@ public class AprsIsData {
         this.dst = dst;
         this.digipath = path;
         this.data = data;
+        // handle third party packet
+        if (data.length() > 10 && data.startsWith("}")) {
+            thirdParty = AprsIsData.fromString(data.substring(1));
+        }
+    }
+
+    public boolean hasThirdParty() {
+        return thirdParty != null;
     }
 
     @NonNull
@@ -39,8 +48,12 @@ public class AprsIsData {
                 rawDigipath.contains("NOGATE") ||
                 rawDigipath.contains("RFONLY");
 
-        // do not gate TCPIP/NOGATE and queries
-        return !hasNoGate && !data.startsWith("?");
+        boolean thirdPartyHasNoGate = thirdParty != null &&
+                (thirdParty.rawDigipath.contains("TCPIP") ||
+                        thirdParty.rawDigipath.contains("TCPXX"));
+
+        // do not gate TCPIP/NOGATE, queries and third party tcp ip packets
+        return !hasNoGate && !data.startsWith("?") && !thirdPartyHasNoGate;
     }
 
     public boolean isEligibleForTxGate() {
@@ -65,6 +78,9 @@ public class AprsIsData {
         aprsIsData.digipath = joinTail(path, ",", "^WIDE.+$");
         aprsIsData.rawDigipath = joinTail(path, ",", ".*");
         aprsIsData.data = joinTail(digipathData, ":", ".*");
+        if (aprsIsData.data.length() > 10 && aprsIsData.data.startsWith("}")) {
+            aprsIsData.thirdParty = AprsIsData.fromString(aprsIsData.data.substring(1));
+        }
         return aprsIsData;
     }
 
