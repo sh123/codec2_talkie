@@ -140,6 +140,12 @@ public class AprsIs implements Protocol, Runnable {
             if (aprsIsData != null) {
                 _parentProtocolCallback.onReceiveData(aprsIsData.src, aprsIsData.dst, aprsIsData.rawDigipath, aprsIsData.data.getBytes());
                 AprsCallsign aprsCallsign = new AprsCallsign(aprsIsData.src);
+                /* rules:
+                  1. RX gate must be heard on rf within digi hops or range
+                  2. RX gate has not been heard on internet within given period of time or in third party packets
+                  3. sender must not be heard within given period of time on RF
+                  4. sender must not have TCPXX, NOGATE, RFONLY
+                 */
                 if (_isTxGateEnabled && aprsCallsign.isValid && !_isLoopbackTransport && aprsIsData.isEligibleForTxGate()) {
                     // wrap into third party, https://aprs-is.net/IGateDetails.aspx
                     aprsIsData.digipath = "TCPIP," + _callsign + "*";
