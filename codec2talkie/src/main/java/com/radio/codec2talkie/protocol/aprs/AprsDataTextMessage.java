@@ -18,6 +18,16 @@ public class AprsDataTextMessage implements AprsData {
     private boolean _isValid;
 
     @Override
+    public boolean isPositionReport() {
+        return false;
+    }
+
+    @Override
+    public boolean isTextMessage() {
+        return true;
+    }
+
+    @Override
     public void fromPosition(Position position) {
         _isValid = false;
     }

@@ -12,7 +12,8 @@ public class AprsDataType {
         POSITION_WITHOUT_TIMESTAMP_NO_MSG,
         OBJECT,
         ITEM,
-        STATUS
+        STATUS,
+        THIRD_PARTY
     }
 
     private final DataType _dataType;
@@ -72,6 +73,8 @@ public class AprsDataType {
             return DataType.ITEM;
         } else if (ident == '>') {
             return DataType.STATUS;
+        } else if (ident == '}') {
+            return DataType.THIRD_PARTY;
         } else {
             return DataType.UNKNOWN;
         }
@@ -96,6 +99,8 @@ public class AprsDataType {
             return ')';
         } else if (dataType == DataType.STATUS) {
             return '>';
+        } else if (dataType == DataType.THIRD_PARTY) {
+            return '}';
         } else {
             return 0;
         }

@@ -20,6 +20,8 @@ public class AprsDataFactory {
                 return new AprsObject();
             case ITEM:
                 return new AprsItem();
+            case THIRD_PARTY:
+                return new AprsThirdParty();
         }
         return null;
     }

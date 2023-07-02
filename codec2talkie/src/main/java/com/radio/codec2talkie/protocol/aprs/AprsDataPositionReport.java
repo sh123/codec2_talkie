@@ -24,6 +24,16 @@ public class AprsDataPositionReport implements AprsData {
     private boolean _isValid;
 
     @Override
+    public boolean isPositionReport() {
+        return true;
+    }
+
+    @Override
+    public boolean isTextMessage() {
+        return false;
+    }
+
+    @Override
     public void fromPosition(Position position) {
         _isValid = false;
         _position = position;
