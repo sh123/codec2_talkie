@@ -1,14 +1,9 @@
 package com.radio.codec2talkie.protocol.aprs.tools;
 
 import java.util.Map;
-
-import java.util.Timer;
-import java.util.TimerTask;
 import java.util.TreeMap;
 
 public class AprsHeardList {
-
-    private final int CLEANUP_PERIOD_MS = 30000;
 
     private static class AprsHeardListItem {
         public long timestamp;
@@ -25,7 +20,6 @@ public class AprsHeardList {
 
     public AprsHeardList(int keepSeconds) {
         _keepSeconds = keepSeconds;
-        scheduleCleanup();
     }
 
     public void add(String callsign) {
@@ -37,32 +31,22 @@ public class AprsHeardList {
             } else {
                 heardItem.timestamp = System.currentTimeMillis();
             }
+            cleanup();
         }
     }
 
     public boolean contains(String callsign) {
         synchronized (_data) {
+            cleanup();
             return _data.containsKey(callsign);
         }
     }
 
-    private void scheduleCleanup() {
-        Timer cleanupTimer = new Timer();
-        cleanupTimer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                cleanup();
-            }
-        }, CLEANUP_PERIOD_MS, CLEANUP_PERIOD_MS);
-    }
-
     private void cleanup() {
         long removeOlderThan = System.currentTimeMillis() - _keepSeconds * 1000L;
-        synchronized (_data) {
-            for (Map.Entry<String, AprsHeardListItem> entryElement : _data.entrySet()) {
-                if (entryElement.getValue().timestamp < removeOlderThan) {
-                    _data.remove(entryElement.getKey());
-                }
+        for (Map.Entry<String, AprsHeardListItem> entryElement : _data.entrySet()) {
+            if (entryElement.getValue().timestamp < removeOlderThan) {
+                _data.remove(entryElement.getKey());
             }
         }
     }

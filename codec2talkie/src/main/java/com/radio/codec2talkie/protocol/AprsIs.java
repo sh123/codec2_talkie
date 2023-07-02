@@ -11,6 +11,7 @@ import androidx.preference.PreferenceManager;
 import com.radio.codec2talkie.BuildConfig;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.aprs.AprsCallsign;
+import com.radio.codec2talkie.protocol.aprs.tools.AprsHeardList;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
@@ -40,6 +41,8 @@ public class AprsIs implements Protocol, Runnable {
     private static final int APRSIS_RETRY_WAIT_MS = 10000;
     private static final int APRSIS_DEFAULT_PORT = 14580;
 
+    private static final int HEARD_LIST_DURATION_SECONDS = 60;
+
     private final Protocol _childProtocol;
     private Context _context;
     private ProtocolCallback _parentProtocolCallback;
@@ -62,6 +65,8 @@ public class AprsIs implements Protocol, Runnable {
     private final ByteBuffer _toAprsIsQueue;
     private final byte[] _rxBuf;
 
+    private final AprsHeardList _rfHeardList = new AprsHeardList(HEARD_LIST_DURATION_SECONDS);
+
     protected boolean _isRunning = true;
     private boolean _isConnected = false;
 
@@ -80,7 +85,7 @@ public class AprsIs implements Protocol, Runnable {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         _isRxGateEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_RX_GATE, false);
-        _isTxGateEnabled = false; // sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_TX_GATE, false);
+        _isTxGateEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_TX_GATE, false);
         _isSelfEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_SELF, false);
         _callsign = sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "N0CALL").toLowerCase(Locale.ROOT);
         _digipath = sharedPreferences.getString(PreferenceKeys.AX25_DIGIPATH, "").toUpperCase();
@@ -132,13 +137,14 @@ public class AprsIs implements Protocol, Runnable {
         /* rules:
             1. RX gate must be heard on rf within digi hops or range
             2. RX gate has not been heard on internet within given period of time or in third party packets
-            3. sender must not be heard within given period of time on RF
+            3. ✓ sender must not be heard within given period of time on RF
             4. ✓ sender must not have TCPXX, NOGATE, RFONLY
         */
         AprsCallsign aprsCallsign = new AprsCallsign(aprsIsData.src);
         return _isTxGateEnabled &&
                 aprsCallsign.isValid &&
                 !_isLoopbackTransport &&
+                !_rfHeardList.contains(aprsIsData.src) &&
                 aprsIsData.isEligibleForTxGate();
     }
 
@@ -192,6 +198,7 @@ public class AprsIs implements Protocol, Runnable {
 
         @Override
         protected void onReceiveData(String src, String dst, String path, byte[] data) {
+            _rfHeardList.add(src);
             if (_isRxGateEnabled && !_isLoopbackTransport) {
                 // NOTE, https://aprs-is.net/IGateDetails.aspx
                 AprsIsData aprsIsData = new AprsIsData(src, dst, path, new String(data));
