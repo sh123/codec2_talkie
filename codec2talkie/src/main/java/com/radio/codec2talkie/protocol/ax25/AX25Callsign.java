@@ -12,6 +12,13 @@ public class AX25Callsign {
     public boolean isValid;
     public boolean isLast = false;
 
+    public AX25Callsign() {}
+
+    public AX25Callsign(String callsign, String ssid) {
+        this.callsign = callsign;
+        this.ssid = Integer.parseInt(ssid);
+    }
+
     public static String formatCallsign(String callsign, String ssid) {
         return String.format("%s-%s", callsign, ssid);
     }

@@ -13,6 +13,7 @@ import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.aprs.AprsCallsign;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsHeardList;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
+import com.radio.codec2talkie.protocol.ax25.AX25Callsign;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
@@ -87,7 +88,7 @@ public class AprsIs implements Protocol, Runnable {
         _isRxGateEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_RX_GATE, false);
         _isTxGateEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_TX_GATE, false);
         _isSelfEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_SELF, false);
-        _callsign = sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "N0CALL").toLowerCase(Locale.ROOT);
+        _callsign = sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "N0CALL").toUpperCase(Locale.ROOT);
         _digipath = sharedPreferences.getString(PreferenceKeys.AX25_DIGIPATH, "").toUpperCase();
         _ssid = sharedPreferences.getString(PreferenceKeys.AX25_SSID, "0");
         _passcode = sharedPreferences.getString(PreferenceKeys.APRS_IS_CODE, "");
@@ -167,7 +168,7 @@ public class AprsIs implements Protocol, Runnable {
             if (aprsIsData != null) {
                 _parentProtocolCallback.onReceiveData(aprsIsData.src, aprsIsData.dst, aprsIsData.rawDigipath, aprsIsData.data.getBytes());
                 if (isEligibleForTxGate(aprsIsData)) {
-                    _childProtocol.sendData(_callsign, Aprs.APRS_ID, _digipath, thirdPartyWrap(aprsIsData));
+                    _childProtocol.sendData(new AX25Callsign(_callsign, _ssid).toString(), Aprs.APRS_ID, _digipath, thirdPartyWrap(aprsIsData));
                 }
             }
             _parentProtocolCallback.onReceiveLog(line);
@@ -317,7 +318,7 @@ public class AprsIs implements Protocol, Runnable {
     }
 
     private String getLoginCommand() {
-        String cmd = "user " + _callsign + "-" + _ssid + " pass " + _passcode + " vers " + "C2T " + BuildConfig.VERSION_NAME;
+        String cmd = "user " + new AX25Callsign(_callsign, _ssid).toString() + " pass " + _passcode + " vers " + "C2T " + BuildConfig.VERSION_NAME;
         if (_filterRadius > 0) {
             cmd += " filter m/" + _filterRadius;
         }
