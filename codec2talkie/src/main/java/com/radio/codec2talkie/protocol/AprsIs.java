@@ -128,6 +128,27 @@ public class AprsIs implements Protocol, Runnable {
         _childProtocol.sendData(src, dst, path, data);
     }
 
+    private boolean isEligibleForTxGate(AprsIsData aprsIsData) {
+        /* rules:
+            1. RX gate must be heard on rf within digi hops or range
+            2. RX gate has not been heard on internet within given period of time or in third party packets
+            3. sender must not be heard within given period of time on RF
+            4. ✓ sender must not have TCPXX, NOGATE, RFONLY
+        */
+        AprsCallsign aprsCallsign = new AprsCallsign(aprsIsData.src);
+        return _isTxGateEnabled &&
+                aprsCallsign.isValid &&
+                !_isLoopbackTransport &&
+                aprsIsData.isEligibleForTxGate();
+    }
+
+    private byte[] thirdPartyWrap(AprsIsData aprsIsData) {
+        // wrap into third party, https://aprs-is.net/IGateDetails.aspx
+        aprsIsData.digipath = "TCPIP," + _callsign + "*";
+        String txData = "}" + aprsIsData.toString();
+        return txData.getBytes();
+    }
+
     @Override
     public boolean receive() throws IOException {
         String line;
@@ -139,18 +160,8 @@ public class AprsIs implements Protocol, Runnable {
             AprsIsData aprsIsData = AprsIsData.fromString(line);
             if (aprsIsData != null) {
                 _parentProtocolCallback.onReceiveData(aprsIsData.src, aprsIsData.dst, aprsIsData.rawDigipath, aprsIsData.data.getBytes());
-                AprsCallsign aprsCallsign = new AprsCallsign(aprsIsData.src);
-                /* rules:
-                  1. RX gate must be heard on rf within digi hops or range
-                  2. RX gate has not been heard on internet within given period of time or in third party packets
-                  3. sender must not be heard within given period of time on RF
-                  4. sender must not have TCPXX, NOGATE, RFONLY
-                 */
-                if (_isTxGateEnabled && aprsCallsign.isValid && !_isLoopbackTransport && aprsIsData.isEligibleForTxGate()) {
-                    // wrap into third party, https://aprs-is.net/IGateDetails.aspx
-                    aprsIsData.digipath = "TCPIP," + _callsign + "*";
-                    String txData = "}" + aprsIsData.toString();
-                    _childProtocol.sendData(_callsign, Aprs.APRS_ID, _digipath, txData.getBytes());
+                if (isEligibleForTxGate(aprsIsData)) {
+                    _childProtocol.sendData(_callsign, Aprs.APRS_ID, _digipath, thirdPartyWrap(aprsIsData));
                 }
             }
             _parentProtocolCallback.onReceiveLog(line);
