@@ -3,9 +3,9 @@ package com.radio.codec2talkie.protocol;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
-import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsWrapper;
 
 public class ProtocolFactory {
@@ -24,6 +24,7 @@ public class ProtocolFactory {
             _name = name;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return _name;
