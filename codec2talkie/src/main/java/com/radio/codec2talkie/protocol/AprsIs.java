@@ -127,7 +127,7 @@ public class AprsIs implements Protocol, Runnable {
         if (_isSelfEnabled) {
             AprsIsData aprsIsData = new AprsIsData(src, dst, path, new String(data));
             synchronized (_toAprsIsQueue) {
-                String rawData = aprsIsData.toString() + "\n";
+                String rawData = aprsIsData.convertToString(false) + "\n";
                 _toAprsIsQueue.put(rawData.getBytes());
             }
         }
@@ -152,7 +152,7 @@ public class AprsIs implements Protocol, Runnable {
     private byte[] thirdPartyWrap(AprsIsData aprsIsData) {
         // wrap into third party, https://aprs-is.net/IGateDetails.aspx
         aprsIsData.digipath = "TCPIP," + _callsign + "*";
-        String txData = "}" + aprsIsData.toString();
+        String txData = "}" + aprsIsData.convertToString(false);
         return txData.getBytes();
     }
 
@@ -208,7 +208,7 @@ public class AprsIs implements Protocol, Runnable {
                     if (aprsIsData.hasThirdParty()) {
                         aprsIsData = aprsIsData.thirdParty;
                     }
-                    String rawData = aprsIsData.toString() + "\n";
+                    String rawData = aprsIsData.convertToString(false) + "\n";
                     synchronized (_toAprsIsQueue) {
                         _toAprsIsQueue.put(rawData.getBytes());
                     }

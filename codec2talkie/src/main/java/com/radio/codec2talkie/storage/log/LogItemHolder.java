@@ -33,7 +33,8 @@ public class LogItemHolder extends RecyclerView.ViewHolder implements View.OnCli
                 DateTools.epochToIso8601(timestamp),
                 isTransmitting ? "→" : "←",
                 srcCallsign));
-        _logItemViewMessage.setText(TextTools.addZeroWidthSpaces(text));
+        if (text != null)
+            _logItemViewMessage.setText(TextTools.addZeroWidthSpaces(text));
     }
 
     static LogItemHolder create(ViewGroup parent, boolean isClickable) {

@@ -22,6 +22,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.storage.log.LogItem;
 import com.radio.codec2talkie.storage.log.LogItemRepository;
@@ -375,17 +376,25 @@ public class AppWorker extends Thread {
         }
     };
 
-    void storeLogData(String logData, boolean isTransmit) {
-        // TODO, parse through aprs data
-        String[] callsignData = logData.split(">");
-        if (callsignData.length >= 2) {
+    private void storeLogData(String logData, boolean isTransmit) {
+        AprsIsData aprsIsData = AprsIsData.fromString(logData);
+        if (aprsIsData != null) {
             LogItem logItem = new LogItem();
             logItem.setTimestampEpoch(System.currentTimeMillis());
-            logItem.setSrcCallsign(callsignData[0]);
-            logItem.setLogLine(logData);
             logItem.setIsTransmit(isTransmit);
+            logItem.setSrcCallsign(aprsIsData.src);
+            logItem.setLogLine(logData);
             _logItemRepository.insertLogItem(logItem);
             _stationItemRepository.upsertStationItem(logItem.toStationItem());
+            if (aprsIsData.hasThirdParty()) {
+                LogItem logItemThirdParty = new LogItem();
+                logItemThirdParty.setTimestampEpoch(System.currentTimeMillis());
+                logItemThirdParty.setIsTransmit(isTransmit);
+                logItemThirdParty.setSrcCallsign(aprsIsData.thirdParty.src);
+                logItemThirdParty.setLogLine(aprsIsData.thirdParty.convertToString(true));
+                _logItemRepository.insertLogItem(logItemThirdParty);
+                _stationItemRepository.upsertStationItem(logItemThirdParty.toStationItem());
+            }
         }
     }
 
