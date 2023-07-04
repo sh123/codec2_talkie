@@ -312,7 +312,7 @@ public class AprsIs implements Protocol, Runnable {
     }
 
     private String getLoginCommand() {
-        String cmd = "user " + new AX25Callsign(_callsign, _ssid).toString() + " pass " + _passcode + " vers " + "C2T " + BuildConfig.VERSION_NAME;
+        String cmd = "user " + new AX25Callsign(_callsign, _ssid).toString() + " pass " + _passcode + " vers " + Aprs.APRS_ID + " " + BuildConfig.VERSION_NAME;
         if (_filterRadius > 0) {
             cmd += " filter m/" + _filterRadius;
         }

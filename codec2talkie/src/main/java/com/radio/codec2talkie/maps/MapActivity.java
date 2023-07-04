@@ -13,7 +13,9 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.BuildConfig;
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.protocol.Aprs;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsSymbolTable;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 
@@ -29,6 +31,9 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 public class MapActivity extends AppCompatActivity {
     private static final String TAG = MapActivity.class.getSimpleName();
+
+    private static final double MAP_STARTUP_ZOOM = 5.0;
+    private static final double MAP_FOLLOW_ZOOM = 14.0;
 
     private MapView _mapView;
     private IMapController _mapController;
@@ -47,7 +52,7 @@ public class MapActivity extends AppCompatActivity {
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         Context context = getApplicationContext();
-        Configuration.getInstance().setUserAgentValue("C2T");
+        Configuration.getInstance().setUserAgentValue(Aprs.APRS_ID + " " + BuildConfig.VERSION_NAME);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
         // my symbol
@@ -61,7 +66,7 @@ public class MapActivity extends AppCompatActivity {
 
         // controller
         _mapController = _mapView.getController();
-        _mapController.zoomTo(5.0);
+        _mapController.zoomTo(MAP_STARTUP_ZOOM);
 
         // compass
         InternalCompassOrientationProvider compassOrientationProvider = new InternalCompassOrientationProvider(context) {
@@ -149,7 +154,18 @@ public class MapActivity extends AppCompatActivity {
             }
             _mapStations.showMovingStations(showMoving);
             return true;
+        } else if (itemId == R.id.map_menu_move_map) {
+            if (item.isChecked()) {
+                item.setChecked(false);
+                _myLocationNewOverlay.disableFollowLocation();
+            } else {
+                item.setChecked(true);
+                _myLocationNewOverlay.enableFollowLocation();
+                _mapController.zoomTo(MAP_FOLLOW_ZOOM);
+            }
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 }
