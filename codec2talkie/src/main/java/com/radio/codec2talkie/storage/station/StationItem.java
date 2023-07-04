@@ -116,7 +116,6 @@ public class StationItem {
 
     public void updateFrom(StationItem stationItem) {
         setTimestampEpoch(stationItem.getTimestampEpoch());
-        setDstCallsign(stationItem.getDstCallsign());
         // update position if known
         if (stationItem.getMaidenHead() != null) {
             setMaidenHead(stationItem.getMaidenHead());
@@ -139,6 +138,8 @@ public class StationItem {
             setLogLine(stationItem.getLogLine());
         if (stationItem.getDigipath() != null)
             setDigipath(stationItem.getDigipath());
+        if (stationItem.getDstCallsign() != null)
+            setDstCallsign(stationItem.getDstCallsign());
     }
 
     @Override

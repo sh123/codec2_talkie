@@ -135,12 +135,6 @@ public class AprsIs implements Protocol, Runnable {
     }
 
     private boolean isEligibleForTxGate(AprsIsData aprsIsData) {
-        /* rules:
-            1. RX gate must be heard on rf within digi hops or range
-            2. RX gate has not been heard on internet within given period of time or in third party packets
-            3. ✓ sender must not be heard within given period of time on RF
-            4. ✓ sender must not have TCPXX, NOGATE, RFONLY
-        */
         AprsCallsign aprsCallsign = new AprsCallsign(aprsIsData.src);
         return _isTxGateEnabled &&
                 aprsCallsign.isValid &&

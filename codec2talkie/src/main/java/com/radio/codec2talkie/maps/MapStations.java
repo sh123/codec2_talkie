@@ -83,7 +83,8 @@ public class MapStations {
         _stationItemLiveData.observe((LifecycleOwner) _owner, allStations -> {
             Log.i(TAG, "add stations " + allStations.size());
             for (StationItem station : allStations) {
-                //Log.i(TAG, "new position " + station.getLatitude() + " " + station.getLongitude());
+                //Log.i(TAG, "new position " + station.getSrcCallsign() + ">" +
+                //        station.getDstCallsign() + " " + station.getLatitude() + " " + station.getLongitude());
                 // do not add items without coordinate
                 if (station.getMaidenHead() == null) continue;
                 if (addStationPositionIcon(station)) {
@@ -200,7 +201,8 @@ public class MapStations {
 
     private String getStatus(StationItem station) {
         double range = UnitTools.milesToKilometers(station.getRangeMiles());
-        return String.format(Locale.US, "%s<br>%s %f %f<br>%03d° %03dkm/h %04dm %.2fkm<br>%s %s",
+        return String.format(Locale.US, "%s %s<br>%s %f %f<br>%03d° %03dkm/h %04dm %.2fkm<br>%s %s",
+                station.getDstCallsign(),
                 station.getDigipath(),
                 station.getMaidenHead(), station.getLatitude(), station.getLongitude(),
                 (int)station.getBearingDegrees(),
