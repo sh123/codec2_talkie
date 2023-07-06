@@ -3,12 +3,14 @@ package com.radio.codec2talkie.maps;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.hardware.SensorEvent;
+import android.location.Location;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,6 +24,7 @@ import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.Aprs;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsSymbolTable;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.UnitTools;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -31,7 +34,10 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
+import org.osmdroid.views.overlay.mylocation.IMyLocationProvider;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
+
+import java.util.Locale;
 
 public class MapActivity extends AppCompatActivity {
     private static final String TAG = MapActivity.class.getSimpleName();
@@ -45,6 +51,9 @@ public class MapActivity extends AppCompatActivity {
 
     private MapStations _mapStations;
     private boolean _rotateMap = false;
+    private boolean _shouldFollowLocation = false;
+
+    private String _info;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +96,50 @@ public class MapActivity extends AppCompatActivity {
         _mapView.getOverlays().add(compassOverlay);
 
         // my location
-        _myLocationNewOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), _mapView);
+        _myLocationNewOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), _mapView) {
+            @Override
+            public void onLocationChanged(Location location, IMyLocationProvider source) {
+                super.onLocationChanged(location, source);
+                _info = String.format(Locale.US, "%dkm/h, %d°, %dm, %s, %f, %f",
+                        UnitTools.metersPerSecondToKilometersPerHour((int)location.getSpeed()),
+                        (int)location.getBearing(),
+                        (int)location.getAltitude(),
+                        UnitTools.decimalToMaidenhead(location.getLatitude(), location.getLongitude()),
+                        location.getLatitude(),
+                        location.getLongitude()
+                );
+            }
+
+            @Override
+            public void draw(Canvas pCanvas, MapView pMapView, boolean pShadow) {
+                super.draw(pCanvas, pMapView, pShadow);
+                if (_info == null || !_shouldFollowLocation) return;
+
+                // create paint
+                Paint paint = new Paint();
+                paint.setStyle(Paint.Style.FILL);
+                paint.setTextSize(24);
+
+                // query bounds from text
+                Rect bounds = new Rect();
+                paint.getTextBounds(_info, 0, _info.length(), bounds);
+
+                // draw background
+                paint.setColor(Color.WHITE);
+                paint.setAlpha(200);
+                pCanvas.drawRect(pCanvas.getWidth() - bounds.width(),
+                        0,
+                        pCanvas.getWidth(),
+                        bounds.height(),
+                        paint);
+
+                // draw text
+                paint.setColor(Color.BLACK);
+                paint.setAlpha(255);
+                paint.setFlags(Paint.ANTI_ALIAS_FLAG);
+                pCanvas.drawText(_info, pCanvas.getWidth() - bounds.width(), bounds.height(), paint);
+            }
+        };
         Bitmap myBitmapIcon = aprsSymbolTable.bitmapFromSymbol(mySymbolCode, true);
         if (AprsSymbolTable.needsRotation(mySymbolCode)) {
             Matrix matrix = new Matrix();
@@ -166,9 +218,11 @@ public class MapActivity extends AppCompatActivity {
         } else if (itemId == R.id.map_menu_move_map) {
             if (item.isChecked()) {
                 item.setChecked(false);
+                _shouldFollowLocation = false;
                 _myLocationNewOverlay.disableFollowLocation();
             } else {
                 item.setChecked(true);
+                _shouldFollowLocation = true;
                 _myLocationNewOverlay.enableFollowLocation();
                 _mapController.zoomTo(MAP_FOLLOW_ZOOM);
             }
