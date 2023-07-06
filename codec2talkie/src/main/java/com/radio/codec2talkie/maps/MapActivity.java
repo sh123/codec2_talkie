@@ -3,8 +3,12 @@ package com.radio.codec2talkie.maps;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.graphics.Paint;
+import android.graphics.Rect;
 import android.hardware.SensorEvent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -85,6 +89,11 @@ public class MapActivity extends AppCompatActivity {
         // my location
         _myLocationNewOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), _mapView);
         Bitmap myBitmapIcon = aprsSymbolTable.bitmapFromSymbol(mySymbolCode, true);
+        if (AprsSymbolTable.needsRotation(mySymbolCode)) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(-90);
+            myBitmapIcon = Bitmap.createBitmap(myBitmapIcon, 0, 0, myBitmapIcon.getWidth(), myBitmapIcon.getHeight(), matrix, true);
+        }
         _myLocationNewOverlay.setDirectionIcon(myBitmapIcon);
         _myLocationNewOverlay.setPersonIcon(myBitmapIcon);
 
