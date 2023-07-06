@@ -53,7 +53,8 @@ public class MapActivity extends AppCompatActivity {
     private boolean _rotateMap = false;
     private boolean _shouldFollowLocation = false;
 
-    private String _info;
+    private String _positionInfo;
+    private double _prevBearing = 0.0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +67,6 @@ public class MapActivity extends AppCompatActivity {
 
         Context context = getApplicationContext();
         Configuration.getInstance().setUserAgentValue(Aprs.APRS_ID + " " + BuildConfig.VERSION_NAME);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-
-        // my symbol
-        AprsSymbolTable aprsSymbolTable = AprsSymbolTable.getInstance(context);
-        String mySymbolCode = sharedPreferences.getString(PreferenceKeys.APRS_SYMBOL, "/[");
 
         // map
         _mapView = findViewById(R.id.map);
@@ -100,7 +96,7 @@ public class MapActivity extends AppCompatActivity {
             @Override
             public void onLocationChanged(Location location, IMyLocationProvider source) {
                 super.onLocationChanged(location, source);
-                _info = String.format(Locale.US, "%dkm/h, %d°, %dm, %s, %f, %f",
+                _positionInfo = String.format(Locale.US, "%dkm/h, %d°, %dm, %s, %f, %f",
                         UnitTools.metersPerSecondToKilometersPerHour((int)location.getSpeed()),
                         (int)location.getBearing(),
                         (int)location.getAltitude(),
@@ -108,12 +104,21 @@ public class MapActivity extends AppCompatActivity {
                         location.getLatitude(),
                         location.getLongitude()
                 );
+
+                double currentBearing = location.getBearing();
+
+                if (_prevBearing > 180 && currentBearing <= 180)
+                    updateMyIcon(false);
+                else if (_prevBearing <= 180 && currentBearing > 180)
+                    updateMyIcon(true);
+
+                _prevBearing = currentBearing;
             }
 
             @Override
             public void draw(Canvas pCanvas, MapView pMapView, boolean pShadow) {
                 super.draw(pCanvas, pMapView, pShadow);
-                if (_info == null || !_shouldFollowLocation) return;
+                if (_positionInfo == null || !_shouldFollowLocation) return;
 
                 // create paint
                 Paint paint = new Paint();
@@ -122,7 +127,7 @@ public class MapActivity extends AppCompatActivity {
 
                 // query bounds from text
                 Rect bounds = new Rect();
-                paint.getTextBounds(_info, 0, _info.length(), bounds);
+                paint.getTextBounds(_positionInfo, 0, _positionInfo.length(), bounds);
 
                 // draw background
                 paint.setColor(Color.WHITE);
@@ -137,17 +142,12 @@ public class MapActivity extends AppCompatActivity {
                 paint.setColor(Color.BLACK);
                 paint.setAlpha(255);
                 paint.setFlags(Paint.ANTI_ALIAS_FLAG);
-                pCanvas.drawText(_info, pCanvas.getWidth() - bounds.width(), bounds.height(), paint);
+                pCanvas.drawText(_positionInfo, pCanvas.getWidth() - bounds.width(), bounds.height(), paint);
             }
         };
-        Bitmap myBitmapIcon = aprsSymbolTable.bitmapFromSymbol(mySymbolCode, true);
-        if (AprsSymbolTable.needsRotation(mySymbolCode)) {
-            Matrix matrix = new Matrix();
-            matrix.postRotate(-90);
-            myBitmapIcon = Bitmap.createBitmap(myBitmapIcon, 0, 0, myBitmapIcon.getWidth(), myBitmapIcon.getHeight(), matrix, true);
-        }
-        _myLocationNewOverlay.setDirectionIcon(myBitmapIcon);
-        _myLocationNewOverlay.setPersonIcon(myBitmapIcon);
+
+        // set own icon
+        updateMyIcon(false);
 
         // my location overlay
         _myLocationNewOverlay.enableMyLocation();
@@ -159,6 +159,28 @@ public class MapActivity extends AppCompatActivity {
 
         // stations
         _mapStations = new MapStations(context, _mapView, this);
+    }
+
+    public void updateMyIcon(boolean shouldFlip) {
+        Context context = getApplicationContext();
+        Configuration.getInstance().setUserAgentValue(Aprs.APRS_ID + " " + BuildConfig.VERSION_NAME);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+
+        // my symbol
+        AprsSymbolTable aprsSymbolTable = AprsSymbolTable.getInstance(context);
+        String mySymbolCode = sharedPreferences.getString(PreferenceKeys.APRS_SYMBOL, "/[");
+
+        Bitmap myBitmapIcon = aprsSymbolTable.bitmapFromSymbol(mySymbolCode, true);
+        if (AprsSymbolTable.needsRotation(mySymbolCode)) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(-90);
+            if (shouldFlip) {
+                matrix.postScale(-1, 1, myBitmapIcon.getWidth() / 2f, myBitmapIcon.getHeight() / 2f);
+            }
+            myBitmapIcon = Bitmap.createBitmap(myBitmapIcon, 0, 0, myBitmapIcon.getWidth(), myBitmapIcon.getHeight(), matrix, true);
+        }
+        _myLocationNewOverlay.setDirectionIcon(myBitmapIcon);
+        _myLocationNewOverlay.setPersonIcon(myBitmapIcon);
     }
 
     @Override

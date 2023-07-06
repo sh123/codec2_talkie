@@ -18,7 +18,7 @@ public class BitmapTools {
         Rect bounds = new Rect();
         paint.getTextBounds(text, 0, text.length(), bounds);
 
-            Bitmap bitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(bounds.width(), bounds.height(), Bitmap.Config.ARGB_8888);
         bitmap.setDensity(DisplayMetrics.DENSITY_DEFAULT);
 
         Canvas canvas = new Canvas(bitmap);
