@@ -7,15 +7,18 @@ public class TextMessage {
     public String dst;
     public String digipath;
     public String text;
+    public Integer ackId;
 
     public MessageItem toMessageItem(boolean isTransmit) {
         MessageItem messageItem = new MessageItem();
         messageItem.setTimestampEpoch(System.currentTimeMillis());
-        messageItem.setNeedsAck(false); // TODO
         messageItem.setIsTransmit(isTransmit);
         messageItem.setSrcCallsign(this.src);
         messageItem.setDstCallsign(this.dst);
         messageItem.setMessage(this.text);
+        messageItem.setAckId(this.ackId);
+        messageItem.setIsAcknowledged(false);
+        messageItem.setRetryCnt(0);
         return messageItem;
     }
 }

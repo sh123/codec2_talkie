@@ -4,7 +4,7 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(indices = {@Index(value = {"id", "srcCallsign"}, unique = true)})
+@Entity(indices = {@Index(value = {"id", "srcCallsign", "ackId"}, unique = true)})
 public class MessageItem {
 
     @PrimaryKey(autoGenerate = true)
@@ -14,7 +14,9 @@ public class MessageItem {
     private String dstCallsign;
     private String message;
     private boolean needsAck;
-    private int ackNum;
+    private boolean isAcknowledged;
+    private int ackId;
+    private int retryCnt;
     private boolean isTransmit;
 
     public long getId() {
@@ -35,13 +37,19 @@ public class MessageItem {
 
     public boolean getNeedsAck() { return needsAck; }
 
-    public int getAckNum() { return ackNum; }
+    public int getAckId() { return ackId; }
+
+    public int getRetryCnt() { return this.retryCnt; }
+
+    public boolean getIsAcknowledged() { return this.isAcknowledged; }
 
     public boolean getIsTransmit() { return isTransmit; }
 
     public void setId(long id) {
         this.id = id;
     }
+
+    public void setRetryCnt(int retryCnt) { this.retryCnt = retryCnt; }
 
     public void setTimestampEpoch(long timestampEpoch) {
         this.timestampEpoch = timestampEpoch;
@@ -57,8 +65,10 @@ public class MessageItem {
 
     public void setNeedsAck(boolean needsAck) { this.needsAck = needsAck; }
 
-    public void setAckNum(int ackNum) { this.ackNum = ackNum; }
+    public void setAckId(int ackId) { this.ackId = ackId; }
 
     public void setIsTransmit(boolean isTransmit) { this.isTransmit = isTransmit; }
+
+    public void setIsAcknowledged(boolean isAcknowledged) { this.isAcknowledged = isAcknowledged; }
 }
 

@@ -5,6 +5,7 @@ import com.radio.codec2talkie.protocol.position.Position;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,6 +15,7 @@ public class AprsDataTextMessage implements AprsData {
     public String dstCallsign;
     public String digipath;
     public String textMessage;
+    public Integer ackId;
 
     private boolean _isValid;
 
@@ -37,6 +39,7 @@ public class AprsDataTextMessage implements AprsData {
         this.dstCallsign = textMessage.dst;
         this.textMessage = textMessage.text;
         this.digipath = textMessage.digipath;
+        this.ackId = textMessage.ackId;
         _isValid = true;
     }
 
@@ -52,6 +55,7 @@ public class AprsDataTextMessage implements AprsData {
         textMessage.dst = this.dstCallsign;
         textMessage.digipath = this.digipath;
         textMessage.text = this.textMessage;
+        textMessage.ackId = this.ackId;
         return textMessage;
     }
 
@@ -62,25 +66,56 @@ public class AprsDataTextMessage implements AprsData {
         this.digipath = digipath;
         this.srcCallsign = srcCallsign;
         ByteBuffer buffer = ByteBuffer.wrap(infoData);
+
         // callsign, trim ending spaces
         byte[] callsign = new byte[9];
         buffer.get(callsign);
         this.dstCallsign = new String(callsign).replaceAll("\\s+$", "");
+
         // ':' separator
         byte b = buffer.get();
         if (b != ':') return;
+
         // message
         byte[] message = new byte[buffer.remaining()];
         buffer.get(message);
-        textMessage = new String(message, StandardCharsets.UTF_8);
-        // TODO, message id: {xxxxx (for auto ack)
+        String stringMessage = new String(message, StandardCharsets.UTF_8);
+
+        // ack/rej message
+        this.ackId = 0;
+        Pattern p = Pattern.compile("^(ack|rej)(\n+){1,5}$", Pattern.DOTALL);
+        Matcher m = p.matcher(stringMessage);
+        if (m.find()) {
+            String type = m.group(1);
+            if (type != null) {
+                String ackIdStr = m.group(2);
+                if (ackIdStr != null)
+                    this.ackId = Integer.parseInt(ackIdStr);
+            }
+        } else {
+            // message requires acknowledge {xxxxx (for auto ack)
+            p = Pattern.compile("^(.+){0,67}[{](\\d+){1,5}$", Pattern.DOTALL);
+            m = p.matcher(stringMessage);
+            if (m.find()) {
+                this.textMessage = m.group(1);
+                String ackNumStr = m.group(2);
+                if (ackNumStr != null)
+                    this.ackId = Integer.parseInt(ackNumStr);
+            } else if (stringMessage.length() <= 67) {
+                this.textMessage = stringMessage;
+            }
+        }
+
         // TODO, telemetry, make subclass from message, extend and extract values
-        _isValid = !isTelemetry(textMessage);
+        if (this.textMessage != null)
+            _isValid = !isTelemetry(this.textMessage);
     }
 
     @Override
     public byte[] toBinary() {
-        return String.format(":%-9s:%s", dstCallsign, textMessage).getBytes();
+        return (ackId > 0)
+                ? String.format(Locale.US, ":%-9s:%s{%d", dstCallsign, textMessage, ackId).getBytes()
+                : String.format(":%-9s:%s", dstCallsign, textMessage).getBytes();
     }
 
     @Override

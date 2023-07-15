@@ -13,6 +13,8 @@ import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.app.AppService;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 
+import java.util.Locale;
+
 public class MessageGroupDialogSendTo extends AlertDialog implements View.OnClickListener {
 
     private final AppService _appService;
@@ -44,8 +46,9 @@ public class MessageGroupDialogSendTo extends AlertDialog implements View.OnClic
             assert targetEdit != null;
             assert messageEdit != null;
             TextMessage textMessage = new TextMessage();
-            textMessage.dst = targetEdit.getText().toString();
+            textMessage.dst = targetEdit.getText().toString().toUpperCase(Locale.ROOT);
             textMessage.text = messageEdit.getText().toString();
+            textMessage.ackId = 0;
             _appService.sendTextMessage(textMessage);
             dismiss();
         }  else if (id == R.id.send_message_to_btn_cancel) {

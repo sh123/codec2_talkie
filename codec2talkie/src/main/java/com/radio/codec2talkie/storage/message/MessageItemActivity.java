@@ -75,6 +75,7 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
             TextMessage textMessage = new TextMessage();
             textMessage.dst = _groupName;
             textMessage.text = messageEdit.getText().toString();
+            textMessage.ackId = 0;
             getService().sendTextMessage(textMessage);
             messageEdit.setText("");
         }
