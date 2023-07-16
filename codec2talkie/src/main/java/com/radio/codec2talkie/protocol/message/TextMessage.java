@@ -2,6 +2,8 @@ package com.radio.codec2talkie.protocol.message;
 
 import com.radio.codec2talkie.storage.message.MessageItem;
 
+import java.util.Locale;
+
 public class TextMessage {
     public String src;
     public String dst;
@@ -20,5 +22,21 @@ public class TextMessage {
         messageItem.setIsAcknowledged(false);
         messageItem.setRetryCnt(0);
         return messageItem;
+    }
+
+    public boolean isAck() {
+        return this.text != null &&
+                this.text.toLowerCase(Locale.ROOT).equals("ack") &&
+                this.ackId > 0;
+    }
+
+    public boolean isRej() {
+        return this.text != null &&
+                this.text.toLowerCase(Locale.ROOT).equals("rej") &&
+                this.ackId > 0;
+    }
+
+    public boolean isAutoReply() {
+        return isAck() || isRej();
     }
 }

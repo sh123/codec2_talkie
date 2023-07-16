@@ -299,7 +299,11 @@ public class AppWorker extends Thread {
             String note = (textMessage.src == null ? "UNK" : textMessage.src) + "→" +
                     (textMessage.dst == null ? "UNK" : textMessage.dst);
             sendStatusUpdate(AppMessage.EV_TEXT_MESSAGE_RECEIVED, note + ": " + textMessage.text);
-            _messageItemRepository.insertMessageItem(textMessage.toMessageItem(false));
+            if (textMessage.isAutoReply()) {
+                // TODO, acknowledge or reject message with the given (src, dst, ackId)
+            } else {
+                _messageItemRepository.insertMessageItem(textMessage.toMessageItem(false));
+            }
             Log.i(TAG, "message received: " + textMessage.text);
         }
 
@@ -342,7 +346,9 @@ public class AppWorker extends Thread {
             String note = (textMessage.src == null ? "UNK" : textMessage.src) + "→" +
                     (textMessage.dst == null ? "UNK" : textMessage.dst);
             sendStatusUpdate(AppMessage.EV_TEXT_MESSAGE_TRANSMITTED, note);
-            _messageItemRepository.insertMessageItem(textMessage.toMessageItem(true));
+            if (!textMessage.isAutoReply()) {
+                _messageItemRepository.insertMessageItem(textMessage.toMessageItem(true));
+            }
         }
 
         @Override
