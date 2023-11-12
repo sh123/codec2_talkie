@@ -338,7 +338,9 @@
     <string name="aprs_is_settings_title">Internet APRS-IS</string>
     <string name="aprs_is_settings_summary">Configure internet APRS-IS server connectivity</string>
     <string name="aprs_is_tcpip_server_title">Server</string>
-    <string name="aprs_is_tcpip_server_summary">APRS-IS TCP server (port 14580) to connect</string>
+    <string name="aprs_is_tcpip_server_summary">APRS-IS TCP server to connect</string>
+    <string name="aprs_is_tcpip_server_port_title">Server port</string>
+    <string name="aprs_is_tcpip_server_port_summary">APRS-IS TCP server port to use</string>
     <string name="aprs_is_enable_rx_gate_title">Enable APRS-IS RX gate</string>
     <string name="aprs_is_enable_tx_gate_title">Enable APRS-IS TX gate</string>
     <string name="aprs_is_enable_rx_gate_summary">Radio packets will be forwarded to APRS-IS</string>

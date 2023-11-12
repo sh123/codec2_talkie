@@ -101,6 +101,7 @@ public final class PreferenceKeys {
     public static String APRS_IS_ENABLE="aprs_is_enable";
     public static String APRS_IS_CODE = "aprs_is_code";
     public static String APRS_IS_TCPIP_SERVER = "aprs_is_tcpip_server";
+    public static String APRS_IS_TCPIP_SERVER_PORT = "aprs_is_tcpip_server_port";
     public static String APRS_IS_ENABLE_RX_GATE = "aprs_is_enable_rx_gate";
     public static String APRS_IS_ENABLE_TX_GATE = "aprs_is_enable_tx_gate";
     public static String APRS_IS_ENABLE_SELF = "aprs_is_enable_self";

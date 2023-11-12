@@ -18,6 +18,13 @@
             app:defaultValue="euro.aprs2.net">
         </EditTextPreference>
 
+        <EditTextPreference
+            app:key="aprs_is_tcpip_server_port"
+            app:title="@string/aprs_is_tcpip_server_port_title"
+            app:summary="@string/aprs_is_tcpip_server_port_summary"
+            app:defaultValue="14580">
+        </EditTextPreference>
+
         <SwitchPreference
             app:key="aprs_is_enable_rx_gate"
             app:title="@string/aprs_is_enable_rx_gate_title"

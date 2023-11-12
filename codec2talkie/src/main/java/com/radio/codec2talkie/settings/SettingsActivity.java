@@ -38,7 +38,8 @@ public class SettingsActivity extends AppCompatActivity
             "ports_tcp_ip_retry_count",
             "ports_tcp_ip_retry_delay",
             "ports_sound_modem_preamble",
-            "ports_sound_modem_ptt_off_delay_ms"
+            "ports_sound_modem_ptt_off_delay_ms",
+            "aprs_is_tcpip_server_port"
     };
 
     private static final String[] _signedDecimalSettings = {

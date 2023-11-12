@@ -61,6 +61,7 @@ public class AprsIs implements Protocol, Runnable {
     private String _ssid;
     private int _filterRadius;
     private String _filter;
+    private int _defaultPort;
 
     private final ByteBuffer _fromAprsIsQueue;
     private final ByteBuffer _toAprsIsQueue;
@@ -96,6 +97,7 @@ public class AprsIs implements Protocol, Runnable {
         _filterRadius = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_IS_RADIUS, "10"));
         _filter = sharedPreferences.getString(PreferenceKeys.APRS_IS_FILTER, "");
         _isLoopbackTransport = SettingsWrapper.isLoopbackTransport(sharedPreferences);
+        _defaultPort = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_IS_TCPIP_SERVER_PORT, "14580"));
 
         Log.i(TAG, "AprsIs RX gate: " + _isTxGateEnabled + ", TX gate: " + _isTxGateEnabled + ", server: " + _server);
 
@@ -329,7 +331,7 @@ public class AprsIs implements Protocol, Runnable {
     private TcpIp runConnect() {
         Socket socket = new Socket();
         try {
-            socket.connect(new InetSocketAddress(_server, APRSIS_DEFAULT_PORT));
+            socket.connect(new InetSocketAddress(_server, _defaultPort));
             TcpIp tcpIp = new TcpIp(socket, "aprsis");
             String loginCmd = getLoginCommand();
             Log.i(TAG, "Login command " + loginCmd);
