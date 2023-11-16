@@ -15,6 +15,7 @@ import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsWrapper;
+import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -30,7 +31,7 @@ public class Kiss implements Protocol {
     private static final int FRAME_OUTPUT_BUFFER_SIZE = 1024;
     private static final int KISS_CMD_BUFFER_SIZE = 128;
 
-    private static final int KISS_RADIO_CONTROL_COMMAND_SIZE = 17;
+    private static final int KISS_RADIO_CONTROL_COMMAND_SIZE = 34;
 
     private static final byte KISS_FEND = (byte)0xc0;
     private static final byte KISS_FESC = (byte)0xdb;
@@ -172,7 +173,7 @@ public class Kiss implements Protocol {
         */
         String freq = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FREQUENCY, "433775000");
         String freqTx = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FREQUENCY_TX, "433775000");
-        if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_RADIO_SPLIT_FREQ, false)) freqTx = freq;
+        if (!_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_RADIO_SPLIT_FREQ, false)) freqTx = freq;
         String modType = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_MOD, "0");
         String bw = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_BANDWIDTH, "125000");
         String sf = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SF, "7");
@@ -189,10 +190,10 @@ public class Kiss implements Protocol {
         rawBuffer.putInt(Integer.parseInt(freq))
                 .putInt(Integer.parseInt(freqTx))
                 .put(Byte.parseByte(modType))
+                .putShort(Short.parseShort(pwr))
                 .putInt(Integer.parseInt(bw))
                 .putShort(Short.parseShort(sf))
                 .putShort(Short.parseShort(cr))
-                .putShort(Short.parseShort(pwr))
                 .putShort(Short.parseShort(sync, 16))
                 .put(crc)
                 .putInt(Integer.parseInt(fskBitRate))
@@ -200,12 +201,7 @@ public class Kiss implements Protocol {
                 .putInt(Integer.parseInt(fskRxBw))
                 .rewind();
 
-        startKissPacket(KISS_CMD_SET_HARDWARE);
-        for (byte b: rawBuffer.array()) {
-            sendKissByte(b);
-        }
-        completeKissPacket();
-
+        send(KISS_CMD_SET_HARDWARE, rawBuffer.array());
         _context.registerReceiver(onModemRebootRequested, new IntentFilter(PreferenceKeys.KISS_EXTENSIONS_ACTION_REBOOT_REQUESTED));
     }
 
@@ -226,7 +222,7 @@ public class Kiss implements Protocol {
     @Override
     public void sendCompressedAudio(String src, String dst, int codec, byte[] frame) throws IOException {
         // NOTE, KISS does not distinguish between audio and data packet, upper layer should decide
-        send(frame);
+        send(KISS_CMD_DATA, frame);
     }
 
     @Override
@@ -242,7 +238,7 @@ public class Kiss implements Protocol {
     @Override
     public void sendData(String src, String dst, String path, byte[] dataPacket) throws IOException {
         // NOTE, KISS does not distinguish between audio and data packet, upper layer should decide
-        send(dataPacket);
+        send(KISS_CMD_DATA, dataPacket);
     }
 
     @Override
@@ -274,14 +270,14 @@ public class Kiss implements Protocol {
         }
     }
 
-    private void send(byte[] data) throws IOException {
+    private void send(byte commandCode, byte[] data) throws IOException {
         // escape
         ByteBuffer escapedFrame = escape(data);
         int escapedFrameSize = escapedFrame.position();
         escapedFrame.rewind();
 
         // send
-        startKissPacket(KISS_CMD_DATA);
+        startKissPacket(commandCode);
         while (escapedFrame.position() < escapedFrameSize) {
             sendKissByte(escapedFrame.get());
         }
@@ -428,6 +424,8 @@ public class Kiss implements Protocol {
     private void completeKissPacket() throws IOException {
         if (_transportOutputBufferPos > 0) {
             sendKissByte(KISS_FEND);
+            //byte[] d = Arrays.copyOf(_transportOutputBuffer, _transportOutputBufferPos);
+            //Log.i(TAG, DebugTools.bytesToHex(d));
             _transport.write(Arrays.copyOf(_transportOutputBuffer, _transportOutputBufferPos));
             _transportOutputBufferPos = 0;
         }
