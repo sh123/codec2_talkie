@@ -47,13 +47,18 @@ public final class PreferenceKeys {
     public static String KISS_SCRAMBLER_ITERATIONS = "kiss_scrambler_iterations";
 
     public static String KISS_EXTENSIONS_ENABLED = "kiss_extensions_enable";
+    public static String KISS_EXTENSIONS_RADIO_MOD = "kiss_extension_radio_mod";
     public static String KISS_EXTENSIONS_RADIO_FREQUENCY = "kiss_extension_radio_frequency";
+    public static String KISS_EXTENSIONS_RADIO_FREQUENCY_TX = "kiss_extension_radio_frequency_tx";
     public static String KISS_EXTENSIONS_RADIO_BANDWIDTH = "kiss_extension_radio_bandwidth";
     public static String KISS_EXTENSIONS_RADIO_POWER = "kiss_extension_radio_power";
     public static String KISS_EXTENSIONS_RADIO_SF = "kiss_extension_radio_sf";
     public static String KISS_EXTENSIONS_RADIO_CR = "kiss_extension_radio_cr";
     public static String KISS_EXTENSIONS_RADIO_SYNC = "kiss_extension_radio_sync";
     public static String KISS_EXTENSIONS_RADIO_CRC = "kiss_extension_radio_crc";
+    public static String KISS_EXTENSIONS_RADIO_FSK_BIT_RATE = "kiss_extension_radio_fsk_bit_rate";
+    public static String KISS_EXTENSIONS_RADIO_FSK_FREQ_DEV = "kiss_extension_radio_fsk_freq_dev";
+    public static String KISS_EXTENSIONS_RADIO_FSK_RX_BW = "kiss_extension_radio_fsk_rx_bw";
 
     public static String KISS_EXTENSIONS_ACTION_REBOOT_REQUESTED = "com.radio.codec2talkie.MODEM_REBOOT";
 

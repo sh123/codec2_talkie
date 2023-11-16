@@ -155,33 +155,48 @@ public class Kiss implements Protocol {
 
     private void initializeExtended() throws IOException {
         /*
-          struct LoraControlCommand {
-            uint32_t freq;
+        struct SetHardware {
+            uint32_t freqRx;
+            uint32_t freqTx;
+            uint8_t modType;
+            uint16_t pwr;
             uint32_t bw;
             uint16_t sf;
             uint16_t cr;
-            uint16_t pwr;
             uint16_t sync;
             uint8_t crc;
-          } __attribute__((packed));
+            uint32_t fskBitRate;
+            uint32_t fskFreqDev;
+            uint32_t fskRxBw;
+        } __attribute__((packed));
         */
         String freq = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FREQUENCY, "433775000");
+        String freqTx = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FREQUENCY_TX, "433775000");
+        String modType = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_MOD, "0");
         String bw = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_BANDWIDTH, "125000");
         String sf = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SF, "7");
         String cr = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_CR, "6");
         String pwr = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_POWER, "20");
         String sync = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SYNC, "34");
         byte crc = (byte)(_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_RADIO_CRC, true) ? 1 : 0);
+        String fskBitRate = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FSK_BIT_RATE, "4800");
+        String fskFreqDev = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FSK_FREQ_DEV, "1200");
+        String fskRxBw = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FSK_FREQ_DEV, "9700");
 
         ByteBuffer rawBuffer  = ByteBuffer.allocate(KISS_RADIO_CONTROL_COMMAND_SIZE);
 
         rawBuffer.putInt(Integer.parseInt(freq))
+                .putInt(Integer.parseInt(freqTx))
+                .put(Byte.parseByte(modType))
                 .putInt(Integer.parseInt(bw))
                 .putShort(Short.parseShort(sf))
                 .putShort(Short.parseShort(cr))
                 .putShort(Short.parseShort(pwr))
                 .putShort(Short.parseShort(sync, 16))
                 .put(crc)
+                .putInt(Integer.parseInt(fskBitRate))
+                .putInt(Integer.parseInt(fskFreqDev))
+                .putInt(Integer.parseInt(fskRxBw))
                 .rewind();
 
         startKissPacket(KISS_CMD_SET_HARDWARE);
