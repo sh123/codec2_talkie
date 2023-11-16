@@ -91,10 +91,10 @@
     <string name="kiss_extensions_radio_crc_title">Enable CRC check</string>
     <string name="kiss_extensions_radio_crc_summary">Enable packet CRC check</string>
 
-    <string name="kiss_extension_radio_fsk_bit_rate_title">Bit rate (600–300000bps)</string>
+    <string name="kiss_extension_radio_fsk_bit_rate_title">Bit rate (600–300000 bps)</string>
     <string name="kiss_extension_radio_fsk_bit_rate_summary">Set bit rate</string>
 
-    <string name="kiss_extension_radio_fsk_freq_dev_title">Set freq deviation (600–200000Hz)</string>
+    <string name="kiss_extension_radio_fsk_freq_dev_title">Set freq deviation (600–200000 Hz)</string>
     <string name="kiss_extension_radio_fsk_freq_dev_summary">Set freq deviation</string>
 
     <string name="kiss_extension_radio_fsk_rx_bw_title">Set receive bandwidth (Hz)</string>

@@ -38,7 +38,6 @@
     </string-array>
 
     <string-array name="lora_spreading_factors">
-        <item>6</item>
         <item>7</item>
         <item>8</item>
         <item>9</item>
@@ -286,27 +285,27 @@
     </string-array>
 
     <string-array name="fsk_rx_bw_entries">
-        <item>4800</item>
-        <item>5800</item>
-        <item>7300</item>
-        <item>9700</item>
-        <item>11700</item>
-        <item>14600</item>
-        <item>19500</item>
-        <item>23400</item>
-        <item>29300</item>
-        <item>39000</item>
-        <item>46900</item>
-        <item>58600</item>
-        <item>78200</item>
-        <item>93800</item>
-        <item>117300</item>
-        <item>156200</item>
-        <item>187200</item>
-        <item>234300</item>
-        <item>312000</item>
-        <item>373000</item>
-        <item>467000</item>
+        <item>4800 Hz</item>
+        <item>5800 Hz</item>
+        <item>7300 Hz</item>
+        <item>9700 Hz</item>
+        <item>11700 Hz</item>
+        <item>14600 Hz</item>
+        <item>19500 Hz</item>
+        <item>23400 Hz</item>
+        <item>29300 Hz</item>
+        <item>39000 Hz</item>
+        <item>46900 Hz</item>
+        <item>58600 Hz</item>
+        <item>78200 Hz</item>
+        <item>93800 Hz</item>
+        <item>117300 Hz</item>
+        <item>156200 Hz</item>
+        <item>187200 Hz</item>
+        <item>234300 Hz</item>
+        <item>312000 Hz</item>
+        <item>373000 Hz</item>
+        <item>467000 Hz</item>
     </string-array>
 
     <string-array name="fsk_rx_bw_values">
