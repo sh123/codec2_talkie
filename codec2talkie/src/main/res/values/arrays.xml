@@ -275,7 +275,76 @@
         <item>/y</item>
     </string-array>
 
+    <string-array name="radio_mod_entries">
+        <item>LoRa</item>
+        <item>FSK</item>
+    </string-array>
+
+    <string-array name="radio_mod_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="fsk_rx_bw_entries">
+        <item>4800</item>
+        <item>5800</item>
+        <item>7300</item>
+        <item>9700</item>
+        <item>11700</item>
+        <item>14600</item>
+        <item>19500</item>
+        <item>23400</item>
+        <item>29300</item>
+        <item>39000</item>
+        <item>46900</item>
+        <item>58600</item>
+        <item>78200</item>
+        <item>93800</item>
+        <item>117300</item>
+        <item>156200</item>
+        <item>187200</item>
+        <item>234300</item>
+        <item>312000</item>
+        <item>373000</item>
+        <item>467000</item>
+    </string-array>
+
+    <string-array name="fsk_rx_bw_values">
+        <item>4800</item>
+        <item>5800</item>
+        <item>7300</item>
+        <item>9700</item>
+        <item>11700</item>
+        <item>14600</item>
+        <item>19500</item>
+        <item>23400</item>
+        <item>29300</item>
+        <item>39000</item>
+        <item>46900</item>
+        <item>58600</item>
+        <item>78200</item>
+        <item>93800</item>
+        <item>117300</item>
+        <item>156200</item>
+        <item>187200</item>
+        <item>234300</item>
+        <item>312000</item>
+        <item>373000</item>
+        <item>467000</item>
+    </string-array>
+
     <string-array name="lora_power_entries">
+        <item>-9 dBm</item>
+        <item>-8 dBm</item>
+        <item>-7 dBm</item>
+        <item>-6 dBm</item>
+        <item>-5 dBm</item>
+        <item>-4 dBm</item>
+        <item>-3 dBm</item>
+        <item>-2 dBm</item>
+        <item>-1 dBm</item>
+        <item>0 dBm</item>
+        <item>1 dBm</item>
         <item>2 dBm</item>
         <item>3 dBm</item>
         <item>4 dBm</item>
@@ -300,6 +369,17 @@
     </string-array>
 
     <string-array name="lora_power_values">
+        <item>-9</item>
+        <item>-8</item>
+        <item>-7</item>
+        <item>-6</item>
+        <item>-5</item>
+        <item>-4</item>
+        <item>-3</item>
+        <item>-2</item>
+        <item>-1</item>
+        <item>0</item>
+        <item>1</item>
         <item>2</item>
         <item>3</item>
         <item>4</item>

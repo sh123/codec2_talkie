@@ -54,11 +54,24 @@
     <string name="kiss_extensions_enable_title">Enable extensions</string>
     <string name="kiss_extensions_enable_summary">Enable radio control and signal level reports</string>
 
+    <string name="kiss_extensions_radio_mod_title">Select radio modulation type</string>
+
     <string name="kiss_extensions_radio_control_title">Set radio parameters</string>
     <string name="kiss_extensions_radio_control_summary">Set frequency, bandwidth and other radio parameters</string>
 
+    <string name="kiss_extensions_radio_category_lora_title">Set LoRa modulation parameters</string>
+    <string name="kiss_extensions_radio_category_fsk_title">Set FSK modulation parameters</string>
+
+    <string name="kiss_extensions_radio_category_other_title">Modem control</string>
+
+    <string name="kiss_extension_radio_split_freq_title">Split frequency operation</string>
+    <string name="kiss_extension_radio_split_freq_summary">Use separate frequencies for RX and TX</string>
+
     <string name="kiss_extensions_radio_frequency_title">Frequency (Hz)</string>
-    <string name="kiss_extensions_radio_frequency_summary">Set radio frequency</string>
+    <string name="kiss_extensions_radio_frequency_summary">Set radio frequency for RX/TX or RX frequency when split operation is enabled</string>
+
+    <string name="kiss_extensions_radio_frequency_title_tx">Frequency TX (Hz)</string>
+    <string name="kiss_extensions_radio_frequency_summary_tx">Set transmit radio frequency</string>
 
     <string name="kiss_extensions_radio_bandwidth_title">Bandwidth (Hz)</string>
     <string name="kiss_extensions_radio_bandwidth_summary">Set radio bandwidth</string>
@@ -77,6 +90,14 @@
 
     <string name="kiss_extensions_radio_crc_title">Enable CRC check</string>
     <string name="kiss_extensions_radio_crc_summary">Enable packet CRC check</string>
+
+    <string name="kiss_extension_radio_fsk_bit_rate_title">Bit rate (600–300000bps)</string>
+    <string name="kiss_extension_radio_fsk_bit_rate_summary">Set bit rate</string>
+
+    <string name="kiss_extension_radio_fsk_freq_dev_title">Set freq deviation (600–200000Hz)</string>
+    <string name="kiss_extension_radio_fsk_freq_dev_summary">Set freq deviation</string>
+
+    <string name="kiss_extension_radio_fsk_rx_bw_title">Set receive bandwidth (Hz)</string>
 
     <string name="app_volume_ptt_title">Use volume keys for PTT</string>
     <string name="app_volume_ptt_summary">Volume up/down keys will be used for PTT</string>

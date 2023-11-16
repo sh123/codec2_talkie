@@ -172,6 +172,7 @@ public class Kiss implements Protocol {
         */
         String freq = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FREQUENCY, "433775000");
         String freqTx = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FREQUENCY_TX, "433775000");
+        if (_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_RADIO_SPLIT_FREQ, false)) freqTx = freq;
         String modType = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_MOD, "0");
         String bw = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_BANDWIDTH, "125000");
         String sf = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SF, "7");
@@ -181,7 +182,7 @@ public class Kiss implements Protocol {
         byte crc = (byte)(_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_RADIO_CRC, true) ? 1 : 0);
         String fskBitRate = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FSK_BIT_RATE, "4800");
         String fskFreqDev = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FSK_FREQ_DEV, "1200");
-        String fskRxBw = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FSK_FREQ_DEV, "9700");
+        String fskRxBw = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FSK_RX_BW, "9700");
 
         ByteBuffer rawBuffer  = ByteBuffer.allocate(KISS_RADIO_CONTROL_COMMAND_SIZE);
 
