@@ -7,25 +7,37 @@ import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsWrapper;
 
 public class RadioTools {
+    
+    public static final int ModulationTypeLora  = 0;
+    public static final int ModulationTypeFsk = 1;
 
     public static int calculateLoraSpeedBps(int bw, int sf, int cr) {
         return (int)(sf * (4.0 / cr) / (Math.pow(2.0, sf) / bw));
     }
 
     public static int getRadioSpeed(SharedPreferences sharedPreferences) {
-        int resultBps = 0;
-        int maxSpeedBps = 128000;
-        try {
-            if (!SettingsWrapper.isSoundModemEnabled(sharedPreferences) && SettingsWrapper.isKissExtensionEnabled(sharedPreferences)) {
-                int bw = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_BANDWIDTH, "125000"));
-                int sf = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SF, "7"));
-                int cr = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_CR, "5"));
-                resultBps = RadioTools.calculateLoraSpeedBps(bw, sf, cr);
-            }
-        } catch (NumberFormatException|ArithmeticException e) {
-            e.printStackTrace();
+        int modulation = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_MOD, "0"));
+        if (SettingsWrapper.isSoundModemEnabled(sharedPreferences)) {
+            return SettingsWrapper.getFskSpeed(sharedPreferences);
         }
-        return (resultBps > 0 && resultBps <= maxSpeedBps) ? resultBps : 0;
+        if (modulation == ModulationTypeLora) {
+            int resultBps = 0;
+            int maxSpeedBps = 128000;
+            try {
+                if (!SettingsWrapper.isSoundModemEnabled(sharedPreferences) && SettingsWrapper.isKissExtensionEnabled(sharedPreferences)) {
+                    int bw = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_BANDWIDTH, "125000"));
+                    int sf = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SF, "7"));
+                    int cr = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_CR, "5"));
+                    resultBps = RadioTools.calculateLoraSpeedBps(bw, sf, cr);
+                }
+            } catch (NumberFormatException | ArithmeticException e) {
+                e.printStackTrace();
+            }
+            return (resultBps > 0 && resultBps <= maxSpeedBps) ? resultBps : 0;
+        } else if (modulation == ModulationTypeFsk){
+            return Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FSK_BIT_RATE, "4.8"));
+        }
+        return 0;
     }
 
     public static double calculateLoraSensitivity(SharedPreferences sharedPreferences) {

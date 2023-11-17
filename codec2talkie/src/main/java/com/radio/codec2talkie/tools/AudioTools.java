@@ -76,6 +76,11 @@ public class AudioTools {
         return null;
     }
 
+    public static String getModulationAsText(SharedPreferences sharedPreferences) {
+        int modulation = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_MOD, "0"));
+        return modulation == RadioTools.ModulationTypeLora ? "LoRa" : "FSK";
+    }
+
     public static String getSpeedStatusText(String codec2ModeName, SharedPreferences sharedPreferences) {
 
         // use freedv mode text instead if it is active
