@@ -46,7 +46,7 @@ public class AppWorker extends Thread {
     private static final int AUDIO_MAX_LEVEL = 0;
     private static final int AUDIO_SAMPLE_SIZE = 8000;
 
-    private static final int PROCESS_INTERVAL_MS = 20;
+    private static final int PROCESS_INTERVAL_MS = 10;
     private static final int LISTEN_AFTER_MS = 1500;
 
     private boolean _needTransmission = false;

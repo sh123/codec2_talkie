@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class UsbSerial implements Transport {
 
-    private static final int RX_TIMEOUT = 10;
+    private static final int RX_TIMEOUT = 5;
     private static final int TX_TIMEOUT = 2000;
 
     private final UsbSerialPort _usbPort;
