@@ -94,14 +94,14 @@ public class AprsDataTextMessage implements AprsData {
             }
         } else {
             // message requires acknowledge {xxxxx (for auto ack)
-            p = Pattern.compile("^(.+){0,67}[{](\\d+){1,5}$", Pattern.DOTALL);
+            p = Pattern.compile("^.+[{](\\d+){1,5}$", Pattern.DOTALL);
             m = p.matcher(stringMessage);
             if (m.find()) {
                 this.textMessage = m.group(1);
                 String ackNumStr = m.group(2);
                 if (ackNumStr != null)
                     this.ackId = Integer.parseInt(ackNumStr);
-            } else if (stringMessage.length() <= 67) {
+            } else {
                 this.textMessage = stringMessage;
             }
         }
