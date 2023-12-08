@@ -1,2 +1,2 @@
-include ':libcodec2-android', ':codec2talkie'
+include ':libcodec2-android', ":libopus-android", ':codec2talkie'
 rootProject.name = "Codec2Talkie"
