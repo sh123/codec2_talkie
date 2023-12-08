@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <cstdlib>
+#include "opus.h"
 
 namespace Java_com_radio_opus_Opus {
 }
