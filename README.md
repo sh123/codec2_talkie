@@ -18,7 +18,7 @@ For detailed information about project [Wiki](https://github.com/sh123/codec2_ta
 # Short Description
 What you can do with this app:
 - Voice communication:
-  - Send and receive voice over FreeDV modes
+  - Send and receive Codec2 voice over FreeDV modes
   - Send and receive Codec2 voice over KISS
   - Send and receive Codec2 voice encapsulated into APRS UI frames
 - Data communication
