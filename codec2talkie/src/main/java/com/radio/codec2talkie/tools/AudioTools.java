@@ -88,7 +88,13 @@ public class AudioTools {
         if (freedvModeLabel != null) return freedvModeLabel;
 
         // codec2 speed
-        String speedModeInfo = "C2: " + AudioTools.extractCodec2Speed(codec2ModeName);
+        String speedModeInfo;
+        if (SettingsWrapper.isCodec2Enabled()) {
+            speedModeInfo = "C2: " + AudioTools.extractCodec2Speed(codec2ModeName);
+        } else {
+            int speed = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.OPUS_BIT_RATE, "3200"));
+            speedModeInfo = "OPUS: " + speed;
+        }
 
         // radio speed
         int radioSpeedBps = RadioTools.getRadioSpeed(sharedPreferences);

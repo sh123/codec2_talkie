@@ -26,9 +26,19 @@ public class Opus {
     public static final int OPUS_FRAMESIZE_100_MS = 5008;   /**< Use 100 ms frames */
     public static final int OPUS_FRAMESIZE_120_MS = 5009;   /**< Use 120 ms frames */
 
+    // errors
+    public static final int OPUS_OK = 0;
+    public static final int OPUS_BAD_ARG = -1;
+    public static final int OPUS_BUFFER_TOO_SMALL = -2;
+    public static final int OPUS_INTERNAL_ERROR = -3;
+    public static final int OPUS_INVALID_PACKET = -4;
+    public static final int OPUS_UNIMPLEMENTED = -5;
+    public static final int OPUS_INVALID_STATE = -6;
+    public static final int OPUS_ALLOC_FAIL = -7;
+
     public native static long create(int sampleRate, int numChannels, int application, int bitrate, int complexity);
     public native static int destroy(long con);
 
-    public native static int decode(long con, char[] in, short[] out, int frames);
+    public native static int decode(long con, byte[] in, short[] out, int frames);
     public native static int encode(long con, short[] in, int frames, char[] out);
 }

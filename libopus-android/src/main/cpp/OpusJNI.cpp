@@ -57,19 +57,19 @@ namespace Java_com_radio_opus_Opus {
         return 0;
     }
 
-    static jint decode(JNIEnv *env, jclass clazz, jlong n, jcharArray in, jshortArray out, jint frames)
+    static jint decode(JNIEnv *env, jclass clazz, jlong n, jbyteArray in, jshortArray out, jint frames)
     {
         Context *con = getContext(n);
         OpusDecoder *decoder = con->decoder;
 
         jint inputArraySize = env->GetArrayLength(in);
 
-        jchar* encodedData = env->GetCharArrayElements(in, 0);
+        jbyte* encodedData = env->GetByteArrayElements(in, 0);
         jshort* decodedData = env->GetShortArrayElements(out, 0);
 
         int samples = opus_decode(decoder, (const unsigned char *)encodedData, inputArraySize, decodedData, frames, 0);
 
-        env->ReleaseCharArrayElements(in, encodedData, JNI_ABORT);
+        env->ReleaseByteArrayElements(in, encodedData, JNI_ABORT);
         env->ReleaseShortArrayElements(out, decodedData, 0);
 
         return samples;
@@ -96,7 +96,7 @@ namespace Java_com_radio_opus_Opus {
     static JNINativeMethod method_table[] = {
         {"create", "(IIIII)J",                  (void *) create },
         {"destroy", "(J)I",                     (void *) destroy },
-        {"decode", "(J[C[SI)I",                 (void *) decode },
+        {"decode", "(J[B[SI)I",                 (void *) decode },
         {"encode", "(J[SI[C)I",                 (void *) encode }
     };
 }

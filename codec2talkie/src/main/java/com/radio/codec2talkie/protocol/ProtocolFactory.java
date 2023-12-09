@@ -71,6 +71,7 @@ public class ProtocolFactory {
         boolean aprsEnabled = SettingsWrapper.isAprsEnabled(sharedPreferences);
         boolean aprsIsEnabled = SettingsWrapper.isAprsIsEnabled(sharedPreferences);
         boolean freedvEnabled = SettingsWrapper.isFreeDvSoundModemModulation(sharedPreferences);
+        boolean codec2Enabled = SettingsWrapper.isCodec2Enabled(sharedPreferences);
 
         // "root" protocol
         Protocol proto;
@@ -103,12 +104,16 @@ public class ProtocolFactory {
             proto = new Ax25(proto);
         }
         if (!freedvEnabled) {
-            if (recordingEnabled) {
-                proto = new Recorder(proto, sharedPreferences);
-            }
+            if (codec2Enabled) {
+                if (recordingEnabled) {
+                    proto = new Recorder(proto, sharedPreferences);
+                }
 
-            proto = new AudioCodec2FrameAggregator(proto, sharedPreferences);
-            proto = new AudioCodec2(proto, sharedPreferences);
+                proto = new AudioCodec2FrameAggregator(proto, sharedPreferences);
+                proto = new AudioCodec2(proto, sharedPreferences);
+            } else {
+                proto = new AudioOpus(proto);
+            }
         }
 
         if (aprsEnabled) {

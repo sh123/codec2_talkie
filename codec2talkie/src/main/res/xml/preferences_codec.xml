@@ -15,13 +15,6 @@
             app:summary="%s">
         </ListPreference>
 
-        <EditTextPreference
-            app:key="codec2_tx_frame_max_size"
-            app:title="@string/codec2_tx_frame_max_size_title"
-            app:summary="@string/codec2_tx_frame_max_size_summary"
-            app:defaultValue="48">
-        </EditTextPreference>
-
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -41,6 +34,15 @@
             app:entries="@array/opus_frame_size"
             app:entryValues="@array/opus_frame_size"
             app:defaultValue="40"
+            app:summary="%s">
+        </ListPreference>
+
+        <ListPreference
+            app:key="opus_complexity"
+            app:title="@string/opus_complexity_title"
+            app:entries="@array/opus_complexity_value"
+            app:entryValues="@array/opus_complexity_value"
+            app:defaultValue="5"
             app:summary="%s">
         </ListPreference>
 

@@ -38,6 +38,7 @@ public final class PreferenceKeys {
 
     public static String OPUS_BIT_RATE = "opus_bit_rate";
     public static String OPUS_FRAME_SIZE = "opus_frame_size";
+    public static String OPUS_COMPLEXITY = "opus_complexity";
 
     public static String KISS_ENABLED = "kiss_enable";
     public static String KISS_BUFFERED_ENABLED = "kiss_buffered_enable";

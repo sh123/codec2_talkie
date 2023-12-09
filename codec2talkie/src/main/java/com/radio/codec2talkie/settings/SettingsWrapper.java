@@ -40,6 +40,10 @@ public class SettingsWrapper {
                 sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200").startsWith("F");
     }
 
+    public static boolean isCodec2Enabled(SharedPreferences sharedPreferences) {
+        return sharedPreferences.getString(PreferenceKeys.CODEC_TYPE, "Codec2").equals("Codec2");
+    }
+
     public static int getFreeDvSoundModemModulation(SharedPreferences sharedPreferences) {
         String modemType = sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200");
         if (modemType.startsWith("F")) {

@@ -25,9 +25,10 @@
     <string name="codec2_recorder_summary">Record incoming and outgoing transmissions for future playback</string>
 
     <string name="opus_category_title">OPUS Settings</string>
-    <string name="opus_frame_size_title">Frame size</string>
+    <string name="opus_frame_size_title">PCM frame duration [ms]</string>
     <string name="opus_bit_rate_title">Bit rate</string>
     <string name="opus_bit_rate_summary">Bit rate from 500 up to 512000bps</string>
+    <string name="opus_complexity_title">Complexity</string>
 
     <string name="main_status_loopback_test">Loopback</string>
     <string name="main_status_stop">STOPPED</string>
@@ -179,7 +180,7 @@
     <string name="kiss_toast_modem_reboot">Modem reboot requested</string>
 
     <string name="codec2_tx_frame_max_size_title">Maximum super frame size (bytes)</string>
-    <string name="codec2_tx_frame_max_size_summary">Multiple Codec2 samples are aggregated into super frame not larger than this value</string>
+    <string name="codec2_tx_frame_max_size_summary">Multiple audio codec encoded samples are aggregated into super frame not larger than this value</string>
 
     <string name="usb_settings_title">USB settings</string>
     <string name="usb_data_bits_title">Serial data bits</string>
