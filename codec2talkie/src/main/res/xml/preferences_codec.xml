@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        app:key="codec2_category"
+        app:title="@string/codec2_category_title">
+
+        <ListPreference
+            app:key="codec2_mode"
+            app:title="@string/codec2_mode_title"
+            app:entries="@array/codec2_modes"
+            app:entryValues="@array/codec2_modes"
+            app:defaultValue="MODE_450=10"
+            app:summary="%s">
+        </ListPreference>
+
+        <EditTextPreference
+            app:key="codec2_tx_frame_max_size"
+            app:title="@string/codec2_tx_frame_max_size_title"
+            app:summary="@string/codec2_tx_frame_max_size_summary"
+            app:defaultValue="48">
+        </EditTextPreference>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="opus_category"
+        app:title="@string/opus_category_title">
+
+        <EditTextPreference
+            app:key="opus_bit_rate"
+            app:title="@string/opus_bit_rate_title"
+            app:summary="@string/opus_bit_rate_summary"
+            app:defaultValue="3200">
+        </EditTextPreference>
+
+        <ListPreference
+            app:key="opus_frame_size"
+            app:title="@string/opus_frame_size_title"
+            app:entries="@array/opus_frame_size"
+            app:entryValues="@array/opus_frame_size"
+            app:defaultValue="40"
+            app:summary="%s">
+        </ListPreference>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

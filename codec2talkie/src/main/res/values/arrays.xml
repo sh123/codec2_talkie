@@ -13,6 +13,11 @@
         <item>115200</item>
     </string-array>
 
+    <string-array name="codec_type_modes">
+        <item>Codec2</item>
+        <item>OPUS</item>
+    </string-array>
+
     <string-array name="codec2_modes">
         <item>MODE_450=10</item>
         <item>MODE_700C=8</item>
@@ -22,6 +27,13 @@
         <item>MODE_1600=2</item>
         <item>MODE_2400=1</item>
         <item>MODE_3200=0</item>
+    </string-array>
+
+    <string-array name="opus_frame_size">
+        <item>20</item>
+        <item>40</item>
+        <item>80</item>
+        <item>180</item>
     </string-array>
 
     <string-array name="lora_bandwidths">

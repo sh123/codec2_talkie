@@ -12,12 +12,22 @@
     <string name="usb_bt_client_name_title">Bluetooth device</string>
     <string name="usb_bt_client_name_summary">Default Bluetooth device to connect</string>
 
-    <string name="codec2_category_title">Codec2 settings</string>
+    <string name="codec_category_title">Audio Codec Settings</string>
+    <string name="codec_type_title">Select codec type</string>
+    <string name="codec_type_settings_title">Codec settings</string>
+    <string name="codec_type_settings_summary">Change selected codec settings, such as bit rate, frame size</string>
+
+    <string name="codec2_category_title">Codec2 Settings</string>
     <string name="codec2_mode_title">Mode/Speed</string>
     <string name="codec2_test_mode_title">Loopback test mode</string>
     <string name="codec2_test_mode_summary">Records and plays recording without transmission</string>
     <string name="codec2_recorder_title">Enable recorder</string>
     <string name="codec2_recorder_summary">Record incoming and outgoing transmissions for future playback</string>
+
+    <string name="opus_category_title">OPUS Settings</string>
+    <string name="opus_frame_size_title">Frame size</string>
+    <string name="opus_bit_rate_title">Bit rate</string>
+    <string name="opus_bit_rate_summary">Bit rate from 500 up to 512000bps</string>
 
     <string name="main_status_loopback_test">Loopback</string>
     <string name="main_status_stop">STOPPED</string>
@@ -102,7 +112,7 @@
     <string name="app_volume_ptt_title">Use volume keys for PTT</string>
     <string name="app_volume_ptt_summary">Volume up/down keys will be used for PTT</string>
 
-    <string name="app_category_title">Application settings</string>
+    <string name="app_category_title">Application Settings</string>
 
     <string name="app_keep_screen_on_title">Keep screen ON</string>
     <string name="app_keep_screen_on_summary">Prevent screen switching off when app is active</string>

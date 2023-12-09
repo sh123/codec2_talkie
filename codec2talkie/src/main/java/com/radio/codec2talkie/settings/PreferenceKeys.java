@@ -30,9 +30,14 @@ public final class PreferenceKeys {
     public static String PORTS_SOUND_MODEM_FREEDV_SQUELCH_SNR="ports_sound_modem_freedv_squelch_snr";
     public static String PORTS_SOUND_MODEM_FREEDV_DATA_MODE="ports_sound_modem_freedv_data_mode";
 
-    public static String CODEC2_MODE = "codec2_mode";
+    public static String CODEC_TYPE = "codec_type";
     public static String CODEC2_RECORDING_ENABLED = "codec2_recording_enabled";
+
+    public static String CODEC2_MODE = "codec2_mode";
     public static String CODEC2_TX_FRAME_MAX_SIZE = "codec2_tx_frame_max_size";
+
+    public static String OPUS_BIT_RATE = "opus_bit_rate";
+    public static String OPUS_FRAME_SIZE = "opus_frame_size";
 
     public static String KISS_ENABLED = "kiss_enable";
     public static String KISS_BUFFERED_ENABLED = "kiss_buffered_enable";

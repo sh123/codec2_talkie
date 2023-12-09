@@ -39,7 +39,8 @@ public class SettingsActivity extends AppCompatActivity
             "ports_tcp_ip_retry_delay",
             "ports_sound_modem_preamble",
             "ports_sound_modem_ptt_off_delay_ms",
-            "aprs_is_tcpip_server_port"
+            "aprs_is_tcpip_server_port",
+            "opus_bit_rate"
     };
 
     private static final String[] _signedDecimalSettings = {
@@ -139,6 +140,15 @@ public class SettingsActivity extends AppCompatActivity
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.preferences_usb, null);
+            setNumberInputType(getPreferenceManager());
+        }
+    }
+
+    public static class SettingsCodecFragment extends PreferenceFragmentCompat
+    {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences_codec, null);
             setNumberInputType(getPreferenceManager());
         }
     }

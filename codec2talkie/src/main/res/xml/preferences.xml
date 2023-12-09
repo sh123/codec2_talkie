@@ -115,24 +115,24 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        app:key="codec2_category"
-        app:title="@string/codec2_category_title">
+        app:key="codec_category"
+        app:title="@string/codec_category_title">
 
         <ListPreference
-            app:key="codec2_mode"
-            app:title="@string/codec2_mode_title"
-            app:entries="@array/codec2_modes"
-            app:entryValues="@array/codec2_modes"
-            app:defaultValue="MODE_450=10"
+            app:key="codec_type"
+            app:title="@string/codec_type_title"
+            app:entries="@array/codec_type_modes"
+            app:entryValues="@array/codec_type_modes"
+            app:defaultValue="Codec2"
             app:summary="%s">
         </ListPreference>
 
-        <EditTextPreference
-            app:key="codec2_tx_frame_max_size"
-            app:title="@string/codec2_tx_frame_max_size_title"
-            app:summary="@string/codec2_tx_frame_max_size_summary"
-            app:defaultValue="48">
-        </EditTextPreference>
+        <Preference
+            app:key="codec_type_settings"
+            app:title="@string/codec_type_settings_title"
+            app:summary="@string/codec_type_settings_summary"
+            app:fragment="com.radio.codec2talkie.settings.SettingsActivity$SettingsCodecFragment">
+        </Preference>
 
         <SwitchPreference
             app:key="codec2_recording_enabled"
