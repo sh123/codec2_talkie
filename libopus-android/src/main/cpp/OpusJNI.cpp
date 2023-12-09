@@ -75,7 +75,7 @@ namespace Java_com_radio_opus_Opus {
         return samples;
     }
 
-    static jint encode(JNIEnv *env, jclass clazz, jlong n, jshortArray in, jint frames, jcharArray out)
+    static jint encode(JNIEnv *env, jclass clazz, jlong n, jshortArray in, jint frames, jbyteArray out)
     {
         Context *con = getContext(n);
         OpusEncoder *encoder = con->encoder;
@@ -83,12 +83,12 @@ namespace Java_com_radio_opus_Opus {
         jint outputArraySize = env->GetArrayLength(out);
 
         jshort* audioSignal = env->GetShortArrayElements(in, 0);
-        jchar* encodedSignal = env->GetCharArrayElements(out, 0);
+        jbyte* encodedSignal = env->GetByteArrayElements(out, 0);
 
         int dataArraySize = opus_encode(encoder, audioSignal, frames, (unsigned char *)encodedSignal, outputArraySize);
 
         env->ReleaseShortArrayElements(in, audioSignal, JNI_ABORT);
-        env->ReleaseCharArrayElements(out, encodedSignal, 0);
+        env->ReleaseByteArrayElements(out, encodedSignal, 0);
 
         return dataArraySize;
     }
@@ -97,7 +97,7 @@ namespace Java_com_radio_opus_Opus {
         {"create", "(IIIII)J",                  (void *) create },
         {"destroy", "(J)I",                     (void *) destroy },
         {"decode", "(J[B[SI)I",                 (void *) decode },
-        {"encode", "(J[SI[C)I",                 (void *) encode }
+        {"encode", "(J[SI[B)I",                 (void *) encode }
     };
 }
 

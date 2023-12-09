@@ -2,6 +2,7 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
@@ -9,6 +10,7 @@ import androidx.preference.PreferenceManager;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.radio.opus.Opus;
 
@@ -24,7 +26,7 @@ public class AudioOpus implements Protocol {
 
     private int _pcmFrameSize;
 
-    private char[] _recordAudioEncodedBuffer;
+    private byte[] _recordAudioEncodedBuffer;
     private short[] _playbackAudioBuffer;
 
     private ProtocolCallback _parentProtocolCallback;
@@ -51,7 +53,7 @@ public class AudioOpus implements Protocol {
         _audioBufferSize = 10*_pcmFrameSize;
 
         _playbackAudioBuffer = new short[_audioBufferSize];
-        _recordAudioEncodedBuffer = new char[superFrameSize];
+        _recordAudioEncodedBuffer = new byte[superFrameSize];
 
         _opusCon = Opus.create(SAMPLE_RATE, 1, Opus.OPUS_APPLICATION_VOIP, bitRate, complexity);
         if (_opusCon == 0) {
@@ -78,6 +80,7 @@ public class AudioOpus implements Protocol {
     @Override
     public void sendPcmAudio(String src, String dst, short[] pcmFrame) throws IOException {
         _parentProtocolCallback.onTransmitPcmAudio(src, dst, pcmFrame);
+        Log.v(TAG, DebugTools.shortsToHex(pcmFrame));
         int encodedBytesCnt = Opus.encode(_opusCon, pcmFrame, _pcmFrameSize, _recordAudioEncodedBuffer);
         if (encodedBytesCnt == 0) {
             Log.w(TAG, "Nothing was encoded");
@@ -128,6 +131,7 @@ public class AudioOpus implements Protocol {
             short [] decodedSamples = new short[decodedSamplesCnt];
             if (decodedSamplesCnt > 0) {
                 System.arraycopy(_playbackAudioBuffer, 0, decodedSamples, 0, decodedSamplesCnt);
+                Log.v(TAG, DebugTools.shortsToHex(decodedSamples));
             } else {
                 Log.e(TAG, "Decode error: " + decodedSamplesCnt);
                 _parentProtocolCallback.onProtocolRxError();

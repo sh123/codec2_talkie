@@ -40,5 +40,5 @@ public class Opus {
     public native static int destroy(long con);
 
     public native static int decode(long con, byte[] in, short[] out, int frames);
-    public native static int encode(long con, short[] in, int frames, char[] out);
+    public native static int encode(long con, short[] in, int frames, byte[] out);
 }
