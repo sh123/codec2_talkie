@@ -6,9 +6,11 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.ustadmobile.codec2.Codec2;
 
@@ -25,19 +27,18 @@ public class AudioFrameAggregator implements Protocol {
     private int _outputBufferPos;
     private byte[] _outputBuffer;
 
-    private final int _codec2FrameSize;
-    private final int _codec2ModeId;
+    private int _codec2FrameSize;
 
     private String _lastSrc;
     private String _lastDst;
     private int _lastCodec2Mode;
 
+    private final SharedPreferences _sharedPreferences;
     private ProtocolCallback _parentProtocolCallback;
 
-    public AudioFrameAggregator(Protocol childProtocol, int codec2ModeId) {
+    public AudioFrameAggregator(Protocol childProtocol, SharedPreferences sharedPreferences) {
         _childProtocol = childProtocol;
-        _codec2ModeId = codec2ModeId;
-        _codec2FrameSize = getPcmAudioBufferSize(codec2ModeId);
+        _sharedPreferences = sharedPreferences;
     }
 
     @Override
@@ -48,6 +49,10 @@ public class AudioFrameAggregator implements Protocol {
         _outputBuffer = new byte[_outputBufferSize];
         _outputBufferPos = 0;
         _childProtocol.initialize(transport, context, _protocolCallback);
+
+        String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, context.getResources().getStringArray(R.array.codec2_modes)[0]);
+        int codec2ModeId = AudioTools.extractCodec2ModeId(codec2ModeName);
+        _codec2FrameSize = getPcmAudioBufferSize(codec2ModeId);
     }
 
     @Override

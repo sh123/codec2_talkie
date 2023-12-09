@@ -1,12 +1,16 @@
 package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.radio.codec2talkie.MainActivity;
+import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
+import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.tools.StorageTools;
 import com.radio.codec2talkie.transport.Transport;
 
@@ -31,16 +35,17 @@ public class Recorder implements Protocol {
     private Timer _fileRotationTimer;
 
     final Protocol _childProtocol;
-    final int _codec2ModeId;
+    int _codec2ModeId;
 
     private String _prevSrcCallsign;
     private String _prevDstCallsign;
 
+    private final SharedPreferences _sharedPreferences;
     private ProtocolCallback _parentProtocolCallback;
 
-    public Recorder(Protocol childProtocol, int codec2ModeId) {
+    public Recorder(Protocol childProtocol, SharedPreferences sharedPreferences) {
         _childProtocol = childProtocol;
-        _codec2ModeId = codec2ModeId;
+        _sharedPreferences = sharedPreferences;
 
         _prevSrcCallsign = null;
         _prevDstCallsign = null;
@@ -51,6 +56,9 @@ public class Recorder implements Protocol {
         _parentProtocolCallback = protocolCallback;
         _storage = StorageTools.getStorage(context);
         _childProtocol.initialize(transport, context, _protocolCallback);
+
+        String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, context.getResources().getStringArray(R.array.codec2_modes)[0]);
+        _codec2ModeId = AudioTools.extractCodec2ModeId(codec2ModeName);
     }
 
     @Override

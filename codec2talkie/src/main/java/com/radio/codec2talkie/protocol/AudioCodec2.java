@@ -1,9 +1,13 @@
 package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
+import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
+import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.ustadmobile.codec2.Codec2;
 
@@ -19,18 +23,23 @@ public class AudioCodec2 implements Protocol {
     private char[] _recordAudioEncodedBuffer;
     private short[] _playbackAudioBuffer;
 
+    private final SharedPreferences _sharedPreferences;
     private ProtocolCallback _parentProtocolCallback;
 
-    public AudioCodec2(Protocol childProtocol, int codec2ModeId) {
+    public AudioCodec2(Protocol childProtocol, SharedPreferences sharedPreferences) {
         _childProtocol = childProtocol;
         _codec2Con = 0;
-        constructCodec2(codec2ModeId);
+        _sharedPreferences = sharedPreferences;
     }
 
     @Override
     public void initialize(Transport transport, Context context, ProtocolCallback protocolCallback) throws IOException {
         _parentProtocolCallback = protocolCallback;
         _childProtocol.initialize(transport, context, _protocolCallback);
+
+        String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, context.getResources().getStringArray(R.array.codec2_modes)[0]);
+        int codec2ModeId = AudioTools.extractCodec2ModeId(codec2ModeName);
+        constructCodec2(codec2ModeId);
     }
 
     @Override

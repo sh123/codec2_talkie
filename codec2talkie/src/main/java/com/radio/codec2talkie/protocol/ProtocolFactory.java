@@ -59,7 +59,7 @@ public class ProtocolFactory {
         return protocolType;
     }
 
-    public static Protocol create(int codec2ModeId, Context context) {
+    public static Protocol create(Context context) {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
@@ -104,11 +104,11 @@ public class ProtocolFactory {
         }
         if (!freedvEnabled) {
             if (recordingEnabled) {
-                proto = new Recorder(proto, codec2ModeId);
+                proto = new Recorder(proto, sharedPreferences);
             }
 
-            proto = new AudioFrameAggregator(proto, codec2ModeId);
-            proto = new AudioCodec2(proto, codec2ModeId);
+            proto = new AudioFrameAggregator(proto, sharedPreferences);
+            proto = new AudioCodec2(proto, sharedPreferences);
         }
 
         if (aprsEnabled) {

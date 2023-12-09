@@ -97,7 +97,7 @@ public class AppWorker extends Thread {
         _stationItemRepository = new StationItemRepository((Application)context);
 
         _transport = TransportFactory.create(transportType, context);
-        _protocol = ProtocolFactory.create(_codec2Mode, context);
+        _protocol = ProtocolFactory.create(context);
 
         _processPeriodicTimer = new Timer();
 
