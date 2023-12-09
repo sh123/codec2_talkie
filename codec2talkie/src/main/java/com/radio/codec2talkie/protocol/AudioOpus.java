@@ -80,7 +80,6 @@ public class AudioOpus implements Protocol {
     @Override
     public void sendPcmAudio(String src, String dst, short[] pcmFrame) throws IOException {
         _parentProtocolCallback.onTransmitPcmAudio(src, dst, pcmFrame);
-        Log.v(TAG, DebugTools.shortsToHex(pcmFrame));
         int encodedBytesCnt = Opus.encode(_opusCon, pcmFrame, _pcmFrameSize, _recordAudioEncodedBuffer);
         if (encodedBytesCnt == 0) {
             Log.w(TAG, "Nothing was encoded");
@@ -88,9 +87,7 @@ public class AudioOpus implements Protocol {
         }
         if (encodedBytesCnt > 0) {
             byte[] frame = new byte[encodedBytesCnt];
-            for (int i = 0; i < encodedBytesCnt; i++) {
-                frame[i] = (byte) _recordAudioEncodedBuffer[i];
-            }
+            System.arraycopy(_recordAudioEncodedBuffer, 0, frame, 0, encodedBytesCnt);
             Log.v(TAG, "pcm count: " + pcmFrame.length + ", encoded bytes count: " + encodedBytesCnt);
             _childProtocol.sendCompressedAudio(src, dst, frame);
         } else {
@@ -130,8 +127,7 @@ public class AudioOpus implements Protocol {
             }
             short [] decodedSamples = new short[decodedSamplesCnt];
             if (decodedSamplesCnt > 0) {
-                System.arraycopy(_playbackAudioBuffer, 0, decodedSamples, 0, decodedSamplesCnt);
-                Log.v(TAG, DebugTools.shortsToHex(decodedSamples));
+                System.arraycopy(_playbackAudioBuffer, 0, decodedSamples, 0, decodedSamplesCnt)
             } else {
                 Log.e(TAG, "Decode error: " + decodedSamplesCnt);
                 _parentProtocolCallback.onProtocolRxError();
