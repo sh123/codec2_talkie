@@ -107,7 +107,7 @@ public class ProtocolFactory {
                 proto = new Recorder(proto, sharedPreferences);
             }
 
-            proto = new AudioFrameAggregator(proto, sharedPreferences);
+            proto = new AudioCodec2FrameAggregator(proto, sharedPreferences);
             proto = new AudioCodec2(proto, sharedPreferences);
         }
 

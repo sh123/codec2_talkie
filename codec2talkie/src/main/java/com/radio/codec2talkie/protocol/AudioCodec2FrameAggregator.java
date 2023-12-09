@@ -17,9 +17,9 @@ import com.ustadmobile.codec2.Codec2;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class AudioFrameAggregator implements Protocol {
+public class AudioCodec2FrameAggregator implements Protocol {
 
-    private static final String TAG = AudioFrameAggregator.class.getSimpleName();
+    private static final String TAG = AudioCodec2FrameAggregator.class.getSimpleName();
 
     private final Protocol _childProtocol;
 
@@ -35,7 +35,7 @@ public class AudioFrameAggregator implements Protocol {
     private final SharedPreferences _sharedPreferences;
     private ProtocolCallback _parentProtocolCallback;
 
-    public AudioFrameAggregator(Protocol childProtocol, SharedPreferences sharedPreferences) {
+    public AudioCodec2FrameAggregator(Protocol childProtocol, SharedPreferences sharedPreferences) {
         _childProtocol = childProtocol;
         _sharedPreferences = sharedPreferences;
     }

@@ -60,6 +60,7 @@ public class Raw implements Protocol {
     public boolean receive() throws IOException {
         int bytesRead = _transport.read(_rxDataBuffer);
         if (bytesRead > 0) {
+            // NOTE, default data is compressed audio, upper layer should distinguish
             _parentProtocolCallback.onReceiveCompressedAudio(null, null, Arrays.copyOf(_rxDataBuffer, bytesRead));
             return true;
         }

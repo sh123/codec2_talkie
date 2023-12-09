@@ -18,7 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.R;
-import com.radio.codec2talkie.protocol.AudioFrameAggregator;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsSymbolTable;
 
 public class AprsSymbolSelectionActivity extends AppCompatActivity {
