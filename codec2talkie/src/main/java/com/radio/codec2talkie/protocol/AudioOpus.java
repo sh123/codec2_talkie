@@ -47,12 +47,17 @@ public class AudioOpus implements Protocol {
         float pcmFrameDuration = Float.parseFloat(sharedPreferences.getString(PreferenceKeys.OPUS_FRAME_SIZE, "40"));
 
         int superFrameSize = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.CODEC2_TX_FRAME_MAX_SIZE, "48"));
-        _pcmFrameSize = (int)(SAMPLE_RATE * pcmFrameDuration);
+        _pcmFrameSize = (int)(SAMPLE_RATE / 1000 * pcmFrameDuration);
+        _audioBufferSize = 10*_pcmFrameSize;
 
-        _playbackAudioBuffer = new short[10*_pcmFrameSize];
+        _playbackAudioBuffer = new short[_audioBufferSize];
         _recordAudioEncodedBuffer = new char[superFrameSize];
 
         _opusCon = Opus.create(SAMPLE_RATE, 1, Opus.OPUS_APPLICATION_VOIP, bitRate, complexity);
+        if (_opusCon == 0) {
+            Log.e(TAG, "Failed to create opus");
+        }
+        Log.i(TAG, "Opus is initialized, pcm frame size: " + _pcmFrameSize + ", super frame size: " + superFrameSize);
     }
 
     @Override
@@ -83,6 +88,7 @@ public class AudioOpus implements Protocol {
             for (int i = 0; i < encodedBytesCnt; i++) {
                 frame[i] = (byte) _recordAudioEncodedBuffer[i];
             }
+            Log.v(TAG, "pcm count: " + pcmFrame.length + ", encoded bytes count: " + encodedBytesCnt);
             _childProtocol.sendCompressedAudio(src, dst, frame);
         } else {
             Log.e(TAG, "Encode error: " + encodedBytesCnt);
@@ -113,7 +119,8 @@ public class AudioOpus implements Protocol {
 
         @Override
         protected void onReceiveCompressedAudio(String src, String dst, byte[] audioEncodedFrame) {
-            int decodedSamplesCnt = Opus.decode(_opusCon, audioEncodedFrame, _playbackAudioBuffer, _pcmFrameSize);
+            int decodedSamplesCnt = Opus.decode(_opusCon, audioEncodedFrame, _playbackAudioBuffer, _audioBufferSize);
+            Log.v(TAG, "encoded frame size: " + audioEncodedFrame.length + ", decoded samples count:" + decodedSamplesCnt);
             if (decodedSamplesCnt == 0) {
                 Log.w(TAG, "Nothing was decoded");
                 return;
