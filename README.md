@@ -2,11 +2,13 @@
 ![APK](https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.radio.codec2talkie)
 
 # Introduction
-**Turn your Android phone into real Amateur Radio HF/VHF/UHF APRS enabled Codec2 DV (digital voice) and/or FreeDV handheld transceiver.**
+**Turn your Android phone into real Amateur Radio HF/VHF/UHF APRS enabled Codec2/OPUS DV (digital voice) and/or FreeDV handheld transceiver.**
 
 **Requires additional hardware (e.g. AFSK/LoRa), software (e.g. Direwolf) radio modem or analog transceiver with USB audio + VOX/USB CAT PTT control, such as MCHF or ICOM**
 
 For more information about FreeDV and Codec2 visit https://github.com/drowe67/codec2
+
+For more information about OPUS codec visit https://opus-codec.org/
 
 For detailed information about project [Wiki](https://github.com/sh123/codec2_talkie/wiki)
 
@@ -19,8 +21,8 @@ For detailed information about project [Wiki](https://github.com/sh123/codec2_ta
 What you can do with this app:
 - Voice communication:
   - Send and receive Codec2 voice over FreeDV modes
-  - Send and receive Codec2 voice over KISS
-  - Send and receive Codec2 voice encapsulated into APRS UI frames
+  - Send and receive Codec2/OPUS voice over KISS
+  - Send and receive Codec2/OPUS voice encapsulated into APRS UI frames
 - Data communication
   - Use APRS over FSK 300 (HF, TX only), AFSK1200 (VHF), FreeDV OFDM (HF) or APRS-IS (Internet)
   - Send and receive APRS position reports
@@ -50,6 +52,7 @@ What you can do with this app:
 - Source code is integrated into this project for easier building and customization:
   - Codec2 codec: https://github.com/drowe67/codec2
   - Android Codec2 wrapper code: https://github.com/UstadMobile/Codec2-Android
+  - OPUS codec: https://opus-codec.org
 - Fetched with gradle as dependency:
   - Android USB serial: https://github.com/mik3y/usb-serial-for-android
 

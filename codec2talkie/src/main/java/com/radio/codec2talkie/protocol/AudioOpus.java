@@ -127,7 +127,7 @@ public class AudioOpus implements Protocol {
             }
             short [] decodedSamples = new short[decodedSamplesCnt];
             if (decodedSamplesCnt > 0) {
-                System.arraycopy(_playbackAudioBuffer, 0, decodedSamples, 0, decodedSamplesCnt)
+                System.arraycopy(_playbackAudioBuffer, 0, decodedSamples, 0, decodedSamplesCnt);
             } else {
                 Log.e(TAG, "Decode error: " + decodedSamplesCnt);
                 _parentProtocolCallback.onProtocolRxError();
