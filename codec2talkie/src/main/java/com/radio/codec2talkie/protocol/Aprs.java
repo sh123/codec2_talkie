@@ -80,8 +80,8 @@ public class Aprs implements Protocol {
     }
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
-        _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
+    public void sendCompressedAudio(String src, String dst, byte[] frame) throws IOException {
+        _childProtocol.sendCompressedAudio(src, dst, frame);
     }
 
     @Override
@@ -101,11 +101,11 @@ public class Aprs implements Protocol {
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec2Mode, short[] pcmFrame) throws IOException {
+    public void sendPcmAudio(String src, String dst, short[] pcmFrame) throws IOException {
         if (_isVoax25Enabled) {
-            _childProtocol.sendPcmAudio(src == null ? _srcCallsign : src, dst == null ? _dstCallsign : dst, codec2Mode, pcmFrame);
+            _childProtocol.sendPcmAudio(src == null ? _srcCallsign : src, dst == null ? _dstCallsign : dst, pcmFrame);
         } else {
-            _childProtocol.sendPcmAudio(src, dst, codec2Mode, pcmFrame);
+            _childProtocol.sendPcmAudio(src, dst, pcmFrame);
         }
     }
 
@@ -126,14 +126,14 @@ public class Aprs implements Protocol {
         }
 
         @Override
-        protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+        protected void onReceivePcmAudio(String src, String dst, short[] pcmFrame) {
             String dstCallsign = new AprsCallsign(dst).isSoftware() ? "*" : dst;
-            _parentProtocolCallback.onReceivePcmAudio(src, dstCallsign, codec, pcmFrame);
+            _parentProtocolCallback.onReceivePcmAudio(src, dstCallsign, pcmFrame);
         }
 
         @Override
-        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) {
-            _parentProtocolCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrame);
+        protected void onReceiveCompressedAudio(String src, String dst, byte[] audioFrame) {
+            _parentProtocolCallback.onReceiveCompressedAudio(src, dst, audioFrame);
         }
 
         @Override
@@ -177,14 +177,14 @@ public class Aprs implements Protocol {
         }
 
         @Override
-        protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
+        protected void onTransmitPcmAudio(String src, String dst, short[] frame) {
             String dstCallsign = new AprsCallsign(dst).isSoftware() ? "*" : dst;
-            _parentProtocolCallback.onTransmitPcmAudio(src, dstCallsign, codec, frame);
+            _parentProtocolCallback.onTransmitPcmAudio(src, dstCallsign, frame);
         }
 
         @Override
-        protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
-            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        protected void onTransmitCompressedAudio(String src, String dst, byte[] frame) {
+            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, frame);
         }
 
         @Override

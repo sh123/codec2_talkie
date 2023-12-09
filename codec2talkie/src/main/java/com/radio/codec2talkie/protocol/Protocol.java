@@ -13,8 +13,8 @@ public interface Protocol {
     void initialize(Transport transport, Context context, ProtocolCallback protocolCallback) throws IOException;
     // audio
     int getPcmAudioRecordBufferSize();
-    void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException;
-    void sendCompressedAudio(String src, String dst, int codec, byte[] frame) throws IOException;
+    void sendPcmAudio(String src, String dst, short[] pcmFrame) throws IOException;
+    void sendCompressedAudio(String src, String dst, byte[] frame) throws IOException;
     // messaging
     void sendTextMessage(TextMessage textMessage) throws IOException;
     // data

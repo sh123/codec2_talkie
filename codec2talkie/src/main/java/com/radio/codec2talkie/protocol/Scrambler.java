@@ -51,7 +51,7 @@ public class Scrambler implements Protocol {
     }
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) throws IOException {
+    public void sendCompressedAudio(String src, String dst, byte[] audioFrame) throws IOException {
         byte[] result = scramble(audioFrame);
         if (result == null) {
             _parentProtocolCallback.onProtocolTxError();
@@ -66,8 +66,8 @@ public class Scrambler implements Protocol {
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException {
-        _childProtocol.sendPcmAudio(src, dst, codec, pcmFrame);
+    public void sendPcmAudio(String src, String dst, short[] pcmFrame) throws IOException {
+        _childProtocol.sendPcmAudio(src, dst, pcmFrame);
     }
 
     @Override
@@ -92,18 +92,18 @@ public class Scrambler implements Protocol {
         }
 
         @Override
-        protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-            _parentProtocolCallback.onReceivePcmAudio(src, dst, codec, pcmFrame);
+        protected void onReceivePcmAudio(String src, String dst, short[] pcmFrame) {
+            _parentProtocolCallback.onReceivePcmAudio(src, dst, pcmFrame);
         }
 
         @Override
-        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] scrambledFrame) {
+        protected void onReceiveCompressedAudio(String src, String dst, byte[] scrambledFrame) {
 
             byte[] audioFrames = unscramble(scrambledFrame);
             if (audioFrames == null) {
                 _parentProtocolCallback.onProtocolRxError();
             } else {
-                _parentProtocolCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
+                _parentProtocolCallback.onReceiveCompressedAudio(src, dst, audioFrames);
             }
         }
 
@@ -138,13 +138,13 @@ public class Scrambler implements Protocol {
         }
 
         @Override
-        protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
-            _parentProtocolCallback.onTransmitPcmAudio(src, dst, codec, frame);
+        protected void onTransmitPcmAudio(String src, String dst, short[] frame) {
+            _parentProtocolCallback.onTransmitPcmAudio(src, dst, frame);
         }
 
         @Override
-        protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
-            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        protected void onTransmitCompressedAudio(String src, String dst, byte[] frame) {
+            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, frame);
         }
 
         @Override

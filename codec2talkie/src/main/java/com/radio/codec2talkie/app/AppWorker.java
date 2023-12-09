@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.storage.log.LogItem;
@@ -55,8 +54,6 @@ public class AppWorker extends Thread {
     private final Protocol _protocol;
     private final Transport _transport;
 
-    private final int _codec2Mode;
-
     // input data, bt -> audio
     private AudioTrack _systemAudioPlayer;
 
@@ -87,9 +84,6 @@ public class AppWorker extends Thread {
 
         _context = context;
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(_context);
-
-        String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, _context.getResources().getStringArray(R.array.codec2_modes)[0]);
-        _codec2Mode = AudioTools.extractCodec2ModeId(codec2ModeName);
 
         _logItemRepository = new LogItemRepository((Application)context);
         _messageItemRepository = new MessageItemRepository((Application)context);
@@ -260,7 +254,7 @@ public class AppWorker extends Thread {
 
     private void recordAndSendAudioFrame() throws IOException {
         _systemAudioRecorder.read(_recordAudioBuffer, 0, _recordAudioBuffer.length);
-        _protocol.sendPcmAudio(null, null, _codec2Mode, _recordAudioBuffer);
+        _protocol.sendPcmAudio(null, null, _recordAudioBuffer);
     }
 
     private final ProtocolCallback _protocolCallback = new ProtocolCallback() {
@@ -279,7 +273,7 @@ public class AppWorker extends Thread {
         }
 
         @Override
-        protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
+        protected void onReceivePcmAudio(String src, String dst, short[] pcmFrame) {
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
             sendStatusUpdate(AppMessage.EV_VOICE_RECEIVED, note);
             sendRxAudioLevelUpdate(pcmFrame);
@@ -290,7 +284,7 @@ public class AppWorker extends Thread {
         }
 
         @Override
-        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) {
+        protected void onReceiveCompressedAudio(String src, String dst, byte[] audioFrame) {
             throw new UnsupportedOperationException();
         }
 
@@ -330,14 +324,14 @@ public class AppWorker extends Thread {
         }
 
         @Override
-        protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
+        protected void onTransmitPcmAudio(String src, String dst, short[] frame) {
             String note = (src == null ? "UNK" : src) + "→" + (dst == null ? "UNK" : dst);
             sendStatusUpdate(AppMessage.EV_TRANSMITTED_VOICE, note);
             sendTxAudioLevelUpdate(frame);
         }
 
         @Override
-        protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
+        protected void onTransmitCompressedAudio(String src, String dst, byte[] frame) {
             throw new UnsupportedOperationException();
         }
 

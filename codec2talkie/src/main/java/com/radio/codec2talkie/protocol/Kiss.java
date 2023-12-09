@@ -15,7 +15,6 @@ import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsWrapper;
-import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -220,7 +219,7 @@ public class Kiss implements Protocol {
     };
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec, byte[] frame) throws IOException {
+    public void sendCompressedAudio(String src, String dst, byte[] frame) throws IOException {
         // NOTE, KISS does not distinguish between audio and data packet, upper layer should decide
         send(KISS_CMD_DATA, frame);
     }
@@ -231,7 +230,7 @@ public class Kiss implements Protocol {
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame)  {
+    public void sendPcmAudio(String src, String dst, short[] pcmFrame)  {
         Log.w(TAG, "sendPcmAudio() is not supported");
     }
 
@@ -316,9 +315,8 @@ public class Kiss implements Protocol {
                 break;
             case KISS_FEND:
                 if (_kissDataType == DataType.RAW) {
-                    // NOTE, KISS does not distinguish between audio and data packets, upper layer should decide
-                    // TODO, refactor, use onReceiveData
-                    protocolCallback.onReceiveCompressedAudio(null, null, -1, Arrays.copyOf(_frameOutputBuffer, _frameOutputBufferPos));
+                    // NOTE, default data is compressed audio, KISS does not distinguish between audio and data packets, upper layer should decide
+                    protocolCallback.onReceiveCompressedAudio(null, null, Arrays.copyOf(_frameOutputBuffer, _frameOutputBufferPos));
                 } else if (_kissDataType == DataType.SIGNAL_REPORT && _isExtendedMode) {
                     byte[] signalLevelRaw = Arrays.copyOf(_kissCmdBuffer, _kissCmdBufferPos);
                     ByteBuffer data = ByteBuffer.wrap(signalLevelRaw);

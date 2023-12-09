@@ -73,15 +73,15 @@ public class Freedv implements Protocol {
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException {
+    public void sendPcmAudio(String src, String dst, short[] pcmFrame) throws IOException {
         Codec2.freedvTx(_freedv, _modemTxBuffer, pcmFrame);
         //Log.i(TAG, "send pcm " + _modemTxBuffer.length);
         _transport.write(_modemTxBuffer);
-        _parentProtocolCallback.onTransmitPcmAudio(src, dst, codec, pcmFrame);
+        _parentProtocolCallback.onTransmitPcmAudio(src, dst, pcmFrame);
     }
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec, byte[] frame) throws IOException {
+    public void sendCompressedAudio(String src, String dst, byte[] frame) throws IOException {
         Log.w(TAG, "sendCompressedAudio() is not supported");
     }
 
@@ -140,7 +140,7 @@ public class Freedv implements Protocol {
             long cntRead = Codec2.freedvRx(_freedv, _speechRxBuffer, samplesSpeech);
             if (cntRead > 0) {
                 //Log.i(TAG, "receive " + cntRead);
-                _parentProtocolCallback.onReceivePcmAudio(null, null, -1, Arrays.copyOf(_speechRxBuffer, (int) cntRead));
+                _parentProtocolCallback.onReceivePcmAudio(null, null, Arrays.copyOf(_speechRxBuffer, (int) cntRead));
                 float snr = Codec2.freedvGetModemStat(_freedv);
                 _parentProtocolCallback.onReceiveSignalLevel((short) 0, (short)(100 * snr));
                 isRead = true;
@@ -161,8 +161,8 @@ public class Freedv implements Protocol {
                 int pktLen = (((int)_dataBuffer[0] & 0xff) << 8) | ((int)_dataBuffer[1] & 0xff);
                 byte [] pkt = new byte[pktLen];
                 System.arraycopy(_dataBuffer, 2, pkt, 0, pktLen);
-                // TODO, refactor, use onReceiveData
-                _parentProtocolCallback.onReceiveCompressedAudio(null, null, -1, pkt);
+                // NOTE, default data is compressed audio, upper layer should distinguish
+                _parentProtocolCallback.onReceiveCompressedAudio(null, null, pkt);
                 float snr = Codec2.freedvGetModemStat(_freedvData);
                 _parentProtocolCallback.onReceiveSignalLevel((short) 0, (short)(100 * snr));
                 isRead = true;

@@ -40,7 +40,6 @@ public class AprsIs implements Protocol, Runnable {
     private static final String TAG = AprsIs.class.getSimpleName();
 
     private static final int APRSIS_RETRY_WAIT_MS = 10000;
-    private static final int APRSIS_DEFAULT_PORT = 14580;
 
     private static final int HEARD_LIST_DURATION_SECONDS = 60;
 
@@ -110,8 +109,8 @@ public class AprsIs implements Protocol, Runnable {
     }
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
-        _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
+    public void sendCompressedAudio(String src, String dst, byte[] frame) throws IOException {
+        _childProtocol.sendCompressedAudio(src, dst, frame);
     }
 
     @Override
@@ -120,8 +119,8 @@ public class AprsIs implements Protocol, Runnable {
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec2Mode, short[] pcmFrame) throws IOException {
-        _childProtocol.sendPcmAudio(src, dst, codec2Mode, pcmFrame);
+    public void sendPcmAudio(String src, String dst, short[] pcmFrame) throws IOException {
+        _childProtocol.sendPcmAudio(src, dst, pcmFrame);
     }
 
     @Override
@@ -179,13 +178,13 @@ public class AprsIs implements Protocol, Runnable {
         }
 
         @Override
-        protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-            _parentProtocolCallback.onReceivePcmAudio(src, dst, codec, pcmFrame);
+        protected void onReceivePcmAudio(String src, String dst, short[] pcmFrame) {
+            _parentProtocolCallback.onReceivePcmAudio(src, dst, pcmFrame);
         }
 
         @Override
-        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) {
-            _parentProtocolCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrame);
+        protected void onReceiveCompressedAudio(String src, String dst, byte[] audioFrame) {
+            _parentProtocolCallback.onReceiveCompressedAudio(src, dst, audioFrame);
         }
 
         @Override
@@ -229,13 +228,13 @@ public class AprsIs implements Protocol, Runnable {
         }
 
         @Override
-        protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
-            _parentProtocolCallback.onTransmitPcmAudio(src, dst, codec, frame);
+        protected void onTransmitPcmAudio(String src, String dst, short[] frame) {
+            _parentProtocolCallback.onTransmitPcmAudio(src, dst, frame);
         }
 
         @Override
-        protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
-            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        protected void onTransmitCompressedAudio(String src, String dst, byte[] frame) {
+            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, frame);
         }
 
         @Override

@@ -15,8 +15,6 @@ import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 
 public class Ax25 implements Protocol {
 
@@ -57,13 +55,12 @@ public class Ax25 implements Protocol {
     }
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+    public void sendCompressedAudio(String src, String dst, byte[] frame) throws IOException {
         if (_isVoax25Enabled) {
             AX25Packet ax25Packet = new AX25Packet();
             ax25Packet.src = src;
             ax25Packet.dst = dst;
             ax25Packet.digipath = _digipath;
-            ax25Packet.codec2Mode = codec2Mode;
             ax25Packet.isAudio = true;
             ax25Packet.rawData = frame;
             byte[] ax25Frame = ax25Packet.toBinary();
@@ -71,10 +68,10 @@ public class Ax25 implements Protocol {
                 Log.e(TAG, "Cannot convert AX.25 voice packet to binary");
                 _parentProtocolCallback.onProtocolTxError();
             } else {
-                _childProtocol.sendCompressedAudio(src, dst, codec2Mode, ax25Frame);
+                _childProtocol.sendCompressedAudio(src, dst, ax25Frame);
             }
         } else {
-            _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
+            _childProtocol.sendCompressedAudio(src, dst, frame);
         }
     }
 
@@ -84,8 +81,8 @@ public class Ax25 implements Protocol {
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException {
-        _childProtocol.sendPcmAudio(src, dst, codec, pcmFrame);
+    public void sendPcmAudio(String src, String dst, short[] pcmFrame) throws IOException {
+        _childProtocol.sendPcmAudio(src, dst, pcmFrame);
     }
 
     @Override
@@ -119,17 +116,17 @@ public class Ax25 implements Protocol {
         }
 
         @Override
-        protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-            _parentProtocolCallback.onReceivePcmAudio(src, dst, codec, pcmFrame);
+        protected void onReceivePcmAudio(String src, String dst, short[] pcmFrame) {
+            _parentProtocolCallback.onReceivePcmAudio(src, dst, pcmFrame);
         }
 
         @Override
-        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames)  {
+        protected void onReceiveCompressedAudio(String src, String dst, byte[] audioFrames)  {
             AX25Packet ax25Data = new AX25Packet();
             ax25Data.fromBinary(audioFrames);
             if (ax25Data.isValid) {
                 if (ax25Data.isAudio) {
-                    _parentProtocolCallback.onReceiveCompressedAudio(ax25Data.src, ax25Data.dst, ax25Data.codec2Mode, ax25Data.rawData);
+                    _parentProtocolCallback.onReceiveCompressedAudio(ax25Data.src, ax25Data.dst, ax25Data.rawData);
                 } else {
                     _parentProtocolCallback.onReceiveLog(ax25Data.toString());
                     _parentProtocolCallback.onReceiveData(ax25Data.src, ax25Data.dst, ax25Data.digipath, ax25Data.rawData);
@@ -137,7 +134,7 @@ public class Ax25 implements Protocol {
                 }
             } else {
                 // fallback to raw audio if ax25 frame is invalid
-                _parentProtocolCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
+                _parentProtocolCallback.onReceiveCompressedAudio(src, dst, audioFrames);
             }
         }
 
@@ -167,13 +164,13 @@ public class Ax25 implements Protocol {
         }
 
         @Override
-        protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
-            _parentProtocolCallback.onTransmitPcmAudio(src, dst, codec, frame);
+        protected void onTransmitPcmAudio(String src, String dst, short[] frame) {
+            _parentProtocolCallback.onTransmitPcmAudio(src, dst, frame);
         }
 
         @Override
-        protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
-            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        protected void onTransmitCompressedAudio(String src, String dst, byte[] frame) {
+            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, frame);
         }
 
         @Override

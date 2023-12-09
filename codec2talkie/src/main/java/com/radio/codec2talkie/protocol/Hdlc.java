@@ -55,12 +55,12 @@ public class Hdlc implements Protocol {
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException {
+    public void sendPcmAudio(String src, String dst, short[] pcmFrame) throws IOException {
         Log.w(TAG, "sendPcmAudio() is not supported");
     }
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec, byte[] frame) throws IOException {
+    public void sendCompressedAudio(String src, String dst, byte[] frame) throws IOException {
         _transport.write(hdlcEncode(frame));
     }
 
@@ -111,7 +111,8 @@ public class Hdlc implements Protocol {
                             if (calculatedCrc == packetCrc) {
                                 //Log.v(TAG, DebugTools.byteBitsToString(packetBits));
                                 //Log.i(TAG, "RX: " + DebugTools.bytesToHex(packetBytes));
-                                _parentProtocolCallback.onReceiveCompressedAudio(null, null, -1, contentBytes);
+                                // NOTE, default data is compressed audio, upper layer should distinguish
+                                _parentProtocolCallback.onReceiveCompressedAudio(null, null, contentBytes);
                             }
                         }
                     }

@@ -31,7 +31,6 @@ public class AudioFrameAggregator implements Protocol {
 
     private String _lastSrc;
     private String _lastDst;
-    private int _lastCodec2Mode;
 
     private final SharedPreferences _sharedPreferences;
     private ProtocolCallback _parentProtocolCallback;
@@ -68,14 +67,13 @@ public class AudioFrameAggregator implements Protocol {
     }
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+    public void sendCompressedAudio(String src, String dst, byte[] frame) throws IOException {
         if ( _outputBufferPos + frame.length >= _outputBufferSize) {
-            _childProtocol.sendCompressedAudio(src, dst, codec2Mode, Arrays.copyOf(_outputBuffer, _outputBufferPos));
+            _childProtocol.sendCompressedAudio(src, dst, Arrays.copyOf(_outputBuffer, _outputBufferPos));
             _outputBufferPos = 0;
         }
         _lastSrc = src;
         _lastDst = dst;
-        _lastCodec2Mode = codec2Mode;
         System.arraycopy(frame, 0, _outputBuffer, _outputBufferPos, frame.length);
         _outputBufferPos += frame.length;
     }
@@ -86,8 +84,8 @@ public class AudioFrameAggregator implements Protocol {
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException {
-        _childProtocol.sendPcmAudio(src, dst, codec, pcmFrame);
+    public void sendPcmAudio(String src, String dst, short[] pcmFrame) throws IOException {
+        _childProtocol.sendPcmAudio(src, dst, pcmFrame);
     }
 
     @Override
@@ -107,12 +105,12 @@ public class AudioFrameAggregator implements Protocol {
         }
 
         @Override
-        protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-            _parentProtocolCallback.onReceivePcmAudio(src, dst, codec, pcmFrame);
+        protected void onReceivePcmAudio(String src, String dst, short[] pcmFrame) {
+            _parentProtocolCallback.onReceivePcmAudio(src, dst, pcmFrame);
         }
 
         @Override
-        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
+        protected void onReceiveCompressedAudio(String src, String dst, byte[] audioFrames) {
             if (audioFrames.length % _codec2FrameSize != 0) {
                 Log.e(TAG, "Ignoring audio frame of wrong size: " + audioFrames.length);
                 _parentProtocolCallback.onProtocolRxError();
@@ -123,7 +121,7 @@ public class AudioFrameAggregator implements Protocol {
                     for (int j = 0; j < _codec2FrameSize && (j + i) < audioFrames.length; j++) {
                         audioFrame[j] = audioFrames[i + j];
                     }
-                    _parentProtocolCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrame);
+                    _parentProtocolCallback.onReceiveCompressedAudio(src, dst, audioFrame);
                 }
             }
         }
@@ -154,13 +152,13 @@ public class AudioFrameAggregator implements Protocol {
         }
 
         @Override
-        protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
-            _parentProtocolCallback.onTransmitPcmAudio(src, dst, codec, frame);
+        protected void onTransmitPcmAudio(String src, String dst, short[] frame) {
+            _parentProtocolCallback.onTransmitPcmAudio(src, dst, frame);
         }
 
         @Override
-        protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
-            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        protected void onTransmitCompressedAudio(String src, String dst, byte[] frame) {
+            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, frame);
         }
 
         @Override
@@ -202,7 +200,7 @@ public class AudioFrameAggregator implements Protocol {
     @Override
     public void flush() throws IOException {
         if (_outputBufferPos > 0) {
-            _childProtocol.sendCompressedAudio(_lastSrc, _lastDst, _lastCodec2Mode, Arrays.copyOf(_outputBuffer, _outputBufferPos));
+            _childProtocol.sendCompressedAudio(_lastSrc, _lastDst, Arrays.copyOf(_outputBuffer, _outputBufferPos));
             _outputBufferPos = 0;
         }
         _childProtocol.flush();

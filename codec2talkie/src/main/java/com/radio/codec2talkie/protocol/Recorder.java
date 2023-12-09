@@ -67,10 +67,10 @@ public class Recorder implements Protocol {
     }
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
+    public void sendCompressedAudio(String src, String dst, byte[] frame) throws IOException {
         rotateIfNewSrcOrDstCallsign(src, dst);
-        writeToFile(src, dst, codec2Mode, frame);
-        _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
+        writeToFile(src, dst, frame);
+        _childProtocol.sendCompressedAudio(src, dst, frame);
     }
 
     @Override
@@ -79,8 +79,8 @@ public class Recorder implements Protocol {
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec, short[] pcmFrame) throws IOException {
-        _childProtocol.sendPcmAudio(src, dst, codec, pcmFrame);
+    public void sendPcmAudio(String src, String dst, short[] pcmFrame) throws IOException {
+        _childProtocol.sendPcmAudio(src, dst, pcmFrame);
     }
 
     @Override
@@ -100,15 +100,15 @@ public class Recorder implements Protocol {
         }
 
         @Override
-        protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-            _parentProtocolCallback.onReceivePcmAudio(src, dst, codec, pcmFrame);
+        protected void onReceivePcmAudio(String src, String dst, short[] pcmFrame) {
+            _parentProtocolCallback.onReceivePcmAudio(src, dst, pcmFrame);
         }
 
         @Override
-        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrames) {
+        protected void onReceiveCompressedAudio(String src, String dst, byte[] audioFrames) {
             rotateIfNewSrcOrDstCallsign(src, dst);
-            _parentProtocolCallback.onReceiveCompressedAudio(src, dst, codec2Mode, audioFrames);
-            writeToFile(src, dst, codec2Mode, audioFrames);
+            _parentProtocolCallback.onReceiveCompressedAudio(src, dst, audioFrames);
+            writeToFile(src, dst, audioFrames);
         }
 
         @Override
@@ -137,13 +137,13 @@ public class Recorder implements Protocol {
         }
 
         @Override
-        protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
-            _parentProtocolCallback.onTransmitPcmAudio(src, dst, codec, frame);
+        protected void onTransmitPcmAudio(String src, String dst, short[] frame) {
+            _parentProtocolCallback.onTransmitPcmAudio(src, dst, frame);
         }
 
         @Override
-        protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
-            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        protected void onTransmitCompressedAudio(String src, String dst, byte[] frame) {
+            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, frame);
         }
 
         @Override
@@ -192,9 +192,9 @@ public class Recorder implements Protocol {
         _childProtocol.close();
     }
 
-    private void writeToFile(String src, String dst, int codec2Mode, byte[] rawData)  {
+    private void writeToFile(String src, String dst, byte[] rawData)  {
         stopRotationTimer();
-        createStreamIfNotExists(src, dst, codec2Mode);
+        createStreamIfNotExists(src, dst);
         writeToStream(rawData);
         startRotationTimer();
     }
@@ -209,7 +209,7 @@ public class Recorder implements Protocol {
         }
     }
 
-    private void createStreamIfNotExists(String src, String dst, int codec2Mode) {
+    private void createStreamIfNotExists(String src, String dst) {
         if (_activeStream == null) {
             try {
                 Date date = new Date();
@@ -217,7 +217,7 @@ public class Recorder implements Protocol {
                 if (!newDirectory.exists() && !newDirectory.mkdirs()) {
                     Log.e(TAG, "Failed to create directory for voicemails");
                 }
-                File newAudioFile = new File(newDirectory, getNewFileName(date, src, dst, codec2Mode));
+                File newAudioFile = new File(newDirectory, getNewFileName(date, src, dst));
                 _activeStream = new FileOutputStream(newAudioFile);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -230,13 +230,9 @@ public class Recorder implements Protocol {
         return df.format(date);
     }
 
-    private String getNewFileName(Date date, String src, String dst, int codec2Mode) {
-        int mode = codec2Mode;
-        if (mode == -1) {
-            mode = _codec2ModeId;
-        }
+    private String getNewFileName(Date date, String src, String dst) {
         SimpleDateFormat tf = new SimpleDateFormat("HHmmss", Locale.ENGLISH);
-        String codec2mode = String.format(Locale.ENGLISH, "%02d", mode);
+        String codec2mode = String.format(Locale.ENGLISH, "%02d", _codec2ModeId);
         String fileName = codec2mode + "_" + tf.format(date);
         if (src != null && dst != null) {
             fileName += "_" + src + "_" + dst;

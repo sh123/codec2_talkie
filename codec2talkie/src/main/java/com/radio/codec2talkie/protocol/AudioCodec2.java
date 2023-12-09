@@ -48,8 +48,8 @@ public class AudioCodec2 implements Protocol {
     }
 
     @Override
-    public void sendCompressedAudio(String src, String dst, int codec2Mode, byte[] frame) throws IOException {
-        _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
+    public void sendCompressedAudio(String src, String dst, byte[] frame) throws IOException {
+        _childProtocol.sendCompressedAudio(src, dst, frame);
     }
 
     @Override
@@ -58,8 +58,8 @@ public class AudioCodec2 implements Protocol {
     }
 
     @Override
-    public void sendPcmAudio(String src, String dst, int codec2Mode, short[] pcmFrame) throws IOException {
-        _parentProtocolCallback.onTransmitPcmAudio(src, dst, codec2Mode, pcmFrame);
+    public void sendPcmAudio(String src, String dst, short[] pcmFrame) throws IOException {
+        _parentProtocolCallback.onTransmitPcmAudio(src, dst, pcmFrame);
 
         Codec2.encode(_codec2Con, pcmFrame, _recordAudioEncodedBuffer);
 
@@ -68,7 +68,7 @@ public class AudioCodec2 implements Protocol {
         for (int i = 0; i < _recordAudioEncodedBuffer.length; i++) {
             frame[i] = (byte)_recordAudioEncodedBuffer[i];
         }
-        _childProtocol.sendCompressedAudio(src, dst, codec2Mode, frame);
+        _childProtocol.sendCompressedAudio(src, dst, frame);
     }
 
     @Override
@@ -88,14 +88,14 @@ public class AudioCodec2 implements Protocol {
         }
 
         @Override
-        protected void onReceivePcmAudio(String src, String dst, int codec, short[] pcmFrame) {
-            _parentProtocolCallback.onReceivePcmAudio(src, dst, codec, pcmFrame);
+        protected void onReceivePcmAudio(String src, String dst, short[] pcmFrame) {
+            _parentProtocolCallback.onReceivePcmAudio(src, dst, pcmFrame);
         }
 
         @Override
-        protected void onReceiveCompressedAudio(String src, String dst, int codec2Mode, byte[] audioFrame) {
+        protected void onReceiveCompressedAudio(String src, String dst, byte[] audioFrame) {
             Codec2.decode(_codec2Con, _playbackAudioBuffer, audioFrame);
-            _parentProtocolCallback.onReceivePcmAudio(src, dst, codec2Mode, _playbackAudioBuffer);
+            _parentProtocolCallback.onReceivePcmAudio(src, dst, _playbackAudioBuffer);
         }
 
         @Override
@@ -124,13 +124,13 @@ public class AudioCodec2 implements Protocol {
         }
 
         @Override
-        protected void onTransmitPcmAudio(String src, String dst, int codec, short[] frame) {
-            _parentProtocolCallback.onTransmitPcmAudio(src, dst, codec, frame);
+        protected void onTransmitPcmAudio(String src, String dst, short[] frame) {
+            _parentProtocolCallback.onTransmitPcmAudio(src, dst, frame);
         }
 
         @Override
-        protected void onTransmitCompressedAudio(String src, String dst, int codec, byte[] frame) {
-            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, codec, frame);
+        protected void onTransmitCompressedAudio(String src, String dst, byte[] frame) {
+            _parentProtocolCallback.onTransmitCompressedAudio(src, dst, frame);
         }
 
         @Override
