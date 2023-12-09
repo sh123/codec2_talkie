@@ -21,7 +21,7 @@ namespace Java_com_radio_opus_Opus {
         con = (struct Context *) malloc(sizeof(struct Context));
 
         int encoderError;
-        OpusEncoder* encoder = opus_encoder_create(sampleRate, 1, application, &encoderError);
+        OpusEncoder* encoder = opus_encoder_create(sampleRate, numChannels, application, &encoderError);
         if (!encoderError) {
             encoderError = opus_encoder_init(encoder, sampleRate, numChannels, application);
 
@@ -30,7 +30,7 @@ namespace Java_com_radio_opus_Opus {
         }
 
         int decoderError;
-        OpusDecoder* decoder = opus_decoder_create(sampleRate, 1, &decoderError);
+        OpusDecoder* decoder = opus_decoder_create(sampleRate, numChannels, &decoderError);
         if (!decoderError) {
             decoderError = opus_decoder_init(decoder, sampleRate, numChannels);
         }
@@ -57,25 +57,25 @@ namespace Java_com_radio_opus_Opus {
         return 0;
     }
 
-    static jint decode(JNIEnv *env, jclass clazz, jlong n, jbyteArray in, jshortArray out, jint frames)
+    static jint decode(JNIEnv *env, jclass clazz, jlong n, jcharArray in, jshortArray out, jint frames)
     {
         Context *con = getContext(n);
         OpusDecoder *decoder = con->decoder;
 
         jint inputArraySize = env->GetArrayLength(in);
 
-        jbyte* encodedData = env->GetByteArrayElements(in, 0);
+        jchar* encodedData = env->GetCharArrayElements(in, 0);
         jshort* decodedData = env->GetShortArrayElements(out, 0);
 
         int samples = opus_decode(decoder, (const unsigned char *)encodedData, inputArraySize, decodedData, frames, 0);
 
-        env->ReleaseByteArrayElements(in, encodedData, JNI_ABORT);
+        env->ReleaseCharArrayElements(in, encodedData, JNI_ABORT);
         env->ReleaseShortArrayElements(out, decodedData, 0);
 
         return samples;
     }
 
-    static jint encode(JNIEnv *env, jclass clazz, jlong n, jshortArray in, jint frames, jbyteArray out)
+    static jint encode(JNIEnv *env, jclass clazz, jlong n, jshortArray in, jint frames, jcharArray out)
     {
         Context *con = getContext(n);
         OpusEncoder *encoder = con->encoder;
@@ -83,12 +83,12 @@ namespace Java_com_radio_opus_Opus {
         jint outputArraySize = env->GetArrayLength(out);
 
         jshort* audioSignal = env->GetShortArrayElements(in, 0);
-        jbyte* encodedSignal = env->GetByteArrayElements(out, 0);
+        jchar* encodedSignal = env->GetCharArrayElements(out, 0);
 
         int dataArraySize = opus_encode(encoder, audioSignal, frames, (unsigned char *)encodedSignal, outputArraySize);
 
         env->ReleaseShortArrayElements(in, audioSignal, JNI_ABORT);
-        env->ReleaseByteArrayElements(out, encodedSignal, 0);
+        env->ReleaseCharArrayElements(out, encodedSignal, 0);
 
         return dataArraySize;
     }
@@ -96,8 +96,8 @@ namespace Java_com_radio_opus_Opus {
     static JNINativeMethod method_table[] = {
         {"create", "(IIIII)J",                  (void *) create },
         {"destroy", "(J)I",                     (void *) destroy },
-        {"decode", "(J[B[SI)J",                 (void *) decode },
-        {"encode", "(J[SI[B)J",                 (void *) encode }
+        {"decode", "(J[C[SI)I",                 (void *) decode },
+        {"encode", "(J[SI[C)I",                 (void *) encode }
     };
 }
 
