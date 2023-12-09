@@ -457,8 +457,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
     private void updateStatusText(ProtocolFactory.ProtocolType protocolType) {
-        String codec2ModeName = _sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, getResources().getStringArray(R.array.codec2_modes)[0]);
-
         // protocol
         String status = "";
 
@@ -518,7 +516,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         status = status.length() == 0 ? protocolType.toString() : protocolType.toString() + " " + status;
 
-        String statusLine = AudioTools.getSpeedStatusText(codec2ModeName, _sharedPreferences) + ", " + status;
+        String statusLine = AudioTools.getSpeedStatusText(_sharedPreferences, getResources()) + ", " + status;
         _textCodecMode.setText(statusLine);
     }
 

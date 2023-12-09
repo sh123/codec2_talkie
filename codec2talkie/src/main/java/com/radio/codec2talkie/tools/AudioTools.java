@@ -1,10 +1,12 @@
 package com.radio.codec2talkie.tools;
 
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Color;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.app.AppWorker;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsWrapper;
@@ -81,7 +83,7 @@ public class AudioTools {
         return modulation == RadioTools.ModulationTypeLora ? "LoRa" : "FSK";
     }
 
-    public static String getSpeedStatusText(String codec2ModeName, SharedPreferences sharedPreferences) {
+    public static String getSpeedStatusText(SharedPreferences sharedPreferences, Resources resources) {
 
         // use freedv mode text instead if it is active
         String freedvModeLabel = getFreedvModeAsText(sharedPreferences);
@@ -89,7 +91,8 @@ public class AudioTools {
 
         // codec2 speed
         String speedModeInfo;
-        if (SettingsWrapper.isCodec2Enabled()) {
+        if (SettingsWrapper.isCodec2Enabled(sharedPreferences)) {
+            String codec2ModeName = sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, resources.getStringArray(R.array.codec2_modes)[0]);
             speedModeInfo = "C2: " + AudioTools.extractCodec2Speed(codec2ModeName);
         } else {
             int speed = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.OPUS_BIT_RATE, "3200"));

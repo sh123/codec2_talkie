@@ -451,10 +451,14 @@ public class AppWorker extends Thread {
 
     private void cleanup() {
         Log.i(TAG, "cleanup() started");
-        _systemAudioRecorder.stop();
+        try {
+            _systemAudioRecorder.stop();
+        } catch (IllegalStateException ignored) {}
         _systemAudioRecorder.release();
 
-        _systemAudioPlayer.stop();
+        try {
+            _systemAudioPlayer.stop();
+        } catch (IllegalStateException ignored) {}
         _systemAudioPlayer.release();
 
         try {
