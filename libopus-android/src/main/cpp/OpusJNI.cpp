@@ -27,6 +27,7 @@ namespace Java_com_radio_opus_Opus {
 
             opus_encoder_ctl(encoder, OPUS_SET_BITRATE(bitrate));
             opus_encoder_ctl(encoder, OPUS_SET_COMPLEXITY(complexity));
+            opus_encoder_ctl(encoder, OPUS_SET_SIGNAL(OPUS_SIGNAL_VOICE));
         }
 
         int decoderError;
