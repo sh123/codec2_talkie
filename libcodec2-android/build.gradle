@@ -74,12 +74,12 @@ task compileCodec2 {
     doLast {
         exec {
             workingDir "$projectDir/build/codec2_build_linux"
-            commandLine "/usr/bin/cmake", "$projectDir/src/codec2"
+            commandLine "cmake", "$projectDir/src/codec2"
         }
 
         exec {
             workingDir "$projectDir/build/codec2_build_linux"
-            commandLine "/usr/bin/make"
+            commandLine "make"
         }
 
         for(String abi : rootProject.ext.ABI_FILTERS.split(";")) {
@@ -96,7 +96,7 @@ task compileCodec2 {
 
             exec {
                 workingDir "$projectDir/build/codec2_build_android_" + abi
-                commandLine "/usr/bin/cmake", "--build", "."
+                commandLine "cmake", "--build", "."
             }
 
             copy {

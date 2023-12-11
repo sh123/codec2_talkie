@@ -74,12 +74,12 @@ task compileOpus {
     doLast {
         exec {
             workingDir "$projectDir/build/opus_build_linux"
-            commandLine "/usr/bin/cmake", "$projectDir/src/opus"
+            commandLine "cmake", "$projectDir/src/opus"
         }
 
         exec {
             workingDir "$projectDir/build/opus_build_linux"
-            commandLine "/usr/bin/make"
+            commandLine "make"
         }
 
         for(String abi : rootProject.ext.ABI_FILTERS.split(";")) {
@@ -95,7 +95,7 @@ task compileOpus {
 
             exec {
                 workingDir "$projectDir/build/opus_build_android_" + abi
-                commandLine "/usr/bin/cmake", "--build", "."
+                commandLine "cmake", "--build", "."
             }
 
             copy {
