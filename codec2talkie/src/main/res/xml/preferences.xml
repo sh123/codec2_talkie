@@ -133,14 +133,7 @@
             app:summary="@string/codec_type_settings_summary"
             app:fragment="com.radio.codec2talkie.settings.SettingsActivity$SettingsCodecFragment">
         </Preference>
-
-        <EditTextPreference
-            app:key="codec2_tx_frame_max_size"
-            app:title="@string/codec2_tx_frame_max_size_title"
-            app:summary="@string/codec2_tx_frame_max_size_summary"
-            app:defaultValue="48">
-        </EditTextPreference>
-
+        
         <SwitchPreference
             app:key="codec2_recording_enabled"
             app:title="@string/codec2_recorder_title"

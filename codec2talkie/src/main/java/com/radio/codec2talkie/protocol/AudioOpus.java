@@ -2,7 +2,6 @@ package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.preference.PreferenceManager;
@@ -10,7 +9,6 @@ import androidx.preference.PreferenceManager;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
-import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.transport.Transport;
 import com.radio.opus.Opus;
 
@@ -48,18 +46,17 @@ public class AudioOpus implements Protocol {
         int complexity = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.OPUS_COMPLEXITY, "5"));
         float pcmFrameDuration = Float.parseFloat(sharedPreferences.getString(PreferenceKeys.OPUS_FRAME_SIZE, "40"));
 
-        int superFrameSize = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.CODEC2_TX_FRAME_MAX_SIZE, "48"));
         _pcmFrameSize = (int)(SAMPLE_RATE / 1000 * pcmFrameDuration);
         _audioBufferSize = 10*_pcmFrameSize;
 
         _playbackAudioBuffer = new short[_audioBufferSize];
-        _recordAudioEncodedBuffer = new byte[superFrameSize];
+        _recordAudioEncodedBuffer = new byte[_audioBufferSize];
 
         _opusCon = Opus.create(SAMPLE_RATE, 1, Opus.OPUS_APPLICATION_VOIP, bitRate, complexity);
         if (_opusCon == 0) {
             Log.e(TAG, "Failed to create opus");
         }
-        Log.i(TAG, "Opus is initialized, pcm frame size: " + _pcmFrameSize + ", super frame size: " + superFrameSize);
+        Log.i(TAG, "Opus is initialized, pcm frame size: " + _pcmFrameSize + ", buffer size: " + _audioBufferSize);
     }
 
     @Override

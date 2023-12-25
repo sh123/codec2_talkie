@@ -15,6 +15,13 @@
             app:summary="%s">
         </ListPreference>
 
+        <EditTextPreference
+            app:key="codec2_tx_frame_max_size"
+            app:title="@string/codec2_tx_frame_max_size_title"
+            app:summary="@string/codec2_tx_frame_max_size_summary"
+            app:defaultValue="48">
+        </EditTextPreference>
+
     </PreferenceCategory>
 
     <PreferenceCategory
