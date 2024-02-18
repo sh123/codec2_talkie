@@ -68,7 +68,7 @@ public class AudioCodec2FrameAggregator implements Protocol {
 
     @Override
     public void sendCompressedAudio(String src, String dst, byte[] frame) throws IOException {
-        if ( _outputBufferPos + frame.length >= _outputBufferSize) {
+        if ( _outputBufferPos + frame.length > _outputBufferSize) {
             _childProtocol.sendCompressedAudio(src, dst, Arrays.copyOf(_outputBuffer, _outputBufferPos));
             _outputBufferPos = 0;
         }
