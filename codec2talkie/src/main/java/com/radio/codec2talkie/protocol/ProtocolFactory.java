@@ -72,6 +72,7 @@ public class ProtocolFactory {
         boolean aprsIsEnabled = SettingsWrapper.isAprsIsEnabled(sharedPreferences);
         boolean freedvEnabled = SettingsWrapper.isFreeDvSoundModemModulation(sharedPreferences);
         boolean codec2Enabled = SettingsWrapper.isCodec2Enabled(sharedPreferences);
+        boolean isCustomPrefixEnabled = SettingsWrapper.isCustomPrefixEnabled(sharedPreferences);
 
         // "root" protocol
         Protocol proto;
@@ -97,6 +98,9 @@ public class ProtocolFactory {
                 break;
         }
 
+        if (isCustomPrefixEnabled) {
+            proto = new CustomDataPrefix(proto, sharedPreferences);
+        }
         if (scramblingEnabled) {
             proto = new Scrambler(proto, scramblingKey);
         }
@@ -108,7 +112,6 @@ public class ProtocolFactory {
                 if (recordingEnabled) {
                     proto = new Recorder(proto, sharedPreferences);
                 }
-
                 proto = new AudioCodec2FrameAggregator(proto, sharedPreferences);
                 proto = new AudioCodec2(proto, sharedPreferences);
             } else {

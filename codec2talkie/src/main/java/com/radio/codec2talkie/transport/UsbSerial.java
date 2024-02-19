@@ -1,17 +1,9 @@
 package com.radio.codec2talkie.transport;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
-import androidx.preference.PreferenceManager;
-
 import com.hoho.android.usbserial.driver.SerialTimeoutException;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
-import com.radio.codec2talkie.settings.PreferenceKeys;
-import com.radio.codec2talkie.tools.TextTools;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 
 public class UsbSerial implements Transport {
 

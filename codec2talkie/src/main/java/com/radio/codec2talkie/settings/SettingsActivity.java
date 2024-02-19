@@ -117,6 +117,15 @@ public class SettingsActivity extends AppCompatActivity
         }
     }
 
+    public static class SettingsTncExtendedFragment extends PreferenceFragmentCompat
+    {
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+            setPreferencesFromResource(R.xml.preferences_tnc_extended, null);
+            setNumberInputType(getPreferenceManager());
+        }
+    }
+
     public static class SettingsTcpIpFragment extends PreferenceFragmentCompat
     {
         @Override

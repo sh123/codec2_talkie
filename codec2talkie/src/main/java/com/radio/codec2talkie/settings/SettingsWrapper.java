@@ -44,6 +44,10 @@ public class SettingsWrapper {
         return sharedPreferences.getString(PreferenceKeys.CODEC_TYPE, "Codec2").equals("Codec2");
     }
 
+    public static boolean isCustomPrefixEnabled(SharedPreferences sharedPreferences) {
+        return sharedPreferences.getBoolean(PreferenceKeys.CUSTOM_PREFIX_ENABLED, false);
+    }
+
     public static int getFreeDvSoundModemModulation(SharedPreferences sharedPreferences) {
         String modemType = sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_TYPE, "1200");
         if (modemType.startsWith("F")) {

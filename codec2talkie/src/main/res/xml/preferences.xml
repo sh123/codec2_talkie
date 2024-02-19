@@ -112,6 +112,12 @@
             app:fragment="com.radio.codec2talkie.settings.SettingsActivity$SettingsSoundModemFragment">
         </Preference>
 
+        <Preference
+            app:key="ports_tnc_extended"
+            app:title="@string/tnc_extended_title"
+            app:summary="@string/tnc_extended_summary"
+            app:fragment="com.radio.codec2talkie.settings.SettingsActivity$SettingsTncExtendedFragment">
+        </Preference>
     </PreferenceCategory>
 
     <PreferenceCategory

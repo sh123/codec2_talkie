@@ -29,6 +29,9 @@ public final class PreferenceKeys {
     public static String PORTS_SOUND_MODEM_FREEDV_SQUELCH_SNR="ports_sound_modem_freedv_squelch_snr";
     public static String PORTS_SOUND_MODEM_FREEDV_DATA_MODE="ports_sound_modem_freedv_data_mode";
 
+    public static String CUSTOM_PREFIX_ENABLED = "custom_prefix_enabled";
+    public static String CUSTOM_PREFIX = "custom_prefix";
+
     public static String CODEC_TYPE = "codec_type";
     public static String CODEC2_RECORDING_ENABLED = "codec2_recording_enabled";
 
