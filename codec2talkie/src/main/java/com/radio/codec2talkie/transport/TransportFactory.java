@@ -40,7 +40,7 @@ public class TransportFactory {
 
         switch (transportType) {
             case USB:
-                return new UsbSerial(UsbPortHandler.getPort(), UsbPortHandler.getName(), context);
+                return new UsbSerial(UsbPortHandler.getPort(), UsbPortHandler.getName());
             case BLUETOOTH:
                 return new Bluetooth(BluetoothSocketHandler.getSocket(), BluetoothSocketHandler.getName());
             case TCP_IP:

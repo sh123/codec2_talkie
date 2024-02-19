@@ -55,20 +55,5 @@
             app:defaultValue="false">
         </CheckBoxPreference>
 
-        <CheckBoxPreference
-            app:key="ports_usb_is_prefix_enabled"
-            app:title="@string/usb_is_prefix_enabled_title"
-            app:summary="@string/usb_is_prefix_enabled_summary"
-            app:defaultValue="false">
-        </CheckBoxPreference>
     </PreferenceCategory>
-
-    <EditTextPreference
-        app:key="ports_usb_prefix"
-        app:title="@string/usb_prefix_title"
-        app:summary = "@string/usb_prefix_summary"
-        app:dependency="ports_usb_is_prefix_enabled"
-        app:defaultValue="C0FFEE">
-    </EditTextPreference>
-
 </PreferenceScreen>
