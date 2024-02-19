@@ -1,9 +1,17 @@
 package com.radio.codec2talkie.transport;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import androidx.preference.PreferenceManager;
+
 import com.hoho.android.usbserial.driver.SerialTimeoutException;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
+import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.TextTools;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 public class UsbSerial implements Transport {
 
@@ -13,9 +21,18 @@ public class UsbSerial implements Transport {
     private final UsbSerialPort _usbPort;
     private final String _name;
 
-    public UsbSerial(UsbSerialPort usbPort, String name) {
+    private final boolean _isPrefixEnabled;
+    private final byte[] _bytePrefix;
+
+    protected SharedPreferences _sharedPreferences;
+
+    public UsbSerial(UsbSerialPort usbPort, String name, Context context) {
         _usbPort = usbPort;
         _name = name;
+        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        _isPrefixEnabled = _sharedPreferences.getBoolean(PreferenceKeys.PORTS_USB_IS_PREFIX_ENABLED, false);
+        String prefix = _sharedPreferences.getString(PreferenceKeys.PORTS_USB_PREFIX, "");
+        _bytePrefix = TextTools.hexStringToByteArray(prefix);
     }
 
     @Override
@@ -31,7 +48,15 @@ public class UsbSerial implements Transport {
     @Override
     public int write(byte[] data) throws IOException {
         try {
-            _usbPort.write(data, TX_TIMEOUT);
+            if (_isPrefixEnabled) {
+                byte[] pkt = ByteBuffer.allocate(_bytePrefix.length + data.length)
+                        .put(_bytePrefix)
+                        .put(data)
+                        .array();
+                _usbPort.write(pkt, TX_TIMEOUT);
+            } else {
+                _usbPort.write(data, TX_TIMEOUT);
+            }
             return data.length;
         } catch (SerialTimeoutException e) {
             e.printStackTrace();

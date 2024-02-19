@@ -192,6 +192,10 @@
     <string name="usb_stop_bits_title">Serial stop bits</string>
     <string name="usb_serial_title">USB serial settings</string>
     <string name="usb_serial_summary">Set USB serial settings, such as speed, bits, parity, etc.</string>
+    <string name="usb_is_prefix_enabled_title">Enable USB packet prefix</string>
+    <string name="usb_is_prefix_enabled_summary">Prefix USB data with the HEX string for LoRA UART modems</string>
+    <string name="usb_prefix_title">USB packet prefix value as HEX string</string>
+    <string name="usb_prefix_summary">Prefix sent content with a hex string (so called transmission target in UART modems), e.g. C0FFEE</string>
 
     <string name="app_audio_output_speaker_title">Play audio through the speaker</string>
     <string name="app_audio_output_speaker_summary">Output incoming audio through the speaker</string>
