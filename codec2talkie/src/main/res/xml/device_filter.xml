@@ -35,4 +35,6 @@
     <usb-device vendor-id="1155" product-id="22322" /> <!-- 0x0483 / 0x5732: STM, MCHF -->
     <usb-device vendor-id="4292" product-id="60000" /> <!-- 0x10c4 / 0xea60: CP2102/2109, iCom -->
 
+    <!-- Raspberry PI -->
+    <usb-device vendor-id="11914" />                   <!-- 0x2E8A / ......: Raspberry -->
 </resources>

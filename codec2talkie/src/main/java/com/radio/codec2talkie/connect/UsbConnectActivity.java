@@ -113,6 +113,14 @@ public class UsbConnectActivity extends AppCompatActivity {
         customTable.addProduct(0x0403, 0x6011, FtdiSerialDriver.class);
         customTable.addProduct(0x0403, 0x6014, FtdiSerialDriver.class);
         customTable.addProduct(0x0403, 0x6015, FtdiSerialDriver.class);
+        // Raspberry PI Pico
+        customTable.addProduct(0x2e8a, 0x0004, CdcAcmSerialDriver.class);
+        customTable.addProduct(0x2e8a, 0x0005, CdcAcmSerialDriver.class);
+        customTable.addProduct(0x2e8a, 0x000a, CdcAcmSerialDriver.class);
+        customTable.addProduct(0x2e8a, 0x000b, CdcAcmSerialDriver.class);
+        customTable.addProduct(0x2e8a, 0x000c, CdcAcmSerialDriver.class);
+        customTable.addProduct(0x2e8a, 0x000d, CdcAcmSerialDriver.class);
+        customTable.addProduct(0x2e8a, 0x000e, CdcAcmSerialDriver.class);
         return new UsbSerialProber(customTable);
     }
 
