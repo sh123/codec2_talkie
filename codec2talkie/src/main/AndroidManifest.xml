@@ -30,39 +30,51 @@
         <service android:name=".app.AppService"
             android:foregroundServiceType="location|microphone"/>
         <activity
+            android:exported="false"
             android:name=".connect.UsbConnectActivity"
             android:configChanges="orientation|screenSize" />
         <activity
+            android:exported="false"
             android:name=".connect.TcpIpConnectActivity"
             android:configChanges="orientation|screenSize" />
         <activity
+            android:exported="false"
             android:name=".connect.BluetoothConnectActivity"
             android:configChanges="orientation|screenSize"/>
         <activity
+            android:exported="false"
             android:name=".connect.BleConnectActivity"
             android:configChanges="orientation|screenSize"/>
         <activity
+            android:exported="false"
             android:name=".settings.BluetoothSettingsActivity"
             android:configChanges="orientation|screenSize" />
         <activity
+            android:exported="false"
             android:name=".settings.AprsSymbolSelectionActivity"
             android:configChanges="orientation|screenSize" />
         <activity
+            android:exported="false"
             android:name=".recorder.RecorderActivity"
             android:configChanges="orientation|screenSize" />
         <activity
+            android:exported="false"
             android:name=".storage.log.LogItemActivity"
             android:configChanges="orientation|screenSize" />
         <activity
+            android:exported="false"
             android:name=".storage.message.group.MessageGroupActivity"
             android:configChanges="orientation|screenSize" />
         <activity
+            android:exported="false"
             android:name=".storage.message.MessageItemActivity"
             android:configChanges="orientation|screenSize" />
         <activity
+            android:exported="false"
             android:name=".maps.MapActivity"
             android:configChanges="orientation|screenSize" />
         <activity
+            android:exported="false"
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize">
             <intent-filter>
