@@ -49,9 +49,9 @@ android {
 
 // As per: https://github.com/googlesamples/android-ndk/blob/master/hello-libs/app/build.gradle
 tasks.whenTaskAdded { task ->
-    if (task.name == 'externalNativeBuildRelease') {
+    if (task.name == 'externalNativeBuildRelease' || task.name == "externalNativeBuildDebug") {
         task.dependsOn compileOpus
-    } else if (task.name == 'externalNativeBuildDebug') {
+    } else if (task.name == 'buildCMakeDebug' || task.name == "buildCMakeRelease") {
         task.dependsOn compileOpus
     }
 }

@@ -49,14 +49,15 @@ android {
 
 // As per: https://github.com/googlesamples/android-ndk/blob/master/hello-libs/app/build.gradle
 tasks.whenTaskAdded { task ->
-    if (task.name == 'externalNativeBuildRelease') {
+    if (task.name == 'externalNativeBuildRelease' || task.name == "externalNativeBuildDebug") {
         task.dependsOn compileCodec2
-    } else if (task.name == 'externalNativeBuildDebug') {
+    } else if (task.name == 'buildCMakeDebug' || task.name == "buildCMakeRelease") {
         task.dependsOn compileCodec2
     }
 }
 
 task compileCodec2 {
+
     doFirst {
         project.file("build/codec2_build_linux").mkdirs()
         for(String abi : rootProject.ext.ABI_FILTERS.split(";")) {
