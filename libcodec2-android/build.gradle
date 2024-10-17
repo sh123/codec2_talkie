@@ -51,7 +51,7 @@ android {
 tasks.whenTaskAdded { task ->
     if (task.name == 'externalNativeBuildRelease' || task.name == "externalNativeBuildDebug") {
         task.dependsOn compileCodec2
-    } else if (task.name == 'buildCMakeDebug' || task.name == "buildCMakeRelease") {
+    } else if (task.name == 'buildCMakeDebug' || task.name == "buildCMakeRelease" || task.name == "buildCMakeRelWithDebInfo") {
         task.dependsOn compileCodec2
     }
 }
