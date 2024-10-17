@@ -3,7 +3,6 @@ plugins {
 }
 
 android {
-    android.ndkVersion "21.4.7075529"
     compileSdkVersion 31
     buildToolsVersion "31.0.0"
 

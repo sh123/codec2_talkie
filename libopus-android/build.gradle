@@ -12,6 +12,7 @@ buildscript {
 }
 
 android {
+    android.ndkVersion "21.4.7075529"
     compileSdkVersion 31
 
     compileOptions {
