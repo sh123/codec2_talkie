@@ -3,7 +3,7 @@
 
 # Sets the minimum version of CMake required to build the native library.
 
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.10)
 set(main_DIR ${CMAKE_SOURCE_DIR})
 add_library(libcodec2 SHARED IMPORTED)
 set_target_properties(libcodec2 PROPERTIES IMPORTED_LOCATION
@@ -38,4 +38,5 @@ find_library( # Sets the name of the path variable.
 target_link_libraries(
         Codec2JNI
         libcodec2
-        ${log-lib})
+        ${log-lib}
+        "-Wl,--build-id=none")

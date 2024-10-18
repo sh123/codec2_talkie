@@ -5,7 +5,7 @@
 # Please report questions, comments, problems, or patches to the freetel
 # mailing list: https://lists.sourceforge.net/lists/listinfo/freetel-codec2
 #
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.10)
 project(CODEC2
   VERSION 1.0.5
   DESCRIPTION "Next-Generation Digital Voice for Two-Way Radio"

@@ -3,14 +3,13 @@
 
 # Sets the minimum version of CMake required to build the native library.
 
-cmake_minimum_required(VERSION 3.4.1)
+cmake_minimum_required(VERSION 3.10)
 set(main_DIR ${CMAKE_SOURCE_DIR})
 add_library(libopus SHARED IMPORTED)
 set_target_properties(libopus PROPERTIES IMPORTED_LOCATION
         ${main_DIR}/../../../build/imported-lib/${ANDROID_ABI}/libopus.so)
 
 include_directories(${main_DIR}/opus/)
-
 
 # Searches for a specified prebuilt library and stores the path as a
 ## variable. Because CMake includes system libraries in the search path by
@@ -36,6 +35,8 @@ find_library( # Sets the name of the path variable.
 # can link multiple libraries, such as libraries you define in this
 # build script, prebuilt third-party libraries, or system libraries.
 target_link_libraries(
-	OpusJNI
-        libopus
-        ${log-lib})
+		OpusJNI
+		libopus
+		${log-lib}
+		"-Wl,--build-id=none")
+
