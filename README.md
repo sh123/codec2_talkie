@@ -56,6 +56,12 @@ What you can do with this app:
 - Fetched with gradle as dependency:
   - Android USB serial: https://github.com/mik3y/usb-serial-for-android
 
+# Building
+- Building from command line:\
+  `ANDROID_HOME=<yor android home directory> JAVA_HOME=<your java home directory> ./gradlew <command>`\
+  For example:\
+  `ANDROID_HOME=~/Android/Sdk JAVA_HOME=~/.jdks/jbr-21.0.4 ./gradlew assembleRelease`
+
 # Other similar or related projects
 - Hardware
   - ESP32 LoRa APRS modem (used with this application for testing): https://github.com/sh123/esp32_loraprs
