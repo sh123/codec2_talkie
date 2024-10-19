@@ -59,8 +59,20 @@ What you can do with this app:
 # Building
 - Building from command line:\
   `ANDROID_HOME=<yor android home directory> JAVA_HOME=<your java home directory> ./gradlew <command>`\
-  For example:\
-  `ANDROID_HOME=~/Android/Sdk JAVA_HOME=~/.jdks/jbr-21.0.4 ./gradlew assembleRelease`
+  For example:
+  ```
+  # ANDROID_HOME=~/Android/Sdk JAVA_HOME=~/.jdks/jbr-21.0.4 ./gradlew assembleRelease
+  
+  Welcome to Gradle 7.0.2!
+  
+  ... compilation output ...
+
+  > Task :codec2talkie:lintVitalRelease
+  No issues found.
+
+  BUILD SUCCESSFUL in 2m 2s
+  111 actionable tasks: 40 executed, 71 up-to-date
+  ```
 
 # Other similar or related projects
 - Hardware
