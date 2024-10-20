@@ -58,7 +58,7 @@ What you can do with this app:
 
 # Building
 - Building from command line:\
-  `ANDROID_HOME=<yor android home directory> JAVA_HOME=<your java home directory> ./gradlew <command>`\
+  `ANDROID_HOME=<android dir> JAVA_HOME=<java home dir> ./gradlew <command>`\
   For example:
   ```
   # ANDROID_HOME=~/Android/Sdk JAVA_HOME=~/.jdks/jbr-21.0.4 ./gradlew assembleRelease
