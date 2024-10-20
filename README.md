@@ -1,5 +1,4 @@
 ![CI](https://github.com/sh123/codec2_talkie/workflows/CI/badge.svg) 
-[<img src='https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.radio.codec2talkie'>](https://apt.izzysoft.de/packages/com.radio.codec2talkie)
 
 # Introduction
 **Turn your Android phone into real Amateur Radio HF/VHF/UHF APRS enabled Codec2/OPUS DV (digital voice) and/or FreeDV handheld transceiver.**
