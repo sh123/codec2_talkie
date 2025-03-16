@@ -72,6 +72,7 @@ public final class PreferenceKeys {
     public static String KISS_EXTENSIONS_ACTION_REBOOT_REQUESTED = "com.radio.codec2talkie.MODEM_REBOOT";
 
     public static String APP_VOLUME_PTT = "app_volume_ptt";
+    public static String APP_FLASHLIGHT_PTT = "app_flashlight_ptt";
     public static String APP_KEEP_SCREEN_ON = "app_keep_screen_on";
     public static String APP_NO_LOCK = "app_no_lock";
     public static String APP_TURN_SCREEN_ON = "app_turn_screen_on";

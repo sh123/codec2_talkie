@@ -108,4 +108,8 @@ public class SettingsWrapper {
     public static boolean isAprsIsEnabled(SharedPreferences sharedPreferences) {
         return sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE, false);
     }
+
+    public static boolean isFlashLightPttEnabled(SharedPreferences sharedPreferences) {
+        return sharedPreferences.getBoolean(PreferenceKeys.APP_FLASHLIGHT_PTT, false);
+    }
 }

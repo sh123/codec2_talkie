@@ -23,6 +23,7 @@ import java.util.TimerTask;
 
 import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
 import com.radio.codec2talkie.protocol.message.TextMessage;
+import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.storage.log.LogItem;
 import com.radio.codec2talkie.storage.log.LogItemRepository;
 import com.radio.codec2talkie.protocol.ProtocolCallback;
@@ -34,6 +35,7 @@ import com.radio.codec2talkie.storage.message.MessageItemRepository;
 import com.radio.codec2talkie.storage.position.PositionItemRepository;
 import com.radio.codec2talkie.storage.station.StationItemRepository;
 import com.radio.codec2talkie.tools.AudioTools;
+import com.radio.codec2talkie.tools.FlashLight;
 import com.radio.codec2talkie.transport.Transport;
 import com.radio.codec2talkie.transport.TransportFactory;
 
@@ -47,6 +49,9 @@ public class AppWorker extends Thread {
 
     private static final int PROCESS_INTERVAL_MS = 10;
     private static final int LISTEN_AFTER_MS = 1500;
+
+    private static final int FLASHLIGHT_PTT_ON_DELAY_MS = 350;
+    private static final int FLASHLIGHT_PTT_OFF_DELAY_MS = 100;
 
     private boolean _needTransmission = false;
     private AppMessage _currentStatus = AppMessage.EV_DISCONNECTED;
@@ -75,6 +80,9 @@ public class AppWorker extends Thread {
     private final PositionItemRepository _positionItemRepository;
     private final StationItemRepository _stationItemRepository;
 
+    // flash light / torch
+    private final FlashLight _flashLight;
+
     private final Context _context;
     private final SharedPreferences _sharedPreferences;
 
@@ -92,6 +100,8 @@ public class AppWorker extends Thread {
 
         _transport = TransportFactory.create(transportType, context);
         _protocol = ProtocolFactory.create(context);
+
+        _flashLight = new FlashLight(_context);
 
         _processPeriodicTimer = new Timer();
 
@@ -432,11 +442,13 @@ public class AppWorker extends Thread {
         sendTxAudioLevelUpdate(null);
         sendRxRadioLevelUpdate(0, 0);
         sendStatusUpdate(AppMessage.EV_LISTENING, null);
+        flashLightOff();
     }
 
     private void processRecordPlaybackToggle() throws IOException {
         // playback -> recording
         if (_needTransmission && _systemAudioRecorder.getRecordingState() != AudioRecord.RECORDSTATE_RECORDING) {
+            flashLightOn();
             _systemAudioPlayer.stop();
             _systemAudioRecorder.startRecording();
             sendRxAudioLevelUpdate(null);
@@ -446,6 +458,7 @@ public class AppWorker extends Thread {
             _protocol.flush();
             _systemAudioRecorder.stop();
             sendTxAudioLevelUpdate(null);
+            flashLightOff();
         }
     }
 
@@ -473,6 +486,28 @@ public class AppWorker extends Thread {
             e.printStackTrace();
         }
         Log.i(TAG, "cleanup() completed");
+    }
+
+    private void flashLightOn() {
+        if (SettingsWrapper.isFlashLightPttEnabled(_sharedPreferences)) {
+            _flashLight.turnOn();
+            try {
+                sleep(FLASHLIGHT_PTT_ON_DELAY_MS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void flashLightOff() {
+        if (SettingsWrapper.isFlashLightPttEnabled(_sharedPreferences)) {
+            try {
+                sleep(FLASHLIGHT_PTT_OFF_DELAY_MS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            _flashLight.turnOff();
+        }
     }
 
     private void processRxTx() throws IOException {
@@ -510,6 +545,7 @@ public class AppWorker extends Thread {
                 quitProcessing();
                 break;
             case CMD_SEND_LOCATION_TO_TNC:
+                flashLightOn();
                 try {
                     _protocol.sendPosition((Position)msg.obj);
                 } catch (IOException e) {
@@ -518,6 +554,7 @@ public class AppWorker extends Thread {
                 }
                 break;
             case CMD_SEND_MESSAGE:
+                flashLightOn();
                 TextMessage textMessage = (TextMessage) msg.obj;
                 try {
                     _protocol.sendTextMessage(textMessage);

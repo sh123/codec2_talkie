@@ -38,6 +38,13 @@
         </SwitchPreference>
 
         <SwitchPreference
+            app:key="app_flashlight_ptt"
+            app:title="@string/app_flashlight_ptt_title"
+            app:summary="@string/app_flashlight_ptt_summary"
+            app:defaultValue="false">
+        </SwitchPreference>
+
+        <SwitchPreference
             app:key="app_no_lock"
             app:title="@string/app_no_lock_title"
             app:summary="@string/app_no_lock_summary"

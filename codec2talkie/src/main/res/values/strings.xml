@@ -113,6 +113,9 @@
     <string name="app_volume_ptt_title">Use volume keys for PTT</string>
     <string name="app_volume_ptt_summary">Volume up/down keys will be used for PTT</string>
 
+    <string name="app_flashlight_ptt_title">Turn ON/OFF phone torch on PTT</string>
+    <string name="app_flashlight_ptt_summary">Will turn ON/OFF phone torch when PTT to control old transceiver by opto-coupling</string>
+
     <string name="app_category_title">Application Settings</string>
 
     <string name="app_keep_screen_on_title">Keep screen ON</string>
