@@ -1,5 +1,4 @@
 ![CI](https://github.com/sh123/codec2_talkie/workflows/CI/badge.svg) 
-[<img src='https://img.shields.io/endpoint?url=https://apt.izzysoft.de/fdroid/api/v1/shield/com.radio.codec2talkie'>](https://apt.izzysoft.de/packages/com.radio.codec2talkie)
 
 # Introduction
 **Turn your Android phone into real Amateur Radio HF/VHF/UHF APRS enabled Codec2/OPUS DV (digital voice) and/or FreeDV handheld transceiver.**
@@ -55,6 +54,24 @@ What you can do with this app:
   - OPUS codec: https://opus-codec.org
 - Fetched with gradle as dependency:
   - Android USB serial: https://github.com/mik3y/usb-serial-for-android
+
+# Building
+- Building from command line:\
+  `ANDROID_HOME=<android dir> JAVA_HOME=<java home dir> ./gradlew <command>`\
+  For example:
+  ```
+  # ANDROID_HOME=~/Android/Sdk JAVA_HOME=~/.jdks/jbr-21.0.4 ./gradlew assembleRelease
+  
+  Welcome to Gradle 7.0.2!
+  
+  ... compilation output ...
+
+  > Task :codec2talkie:lintVitalRelease
+  No issues found.
+
+  BUILD SUCCESSFUL in 2m 2s
+  111 actionable tasks: 40 executed, 71 up-to-date
+  ```
 
 # Other similar or related projects
 - Hardware
