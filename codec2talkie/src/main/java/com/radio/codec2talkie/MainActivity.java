@@ -62,7 +62,6 @@ import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
 import com.radio.codec2talkie.storage.message.group.MessageGroupActivity;
 import com.radio.codec2talkie.tools.AudioTools;
-import com.radio.codec2talkie.tools.FlashLight;
 import com.radio.codec2talkie.tools.RadioTools;
 import com.radio.codec2talkie.transport.TransportFactory;
 import com.radio.codec2talkie.connect.UsbConnectActivity;
@@ -688,9 +687,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    if (_appService != null) {
+                    if (_appService != null)
                         _appService.startTransmit();
-                    }
                     break;
                 case MotionEvent.ACTION_UP:
                     v.performClick();
