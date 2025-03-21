@@ -481,6 +481,7 @@
 
     <string-array name="ports_sound_modem_rig_entries">
         <item>Do not use rig control</item>
+        <item>Use phone torch</item>
         <item>FT-817/818/MCHF</item>
         <item>IC-7000</item>
         <item>IC-7100</item>
@@ -490,6 +491,7 @@
 
     <string-array name="ports_sound_modem_rig_values">
         <item>Disabled</item>
+        <item>PhoneTorch</item>
         <item>Ft817</item>
         <item>Ic7000</item>
         <item>Ic7100</item>

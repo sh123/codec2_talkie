@@ -8,8 +8,8 @@ import com.radio.codec2talkie.transport.TransportFactory;
 public class SettingsWrapper {
 
     public static boolean isSoundModemRigDisabled(SharedPreferences sharedPreferences) {
-        return sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_RIG,
-                RigCtlFactory.RIG_DISABLED).equals(RigCtlFactory.RIG_DISABLED);
+        String rigTypeName = sharedPreferences.getString(PreferenceKeys.PORTS_SOUND_MODEM_RIG, RigCtlFactory.RIG_DISABLED);
+        return rigTypeName.equals(RigCtlFactory.RIG_DISABLED) || rigTypeName.equals(RigCtlFactory.RIG_PHONE_TORCH);
     }
 
     public static boolean isSoundModemEnabled(SharedPreferences sharedPreferences) {
@@ -107,9 +107,5 @@ public class SettingsWrapper {
 
     public static boolean isAprsIsEnabled(SharedPreferences sharedPreferences) {
         return sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE, false);
-    }
-
-    public static boolean isFlashLightPttEnabled(SharedPreferences sharedPreferences) {
-        return sharedPreferences.getBoolean(PreferenceKeys.APP_FLASHLIGHT_PTT, false);
     }
 }

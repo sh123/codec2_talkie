@@ -197,6 +197,7 @@ public class UsbConnectActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             String toastMsg;
+            Log.i(TAG, "usb state changed " + msg.what);
             if (msg.what == USB_CONNECTED) {
                 UsbPortHandler.setPort(_usbPort);
                 UsbPortHandler.setName(_usbDeviceName);

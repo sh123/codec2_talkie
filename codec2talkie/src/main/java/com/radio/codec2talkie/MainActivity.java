@@ -292,8 +292,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private final ActivityResultLauncher<Intent> _usbActivityLauncher = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(),
         result -> {
-            Intent data = result.getData();
-            assert data != null;
             int resultCode = result.getResultCode();
             if (SettingsWrapper.isSoundModemEnabled(_sharedPreferences)) {
                 _isRigCtlUsbConnected = resultCode == RESULT_OK;
@@ -302,6 +300,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 _textConnInfo.setText(R.string.main_status_loopback_test);
                 startAppService(TransportFactory.TransportType.LOOPBACK);
             } else if (resultCode == RESULT_OK) {
+                Intent data = result.getData();
+                assert data != null;
                 _textConnInfo.setText(data.getStringExtra("name"));
                 startAppService(TransportFactory.TransportType.USB);
             }
