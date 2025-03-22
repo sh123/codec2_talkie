@@ -317,14 +317,14 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private final ActivityResultLauncher<Intent> _bluetoothActivityLauncher = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(),
         result -> {
-            Intent data = result.getData();
-            assert data != null;
             int resultCode = result.getResultCode();
             if (resultCode == RESULT_CANCELED) {
                 // fall back to loopback if bluetooth failed
                 _textConnInfo.setText(R.string.main_status_loopback_test);
                 startAppService(TransportFactory.TransportType.LOOPBACK);
             } else if (resultCode == RESULT_OK) {
+                Intent data = result.getData();
+                assert data != null;
                 _textConnInfo.setText(data.getStringExtra("name"));
                 if (_isBleEnabled) {
                     startAppService(TransportFactory.TransportType.BLE);
@@ -349,14 +349,14 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private final ActivityResultLauncher<Intent> _tcpipActivityLauncher  = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(),
         result -> {
-            Intent data = result.getData();
-            assert data != null;
             int resultCode = result.getResultCode();
             if (resultCode == RESULT_CANCELED) {
                 // fall back to loopback if tcp/ip failed
                 _textConnInfo.setText(R.string.main_status_loopback_test);
                 startAppService(TransportFactory.TransportType.LOOPBACK);
             } else if (resultCode == RESULT_OK) {
+                Intent data = result.getData();
+                assert data != null;
                 _textConnInfo.setText(data.getStringExtra("name"));
                 startAppService(TransportFactory.TransportType.TCP_IP);
             }
