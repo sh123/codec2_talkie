@@ -203,14 +203,15 @@ public class UsbConnectActivity extends AppCompatActivity {
                 UsbPortHandler.setName(_usbDeviceName);
 
                 toastMsg = String.format("USB connected %s", _usbDeviceName);
-                Toast.makeText(getBaseContext(), toastMsg, Toast.LENGTH_SHORT).show();
 
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("name", _usbDeviceName);
                 setResult(Activity.RESULT_OK, resultIntent);
             } else {
+                toastMsg = getString(R.string.usb_connection_failed);
                 setResult(Activity.RESULT_CANCELED);
             }
+            Toast.makeText(getBaseContext(), toastMsg, Toast.LENGTH_SHORT).show();
             finish();
         }
     };

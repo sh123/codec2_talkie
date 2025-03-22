@@ -142,6 +142,7 @@
     <string name="menu_reconnect">Reconnect to TNC</string>
     <string name="bt_connecting">Connecting bluetooth…</string>
     <string name="usb_connecting">Connecting USB…</string>
+    <string name="usb_connection_failed">USB connection failed</string>
 
     <string name="ports_tcp_ip_enable_title">Enable TCP/IP</string>
     <string name="ports_tcp_ip_enable_summary">Data will be sent and received through TCP/IP as a client</string>
