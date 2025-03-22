@@ -113,8 +113,6 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     private final ActivityResultLauncher<Intent> _enableBtLauncher = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(),
         result -> {
-            Intent data = result.getData();
-            assert data != null;
             int resultCode = result.getResultCode();
             if (resultCode == RESULT_OK) {
                 connectOrPopulateDevices();
