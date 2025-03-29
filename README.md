@@ -79,6 +79,7 @@ What you can do with this app:
   - ESP32 LoRa DV transceiver: https://github.com/sh123/esp32_loradv
   - Arduno Micro KISS modem and APRS AX.25 digirepeater: https://github.com/sh123/micro_loraprs
   - ESP32 Arduino Codec2 library (ESP32 i2s walkie talkie example interoperable with this application): https://github.com/sh123/esp32_codec2_arduino
+  - ESP32 Arduino Opus library: https://github.com/sh123/esp32_opus_arduino
   - Minimal Arduino LoRa KISS modem: https://github.com/sh123/lora_arduino_kiss_modem
   - Minimal Arduino NRF24 KISS modem: https://github.com/sh123/nrf24l01_arduino_kiss_modem
 - Software:
