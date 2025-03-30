@@ -177,6 +177,7 @@ public class BleConnectActivity extends AppCompatActivity {
         ScanSettings.Builder scanSettingsBuilder = new ScanSettings.Builder();
         ScanSettings scanSettings = scanSettingsBuilder.build();
 
+        _btBleScanner = _btAdapter.getBluetoothLeScanner();
         _btBleScanner.startScan(Arrays.asList(scanFilters), scanSettings, leScanCallback);
 
         Message resultMsg = new Message();
