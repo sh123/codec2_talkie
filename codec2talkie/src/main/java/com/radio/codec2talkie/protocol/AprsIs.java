@@ -43,6 +43,9 @@ public class AprsIs implements Protocol, Runnable {
 
     private static final int HEARD_LIST_DURATION_SECONDS = 60;
 
+    private static final int RX_BUF_SIZE = 32768;
+    private static final int QUEUE_SIZE = 8192;
+
     private final Protocol _childProtocol;
     private Context _context;
     private ProtocolCallback _parentProtocolCallback;
@@ -73,9 +76,9 @@ public class AprsIs implements Protocol, Runnable {
 
     public AprsIs(Protocol childProtocol) {
         _childProtocol = childProtocol;
-        _fromAprsIsQueue = ByteBuffer.allocate(4096);
-        _toAprsIsQueue = ByteBuffer.allocate(4096);
-        _rxBuf = new byte[4096];
+        _fromAprsIsQueue = ByteBuffer.allocate(QUEUE_SIZE);
+        _toAprsIsQueue = ByteBuffer.allocate(QUEUE_SIZE);
+        _rxBuf = new byte[RX_BUF_SIZE];
     }
 
     @Override
