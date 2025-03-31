@@ -22,7 +22,7 @@ jobs:
       with:
         java-version: '11'
         distribution: 'temurin'
-
+      
     - name: Cache Gradle packages
       uses: actions/cache@v4
       with:
@@ -36,6 +36,9 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew assembleRelease
 
+    - name: List files
+      run: ls -R
+      
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
