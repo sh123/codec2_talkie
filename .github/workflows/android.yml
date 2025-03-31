@@ -36,35 +36,9 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew assembleRelease
 
-    - name: List files
-      run: ls -R
-
-    - name: Sign APK
-      run: |
-        jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 \
-          -keystore keystore.jks \
-          -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
-          -keypass ${{ secrets.KEY_PASSWORD }} \
-          app/build/outputs/apk/release/codec2talkie-release-unsigned.apk \
-          ${{ secrets.KEY_ALIAS }}
-
-    - name: Verify APK
-      run: jarsigner -verify -verbose -certs app/build/outputs/apk/release/codec2talkie-release-unsigned.apk
-
-    - name: Zipalign APK
-      run: |
-        $ANDROID_HOME/build-tools/<build-tools-version>/zipalign -v 4 \
-          codec2talkie/build/outputs/apk/release/codec2talkie-release-unsigned.apk \
-          codec2talkie/build/outputs/apk/release/codec2talkie-release.apk
-          
     - name: Upload unsigned APK
       uses: actions/upload-artifact@v4
       with:
         name: codec2talkie-release-unsigned.apk
         path: codec2talkie/build/outputs/apk/release/codec2talkie-release-unsigned.apk
-
-    - name: Upload signed APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: codec2talkie-release.apk
-        path: codec2talkie/build/outputs/apk/release/codec2talkie-release.apk
+        
