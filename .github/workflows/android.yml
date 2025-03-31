@@ -39,5 +39,5 @@ jobs:
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
-        name: app-release.apk
-        path: app/build/outputs/apk/release/app-release.apk
+        name: codec2talkie-release.apk
+        path: codec2talkie/build/outputs/apk/release/codec2talkie-release.apk
