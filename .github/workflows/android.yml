@@ -43,8 +43,8 @@ jobs:
       run: |
         jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 \
           -keystore keystore.jks \
-          -storepass ${{ secrets.KEYSTORE_PASSWORD }} \
-          -keypass ${{ secrets.KEY_PASSWORD }} \
+          -storepass '${{ secrets.KEYSTORE_PASSWORD }}' \
+          -keypass '${{ secrets.KEY_PASSWORD }}' \
           codec2talkie/build/outputs/apk/release/codec2talkie-release-unsigned.apk \
           ${{ secrets.KEY_ALIAS }}
 
