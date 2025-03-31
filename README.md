@@ -72,7 +72,7 @@ What you can do with this app:
   BUILD SUCCESSFUL in 2m 2s
   111 actionable tasks: 40 executed, 71 up-to-date
   ```
-- You can build locally using [act](https://github.com/nektos/act) and [codec2talkie workflow](https://github.com/sh123/codec2_talkie/blob/master/.github/workflows/android.yml)
+- You can also build locally using [act](https://github.com/nektos/act) and [codec2talkie android workflow](https://github.com/sh123/codec2_talkie/blob/master/.github/workflows/android.yml)
 
 # Other similar or related projects
 - Hardware
