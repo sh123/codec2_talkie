@@ -1,4 +1,4 @@
-![CI](https://github.com/sh123/codec2_talkie/workflows/CI/badge.svg) 
+[![Android CI](https://github.com/sh123/codec2_talkie/actions/workflows/android.yml/badge.svg?branch=master)](https://github.com/sh123/codec2_talkie/actions/workflows/android.yml)
 
 # Introduction
 **Turn your Android phone into real Amateur Radio HF/VHF/UHF APRS enabled Codec2/OPUS DV (digital voice) and/or FreeDV handheld transceiver.**
