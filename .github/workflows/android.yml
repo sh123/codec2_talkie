@@ -31,7 +31,7 @@ jobs:
       uses: android-actions/setup-android@v2
       with:
         api-level: 31
-        build-tools: 33.0.0
+        build-tools: 31.0.0
         
     - name: Build with Gradle
       run: ./gradlew assembleRelease
