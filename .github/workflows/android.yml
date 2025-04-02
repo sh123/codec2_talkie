@@ -27,6 +27,12 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-gradle-
 
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v2
+      with:
+        api-level: 31
+        build-tools: 33.0.0
+        
     - name: Build with Gradle
       run: ./gradlew assembleRelease
       
