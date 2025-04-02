@@ -50,7 +50,13 @@ jobs:
         $ANDROID_HOME/build-tools/31.0.0/zipalign -v 4 \
           codec2talkie/build/outputs/apk/release/codec2talkie-release-unsigned.apk \
           codec2talkie/build/outputs/apk/release/codec2talkie-release.apk
-          
+
+    - name: Upload unaligned APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: codec2talkie-release-unaligned.apk
+        path: codec2talkie/build/outputs/apk/release/codec2talkie-unsigned.apk
+        
     - name: Upload signed APK
       uses: actions/upload-artifact@v4
       with:
