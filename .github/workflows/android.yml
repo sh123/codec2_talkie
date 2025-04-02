@@ -32,30 +32,22 @@ jobs:
       
     - name: Decode Keystore
       run: echo ${{ secrets.KEYSTORE_FILE }} | base64 --decode > keystore.jks
-
-    - name: Sign APK
+      
+    - name: Sign APK with apksigner
       run: |
-        jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
-          -keystore keystore.jks \
-          -storepass '${{ secrets.KEYSTORE_PASSWORD }}' \
-          -keypass '${{ secrets.KEY_PASSWORD }}' \
-          codec2talkie/build/outputs/apk/release/codec2talkie-release-unsigned.apk \
-          ${{ secrets.KEY_ALIAS }}
-
+        $ANDROID_HOME/build-tools/31.0.0/apksigner sign \
+          --ks keystore.jks \
+          --ks-key-alias ${{ secrets.KEY_ALIAS }} \
+          --ks-pass env:KEYSTORE_PASSWORD \
+          --key-pass env:KEY_PASSWORD \
+          --out codec2talkie/build/outputs/apk/release/codec2talkie-release.apk \
+          codec2talkie/build/outputs/apk/release/codec2talkie-release-unsigned.apk
+      env:
+        KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        
     - name: Verify APK
-      run: jarsigner -verify -verbose -certs codec2talkie/build/outputs/apk/release/codec2talkie-release-unsigned.apk
-
-    - name: Zipalign APK
-      run: |
-        $ANDROID_HOME/build-tools/31.0.0/zipalign -v 4 \
-          codec2talkie/build/outputs/apk/release/codec2talkie-release-unsigned.apk \
-          codec2talkie/build/outputs/apk/release/codec2talkie-release.apk
-
-    - name: Upload unaligned APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: codec2talkie-release-unaligned.apk
-        path: codec2talkie/build/outputs/apk/release/codec2talkie-unsigned.apk
+      run: $ANDROID_HOME/build-tools/31.0.0/apksigner verify codec2talkie/build/outputs/apk/release/codec2talkie-release.apk
         
     - name: Upload signed APK
       uses: actions/upload-artifact@v4
