@@ -35,7 +35,7 @@ jobs:
 
     - name: Sign APK
       run: |
-        jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 \
+        jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
           -keystore keystore.jks \
           -storepass '${{ secrets.KEYSTORE_PASSWORD }}' \
           -keypass '${{ secrets.KEY_PASSWORD }}' \
