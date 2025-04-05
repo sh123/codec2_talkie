@@ -3,7 +3,7 @@
 # Introduction
 **Turn your Android phone into Amateur Radio HF/VHF/UHF APRS enabled Codec2/OPUS DV (digital voice) and/or FreeDV handheld transceiver.**
 
-**Requires additional hardware (e.g. AFSK/LoRa), software (e.g. Direwolf) radio modem or analog transceiver with USB audio + VOX/USB CAT PTT control, such as MCHF or ICOM**
+**Requires additional hardware (e.g. AFSK/LoRa/FSK), software (e.g. Direwolf) radio modem or analog transceiver with USB audio + VOX/USB CAT PTT control, such as MCHF or ICOM**
 
 For more information about FreeDV and Codec2 visit https://github.com/drowe67/codec2
 
