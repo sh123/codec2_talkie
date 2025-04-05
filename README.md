@@ -42,7 +42,7 @@ What you can do with this app:
   - Control your external transceiver PTT by using USB serial CAT (or VOX if CAT PTT is not supported)
 
 # Requirements
-- Android 7.0 (API 24) or higher
+- Minimum supported version is Android 7.0 (API 24), target is Android 12.0 (API 31)
   - Application could also be used with your Android network radio, such as Inrico TM-7, apk just needs to be installed over USB, see [Discussion](https://github.com/sh123/codec2_talkie/issues/4)
 - Modem, radio module or transceiver which supports [KISS protocol](https://en.wikipedia.org/wiki/KISS_(TNC)) or can process KISS or raw Codec2 audio frames over serial Bluetooth, BLE, USB or TCP/IP
 - Analog transceiver with built-in or external USB audio adapter and VOX or USB CAT PTT control (such as MCHF, FT817 or ICOM IC-7X00 series)
@@ -63,7 +63,7 @@ What you can do with this app:
 
 # Building yourself
 - Easiest way to build locally if you are not planning to modify code is to use [act](https://github.com/nektos/act) and [Android CI workflow](https://github.com/sh123/codec2_talkie/blob/master/.github/workflows/android.yml)
-- Just install Android Studio and build/create apk package
+- Otherwise, just install Android Studio and build/create/install apk package
 - Building on PC in development environment from command line:\
   `ANDROID_HOME=<android dir> JAVA_HOME=<java home dir> ./gradlew <command>`\
   For example:
