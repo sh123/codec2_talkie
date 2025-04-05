@@ -3,7 +3,7 @@
 # Introduction
 **Turn your Android phone into Amateur Radio HF/VHF/UHF APRS enabled Codec2/OPUS DV (digital voice) and/or FreeDV handheld transceiver.**
 
-**The goal of this project is to promote usage of open source DV codecs and open source transceivers in Amateur and Citizen radio.**
+**The goal of this project is to promote usage of open source DV codecs and open source transceiver solutions in Amateur and Citizen radio.**
 
 **Requires additional hardware (e.g. AFSK/LoRa/FSK), software (e.g. Direwolf) radio modem or analog transceiver with USB audio + VOX/USB CAT PTT control, such as MCHF or ICOM**
 
