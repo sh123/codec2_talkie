@@ -1,7 +1,7 @@
 [![Android CI](https://github.com/sh123/codec2_talkie/actions/workflows/android.yml/badge.svg?branch=master)](https://github.com/sh123/codec2_talkie/actions/workflows/android.yml)
 
 # Introduction
-**Turn your Android phone into real Amateur Radio HF/VHF/UHF APRS enabled Codec2/OPUS DV (digital voice) and/or FreeDV handheld transceiver.**
+**Turn your Android phone into Amateur Radio HF/VHF/UHF APRS enabled Codec2/OPUS DV (digital voice) and/or FreeDV handheld transceiver.**
 
 **Requires additional hardware (e.g. AFSK/LoRa), software (e.g. Direwolf) radio modem or analog transceiver with USB audio + VOX/USB CAT PTT control, such as MCHF or ICOM**
 
@@ -55,8 +55,14 @@ What you can do with this app:
 - Fetched with gradle as dependency:
   - Android USB serial: https://github.com/mik3y/usb-serial-for-android
 
+# APK packages
+- Stable APK packages are available in [Releases](https://github.com/sh123/codec2_talkie/releases)
+- Latest untested APK packages from master are available at [Android CI workflow artifacts](https://github.com/sh123/codec2_talkie/actions/workflows/android.yml)
+- If you are getting "App not installed" error when trying to install APK package try to uninstall previous version before installing new one
+
 # Building
-- Building from command line:\
+- Easiest way to build locally is to use [act](https://github.com/nektos/act) and [Android CI workflow](https://github.com/sh123/codec2_talkie/blob/master/.github/workflows/android.yml)
+- Building on PC in development environment:\
   `ANDROID_HOME=<android dir> JAVA_HOME=<java home dir> ./gradlew <command>`\
   For example:
   ```
@@ -72,8 +78,6 @@ What you can do with this app:
   BUILD SUCCESSFUL in 2m 2s
   111 actionable tasks: 40 executed, 71 up-to-date
   ```
-- You can also build locally using [act](https://github.com/nektos/act) and [Android CI workflow](https://github.com/sh123/codec2_talkie/blob/master/.github/workflows/android.yml)
-- Latest untested APK packages from master are available at [Android CI workflow artifacts](https://github.com/sh123/codec2_talkie/actions/workflows/android.yml)
 
 # Other similar or related projects
 - Hardware
