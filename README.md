@@ -62,8 +62,9 @@ What you can do with this app:
 - If you are getting "App not installed" error when trying to install APK package try to uninstall previous version before installing new one, see [FAQ](https://github.com/sh123/codec2_talkie/wiki/Frequently-asked-questions)
 
 # Building yourself
-- Easiest way to build locally is to use [act](https://github.com/nektos/act) and [Android CI workflow](https://github.com/sh123/codec2_talkie/blob/master/.github/workflows/android.yml)
-- Building on PC in development environment:\
+- Easiest way to build locally if you are not planning to modify code is to use [act](https://github.com/nektos/act) and [Android CI workflow](https://github.com/sh123/codec2_talkie/blob/master/.github/workflows/android.yml)
+- Just install Android Studio and build/create apk package
+- Building on PC in development environment from command line:\
   `ANDROID_HOME=<android dir> JAVA_HOME=<java home dir> ./gradlew <command>`\
   For example:
   ```
