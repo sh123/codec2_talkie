@@ -59,7 +59,7 @@ What you can do with this app:
 
 # Using pre-built APK packages
 - Stable APK packages are available in [Releases](https://github.com/sh123/codec2_talkie/releases)
-- Latest untested APK packages from master are available at [Android CI workflow artifacts](https://github.com/sh123/codec2_talkie/actions/workflows/android.yml)
+- Latest untested APK packages from master are available at [Android CI workflow artifacts](https://github.com/sh123/codec2_talkie/actions/workflows/android.yml), when CI version is tested it is released into [Releases](https://github.com/sh123/codec2_talkie/releases)
 - &#x26A0; If you are getting "Cannot install app from unknown sources" then you need to allow installation from unknown sources in Android settings as it uses self signed certificate, see [FAQ](https://github.com/sh123/codec2_talkie/wiki/Frequently-asked-questions)
 - &#x26A0; If you are getting "App not installed" error when trying to install APK package try to uninstall previous version before installing new one, see [FAQ](https://github.com/sh123/codec2_talkie/wiki/Frequently-asked-questions)
 
