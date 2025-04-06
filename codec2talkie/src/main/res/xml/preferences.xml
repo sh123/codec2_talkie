@@ -78,7 +78,7 @@
             app:entries="@array/ports_type_labels"
             app:entryValues="@array/ports_type_values"
             app:summary="%s"
-            app:defaultValue="loopback">
+            app:defaultValue="LOOPBACK">
         </ListPreference>
 
         <Preference
