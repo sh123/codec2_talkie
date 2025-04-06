@@ -713,7 +713,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             }
             if (allGranted) {
                 Toast.makeText(MainActivity.this, R.string.permissions_granted, Toast.LENGTH_SHORT).show();
-                startUsbConnectActivity();
             } else {
                 Toast.makeText(MainActivity.this, R.string.permissions_denied, Toast.LENGTH_SHORT).show();
                 exitApplication();
