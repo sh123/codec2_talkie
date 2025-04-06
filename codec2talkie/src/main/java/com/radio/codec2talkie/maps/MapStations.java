@@ -87,12 +87,12 @@ public class MapStations {
                 //        station.getDstCallsign() + " " + station.getLatitude() + " " + station.getLongitude());
                 // do not add items without coordinate
                 if (station.getMaidenHead() == null) continue;
-                if (addStationPositionIcon(station)) {
-                    try {
+                try {
+                    if (addStationPositionIcon(station)) {
                         addRangeCircle(station);
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         });
