@@ -88,7 +88,11 @@ public class MapStations {
                 // do not add items without coordinate
                 if (station.getMaidenHead() == null) continue;
                 if (addStationPositionIcon(station)) {
-                    addRangeCircle(station);
+                    try {
+                        addRangeCircle(station);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
