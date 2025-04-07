@@ -48,7 +48,7 @@ android {
 }
 
 // As per: https://github.com/googlesamples/android-ndk/blob/master/hello-libs/app/build.gradle
-tasks.whenTaskAdded { task ->
+tasks.configureEach { task ->
     if (task.name == 'externalNativeBuildRelease' || task.name == "externalNativeBuildDebug") {
         task.dependsOn compileCodec2
     } else if (task.name == 'buildCMakeDebug' || task.name == "buildCMakeRelease" || task.name == "buildCMakeRelWithDebInfo") {
@@ -56,13 +56,13 @@ tasks.whenTaskAdded { task ->
     }
 }
 
-task compileCodec2 {
+tasks.register('compileCodec2') {
 
     doFirst {
         project.file("build/codec2_build_linux").mkdirs()
-        for(String abi : rootProject.ext.ABI_FILTERS.split(";")) {
+        for (String abi : rootProject.ext.ABI_FILTERS.split(";")) {
             project.file("build/codec2_build_android_" + abi).mkdirs()
-            project.file("build/imported-lib/"+abi).mkdirs()
+            project.file("build/imported-lib/" + abi).mkdirs()
         }
     }
 
@@ -77,7 +77,7 @@ task compileCodec2 {
             commandLine "make"
         }
 
-        for(String abi : rootProject.ext.ABI_FILTERS.split(";")) {
+        for (String abi : rootProject.ext.ABI_FILTERS.split(";")) {
             System.out.println("Handle abi " + abi)
             exec {
                 workingDir "$projectDir/build/codec2_build_android_" + abi
@@ -85,7 +85,7 @@ task compileCodec2 {
                         "-DCMAKE_TOOLCHAIN_FILE=" + android.ndkDirectory + "/build/cmake/android.toolchain.cmake",
                         "-DUNITTEST=FALSE",
                         "-DGENERATE_CODEBOOK=$projectDir/build/codec2_build_linux/src/generate_codebook",
-                        "-DANDROID_NATIVE_API_LEVEL=23", "-DANDROID_ABI="+abi,
+                        "-DANDROID_NATIVE_API_LEVEL=23", "-DANDROID_ABI=" + abi,
                         "-DANDROID_STL=c++_shared"
             }
 
@@ -95,8 +95,8 @@ task compileCodec2 {
             }
 
             copy {
-                from "$projectDir/build/codec2_build_android_" + abi +"/src/libcodec2.so"
-                into "$projectDir/build/imported-lib/"+abi
+                from "$projectDir/build/codec2_build_android_" + abi + "/src/libcodec2.so"
+                into "$projectDir/build/imported-lib/" + abi
             }
         }
     }
@@ -122,7 +122,6 @@ publishing {
     }
 
     repositories {
-        //Set this in projectdir/extrasettings.gradle
         maven {
             url rootProject.file(rootProject.ext.buildConfigProperties['repo.dir']).getAbsolutePath()
         }
