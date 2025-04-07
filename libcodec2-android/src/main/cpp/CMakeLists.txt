@@ -4,6 +4,7 @@
 # Sets the minimum version of CMake required to build the native library.
 
 cmake_minimum_required(VERSION 3.10)
+project(libcodec)
 set(main_DIR ${CMAKE_SOURCE_DIR})
 add_library(libcodec2 SHARED IMPORTED)
 set_target_properties(libcodec2 PROPERTIES IMPORTED_LOCATION

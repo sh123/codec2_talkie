@@ -48,15 +48,15 @@ android {
 }
 
 // As per: https://github.com/googlesamples/android-ndk/blob/master/hello-libs/app/build.gradle
-tasks.configureEach { task ->
-    if (task.name == 'externalNativeBuildRelease' || task.name == "externalNativeBuildDebug") {
+tasks.whenTaskAdded { task ->
+    if (task.name.contains('externalNativeBuildRelease') || task.name.contains("externalNativeBuildDebug")) {
         task.dependsOn compileCodec2
-    } else if (task.name == 'buildCMakeDebug' || task.name == "buildCMakeRelease" || task.name == "buildCMakeRelWithDebInfo") {
+    } else if (task.name.contains('buildCMakeDebug') || task.name.contains("buildCMakeRelease") || task.name.contains("buildCMakeRelWithDebInfo")) {
         task.dependsOn compileCodec2
     }
 }
 
-tasks.register('compileCodec2') {
+task compileCodec2 {
 
     doFirst {
         project.file("build/codec2_build_linux").mkdirs()

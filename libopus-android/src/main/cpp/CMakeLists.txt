@@ -4,6 +4,7 @@
 # Sets the minimum version of CMake required to build the native library.
 
 cmake_minimum_required(VERSION 3.10)
+project(libopus)
 set(main_DIR ${CMAKE_SOURCE_DIR})
 add_library(libopus SHARED IMPORTED)
 set_target_properties(libopus PROPERTIES IMPORTED_LOCATION
