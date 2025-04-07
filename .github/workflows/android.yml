@@ -35,7 +35,7 @@ jobs:
       
     - name: Sign APK with apksigner
       run: |
-        $ANDROID_HOME/build-tools/31.0.0/apksigner sign \
+        $ANDROID_HOME/build-tools/34.0.0/apksigner sign \
           --ks keystore.jks \
           --ks-key-alias ${{ secrets.KEY_ALIAS }} \
           --ks-pass env:KEYSTORE_PASSWORD \
@@ -47,7 +47,7 @@ jobs:
         KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         
     - name: Verify APK
-      run: $ANDROID_HOME/build-tools/31.0.0/apksigner verify codec2talkie/build/outputs/apk/release/codec2talkie-release.apk
+      run: $ANDROID_HOME/build-tools/34.0.0/apksigner verify codec2talkie/build/outputs/apk/release/codec2talkie-release.apk
         
     - name: Upload signed APK
       uses: actions/upload-artifact@v4
