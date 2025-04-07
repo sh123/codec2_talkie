@@ -48,7 +48,7 @@ android {
 }
 
 // As per: https://github.com/googlesamples/android-ndk/blob/master/hello-libs/app/build.gradle
-tasks.whenTaskAdded { task ->
+tasks.configureEach { task ->
     if (task.name.contains('externalNativeBuildRelease') || task.name.contains("externalNativeBuildDebug")) {
         task.dependsOn compileOpus
     } else if (task.name.contains('buildCMakeDebug') || task.name.contains("buildCMakeRelease") || task.name.contains("buildCMakeRelWithDebInfo")) {
@@ -56,7 +56,7 @@ tasks.whenTaskAdded { task ->
     }
 }
 
-task compileOpus {
+tasks.register('compileOpus') {
     doFirst {
         project.file("build/opus_build_linux").mkdirs()
         for (String abi : rootProject.ext.ABI_FILTERS.split(";")) {
