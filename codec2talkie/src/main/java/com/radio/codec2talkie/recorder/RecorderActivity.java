@@ -48,7 +48,7 @@ public class RecorderActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
-        _dirAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item);
+        _dirAdapter = new ArrayAdapter<>(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
         _recordingList = findViewById(R.id.listRecorder);
         _recordingList.setOnItemClickListener(onFileClickListener);
         _recordingList.setOnItemLongClickListener(onFileLongClickListener);

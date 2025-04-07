@@ -47,7 +47,7 @@ public class BluetoothSettingsActivity extends AppCompatActivity {
         _isBleEnabled = SettingsWrapper.isBleTransport(_sharedPreferences);
 
         _btAdapter = BluetoothAdapter.getDefaultAdapter();
-        _btArrayAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item);
+        _btArrayAdapter = new ArrayAdapter<>(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
         _btBleScanner = _btAdapter.getBluetoothLeScanner();
 
         ListView _btDevicesList = findViewById(R.id.btDevicesList);

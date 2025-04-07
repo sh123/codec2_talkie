@@ -14,6 +14,7 @@ buildscript {
 android {
     android.ndkVersion "21.4.7075529"
     compileSdkVersion 31
+    namespace "com.ustadmobile.codec2"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

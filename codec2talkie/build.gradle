@@ -5,6 +5,11 @@ plugins {
 android {
     compileSdkVersion 31
     buildToolsVersion "31.0.0"
+    namespace "com.radio.codec2talkie"
+
+    buildFeatures {
+        buildConfig true
+    }
 
     defaultConfig {
         applicationId "com.radio.codec2talkie"
@@ -52,5 +57,5 @@ dependencies {
     implementation "androidx.room:room-runtime:2.4.3"
     annotationProcessor "androidx.room:room-compiler:2.4.3"
 
-    implementation "org.osmdroid:osmdroid-android:6.1.13"
+    implementation "org.osmdroid:osmdroid-android:6.1.20"
 }

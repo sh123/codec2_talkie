@@ -71,7 +71,7 @@ public class MapStations {
         _deviceIdTools = new DeviceIdTools(context);
 
         _aprsSymbolTable = AprsSymbolTable.getInstance(context);
-        _infoWindow = new MarkerInfoWindow(R.layout.bonuspack_bubble, _mapView);
+        _infoWindow = new MarkerInfoWindow(org.osmdroid.library.R.layout.bonuspack_bubble, _mapView);
         _activeTrack = new MapTrack(_context, _mapView, _owner);
 
         _stationItemViewModel = new ViewModelProvider(_owner).get(StationItemViewModel.class);

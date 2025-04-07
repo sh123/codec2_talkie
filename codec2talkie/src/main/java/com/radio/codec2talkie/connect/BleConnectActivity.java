@@ -73,7 +73,7 @@ public class BleConnectActivity extends AppCompatActivity {
         _btDefaultName = sharedPreferences.getString(PreferenceKeys.PORTS_BT_CLIENT_NAME, null);
 
         _btAdapter = BluetoothAdapter.getDefaultAdapter();
-        _btArrayAdapter = new ArrayAdapter<>(this, R.layout.support_simple_spinner_dropdown_item);
+        _btArrayAdapter = new ArrayAdapter<>(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item);
 
         _btDevicesList = findViewById(R.id.btDevicesList);
         _btDevicesList.setAdapter(_btArrayAdapter);
