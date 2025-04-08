@@ -80,7 +80,7 @@
             android:name=".maps.MapActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:exported="false"
+            android:exported="true"
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize">
             <intent-filter>
