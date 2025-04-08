@@ -1,7 +1,5 @@
 package com.radio.codec2talkie.protocol.aprs;
 
-import android.util.Log;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

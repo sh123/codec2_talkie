@@ -2,7 +2,6 @@ package com.radio.codec2talkie.protocol.aprs;
 
 import android.util.Log;
 
-import com.radio.codec2talkie.protocol.Aprs;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsTools;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
@@ -230,9 +229,9 @@ public class AprsDataPositionReport implements AprsData {
         Pattern latLonPattern = Pattern.compile(
                 "^" +
                 "(?:.*)?" +                         // optional timestamp
-                "([\\d ]{4}[.][\\d ]{2})(N|S)" +    // latitude "
-                "([\\S])" +                         // symbol table
-                "([\\d ]{5}[.][\\d ]{2})(E|W)" +    // longitude
+                "([\\d ]{4}[.][\\d ]{2})([NS])" +   // latitude "
+                "(\\S)" +                           // symbol table
+                "([\\d ]{5}[.][\\d ]{2})([EW])" +   // longitude
                 "(\\S)(.+)?" +                      // tail (speed/bearing/altitude/comment)
                 "$", Pattern.DOTALL);
 

@@ -6,7 +6,6 @@ import android.media.AudioAttributes;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
-import android.media.MediaRecorder;
 import android.os.Process;
 import android.util.Log;
 
@@ -133,7 +132,7 @@ public class SoundModemBase implements Runnable {
         while (_isRunning) {
             int readCnt = _systemAudioRecorder.read(sampleBuf, 0, readSize);
             if (readCnt != readSize) {
-                Log.w(TAG, "" + readCnt + " != " + readSize);
+                Log.w(TAG, readCnt + " != " + readSize);
                 continue;
             }
             synchronized (_recordAudioSampleBuffer) {

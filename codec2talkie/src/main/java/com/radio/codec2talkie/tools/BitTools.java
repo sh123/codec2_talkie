@@ -1,6 +1,6 @@
 package com.radio.codec2talkie.tools;
 
-import android.util.Log;
+import android.annotation.SuppressLint;
 
 import java.nio.ByteBuffer;
 
@@ -68,6 +68,7 @@ public class BitTools {
         return r;
     }
 
+    @SuppressLint("DefaultLocale")
     public static byte[] convertFromHDLCBitArray(byte[] dataBitsAsBytes) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(dataBitsAsBytes.length / 8);
 
@@ -75,7 +76,7 @@ public class BitTools {
         int cntOnes = 0;
         int bitStuffCnt = 5;
         boolean skipNext = false;
-        StringBuffer s = new StringBuffer();
+        StringBuilder s = new StringBuilder();
         int cntBits = 0;
         for (byte currentBit : dataBitsAsBytes) {
             if (skipNext) {

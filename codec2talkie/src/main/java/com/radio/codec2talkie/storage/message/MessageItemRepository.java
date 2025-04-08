@@ -31,9 +31,7 @@ public class MessageItemRepository {
     }
 
     public void insertMessageItem(MessageItem messageItem) {
-        AppDatabase.getDatabaseExecutor().execute(() -> {
-            _messageItemDao.insertMessageItem(messageItem);
-        });
+        AppDatabase.getDatabaseExecutor().execute(() -> _messageItemDao.insertMessageItem(messageItem));
     }
 
     public void deleteAllMessageItems() {

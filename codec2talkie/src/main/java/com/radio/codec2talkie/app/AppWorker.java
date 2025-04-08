@@ -15,9 +15,11 @@ import android.os.Message;
 import android.os.Process;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -493,7 +495,7 @@ public class AppWorker extends Thread {
         Log.i(TAG, "quitProcessing()");
         _processPeriodicTimer.cancel();
         _processPeriodicTimer.purge();
-        Looper.myLooper().quitSafely();
+        Objects.requireNonNull(Looper.myLooper()).quitSafely();
     }
 
     private void onWorkerIncomingMessage(Message msg) {
@@ -532,9 +534,9 @@ public class AppWorker extends Thread {
     }
 
     private void startWorkerMessageHandler() {
-        _onMessageReceived = new Handler(Looper.myLooper()) {
+        _onMessageReceived = new Handler(Objects.requireNonNull(Looper.myLooper())) {
             @Override
-            public void handleMessage(Message msg) {
+            public void handleMessage(@NonNull Message msg) {
                 onWorkerIncomingMessage(msg);
             }
         };

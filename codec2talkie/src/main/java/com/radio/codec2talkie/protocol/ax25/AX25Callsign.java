@@ -29,7 +29,7 @@ public class AX25Callsign {
         // WIDE1*
         String callsignWithSsid = inputCallsignWithSsid.replace("*", "");
         // ABCDEF-XX
-        if (callsignWithSsid.length() > CallsignMaxSize + 2 || callsignWithSsid.length() == 0) return;
+        if (callsignWithSsid.length() > CallsignMaxSize + 2 || callsignWithSsid.isEmpty()) return;
         int delimiterIndex = callsignWithSsid.indexOf('-');
         // ABCDEF-
         if (delimiterIndex != -1 && delimiterIndex == callsignWithSsid.length() - 1) return;

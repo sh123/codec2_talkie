@@ -6,8 +6,6 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
-import com.radio.codec2talkie.storage.station.StationItem;
-
 import java.util.List;
 
 @Dao

@@ -412,7 +412,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 permissionsToRequest.add(permission);
             }
         }
-        if (permissionsToRequest.size() > 0) {
+        if (!permissionsToRequest.isEmpty()) {
             ActivityCompat.requestPermissions(
                     MainActivity.this,
                     permissionsToRequest.toArray(new String[0]),
@@ -514,7 +514,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             }
         }
 
-        status = status.length() == 0 ? protocolType.toString() : protocolType.toString() + " " + status;
+        status = status.isEmpty() ? protocolType.toString() : protocolType.toString() + " " + status;
 
         String statusLine = AudioTools.getSpeedStatusText(_sharedPreferences, getResources()) + ", " + status;
         _textCodecMode.setText(statusLine);

@@ -17,7 +17,7 @@ public class FlashLight {
     public void turnOn() {
         try {
             CameraManager cameraManager = (CameraManager) _context.getSystemService(Context.CAMERA_SERVICE);
-            String cameraId = null;
+            String cameraId;
             if (cameraManager != null) {
                 cameraId = cameraManager.getCameraIdList()[0];
                 cameraManager.setTorchMode(cameraId, true);

@@ -90,7 +90,7 @@ public class Position {
         int dirIndex = (int) Math.round(degrees / 45);
         if (dirIndex < 0) {
             dirIndex = dirIndex + 8;
-        };
+        }
         return dirNames[dirIndex];
     }
 

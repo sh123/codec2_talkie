@@ -6,8 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.radio.codec2talkie.storage.station.StationItem;
-
 import java.util.List;
 
 public class LogItemViewModel extends AndroidViewModel {

@@ -35,8 +35,8 @@ public class DebugTools {
 
     public static String byteBitsToFlatString(byte[] bytesAsBits) {
         StringBuilder s = new StringBuilder();
-        for (int i = 0; i < bytesAsBits.length; i++) {
-            s.append(bytesAsBits[i]);
+        for (byte bytesAsBit : bytesAsBits) {
+            s.append(bytesAsBit);
         }
         return s.toString();
     }

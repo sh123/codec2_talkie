@@ -1,7 +1,5 @@
 package com.radio.codec2talkie.protocol.aprs;
 
-import android.util.Log;
-
 import java.nio.ByteBuffer;
 
 public class AprsObject extends AprsDataPositionReport {

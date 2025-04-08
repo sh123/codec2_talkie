@@ -160,7 +160,7 @@ public class AprsIs implements Protocol, Runnable {
         synchronized (_fromAprsIsQueue) {
             line = TextTools.getString(_fromAprsIsQueue);
         }
-        if (line.length() > 0) {
+        if (!line.isEmpty()) {
             Log.d(TAG, "APRS-RX: " + DebugTools.bytesToDebugString(line.getBytes()));
             AprsIsData aprsIsData = AprsIsData.fromString(line);
             if (aprsIsData != null) {
@@ -316,11 +316,11 @@ public class AprsIs implements Protocol, Runnable {
     }
 
     private String getLoginCommand() {
-        String cmd = "user " + new AX25Callsign(_callsign, _ssid).toString() + " pass " + _passcode + " vers " + Aprs.APRS_ID + " " + BuildConfig.VERSION_NAME;
+        String cmd = "user " + new AX25Callsign(_callsign, _ssid) + " pass " + _passcode + " vers " + Aprs.APRS_ID + " " + BuildConfig.VERSION_NAME;
         if (_filterRadius > 0) {
             cmd += " filter m/" + _filterRadius;
         }
-        if (_filter.length() > 0) {
+        if (!_filter.isEmpty()) {
             if (!cmd.contains("filter")) {
                 cmd += " filter ";
             }
@@ -359,7 +359,7 @@ public class AprsIs implements Protocol, Runnable {
     private void runWrite(TcpIp tcpIp) {
         synchronized (_toAprsIsQueue) {
             String line = TextTools.getString(_toAprsIsQueue);
-            if (line.length() > 0) {
+            if (!line.isEmpty()) {
                 Log.d(TAG, "APRS-IS TX: " + DebugTools.bytesToDebugString(line.getBytes()));
                 try {
                     line += "\n";

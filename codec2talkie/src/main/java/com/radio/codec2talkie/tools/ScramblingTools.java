@@ -20,7 +20,6 @@ public class ScramblingTools {
     public static final int SALT_BYTES = 8;
     public static final int BLOCK_SIZE = 16;
 
-    private static final int PBK_ITERATIONS = 1000;
     private static final String SCRAMBLING_ALGORITHM = "AES/CBC/PKCS5Padding";
     private static final String PBE_ALGORITHM = "PBEwithSHA256and128BITAES-CBC-BC";
 

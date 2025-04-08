@@ -10,7 +10,6 @@ import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.tools.BitTools;
 import com.radio.codec2talkie.tools.ChecksumTools;
-import com.radio.codec2talkie.tools.DebugTools;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
@@ -146,8 +145,7 @@ public class Hdlc implements Protocol {
 
     public byte[] genPreamble(int count) {
         byte[] preamble = new byte[count];
-        for (int i = 0; i < count; i++)
-            preamble[i] = (byte)0x7e;
+        Arrays.fill(preamble, (byte) 0x7e);
         return BitTools.convertToHDLCBitArray(preamble, false);
     }
 

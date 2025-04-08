@@ -22,6 +22,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
@@ -38,6 +39,7 @@ import com.radio.codec2talkie.tracker.TrackerFactory;
 import com.radio.codec2talkie.transport.TransportFactory;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class AppService extends Service {
 
@@ -145,6 +147,7 @@ public class AppService extends Service {
 
         // update callback from new intent
         Bundle extras = intent.getExtras();
+        assert extras != null;
         _callbackMessenger = (Messenger) extras.get("callback");
 
         // create if not running
@@ -175,6 +178,7 @@ public class AppService extends Service {
             isRunning = true;
 
             transportType = (TransportFactory.TransportType) extras.get("transportType");
+            assert transportType != null;
             startAppWorker(transportType);
 
             Log.i(TAG, "App service started");
@@ -207,9 +211,9 @@ public class AppService extends Service {
         }
     }
 
-    private final Handler _onProcess = new Handler(Looper.myLooper()) {
+    private final Handler _onProcess = new Handler(Objects.requireNonNull(Looper.myLooper())) {
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(@NonNull Message msg) {
             try {
                 deliverToParent(msg);
 

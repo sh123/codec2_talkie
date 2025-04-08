@@ -3,6 +3,7 @@ package com.radio.codec2talkie.transport;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.connect.BleHandler;
@@ -29,6 +30,7 @@ public class TransportFactory {
             _name = name;
         }
 
+        @NonNull
         @Override
         public String toString() {
             return _name;

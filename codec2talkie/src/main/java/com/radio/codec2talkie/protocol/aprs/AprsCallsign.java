@@ -5,7 +5,7 @@ import com.radio.codec2talkie.protocol.ax25.AX25Callsign;
 public class AprsCallsign {
     public boolean isValid;
 
-    private AX25Callsign _ax25Callsign;
+    private final AX25Callsign _ax25Callsign;
 
     public AprsCallsign(String textCallsign) {
         _ax25Callsign = new AX25Callsign();

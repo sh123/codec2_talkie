@@ -2,11 +2,9 @@ package com.radio.codec2talkie.storage;
 
 import android.content.Context;
 
-import androidx.room.AutoMigration;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 
-import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.storage.log.LogItem;
 import com.radio.codec2talkie.storage.log.LogItemDao;
 import com.radio.codec2talkie.storage.message.MessageItem;

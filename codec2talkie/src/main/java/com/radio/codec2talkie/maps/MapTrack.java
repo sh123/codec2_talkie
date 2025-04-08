@@ -1,14 +1,9 @@
 package com.radio.codec2talkie.maps;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
-import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.util.DisplayMetrics;
 import android.util.Log;
 
 import androidx.lifecycle.LifecycleOwner;
@@ -16,10 +11,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelStoreOwner;
 
-import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.storage.position.PositionItem;
 import com.radio.codec2talkie.storage.position.PositionItemViewModel;
-import com.radio.codec2talkie.storage.station.StationItem;
 import com.radio.codec2talkie.tools.BitmapTools;
 import com.radio.codec2talkie.tools.DateTools;
 import com.radio.codec2talkie.tools.UnitTools;
@@ -30,7 +23,6 @@ import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Polyline;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;

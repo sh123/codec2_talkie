@@ -138,10 +138,5 @@ public class Smart implements Tracker {
         }
     }
 
-    private final LocationListener _locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(@NonNull Location location) {
-            processNewLocation(location);
-        }
-    };
+    private final LocationListener _locationListener = this::processNewLocation;
 }

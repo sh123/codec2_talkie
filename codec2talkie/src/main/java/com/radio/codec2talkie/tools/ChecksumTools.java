@@ -42,8 +42,8 @@ public class ChecksumTools {
     {
         int crc = 0xffff;
 
-        for (int j = 0; j < data.length; j++) {
-            crc = (crc >> 8) ^ _ccitTable[(crc ^ ((int)data[j] & 0xff)) & 0xff];
+        for (byte datum : data) {
+            crc = (crc >> 8) ^ _ccitTable[(crc ^ ((int) datum & 0xff)) & 0xff];
             crc &= 0xffff;
         }
 

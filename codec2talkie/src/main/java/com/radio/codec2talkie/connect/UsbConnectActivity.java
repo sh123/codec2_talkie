@@ -158,7 +158,7 @@ public class UsbConnectActivity extends AppCompatActivity {
                         continue;
                     }
                     List<UsbSerialPort> ports = driver.getPorts();
-                    if (ports.size() <= 0) {
+                    if (ports.isEmpty()) {
                         Log.e(TAG, "Not enough ports");
                         continue;
                     }

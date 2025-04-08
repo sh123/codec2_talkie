@@ -46,7 +46,7 @@ public class DeviceIdTools {
     }
 
     private String loadJSONFromAsset(Context context, String fileName) {
-        String json = null;
+        String json;
         try {
             InputStream is = context.getAssets().open(fileName);
             int size = is.available();

@@ -9,7 +9,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.DisplayMetrics;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
@@ -48,6 +47,7 @@ public class StationItem {
 
     public long getTimestampEpoch() { return timestampEpoch; }
 
+    @NonNull
     public String getSrcCallsign() { return srcCallsign; }
 
     public String getDstCallsign() { return dstCallsign; }

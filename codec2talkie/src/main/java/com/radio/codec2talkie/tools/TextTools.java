@@ -1,10 +1,7 @@
 package com.radio.codec2talkie.tools;
 
-import android.util.Log;
-
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Objects;
 
 public class TextTools {
     public static String addZeroWidthSpaces(String text) {

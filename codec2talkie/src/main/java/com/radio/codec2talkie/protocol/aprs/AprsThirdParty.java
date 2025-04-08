@@ -42,7 +42,7 @@ public class AprsThirdParty implements AprsData {
     public void fromBinary(String srcCallsign, String dstCallsign, String digipath, byte[] infoData) {
         AprsIsData data = AprsIsData.fromString(new String(infoData));
         if (data == null) return;
-        AprsDataType aprsDataType = new AprsDataType((char)data.data.charAt(0));
+        AprsDataType aprsDataType = new AprsDataType(data.data.charAt(0));
         _aprsData = AprsDataFactory.create(aprsDataType);
         if (_aprsData == null) return;
         _aprsData.fromBinary(data.src, data.dst, data.rawDigipath, data.data.getBytes());

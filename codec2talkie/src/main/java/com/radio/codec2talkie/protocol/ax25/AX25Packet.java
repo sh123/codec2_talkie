@@ -70,7 +70,7 @@ public class AX25Packet {
                     buffer.get(rptBytes);
                     rptCallsign.fromBinary(rptBytes);
                     if (!rptCallsign.isValid) return;
-                    rptBuilder.append(rptCallsign.toString());
+                    rptBuilder.append(rptCallsign);
                     if (rptCallsign.isLast) break;
                     rptBuilder.append(',');
                 }
@@ -115,7 +115,7 @@ public class AX25Packet {
         if (digipath != null)
             rptCallsigns = digipath.replaceAll(" ", "").split(",");
         boolean hasRtpCallsigns = rptCallsigns.length > 0 &&
-                !(rptCallsigns.length == 1 && rptCallsigns[0].length() == 0);
+                !(rptCallsigns.length == 1 && rptCallsigns[0].isEmpty());
         // dst
         AX25Callsign dstCallsign = new AX25Callsign();
         dstCallsign.fromString(dst);
@@ -130,7 +130,7 @@ public class AX25Packet {
         // digipath
         for (int i = 0; i < rptCallsigns.length; i++) {
             String callsign = rptCallsigns[i];
-            if (callsign.length() == 0) continue;
+            if (callsign.isEmpty()) continue;
             AX25Callsign digiCallsign = new AX25Callsign();
             digiCallsign.fromString(callsign);
             if (!digiCallsign.isValid) return null;

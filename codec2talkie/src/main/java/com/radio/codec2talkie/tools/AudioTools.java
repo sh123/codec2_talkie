@@ -4,8 +4,6 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Color;
 
-import androidx.preference.PreferenceManager;
-
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.app.AppWorker;
 import com.radio.codec2talkie.settings.PreferenceKeys;
