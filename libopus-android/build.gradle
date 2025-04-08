@@ -13,7 +13,7 @@ buildscript {
 
 android {
     android.ndkVersion "21.4.7075529"
-    compileSdkVersion 31
+    compileSdkVersion 33
     namespace "com.radio.opus"
 
     compileOptions {
@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         minSdkVersion 23
-        targetSdkVersion 31
+        targetSdkVersion 33
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
@@ -47,7 +47,6 @@ android {
     }
 }
 
-// As per: https://github.com/googlesamples/android-ndk/blob/master/hello-libs/app/build.gradle
 tasks.configureEach { task ->
     if (task.name.contains('externalNativeBuildRelease') || task.name.contains("externalNativeBuildDebug")) {
         task.dependsOn compileOpus
