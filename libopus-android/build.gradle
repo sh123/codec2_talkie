@@ -1,4 +1,3 @@
-apply plugin: 'digital.wup.android-maven-publish'
 apply plugin: 'com.android.library'
 
 buildscript {
@@ -7,13 +6,12 @@ buildscript {
     }
 
     dependencies {
-        classpath "digital.wup:android-maven-publish:3.6.2"
     }
 }
 
 android {
     android.ndkVersion "21.4.7075529"
-    compileSdkVersion 33
+    compileSdkVersion 35
     namespace "com.radio.opus"
 
     compileOptions {
@@ -23,7 +21,7 @@ android {
 
     defaultConfig {
         minSdkVersion 23
-        targetSdkVersion 33
+        targetSdkVersion 35
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
@@ -105,23 +103,4 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-}
-
-publishing {
-    publications {
-        mavenAar(MavenPublication) {
-            from components.android
-
-            groupId rootProject.group
-            artifactId project.name
-            version "${rootProject.version}"
-        }
-    }
-
-    repositories {
-        //Set this in projectdir/extrasettings.gradle
-        maven {
-            url rootProject.file(rootProject.ext.buildConfigProperties['repo.dir']).getAbsolutePath()
-        }
-    }
 }

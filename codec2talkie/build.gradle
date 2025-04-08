@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 35
     namespace "com.radio.codec2talkie"
 
     buildFeatures {
@@ -13,9 +13,9 @@ android {
     defaultConfig {
         applicationId "com.radio.codec2talkie"
         minSdkVersion 23
-        targetSdkVersion 33
-        versionCode 181
-        versionName "1.81"
+        targetSdkVersion 35
+        versionCode 182
+        versionName "1.82"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
