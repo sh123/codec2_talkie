@@ -203,9 +203,7 @@ public class MapStations {
 
     private String getStatus(StationItem station) {
         double range = UnitTools.milesToKilometers(station.getRangeMiles());
-        String deviceIdDescription = _deviceIdTools.getDescriptionByDeviceId(station.getDstCallsign());
-        return String.format(Locale.US, "%s<br>%s %s<br>%s %f %f<br>%03d° %03dkm/h %04dm %.2fkm<br>%s %s",
-                deviceIdDescription,
+        return String.format(Locale.US, "%s %s<br>%s %f %f<br>%03d° %03dkm/h %04dm %.2fkm<br>%s %s",
                 station.getDstCallsign(),
                 station.getDigipath(),
                 station.getMaidenHead(), station.getLatitude(), station.getLongitude(),
