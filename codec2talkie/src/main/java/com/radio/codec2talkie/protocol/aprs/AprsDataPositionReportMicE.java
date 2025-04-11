@@ -229,13 +229,21 @@ public class AprsDataPositionReportMicE implements AprsData {
 
         // read symbol table + symbol code
         _position.symbolCode = String.format(Locale.US, "%c%c", infoData[7], infoData[6]);
-        
-        if (infoData.length > 11 && infoData[11] == '}') {
-            _position.hasAltitude = true;
-            _position.altitudeMeters = ((infoData[8] - 33) * 91 * 91 + (infoData[9] - 33) * 91 + (infoData[10] - 33)) - 10000;
-            _position.comment = TextTools.stripNulls(new String(Arrays.copyOfRange(infoData, 12, infoData.length), StandardCharsets.UTF_8));
-        } else {
-            _position.comment = TextTools.stripNulls(new String(Arrays.copyOfRange(infoData, 8, infoData.length), StandardCharsets.UTF_8));
+
+        int i = 8;
+        if (infoData.length > i) {
+            char c = (char)infoData[i];
+            if (c == '`' || c == '\'' || c == '>' || c == ']') {
+                i++;
+            }
+            if (infoData.length > i + 3 && (char)infoData[i + 3] == '}') {
+                _position.hasAltitude = true;
+                _position.altitudeMeters = ((infoData[i] - 33) * 91 * 91 + (infoData[i + 1] - 33) * 91 + (infoData[i + 2] - 33)) - 10000;
+                i += 3;
+            } else {
+                i--;
+            }
+            _position.comment = TextTools.stripNulls(new String(Arrays.copyOfRange(infoData, i + 1, infoData.length), StandardCharsets.UTF_8));
         }
 
         _position.maidenHead = UnitTools.decimalToMaidenhead(_position.latitude, _position.longitude);
