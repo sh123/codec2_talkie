@@ -203,7 +203,8 @@ public class MapStations {
 
     private String getStatus(StationItem station) {
         double range = UnitTools.milesToKilometers(station.getRangeMiles());
-        return String.format(Locale.US, "%s %s<br>%s %f %f<br>%03d° %03dkm/h %04dm %.2fkm<br>%s %s",
+        String deviceIdDescription = _deviceIdTools.getDeviceDescription(station.dstCallsign);
+        String data = String.format(Locale.US, "%s %s<br>%s %f %f<br>%03d° %03dkm/h %04dm %.2fkm<br>%s %s",
                 station.getDstCallsign(),
                 station.getDigipath(),
                 station.getMaidenHead(), station.getLatitude(), station.getLongitude(),
@@ -213,5 +214,8 @@ public class MapStations {
                 range == 0 ? UnitTools.milesToKilometers(Position.DEFAULT_RANGE_MILES): range,
                 station.getStatus(),
                 station.getComment());
+        if (!deviceIdDescription.isEmpty())
+            data += "<br>(" + deviceIdDescription + ")";
+        return data;
     }
 }

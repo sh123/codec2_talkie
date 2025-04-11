@@ -1,63 +1,84 @@
 package com.radio.codec2talkie.tools;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Iterator;
 
 public class DeviceIdTools {
     private static final String TAG = DeviceIdTools.class.getSimpleName();
 
     private static final String _deviceIdsAssert = "tocalls.dense.json";
-
+    private final HashMap<String, String> _deviceIdMap = new HashMap<>();
+    private final HashMap<String, String> _deviceIdCache = new HashMap<>();
     private final Context _context;
 
     public DeviceIdTools(Context context) {
         _context = context;
+        loadDeviceIdMap();
     }
 
-    public String getDescriptionByDeviceId(String deviceId) {
-        String jsonString = loadJSONFromAsset(_context, _deviceIdsAssert);
-        if (jsonString == null) return "Unknown device";
+    public String getDeviceDescription(String deviceId) {
+        String description = _deviceIdCache.get(deviceId);
+        if (description != null) return description;
+        for (int i = deviceId.length(); i > 0; i--) {
+            String key = deviceId.substring(0, i);
+            description = _deviceIdMap.get(key);
+            if (description != null) {
+                _deviceIdCache.put(deviceId, description);
+                return description;
+            }
+        }
+        description = "";
+        _deviceIdCache.put(deviceId, description);
+        return description;
+    }
+
+    private void loadDeviceIdMap() {
+        JSONObject jsonObject = loadJSONFromAsset(_context, _deviceIdsAssert);
+        if (jsonObject == null) {
+            Log.e(TAG, "Failed to load device ids");
+            return;
+        }
         try {
-            JSONObject jsonObject = new JSONObject(jsonString);
             JSONObject tocallsJsonObject = jsonObject.getJSONObject("tocalls");
             Iterator<String> deviceIds = tocallsJsonObject.keys();
             while (deviceIds.hasNext()) {
                 String dbDeviceId = deviceIds.next();
-                if (deviceId.startsWith(dbDeviceId.replaceAll("\\?+$", ""))) {
-                    try {
-                        JSONObject jsonDeviceEntry = tocallsJsonObject.getJSONObject(dbDeviceId);
-                        String model = jsonDeviceEntry.getString("model");
-                        String vendor = jsonDeviceEntry.getString("vendor");
-                        return model + " by " + vendor;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
+                JSONObject jsonDeviceEntry = tocallsJsonObject.getJSONObject(dbDeviceId);
+                String model = "Unknown";
+                String vendor = "unknown";
+                if (jsonDeviceEntry.has("model"))
+                    model = jsonDeviceEntry.getString("model");
+                if (jsonDeviceEntry.has("vendor"))
+                    vendor = jsonDeviceEntry.getString("vendor");
+                String deviceId = dbDeviceId.replaceAll("[?*n]", "");
+                _deviceIdMap.put(deviceId, model + " by " + vendor);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "Unknown device";
     }
 
-    private String loadJSONFromAsset(Context context, String fileName) {
-        String json;
+    private JSONObject loadJSONFromAsset(Context context, String fileName) {
+        JSONObject jsonObject;
         try {
             InputStream is = context.getAssets().open(fileName);
             int size = is.available();
             byte[] buffer = new byte[size];
-            is.read(buffer);
+            int bytesRead = is.read(buffer);
+            if (bytesRead == 0) return null;
             is.close();
-            json = new String(buffer, StandardCharsets.UTF_8);
+            jsonObject = new JSONObject(new String(buffer, StandardCharsets.UTF_8));
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;
         }
-        return json;
+        return jsonObject;
     }
 }

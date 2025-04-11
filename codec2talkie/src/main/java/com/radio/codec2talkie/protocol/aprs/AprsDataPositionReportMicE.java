@@ -229,7 +229,7 @@ public class AprsDataPositionReportMicE implements AprsData {
 
         // read symbol table + symbol code
         _position.symbolCode = String.format(Locale.US, "%c%c", infoData[7], infoData[6]);
-
+        
         if (infoData.length > 11 && infoData[11] == '}') {
             _position.hasAltitude = true;
             _position.altitudeMeters = ((infoData[8] - 33) * 91 * 91 + (infoData[9] - 33) * 91 + (infoData[10] - 33)) - 10000;
