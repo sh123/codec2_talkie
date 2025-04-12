@@ -22,6 +22,7 @@ public class Position {
     public double speedMetersPerSecond;
     public String status;
     public String comment;
+    public String deviceIdDescription;
     public String symbolCode;
     public boolean isCompressed;
     public int privacyLevel;
@@ -109,6 +110,7 @@ public class Position {
         positionItem.setSpeedMetersPerSecond(speedMetersPerSecond);
         positionItem.setStatus(status);
         positionItem.setComment(comment);
+        positionItem.setDeviceIdDescription(deviceIdDescription);
         positionItem.setSymbolCode(symbolCode);
         positionItem.setPrivacyLevel(privacyLevel);
         positionItem.setDirectivityDeg(directivityDeg);
@@ -129,6 +131,7 @@ public class Position {
         stationItem.setSpeedMetersPerSecond(speedMetersPerSecond);
         stationItem.setStatus(status);
         stationItem.setComment(comment);
+        stationItem.setDeviceIdDescription(deviceIdDescription);
         stationItem.setSymbolCode(symbolCode);
         stationItem.setPrivacyLevel(privacyLevel);
         stationItem.setDirectivityDeg(directivityDeg);

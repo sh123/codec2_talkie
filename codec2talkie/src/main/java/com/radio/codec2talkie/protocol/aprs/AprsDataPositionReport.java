@@ -5,6 +5,7 @@ import android.util.Log;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsTools;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
+import com.radio.codec2talkie.tools.DeviceIdTools;
 import com.radio.codec2talkie.tools.MathTools;
 import com.radio.codec2talkie.tools.TextTools;
 import com.radio.codec2talkie.tools.UnitTools;
@@ -66,6 +67,7 @@ public class AprsDataPositionReport implements AprsData {
         _position.digipath = digipath;
         _position.status = "";
         _position.comment = "";
+        _position.deviceIdDescription = "";
         _position.privacyLevel = 0;
         if ((infoData[0] == '/' || infoData[0] == '\\') && fromCompressedBinary(infoData)) {
             _position.isCompressed = true;
@@ -75,6 +77,8 @@ public class AprsDataPositionReport implements AprsData {
             _position.isCompressed = false;
             _isValid = true;
         }
+        if (new AprsCallsign(dstCallsign).isSoftware())
+            _position.deviceIdDescription = DeviceIdTools.getDeviceDescription(dstCallsign);
         if (_isValid)
             _position.maidenHead = UnitTools.decimalToMaidenhead(_position.latitude, _position.longitude);
     }

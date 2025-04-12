@@ -4,8 +4,6 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-import com.radio.codec2talkie.protocol.position.Position;
-
 @Entity(indices = {@Index(value = {"id", "srcCallsign"}, unique = true)})
 public class PositionItem {
 
@@ -26,6 +24,7 @@ public class PositionItem {
     public double speedMetersPerSecond;
     public String status;
     public String comment;
+    public String deviceIdDescription;
     public String symbolCode;
     public int privacyLevel;
     public double rangeMiles;
@@ -57,11 +56,13 @@ public class PositionItem {
 
     public double getBearingDegrees() { return bearingDegrees; }
 
-    public double getSpeedMetersPerSecond() { return speedMetersPerSecond; };
+    public double getSpeedMetersPerSecond() { return speedMetersPerSecond; }
 
     public String getStatus() { return status; }
 
-    public String getComment() { return comment; };
+    public String getComment() { return comment; }
+
+    public String getDeviceIdDescription() { return deviceIdDescription; }
 
     public String getSymbolCode() { return symbolCode; }
 
@@ -104,6 +105,10 @@ public class PositionItem {
     public void setStatus(String status) { this.status = status; }
 
     public void setComment(String comment) { this.comment = comment; }
+
+    public void setDeviceIdDescription(String deviceIdDescription) { this.deviceIdDescription = deviceIdDescription; }
+
+    public void setMinCoordinateChangeDelta(String deviceIdDescription) { this.deviceIdDescription = deviceIdDescription; }
 
     public void setSymbolCode(String symbolCode) { this.symbolCode = symbolCode; }
 

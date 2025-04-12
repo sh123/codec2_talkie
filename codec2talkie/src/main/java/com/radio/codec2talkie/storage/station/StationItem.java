@@ -35,6 +35,7 @@ public class StationItem {
     public double speedMetersPerSecond;
     public String status;
     public String comment;
+    public String deviceIdDescription;
     public String symbolCode;
     public String logLine;
     public int privacyLevel;
@@ -70,6 +71,8 @@ public class StationItem {
 
     public String getComment() { return comment; }
 
+    public String getDeviceIdDescription() { return deviceIdDescription; }
+
     public String getSymbolCode() { return symbolCode; }
 
     public String getLogLine() { return logLine; }
@@ -104,6 +107,8 @@ public class StationItem {
 
     public void setComment(String comment) { this.comment = comment; }
 
+    public void setDeviceIdDescription(String deviceIdDescription) { this.deviceIdDescription = deviceIdDescription; }
+
     public void setSymbolCode(String symbolCode) { this.symbolCode = symbolCode; }
 
     public void setPrivacyLevel(int privacyLevel) { this.privacyLevel = privacyLevel; }
@@ -132,6 +137,8 @@ public class StationItem {
             setStatus(stationItem.getStatus());
         if (stationItem.getComment() != null)
             setComment(stationItem.getComment());
+        if (stationItem.getDeviceIdDescription() != null)
+            setDeviceIdDescription(stationItem.getDeviceIdDescription());
         if (stationItem.getSymbolCode() != null)
             setSymbolCode(stationItem.getSymbolCode());
         if (stationItem.getLogLine() != null)

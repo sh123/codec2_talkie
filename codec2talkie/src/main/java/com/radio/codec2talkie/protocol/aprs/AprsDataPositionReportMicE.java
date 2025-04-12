@@ -20,7 +20,7 @@ public class AprsDataPositionReportMicE implements AprsData {
     private byte[] _binary;
     private boolean _isValid;
 
-    private final Map<String, Integer> _miceMessageTypeMap = new HashMap<String, Integer>() {{
+    private final Map<String, Integer> _miceMessageTypeMap = new HashMap<>() {{
         // standard
         put("off_duty", 0b111);
         put("en_route", 0b110);
@@ -41,7 +41,7 @@ public class AprsDataPositionReportMicE implements AprsData {
         put("emergency", 0b000);
     }};
 
-    private final Map<Integer, String> _miceMessageReverseTypeMapStd = new HashMap<Integer, String>() {{
+    private final Map<Integer, String> _miceMessageReverseTypeMapStd = new HashMap<>() {{
         put(0b000, "emergency");
         put(0b111, "off_duty");
         put(0b110, "en_route");
@@ -52,7 +52,7 @@ public class AprsDataPositionReportMicE implements AprsData {
         put(0b001, "priority");
     }};
 
-    private final Map<Integer, String> _miceMessageReverseTypeMapCustom = new HashMap<Integer, String>() {{
+    private final Map<Integer, String> _miceMessageReverseTypeMapCustom = new HashMap<>() {{
         put(0b000, "emergency");
         put(0b111, "custom_0");
         put(0b110, "custom_1");

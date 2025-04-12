@@ -12,18 +12,11 @@ import java.util.Iterator;
 
 public class DeviceIdTools {
     private static final String TAG = DeviceIdTools.class.getSimpleName();
-
     private static final String _deviceIdsAssert = "tocalls.dense.json";
-    private final HashMap<String, String> _deviceIdMap = new HashMap<>();
-    private final HashMap<String, String> _deviceIdCache = new HashMap<>();
-    private final Context _context;
+    private static final HashMap<String, String> _deviceIdMap = new HashMap<>();
+    private static final HashMap<String, String> _deviceIdCache = new HashMap<>();
 
-    public DeviceIdTools(Context context) {
-        _context = context;
-        loadDeviceIdMap();
-    }
-
-    public String getDeviceDescription(String deviceId) {
+    public static String getDeviceDescription(String deviceId) {
         String description = _deviceIdCache.get(deviceId);
         if (description != null) return description;
         for (int i = deviceId.length(); i > 0; i--) {
@@ -39,8 +32,8 @@ public class DeviceIdTools {
         return description;
     }
 
-    private void loadDeviceIdMap() {
-        JSONObject jsonObject = loadJSONFromAsset(_context, _deviceIdsAssert);
+    public static void loadDeviceIdMap(Context context) {
+        JSONObject jsonObject = loadJSONFromAsset(context);
         if (jsonObject == null) {
             Log.e(TAG, "Failed to load device ids");
             return;
@@ -65,10 +58,10 @@ public class DeviceIdTools {
         }
     }
 
-    private JSONObject loadJSONFromAsset(Context context, String fileName) {
+    private static JSONObject loadJSONFromAsset(Context context) {
         JSONObject jsonObject;
         try {
-            InputStream is = context.getAssets().open(fileName);
+            InputStream is = context.getAssets().open(DeviceIdTools._deviceIdsAssert);
             int size = is.available();
             byte[] buffer = new byte[size];
             int bytesRead = is.read(buffer);
