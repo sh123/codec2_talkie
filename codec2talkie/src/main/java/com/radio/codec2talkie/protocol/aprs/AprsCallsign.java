@@ -15,7 +15,7 @@ public class AprsCallsign {
 
     public boolean isSoftware() {
         if (isValid) {
-            return _ax25Callsign.callsign.matches("^(AP|ap)[A-Za-z]{1,4}$");
+            return _ax25Callsign.callsign.matches("^(AP|ap)[A-Za-z0-9]{1,4}$");
         }
         return false;
     }

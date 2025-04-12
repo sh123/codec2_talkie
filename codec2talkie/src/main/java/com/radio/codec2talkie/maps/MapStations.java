@@ -211,7 +211,7 @@ public class MapStations {
                 station.getComment());
         String deviceIdDescription = station.getDeviceIdDescription();
         if (deviceIdDescription != null && !deviceIdDescription.isEmpty())
-            data += "<br>(" + station.getDeviceIdDescription() + ")";
+            data += "<br>(" + deviceIdDescription + ")";
         return data;
     }
 }
