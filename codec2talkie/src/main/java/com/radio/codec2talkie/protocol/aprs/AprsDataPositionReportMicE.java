@@ -230,6 +230,7 @@ public class AprsDataPositionReportMicE implements AprsData {
         // read symbol table + symbol code
         _position.symbolCode = String.format(Locale.US, "%c%c", infoData[7], infoData[6]);
 
+        // read altitude, comment and device id
         int i = 8;
         if (infoData.length > i) {
             char c = (char)infoData[i];
