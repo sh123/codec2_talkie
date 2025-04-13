@@ -212,7 +212,7 @@ public class MapStations {
         String status = station.getStatus();
         String comment = station.getComment();
         if (!status.isBlank() || !comment.isBlank())
-            data += "<br><i>" + status + " " + comment + "</i></hr>";
+            data += "<br><i><font color='#006400'>" + status + " " + comment + "</font></i></hr>";
 
         // device id description
         String deviceIdDescription = station.getDeviceIdDescription();

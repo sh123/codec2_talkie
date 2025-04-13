@@ -250,14 +250,24 @@ public class AprsDataPositionReport implements AprsData {
         _position.privacyLevel = TextTools.countChars(lat, ' ');
         // NOTE, ambiguity, replace with 0
         lat = lat.replace(' ', '0');
-        _position.latitude = UnitTools.nmeaToDecimal(lat, latSuffix);
+        try {
+            _position.latitude = UnitTools.nmeaToDecimal(lat, latSuffix);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return false;
+        }
         String table = latLonMatcher.group(3);
         String lon = latLonMatcher.group(4);
         String lonSuffix = latLonMatcher.group(5);
         if (lon == null || lonSuffix == null) return false;
         // NOTE, ambiguity, replace with 0
         lon = lon.replace(' ', '0');
-        _position.longitude = UnitTools.nmeaToDecimal(lon, lonSuffix);
+        try {
+            _position.longitude = UnitTools.nmeaToDecimal(lon, lonSuffix);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return false;
+        }
         String symbol = latLonMatcher.group(6);
         _position.symbolCode = String.format("%s%s", table, symbol);
         strTail = latLonMatcher.group(7);

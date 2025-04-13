@@ -59,8 +59,8 @@ public class DeviceIdTools {
             JSONObject miceJsonObject = jsonObject.getJSONObject("mice");
             Iterator<String> miceDeviceIds = miceJsonObject.keys();
             while (miceDeviceIds.hasNext()) {
-                String miceDeviceId = deviceIds.next();
-                JSONObject jsonDeviceEntry = tocallsJsonObject.getJSONObject(miceDeviceId);
+                String miceDeviceId = miceDeviceIds.next();
+                JSONObject jsonDeviceEntry = miceJsonObject.getJSONObject(miceDeviceId);
                 String description = toDescription(jsonDeviceEntry);
                 if (description == null) continue;
                 _deviceIdMiceMap.put(miceDeviceId, description);

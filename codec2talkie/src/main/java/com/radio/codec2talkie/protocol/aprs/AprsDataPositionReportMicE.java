@@ -1,8 +1,12 @@
 package com.radio.codec2talkie.protocol.aprs;
 
+import android.icu.number.FormattedNumber;
+import android.util.Log;
+
 import com.radio.codec2talkie.protocol.aprs.tools.AprsTools;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
+import com.radio.codec2talkie.tools.DeviceIdTools;
 import com.radio.codec2talkie.tools.TextTools;
 import com.radio.codec2talkie.tools.UnitTools;
 
@@ -191,7 +195,12 @@ public class AprsDataPositionReportMicE implements AprsData {
             latitude.append(c);
         }
 
-        _position.latitude = UnitTools.nmeaToDecimal(latitude.toString(), Character.toString(ns));
+        try {
+            _position.latitude = UnitTools.nmeaToDecimal(latitude.toString(), Character.toString(ns));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return;
+        }
         _position.status = isCustom
                 ? _miceMessageReverseTypeMapCustom.get(messageId)
                 : _miceMessageReverseTypeMapStd.get(messageId);
@@ -207,7 +216,12 @@ public class AprsDataPositionReportMicE implements AprsData {
         int h = ((int)infoData[2] - 28);
 
         String longitude = String.format(Locale.US, "%03d%02d.%02d", d, m, h);
-        _position.longitude = UnitTools.nmeaToDecimal(longitude, Character.toString(we));
+        try {
+            _position.longitude = UnitTools.nmeaToDecimal(longitude, Character.toString(we));
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            return;
+        }
 
         // read course/speed
         int sp = 10 * ((int)infoData[3] - 28);
@@ -244,7 +258,16 @@ public class AprsDataPositionReportMicE implements AprsData {
             } else {
                 i--;
             }
-            _position.comment = TextTools.stripNulls(new String(Arrays.copyOfRange(infoData, i + 1, infoData.length), StandardCharsets.UTF_8));
+            String comment = new String(Arrays.copyOfRange(infoData, i + 1, infoData.length), StandardCharsets.UTF_8).strip();
+            if (comment.length() >= 2) {
+                String deviceId = comment.substring(comment.length() - 2);
+                String deviceIdDescription = DeviceIdTools.getMiceDeviceDescription(deviceId);
+                if (deviceIdDescription != null) {
+                    _position.deviceIdDescription = deviceIdDescription;
+                    comment = comment.substring(0, comment.length() - 2);
+                }
+            }
+            _position.comment = TextTools.stripNulls(comment);
         }
 
         _position.maidenHead = UnitTools.decimalToMaidenhead(_position.latitude, _position.longitude);
