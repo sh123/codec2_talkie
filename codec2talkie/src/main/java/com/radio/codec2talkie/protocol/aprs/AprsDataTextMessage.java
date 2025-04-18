@@ -114,8 +114,8 @@ public class AprsDataTextMessage implements AprsData {
     @Override
     public byte[] toBinary() {
         return (ackId > 0)
-                ? String.format(Locale.US, ":%-9s:%s{%d", dstCallsign, textMessage, ackId).getBytes()
-                : String.format(":%-9s:%s", dstCallsign, textMessage).getBytes();
+                ? String.format(Locale.US, ":%-9s:%s{%d", dstCallsign, textMessage, ackId).getBytes(StandardCharsets.UTF_8)
+                : String.format(":%-9s:%s", dstCallsign, textMessage).getBytes(StandardCharsets.UTF_8);
     }
 
     @Override

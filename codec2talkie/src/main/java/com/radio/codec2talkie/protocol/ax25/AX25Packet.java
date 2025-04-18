@@ -4,7 +4,6 @@ import androidx.annotation.NonNull;
 
 import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
 import com.radio.codec2talkie.tools.DebugTools;
-import com.radio.codec2talkie.tools.TextTools;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -167,7 +166,7 @@ public class AX25Packet {
             if (rptCallsign.isValid) {
                 if (!isDigiRepeated && rptCallsign.digiRepeat()) {
                     isDigiRepeated = true;
-                    buf.append(rptCallsign.toString());
+                    buf.append(rptCallsign);
                 } else {
                     buf.append(digiPaths[i]);
                 }
@@ -187,7 +186,8 @@ public class AX25Packet {
             path = "," + path;
         String info = DebugTools.bytesToDebugString(rawData);
         if (!isAudio) {
-            info = DebugTools.bytesToDebugString(TextTools.stripNulls(rawData));
+            //info = DebugTools.bytesToDebugString(TextTools.stripNulls(rawData));
+            info = new String(rawData);
         }
         return String.format("%s>%s%s:%s", src, dst, path, info);
     }

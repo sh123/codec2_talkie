@@ -113,7 +113,7 @@ public class AprsDataPositionReport implements AprsData {
         } else {
             buffer.put(" sT".getBytes());
         }
-        buffer.put(position.comment.getBytes());
+        buffer.put(position.comment.getBytes(StandardCharsets.UTF_8));
         // return
         buffer.flip();
         byte [] binaryInfo = new byte[buffer.remaining()];
@@ -135,7 +135,7 @@ public class AprsDataPositionReport implements AprsData {
             buffer.put(String.format(Locale.US, "/A=%06d",
                     UnitTools.metersToFeet(position.altitudeMeters)).getBytes());
         }
-        buffer.put(position.comment.getBytes());
+        buffer.put(position.comment.getBytes(StandardCharsets.UTF_8));
         // return
         buffer.flip();
         byte [] binaryInfo = new byte[buffer.remaining()];

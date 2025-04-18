@@ -4,6 +4,8 @@ import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 
+import java.nio.charset.StandardCharsets;
+
 public class AprsThirdParty implements AprsData {
 
     private AprsData _aprsData;
@@ -45,7 +47,7 @@ public class AprsThirdParty implements AprsData {
         AprsDataType aprsDataType = new AprsDataType(data.data.charAt(0));
         _aprsData = AprsDataFactory.create(aprsDataType);
         if (_aprsData == null) return;
-        _aprsData.fromBinary(data.src, data.dst, data.rawDigipath, data.data.getBytes());
+        _aprsData.fromBinary(data.src, data.dst, data.rawDigipath, data.data.getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
