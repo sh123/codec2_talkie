@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.R;
@@ -201,7 +202,9 @@ public class Kiss implements Protocol {
                 .rewind();
 
         send(KISS_CMD_SET_HARDWARE, rawBuffer.array());
-        _context.registerReceiver(onModemRebootRequested, new IntentFilter(PreferenceKeys.KISS_EXTENSIONS_ACTION_REBOOT_REQUESTED));
+        ContextCompat.registerReceiver(_context, onModemRebootRequested,
+                new IntentFilter(PreferenceKeys.KISS_EXTENSIONS_ACTION_REBOOT_REQUESTED),
+                ContextCompat.RECEIVER_NOT_EXPORTED);
     }
 
     public final BroadcastReceiver onModemRebootRequested = new BroadcastReceiver() {

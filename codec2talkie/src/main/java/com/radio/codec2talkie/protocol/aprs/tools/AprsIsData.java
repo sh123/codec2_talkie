@@ -34,11 +34,11 @@ public class AprsIsData {
     @NonNull
     public String convertToString(boolean useRawPath) {
         String result = src + ">";
-        if (dst != null && dst.length() > 0)
+        if (dst != null && !dst.isEmpty())
             result += dst;
-        if (useRawPath && rawDigipath != null && rawDigipath.length() > 0)
+        if (useRawPath && rawDigipath != null && !rawDigipath.isEmpty())
             result += "," + rawDigipath;
-        else if (digipath != null && digipath.length() > 0)
+        else if (digipath != null && !digipath.isEmpty())
             result += "," + digipath;
         result += ":" + data;
         return result;
