@@ -180,8 +180,9 @@ public class AprsDataPositionReport implements AprsData {
         _position.latitude = getUncompressedCoordinate(latitude.getBytes(), true);
         if (longitude == null) return false;
         _position.longitude = getUncompressedCoordinate(longitude.getBytes(), false);
-        if (comment != null)
+        if (comment != null) {
             _position.comment = TextTools.stripNulls(comment);
+        }
 
         _position.hasSpeed = false;
         _position.hasBearing = false;
@@ -222,6 +223,9 @@ public class AprsDataPositionReport implements AprsData {
             // TODO, implement
             double rangeMiles = 2 * Math.pow(1.08, sByte);
         }
+
+        // sometimes altitude is coming from comment event for compressed packets
+        _position.comment = parseAltitude(_position.comment);
         return true;
     }
 
@@ -294,22 +298,8 @@ public class AprsDataPositionReport implements AprsData {
         }
         if (strTail == null) return true;
 
-        // read altitude (could be anywhere inside the comment)
-        Pattern altitudePattern = Pattern.compile("^.*(/A=\\d{6}).*$", Pattern.DOTALL);
-        Matcher altitudeMatcher = altitudePattern.matcher(strTail);
-        if (altitudeMatcher.matches()) {
-            String altitude = altitudeMatcher.group(1);
-            if (altitude != null) {
-                strTail = strTail.replaceAll(altitude, "");
-                altitude = altitude.split("=")[1];
-                _position.altitudeMeters = UnitTools.feetToMeters(Long.parseLong(altitude));
-                _position.isAltitudeEnabled = true;
-                _position.hasAltitude = true;
-            }
-        } else {
-            _position.isAltitudeEnabled = false;
-            _position.hasAltitude = false;
-        }
+        // try parse altitude
+        strTail = parseAltitude(strTail);
 
         // read PHG range
         Pattern phgPattern = Pattern.compile("^.*(PHG\\d{4}).*$", Pattern.DOTALL);
@@ -338,6 +328,27 @@ public class AprsDataPositionReport implements AprsData {
         // read comment until the end
         _position.comment = TextTools.stripNulls(strTail);
         return true;
+    }
+
+    private String parseAltitude(String strData) {
+        String strTail = strData;
+        // read altitude (could be anywhere inside the comment)
+        Pattern altitudePattern = Pattern.compile("^.*(/A=\\d{6}).*$", Pattern.DOTALL);
+        Matcher altitudeMatcher = altitudePattern.matcher(strTail);
+        if (altitudeMatcher.matches()) {
+            String altitude = altitudeMatcher.group(1);
+            if (altitude != null) {
+                strTail = strTail.replaceAll(altitude, "");
+                altitude = altitude.split("=")[1];
+                _position.altitudeMeters = UnitTools.feetToMeters(Long.parseLong(altitude));
+                _position.isAltitudeEnabled = true;
+                _position.hasAltitude = true;
+            }
+        } else {
+            _position.isAltitudeEnabled = false;
+            _position.hasAltitude = false;
+        }
+        return strTail;
     }
 
     private double getUncompressedCoordinate(byte[] data, boolean isLatitude) {
