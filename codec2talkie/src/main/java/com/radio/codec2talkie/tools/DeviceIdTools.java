@@ -6,7 +6,6 @@ import android.util.Log;
 import org.json.JSONObject;
 
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -94,7 +93,7 @@ public class DeviceIdTools {
             int bytesRead = is.read(buffer);
             if (bytesRead == 0) return null;
             is.close();
-            jsonObject = new JSONObject(new String(buffer, StandardCharsets.UTF_8));
+            jsonObject = new JSONObject(new String(buffer));
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;

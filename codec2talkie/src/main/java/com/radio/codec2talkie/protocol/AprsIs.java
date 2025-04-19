@@ -29,6 +29,9 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Locale;
 
@@ -129,10 +132,11 @@ public class AprsIs implements Protocol, Runnable {
     @Override
     public void sendData(String src, String dst, String path, byte[] data) throws IOException {
         if (_isSelfEnabled) {
-            AprsIsData aprsIsData = new AprsIsData(src, dst, path, new String(data));
+            AprsIsData aprsIsData = new AprsIsData(src, dst, path, new String(data, StandardCharsets.ISO_8859_1));
             synchronized (_toAprsIsQueue) {
                 String rawData = aprsIsData.convertToString(false) + "\n";
-                _toAprsIsQueue.put(rawData.getBytes());
+                _toAprsIsQueue.put(rawData.getBytes(StandardCharsets.ISO_8859_1));
+                Log.d(TAG, "APRSIS-TX: " + DebugTools.bytesToDebugString(rawData.getBytes(StandardCharsets.ISO_8859_1)));
             }
         }
         _childProtocol.sendData(src, dst, path, data);
@@ -161,15 +165,17 @@ public class AprsIs implements Protocol, Runnable {
             line = TextTools.getString(_fromAprsIsQueue);
         }
         if (!line.isEmpty()) {
-            Log.d(TAG, "APRS-RX: " + DebugTools.bytesToDebugString(line.getBytes()));
+            Log.d(TAG, "APRSIS-RX: " + DebugTools.bytesToDebugString(line.getBytes(StandardCharsets.ISO_8859_1)));
             AprsIsData aprsIsData = AprsIsData.fromString(line);
             if (aprsIsData != null) {
-                _parentProtocolCallback.onReceiveData(aprsIsData.src, aprsIsData.dst, aprsIsData.rawDigipath, aprsIsData.data.getBytes());
+                // notify parent on received data
+                _parentProtocolCallback.onReceiveData(aprsIsData.src, aprsIsData.dst, aprsIsData.rawDigipath, aprsIsData.data.getBytes(StandardCharsets.ISO_8859_1));
+                // transmit APRSIS data to radio if allowed to
                 if (isEligibleForTxGate(aprsIsData)) {
                     _childProtocol.sendData(new AX25Callsign(_callsign, _ssid).toString(), Aprs.APRS_ID, _digipath, thirdPartyWrap(aprsIsData));
                 }
             }
-            _parentProtocolCallback.onReceiveLog(line);
+            _parentProtocolCallback.onReceiveLog(DebugTools.bytesToDebugString(line.getBytes(StandardCharsets.ISO_8859_1)));
         }
         return _childProtocol.receive();
     }
@@ -360,7 +366,7 @@ public class AprsIs implements Protocol, Runnable {
         synchronized (_toAprsIsQueue) {
             String line = TextTools.getString(_toAprsIsQueue);
             if (!line.isEmpty()) {
-                Log.d(TAG, "APRS-IS TX: " + DebugTools.bytesToDebugString(line.getBytes()));
+                Log.d(TAG, "APRS-IS TX: " + DebugTools.bytesToDebugString(line.getBytes(StandardCharsets.ISO_8859_1)));
                 try {
                     line += "\n";
                     tcpIp.write(line.getBytes());
@@ -391,7 +397,7 @@ public class AprsIs implements Protocol, Runnable {
         if (bytesRead > 0) {
             // server message
             if (_rxBuf[0] == '#') {
-                String srvMsg = new String(Arrays.copyOf(_rxBuf, bytesRead));
+                String srvMsg = new String(Arrays.copyOf(_rxBuf, bytesRead), StandardCharsets.ISO_8859_1);
                 Log.d(TAG, "APRSIS: " + srvMsg);
                 // wrong password
                 if (srvMsg.matches("# logresp .+ unverified")) {

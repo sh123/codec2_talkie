@@ -1,6 +1,8 @@
 package com.radio.codec2talkie.tools;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class TextTools {
@@ -39,8 +41,10 @@ public class TextTools {
         StringBuilder result = new StringBuilder();
         if (byteBuffer.position() > 0) {
             byteBuffer.flip();
+            Charset charset = StandardCharsets.ISO_8859_1;
             while (byteBuffer.hasRemaining()) {
-                char c = (char)byteBuffer.get();
+                byte b = byteBuffer.get();
+                char c = charset.decode(ByteBuffer.wrap(new byte[]{b})).toString().charAt(0);
                 if (c == '\n') {
                     break;
                 }

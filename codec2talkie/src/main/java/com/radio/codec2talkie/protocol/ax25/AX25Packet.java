@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
 import com.radio.codec2talkie.tools.DebugTools;
+import com.radio.codec2talkie.tools.TextTools;
 
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
@@ -31,13 +32,13 @@ public class AX25Packet {
         if (data == null) return;
         // lora text packet with 0x3c,0xff,0x01 prefix
         if (data.length > 3 && data[0] == (byte)0x3c && data[1] == (byte)0xff && data[2] == (byte)0x01) {
-            String rawText = new String(Arrays.copyOfRange(data, 3, data.length), StandardCharsets.US_ASCII);
+            String rawText = new String(Arrays.copyOfRange(data, 3, data.length), StandardCharsets.ISO_8859_1);
             AprsIsData textPacket = AprsIsData.fromString(rawText);
             if (textPacket != null) {
                 src = textPacket.src;
                 dst = textPacket.dst;
                 digipath = textPacket.rawDigipath;
-                rawData = textPacket.data.getBytes(StandardCharsets.US_ASCII);
+                rawData = textPacket.data.getBytes(StandardCharsets.ISO_8859_1);
                 isAudio = false;
                 isValid = true;
                 return;
@@ -97,7 +98,7 @@ public class AX25Packet {
     }
 
     public byte[] toTextBinary() {
-        byte[] packetContent = toString().getBytes(StandardCharsets.US_ASCII);
+        byte[] packetContent = toString().getBytes(StandardCharsets.ISO_8859_1);
         // lora aprs prefix 0x3c,0xff,0x01
         ByteBuffer textPacketBuffer = ByteBuffer.allocateDirect(packetContent.length + 3);
         textPacketBuffer.put((byte)0x3c).put((byte)0xff).put((byte)0x01);
@@ -186,8 +187,8 @@ public class AX25Packet {
             path = "," + path;
         String info = DebugTools.bytesToDebugString(rawData);
         if (!isAudio) {
-            //info = DebugTools.bytesToDebugString(TextTools.stripNulls(rawData));
-            info = new String(rawData);
+            info = DebugTools.bytesToDebugString(TextTools.stripNulls(rawData));
+            //info = new String(TextTools.stripNulls(rawData), StandardCharsets.ISO_8859_1);
         }
         return String.format("%s>%s%s:%s", src, dst, path, info);
     }
