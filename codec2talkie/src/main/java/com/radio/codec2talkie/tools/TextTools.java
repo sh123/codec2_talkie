@@ -45,7 +45,6 @@ public class TextTools {
             while (byteBuffer.hasRemaining()) {
                 byte b = byteBuffer.get();
                 char c = charset.decode(ByteBuffer.wrap(new byte[]{b})).toString().charAt(0);
-                if (c == '\r') continue;
                 if (c == '\n') {
                     break;
                 }
@@ -53,7 +52,7 @@ public class TextTools {
             }
             byteBuffer.compact();
         }
-        return result.toString();
+        return result.toString().replaceAll("[\\r\\n]+$", "");
     }
 
     public static byte[] hexStringToByteArray(String s) {
