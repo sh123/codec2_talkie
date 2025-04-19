@@ -155,7 +155,7 @@ public class AprsIs implements Protocol, Runnable {
         // wrap into third party, https://aprs-is.net/IGateDetails.aspx
         aprsIsData.digipath = "TCPIP," + _callsign + "*";
         String txData = "}" + aprsIsData.convertToString(false);
-        return txData.getBytes();
+        return txData.getBytes(StandardCharsets.ISO_8859_1);
     }
 
     @Override
