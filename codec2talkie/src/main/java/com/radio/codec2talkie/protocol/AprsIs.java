@@ -369,7 +369,7 @@ public class AprsIs implements Protocol, Runnable {
                 Log.d(TAG, "APRS-IS TX: " + DebugTools.bytesToDebugString(line.getBytes(StandardCharsets.ISO_8859_1)));
                 try {
                     line += "\n";
-                    tcpIp.write(line.getBytes());
+                    tcpIp.write(line.getBytes(StandardCharsets.ISO_8859_1));
                 } catch (IOException e) {
                     Log.w(TAG, "Lost connection on transmit");
                     Toast.makeText(_context, _context.getString(R.string.aprsis_disconnected), Toast.LENGTH_LONG).show();
