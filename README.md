@@ -59,7 +59,7 @@ What you can do with this app:
 
 # Using pre-built APK packages
 - Stable APK packages are available in [Releases](https://github.com/sh123/codec2_talkie/releases)
-- Latest untested APK packages from master are available at [Android CI workflow artifacts](https://github.com/sh123/codec2_talkie/actions/workflows/android.yml), when CI version is tested it is released into [Releases](https://github.com/sh123/codec2_talkie/releases)
+- Latest untested APK packages from master are available at [Android CI workflow artifacts](https://github.com/sh123/codec2_talkie/actions/workflows/android.yml), when CI version is tested it is released-copied into [Releases](https://github.com/sh123/codec2_talkie/releases)
 - &#x26A0; If you are getting "Cannot install app from unknown sources" then you need to allow installation from unknown sources in Android settings as it uses self signed certificate, see [FAQ](https://github.com/sh123/codec2_talkie/wiki/Frequently-asked-questions)
 - &#x26A0; If you are getting "App not installed" error when trying to install APK package try to uninstall previous version before installing new one, see [FAQ](https://github.com/sh123/codec2_talkie/wiki/Frequently-asked-questions)
 
@@ -88,15 +88,15 @@ What you can do with this app:
   - ESP32 LoRa APRS modem (used with this application for testing): https://github.com/sh123/esp32_loraprs
   - ESP32 LoRa DV transceiver: https://github.com/sh123/esp32_loradv
   - Arduno Micro KISS modem and APRS AX.25 digirepeater: https://github.com/sh123/micro_loraprs
+  - Minimal Arduino LoRa KISS modem: https://github.com/sh123/lora_arduino_kiss_modem
+  - Minimal Arduino NRF24 2.4GHz KISS modem: https://github.com/sh123/nrf24l01_arduino_kiss_modem
   - ESP32 Arduino Codec2 library (ESP32 i2s walkie talkie example interoperable with this application): https://github.com/sh123/esp32_codec2_arduino
   - ESP32 Arduino Opus library: https://github.com/sh123/esp32_opus_arduino
-  - Minimal Arduino LoRa KISS modem: https://github.com/sh123/lora_arduino_kiss_modem
-  - Minimal Arduino NRF24 KISS modem: https://github.com/sh123/nrf24l01_arduino_kiss_modem
-- Software:
+- Other Software:
+  - Version adopted for M17 protocol usage: https://github.com/mobilinkd/m17-kiss-ht
   - FreeDV TNC: https://github.com/xssfox/freedv-tnc
   - FreeDV data modem UI: https://github.com/DJ2LS/FreeDATA
   - FreeDV official UI: https://github.com/drowe67/freedv-gui
-  - Version adopted for M17 protocol usage: https://github.com/mobilinkd/m17-kiss-ht
   - Codec2 iOS wrapper: https://github.com/Beartooth/codec2-ios
 - Other interesting projects:
   - LoRa mesh text GPS communicator: https://github.com/meshtastic/Meshtastic-device
