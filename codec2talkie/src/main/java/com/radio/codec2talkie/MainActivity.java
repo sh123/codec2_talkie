@@ -68,6 +68,7 @@ import com.radio.codec2talkie.transport.TransportFactory;
 import com.radio.codec2talkie.connect.UsbConnectActivity;
 import com.radio.codec2talkie.connect.UsbPortHandler;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -404,10 +405,20 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     protected boolean requestPermissions() {
         List<String> permissionsToRequest = new LinkedList<>();
+        List<String> versionRequiredPermissions = Collections.emptyList();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            String permission = Manifest.permission.FOREGROUND_SERVICE;
-            if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
-                permissionsToRequest.add(permission);
+            versionRequiredPermissions.add(Manifest.permission.FOREGROUND_SERVICE);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            versionRequiredPermissions.add(Manifest.permission.POST_NOTIFICATIONS);
+            versionRequiredPermissions.add(Manifest.permission.NEARBY_WIFI_DEVICES);
+            versionRequiredPermissions.add(Manifest.permission.CAMERA);
+        }
+        if (!versionRequiredPermissions.isEmpty()) {
+            for (String permission : versionRequiredPermissions) {
+                if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
+                    permissionsToRequest.add(permission);
+                }
             }
         }
         for (String permission : _requiredPermissions) {
