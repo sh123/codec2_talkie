@@ -725,11 +725,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     break;
                 }
             }
-            if (allGranted) {
+            if (allGranted && grantResults.length > 0) {
                 Toast.makeText(MainActivity.this, R.string.permissions_granted, Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(MainActivity.this, R.string.permissions_denied, Toast.LENGTH_SHORT).show();
-                //exitApplication();
+                exitApplication();
+                finish();
             }
         }
     }
