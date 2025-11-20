@@ -42,7 +42,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     private final static int BT_CONNECT_FAILURE = 2;
     private final static int BT_SOCKET_FAILURE = 3;
     private final static int BT_ADAPTER_FAILURE = 4;
-    private final static int BT_AUTH_FAILURE = 4;
+    private final static int BT_AUTH_FAILURE = 5;
 
     private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
