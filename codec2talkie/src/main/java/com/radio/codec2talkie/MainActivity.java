@@ -68,7 +68,6 @@ import com.radio.codec2talkie.transport.TransportFactory;
 import com.radio.codec2talkie.connect.UsbConnectActivity;
 import com.radio.codec2talkie.connect.UsbPortHandler;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -85,14 +84,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private final static int S_METER_RANGE_DB = 100;
 
     private final static long BACK_EXIT_MS_DELAY = 2000;
-
-    private final String[] _requiredPermissions = new String[] {
-            Manifest.permission.BLUETOOTH,
-            Manifest.permission.BLUETOOTH_ADMIN,
-            Manifest.permission.RECORD_AUDIO,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-    };
 
     private AppService _appService;
 
@@ -261,11 +252,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
     private void startTransportConnection() {
-        Log.i(TAG, "startTransportConnection()");
+        TransportFactory.TransportType transportType = SettingsWrapper.getCurrentTransportType(_sharedPreferences);
+        Log.i(TAG, "startTransportConnection(" +  transportType + ")");
         if (AppService.isRunning) {
             startAppService(AppService.transportType);
         } else if (requestPermissions()) {
-            switch (SettingsWrapper.getCurrentTransportType(_sharedPreferences)) {
+            switch (transportType) {
                 case LOOPBACK:
                     _textConnInfo.setText(R.string.main_status_loopback_test);
                     startAppService(TransportFactory.TransportType.LOOPBACK);
@@ -405,25 +397,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     protected boolean requestPermissions() {
         List<String> permissionsToRequest = new LinkedList<>();
-        List<String> versionRequiredPermissions = Collections.emptyList();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            versionRequiredPermissions.add(Manifest.permission.FOREGROUND_SERVICE);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            versionRequiredPermissions.add(Manifest.permission.POST_NOTIFICATIONS);
-            versionRequiredPermissions.add(Manifest.permission.NEARBY_WIFI_DEVICES);
-            versionRequiredPermissions.add(Manifest.permission.CAMERA);
-        }
+        List<String> versionRequiredPermissions = getRequiredPermissions();
         if (!versionRequiredPermissions.isEmpty()) {
             for (String permission : versionRequiredPermissions) {
                 if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
                     permissionsToRequest.add(permission);
                 }
-            }
-        }
-        for (String permission : _requiredPermissions) {
-            if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
-                permissionsToRequest.add(permission);
             }
         }
         if (!permissionsToRequest.isEmpty()) {
@@ -434,6 +413,28 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             return false;
         }
         return true;
+    }
+
+    @NonNull
+    private static List<String> getRequiredPermissions() {
+        List<String> versionRequiredPermissions = new LinkedList<>();
+        versionRequiredPermissions.add(Manifest.permission.BLUETOOTH);
+        versionRequiredPermissions.add(Manifest.permission.BLUETOOTH_ADMIN);
+        versionRequiredPermissions.add(Manifest.permission.RECORD_AUDIO);
+        versionRequiredPermissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        versionRequiredPermissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            versionRequiredPermissions.add(Manifest.permission.BLUETOOTH_CONNECT);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            versionRequiredPermissions.add(Manifest.permission.FOREGROUND_SERVICE);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            versionRequiredPermissions.add(Manifest.permission.POST_NOTIFICATIONS);
+            versionRequiredPermissions.add(Manifest.permission.NEARBY_WIFI_DEVICES);
+            versionRequiredPermissions.add(Manifest.permission.CAMERA);
+        }
+        return versionRequiredPermissions;
     }
 
     private void bindAppService() {
@@ -669,7 +670,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     public void onBackPressed() {
 
         if (_backPressedTimestamp + BACK_EXIT_MS_DELAY > System.currentTimeMillis()) {
-            //super.onBackPressed();
             exitApplication();
         } else {
             Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_SHORT).show();
@@ -729,7 +729,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 Toast.makeText(MainActivity.this, R.string.permissions_granted, Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(MainActivity.this, R.string.permissions_denied, Toast.LENGTH_SHORT).show();
-                exitApplication();
+                //exitApplication();
             }
         }
     }

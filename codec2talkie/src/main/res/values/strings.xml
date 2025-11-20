@@ -136,6 +136,7 @@
     <string name="bt_connect_failed">Bluetooth connect failed</string>
     <string name="bt_socket_failed">Bluetooth socket failed</string>
     <string name="bt_adapter_not_found">Bluetooth adapter is not found</string>
+    <string name="bt_auth_failure">Bluetooth does not have persmissions</string>
     <string name="bt_connected">BT connected</string>
     <string name="bt_connecting_to">Connecting to %1$s</string>
     <string name="bt_turned_on">Bluetooth turned on</string>

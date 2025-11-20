@@ -2,10 +2,13 @@ package com.radio.codec2talkie.connect;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -13,6 +16,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -38,6 +42,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     private final static int BT_CONNECT_FAILURE = 2;
     private final static int BT_SOCKET_FAILURE = 3;
     private final static int BT_ADAPTER_FAILURE = 4;
+    private final static int BT_AUTH_FAILURE = 4;
 
     private static final UUID BT_MODULE_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
@@ -85,14 +90,17 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     }
 
     private void enableBluetooth() {
-        if (_btAdapter == null) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            Message resultMsg = new Message();
+            resultMsg.what = BT_AUTH_FAILURE;
+            onBtStateChanged.sendMessage(resultMsg);
+        } else if (_btAdapter == null) {
             Message resultMsg = new Message();
             resultMsg.what = BT_ADAPTER_FAILURE;
             onBtStateChanged.sendMessage(resultMsg);
         } else if (_btAdapter.isEnabled()) {
             connectOrPopulateDevices();
-        }
-        else {
+        } else {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             _enableBtLauncher.launch(enableBtIntent);
             Toast.makeText(getApplicationContext(), getString(R.string.bt_turned_on), Toast.LENGTH_SHORT).show();
@@ -157,8 +165,8 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
     private void connectToBluetoothClient(String address) {
         showProgressBar();
-
         new Thread() {
+            @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
             @Override
             public void run() {
                 BluetoothDevice btDevice = _btAdapter.getRemoteDevice(address);
@@ -197,6 +205,11 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                 toastMsg = getString(R.string.bt_socket_failed);
             } else if (msg.what == BT_ADAPTER_FAILURE) {
                 toastMsg = getString(R.string.bt_adapter_not_found);
+            } else if (msg.what == BT_AUTH_FAILURE) {
+                toastMsg = getString(R.string.bt_auth_failure);
+                setResult(RESULT_CANCELED);
+                Toast.makeText(getBaseContext(), toastMsg, Toast.LENGTH_SHORT).show();
+                finish();
             } else {
                 toastMsg = getString(R.string.bt_connected);
                 BluetoothSocketHandler.setSocket(_btSocket);
