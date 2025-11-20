@@ -2,10 +2,13 @@ package com.radio.codec2talkie.connect;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 
+import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -17,6 +20,7 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -90,9 +94,12 @@ public class BleConnectActivity extends AppCompatActivity {
                 .start();
 
         _btBleScanner = _btAdapter.getBluetoothLeScanner();
-        enableBluetooth();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
+            enableBluetooth();
+        }
     }
 
+    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     private void enableBluetooth() {
         if (_btAdapter == null) {
             Message resultMsg = new Message();
@@ -147,6 +154,7 @@ public class BleConnectActivity extends AppCompatActivity {
         }
     }
 
+    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     private void connectOrPopulateDevices() {
         if (_btDefaultName != null && !_btDefaultName.trim().isEmpty()) {
             _btSelectedName = _btDefaultName;
@@ -158,16 +166,18 @@ public class BleConnectActivity extends AppCompatActivity {
 
     private final ScanCallback leScanCallback =
         new ScanCallback() {
+            @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
-            super.onScanResult(callbackType, result);
-            String deviceName = result.getDevice().getName() + " | " + result.getDevice().getAddress();
-            if (_btArrayAdapter.getPosition(deviceName) == -1) {
-                _btArrayAdapter.add(deviceName);
-            }
+                super.onScanResult(callbackType, result);
+                String deviceName = result.getDevice().getName() + " | " + result.getDevice().getAddress();
+                if (_btArrayAdapter.getPosition(deviceName) == -1) {
+                    _btArrayAdapter.add(deviceName);
+                }
             }
         };
 
+    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     private void startDevicesScan() {
         _btArrayAdapter.clear();
 
@@ -193,6 +203,7 @@ public class BleConnectActivity extends AppCompatActivity {
     }
 
     private final Handler onBtStateChanged = new Handler(Looper.getMainLooper()) {
+        @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
         @Override
         public void handleMessage(Message msg) {
             String toastMsg;

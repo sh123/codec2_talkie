@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.app;
 
+import android.Manifest;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -16,6 +17,7 @@ import android.os.Process;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresPermission;
 import androidx.preference.PreferenceManager;
 
 import java.io.IOException;
@@ -80,6 +82,7 @@ public class AppWorker extends Thread {
     private final Context _context;
     private final SharedPreferences _sharedPreferences;
 
+    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     public AppWorker(TransportFactory.TransportType transportType,
                      Handler onWorkerStateChanged, Context context) throws IOException {
         _onWorkerStateChanged = onWorkerStateChanged;
@@ -102,6 +105,7 @@ public class AppWorker extends Thread {
         constructSystemAudioDevices(transportType, audioSource, audioDestination);
     }
 
+    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     private void constructSystemAudioDevices(TransportFactory.TransportType transportType, int audioSource, int audioDestination) {
         int _audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
                 AUDIO_SAMPLE_SIZE,

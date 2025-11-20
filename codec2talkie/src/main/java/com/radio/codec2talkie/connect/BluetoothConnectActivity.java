@@ -157,6 +157,9 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
     private void populateBondedDevices() {
         _btArrayAdapter.clear();
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
         for (BluetoothDevice device : _btAdapter.getBondedDevices()) {
             _btArrayAdapter.add(device.getName() + " | " + device.getAddress());
         }

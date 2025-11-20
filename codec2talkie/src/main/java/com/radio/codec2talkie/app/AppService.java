@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.app;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -9,6 +10,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,6 +27,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.RequiresPermission;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.preference.PreferenceManager;
@@ -179,7 +183,9 @@ public class AppService extends Service {
 
             transportType = (TransportFactory.TransportType) extras.get("transportType");
             assert transportType != null;
-            startAppWorker(transportType);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                startAppWorker(transportType);
+            }
 
             Log.i(TAG, "App service started");
         }
@@ -187,14 +193,13 @@ public class AppService extends Service {
         return START_REDELIVER_INTENT;
     }
 
+    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     private void startAppWorker(TransportFactory.TransportType transportType) {
 
         try {
             Log.i(TAG, "Started app worker: " + transportType.toString());
 
-            _appWorker = new AppWorker(transportType,
-                    _onProcess,
-                    getApplicationContext());
+            _appWorker = new AppWorker(transportType, _onProcess, getApplicationContext());
             _appWorker.start();
 
         } catch (IOException e) {
