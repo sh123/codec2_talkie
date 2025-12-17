@@ -17,6 +17,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -90,7 +91,8 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     }
 
     private void enableBluetooth() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             Message resultMsg = new Message();
             resultMsg.what = BT_AUTH_FAILURE;
             onBtStateChanged.sendMessage(resultMsg);
@@ -157,7 +159,8 @@ public class BluetoothConnectActivity extends AppCompatActivity {
 
     private void populateBondedDevices() {
         _btArrayAdapter.clear();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         for (BluetoothDevice device : _btAdapter.getBondedDevices()) {
@@ -169,7 +172,6 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     private void connectToBluetoothClient(String address) {
         showProgressBar();
         new Thread() {
-            @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
             @Override
             public void run() {
                 BluetoothDevice btDevice = _btAdapter.getRemoteDevice(address);
