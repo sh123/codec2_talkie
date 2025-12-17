@@ -4,10 +4,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.preference.PreferenceManager;
 
-import android.Manifest;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -19,7 +17,6 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -36,7 +33,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.radio.codec2talkie.R;
-import com.radio.codec2talkie.app.AppWorker;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 
 import java.util.Arrays;
