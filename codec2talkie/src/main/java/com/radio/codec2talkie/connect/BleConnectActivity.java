@@ -2,7 +2,6 @@ package com.radio.codec2talkie.connect;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.RequiresPermission;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -26,6 +25,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.ParcelUuid;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -36,11 +36,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.app.AppWorker;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 
 import java.util.Arrays;
 
 public class BleConnectActivity extends AppCompatActivity {
+    private static final String TAG = BleConnectActivity.class.getSimpleName();
 
     private final static int SCAN_PERIOD = 5000;
 
@@ -94,12 +96,9 @@ public class BleConnectActivity extends AppCompatActivity {
                 .start();
 
         _btBleScanner = _btAdapter.getBluetoothLeScanner();
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED) {
-            enableBluetooth();
-        }
+        enableBluetooth();
     }
 
-    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     private void enableBluetooth() {
         if (_btAdapter == null) {
             Message resultMsg = new Message();
@@ -154,7 +153,6 @@ public class BleConnectActivity extends AppCompatActivity {
         }
     }
 
-    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     private void connectOrPopulateDevices() {
         if (_btDefaultName != null && !_btDefaultName.trim().isEmpty()) {
             _btSelectedName = _btDefaultName;
@@ -166,7 +164,6 @@ public class BleConnectActivity extends AppCompatActivity {
 
     private final ScanCallback leScanCallback =
         new ScanCallback() {
-            @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
                 super.onScanResult(callbackType, result);
@@ -177,7 +174,6 @@ public class BleConnectActivity extends AppCompatActivity {
             }
         };
 
-    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     private void startDevicesScan() {
         _btArrayAdapter.clear();
 
@@ -196,6 +192,7 @@ public class BleConnectActivity extends AppCompatActivity {
     }
 
     private void gattConnectToBluetoothClient(String address) {
+        Log.i(TAG, "connecting to  " + address);
         showProgressBar();
         BluetoothDevice device = _btAdapter.getRemoteDevice(address);
         _btGatt = new BleGattWrapper(getApplicationContext(), onBtStateChanged);
@@ -203,7 +200,6 @@ public class BleConnectActivity extends AppCompatActivity {
     }
 
     private final Handler onBtStateChanged = new Handler(Looper.getMainLooper()) {
-        @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
         @Override
         public void handleMessage(Message msg) {
             String toastMsg;

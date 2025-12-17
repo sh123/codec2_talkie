@@ -38,6 +38,7 @@ import com.radio.codec2talkie.storage.message.MessageItemRepository;
 import com.radio.codec2talkie.storage.position.PositionItemRepository;
 import com.radio.codec2talkie.storage.station.StationItemRepository;
 import com.radio.codec2talkie.tools.AudioTools;
+import com.radio.codec2talkie.tools.Dsp;
 import com.radio.codec2talkie.transport.Transport;
 import com.radio.codec2talkie.transport.TransportFactory;
 
@@ -64,6 +65,7 @@ public class AppWorker extends Thread {
     // output data., mic -> bt
     private AudioRecord _systemAudioRecorder;
     private short[] _recordAudioBuffer;
+    private Dsp _dsp;
 
     // callbacks
     private final Handler _onWorkerStateChanged;
@@ -117,6 +119,7 @@ public class AppWorker extends Thread {
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
                 10 * _audioRecorderMinBufferSize);
+        _dsp = new Dsp(AUDIO_SAMPLE_SIZE, 300, 3400);
 
         int _audioPlayerMinBufferSize = AudioTrack.getMinBufferSize(
                 AUDIO_SAMPLE_SIZE,
@@ -260,6 +263,7 @@ public class AppWorker extends Thread {
 
     private void recordAndSendAudioFrame() throws IOException {
         _systemAudioRecorder.read(_recordAudioBuffer, 0, _recordAudioBuffer.length);
+        _dsp.audioFilterBandpass(_recordAudioBuffer, _recordAudioBuffer.length);
         _protocol.sendPcmAudio(null, null, _recordAudioBuffer);
     }
 
