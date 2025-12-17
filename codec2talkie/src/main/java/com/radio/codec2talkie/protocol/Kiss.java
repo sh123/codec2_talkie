@@ -179,7 +179,7 @@ public class Kiss implements Protocol {
         String sf = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SF, "7");
         String cr = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_CR, "6");
         String pwr = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_POWER, "20");
-        String sync = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SYNC, "34");
+        String sync = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SYNC, "12");
         byte crc = (byte)(_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_RADIO_CRC, true) ? 1 : 0);
         String fskBitRate = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FSK_BIT_RATE, "4800");
         String fskFreqDev = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FSK_FREQ_DEV, "1200");
