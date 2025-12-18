@@ -52,7 +52,7 @@ public class AppWorker extends Thread {
     private static final int AUDIO_SAMPLE_SIZE = 8000;
     private static final int AUDIO_RESAMPLE_COEFFICIENT = 2;
     private static final float MIC_GAIN = 0.5f;
-    private static final int AUDIO_LOW_CUTOFF_FREQUENCY_HZ = 300;
+    private static final int AUDIO_LOW_CUTOFF_FREQUENCY_HZ = 100;
     private static final int AUDIO_HIGH_CUTOFF_FREQUENCY_HZ = 4000;
 
     private static final int PROCESS_INTERVAL_MS = 10;
@@ -270,8 +270,8 @@ public class AppWorker extends Thread {
 
     private void recordAndSendAudioFrame() throws IOException {
         _systemAudioRecorder.read(_recordAudioBuffer, 0, _recordAudioBuffer.length);
+        _dsp.audioFilterBandpass(_recordAudioBuffer, _recordAudioBuffer.length);
         _dsp.downSamplePcm(_recordAudioBuffer, _resampleAudioBuffer, RECORDER_SAMPLE_SIZE, AUDIO_SAMPLE_SIZE);
-        _dsp.audioFilterBandpass(_resampleAudioBuffer, _resampleAudioBuffer.length);
         //_dsp.adjustPcmGain(_resampleAudioBuffer, MIC_GAIN);
         _protocol.sendPcmAudio(null, null, _resampleAudioBuffer);
     }
