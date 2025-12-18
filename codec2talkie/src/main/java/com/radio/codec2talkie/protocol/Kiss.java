@@ -177,8 +177,8 @@ public class Kiss implements Protocol {
         String modType = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_MOD, "0");
         String bw = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_BANDWIDTH, "125000");
         String sf = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SF, "7");
-        String cr = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_CR, "6");
-        String pwr = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_POWER, "20");
+        String cr = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_CR, "5");
+        String pwr = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_POWER, "10");
         String sync = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_SYNC, "12");
         byte crc = (byte)(_sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_RADIO_CRC, true) ? 1 : 0);
         String fskBitRate = _sharedPreferences.getString(PreferenceKeys.KISS_EXTENSIONS_RADIO_FSK_BIT_RATE, "4800");
