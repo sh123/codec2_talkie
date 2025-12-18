@@ -87,4 +87,41 @@ public class Dsp {
             pcmBuffer[i] = (short)z0;
         }
     }
+
+    public void downSamplePcm(short[] inputSamples, short[] outputSamples, int originalRate, int targetRate) {
+        int sampleRatio = originalRate / targetRate;
+
+        int outputIndex = 0;
+
+        for (int i = 0; i < inputSamples.length; i += sampleRatio) {
+            long sum = 0;
+            int count = 0;
+
+            for (int j = 0; j < sampleRatio; j++) {
+                if (i + j < inputSamples.length) {
+                    sum += inputSamples[i + j];
+                    count++;
+                }
+            }
+
+            outputSamples[outputIndex++] = (short) (sum / count); // Average value
+        }
+    }
+
+    public  void adjustPcmGain(short[] samples, float gainFactor) {
+        for (int i = 0; i < samples.length; i++) {
+            // Adjust the sample with the gain factor and avoid clipping
+            int adjustedValue = Math.round(samples[i] * gainFactor);
+
+            // Clamp the value to avoid overflow/underflow
+            if (adjustedValue > Short.MAX_VALUE) {
+                samples[i] = Short.MAX_VALUE;
+            } else if (adjustedValue < Short.MIN_VALUE) {
+                samples[i] = Short.MIN_VALUE;
+            } else {
+                samples[i] = (short) adjustedValue;
+            }
+        }
+    }
+
 }

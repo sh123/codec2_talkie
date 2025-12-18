@@ -26,7 +26,7 @@ public class BleGattWrapper extends BluetoothGattCallback {
     public static final UUID BT_KISS_CHARACTERISTIC_RX_UUID = UUID.fromString("00000003-ba2a-46c9-ae49-01b0961f68bb");
     public static final UUID BT_NOTIFY_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
 
-    private static final int DefaultMtuSize = 16;
+    private static final int DefaultMtuSize = 23;
 
     private BluetoothGatt _gatt;
     private BluetoothGattCharacteristic _rxCharacteristic;
@@ -38,11 +38,14 @@ public class BleGattWrapper extends BluetoothGattCallback {
     private final ByteBuffer _readBuffer;
     private final ByteBuffer _writeBuffer;
 
+    private int _mtuSize;
+
     private boolean _isConnected;
 
     public BleGattWrapper(Context context, Handler callback) {
         _context = context;
         _callback = callback;
+        _mtuSize = DefaultMtuSize;
 
         int BUFFER_SIZE = 1024;
         _readBuffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
@@ -96,12 +99,12 @@ public class BleGattWrapper extends BluetoothGattCallback {
         _writeBuffer.flip();
         int cntRemaining = _writeBuffer.remaining();
         if (cntRemaining > 0) {
-            int cntWrite = Math.min(cntRemaining, DefaultMtuSize);
+            int cntWrite = Math.min(cntRemaining, _mtuSize - 3);
             byte[] arr = new byte[cntWrite];
             _writeBuffer.get(arr);
             characteristic.setValue(arr);
             if (!_gatt.writeCharacteristic(characteristic)) {
-                Log.d(TAG, "GATT write delayed");
+                Log.d(TAG, "GATT write delayed " + cntWrite);
                 _writeBuffer.position(_writeBuffer.position() - cntWrite);
             }
         }
@@ -110,6 +113,10 @@ public class BleGattWrapper extends BluetoothGattCallback {
 
     @Override
     public void onMtuChanged(BluetoothGatt gatt, int mtu, int status) {
+        Log.d(TAG, "MTU changed " + mtu + " " + status);
+        if (status == BluetoothGatt.GATT_SUCCESS) {
+            _mtuSize = mtu;
+        }
         super.onMtuChanged(gatt, mtu, status);
     }
 

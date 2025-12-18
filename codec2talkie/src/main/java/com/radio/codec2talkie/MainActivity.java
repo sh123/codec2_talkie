@@ -425,6 +425,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         versionRequiredPermissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             versionRequiredPermissions.add(Manifest.permission.BLUETOOTH_CONNECT);
+            versionRequiredPermissions.add(Manifest.permission.BLUETOOTH_SCAN);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             versionRequiredPermissions.add(Manifest.permission.FOREGROUND_SERVICE);

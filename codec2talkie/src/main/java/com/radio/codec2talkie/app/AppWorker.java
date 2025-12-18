@@ -48,7 +48,12 @@ public class AppWorker extends Thread {
 
     private static final int AUDIO_MIN_LEVEL = -70;
     private static final int AUDIO_MAX_LEVEL = 0;
+    private static final int RECORDER_SAMPLE_SIZE = 16000;
     private static final int AUDIO_SAMPLE_SIZE = 8000;
+    private static final int AUDIO_RESAMPLE_COEFFICIENT = 2;
+    private static final float MIC_GAIN = 0.5f;
+    private static final int AUDIO_LOW_CUTOFF_FREQUENCY_HZ = 300;
+    private static final int AUDIO_HIGH_CUTOFF_FREQUENCY_HZ = 4000;
 
     private static final int PROCESS_INTERVAL_MS = 10;
     private static final int LISTEN_AFTER_MS = 1500;
@@ -65,6 +70,7 @@ public class AppWorker extends Thread {
     // output data., mic -> bt
     private AudioRecord _systemAudioRecorder;
     private short[] _recordAudioBuffer;
+    private short[] _resampleAudioBuffer;
     private Dsp _dsp;
 
     // callbacks
@@ -82,6 +88,7 @@ public class AppWorker extends Thread {
     private final StationItemRepository _stationItemRepository;
 
     private final Context _context;
+    /** @noinspection FieldCanBeLocal*/
     private final SharedPreferences _sharedPreferences;
 
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
@@ -110,16 +117,16 @@ public class AppWorker extends Thread {
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     private void constructSystemAudioDevices(TransportFactory.TransportType transportType, int audioSource, int audioDestination) {
         int _audioRecorderMinBufferSize = AudioRecord.getMinBufferSize(
-                AUDIO_SAMPLE_SIZE,
+                RECORDER_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT);
         _systemAudioRecorder = new AudioRecord(
                 audioSource,
-                AUDIO_SAMPLE_SIZE,
+                RECORDER_SAMPLE_SIZE,
                 AudioFormat.CHANNEL_IN_MONO,
                 AudioFormat.ENCODING_PCM_16BIT,
-                10 * _audioRecorderMinBufferSize);
-        _dsp = new Dsp(AUDIO_SAMPLE_SIZE, 300, 3400);
+                4 * _audioRecorderMinBufferSize);
+        _dsp = new Dsp(AUDIO_SAMPLE_SIZE, AUDIO_LOW_CUTOFF_FREQUENCY_HZ, AUDIO_HIGH_CUTOFF_FREQUENCY_HZ);
 
         int _audioPlayerMinBufferSize = AudioTrack.getMinBufferSize(
                 AUDIO_SAMPLE_SIZE,
@@ -263,8 +270,10 @@ public class AppWorker extends Thread {
 
     private void recordAndSendAudioFrame() throws IOException {
         _systemAudioRecorder.read(_recordAudioBuffer, 0, _recordAudioBuffer.length);
-        _dsp.audioFilterBandpass(_recordAudioBuffer, _recordAudioBuffer.length);
-        _protocol.sendPcmAudio(null, null, _recordAudioBuffer);
+        _dsp.downSamplePcm(_recordAudioBuffer, _resampleAudioBuffer, RECORDER_SAMPLE_SIZE, AUDIO_SAMPLE_SIZE);
+        _dsp.audioFilterBandpass(_resampleAudioBuffer, _resampleAudioBuffer.length);
+        //_dsp.adjustPcmGain(_resampleAudioBuffer, MIC_GAIN);
+        _protocol.sendPcmAudio(null, null, _resampleAudioBuffer);
     }
 
     private final ProtocolCallback _protocolCallback = new ProtocolCallback() {
@@ -303,6 +312,7 @@ public class AppWorker extends Thread {
             String note = (textMessage.src == null ? "UNK" : textMessage.src) + "→" +
                     (textMessage.dst == null ? "UNK" : textMessage.dst);
             sendStatusUpdate(AppMessage.EV_TEXT_MESSAGE_RECEIVED, note + ": " + textMessage.text);
+            //noinspection StatementWithEmptyBody
             if (textMessage.isAutoReply()) {
                 // TODO, acknowledge or reject message with the given (src, dst, ackId)
             } else {
@@ -569,7 +579,8 @@ public class AppWorker extends Thread {
 
         try {
             _protocol.initialize(_transport, _context, _protocolCallback);
-            _recordAudioBuffer = new short[_protocol.getPcmAudioRecordBufferSize()];
+            _recordAudioBuffer = new short[AUDIO_RESAMPLE_COEFFICIENT * _protocol.getPcmAudioRecordBufferSize()];
+            _resampleAudioBuffer = new short[_protocol.getPcmAudioRecordBufferSize()];
             startWorkerMessageHandler();
             Looper.loop();
         } catch (IOException e) {
