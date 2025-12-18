@@ -52,8 +52,8 @@ public class AppWorker extends Thread {
     private static final int AUDIO_SAMPLE_SIZE = 8000;
     private static final int AUDIO_RESAMPLE_COEFFICIENT = 2;
     private static final float MIC_GAIN = 0.5f;
-    private static final int AUDIO_LOW_CUTOFF_FREQUENCY_HZ = 100;
-    private static final int AUDIO_HIGH_CUTOFF_FREQUENCY_HZ = 4000;
+    private static final int AUDIO_LOW_CUTOFF_FREQUENCY_HZ = 300;
+    private static final int AUDIO_HIGH_CUTOFF_FREQUENCY_HZ = 3400;
 
     private static final int PROCESS_INTERVAL_MS = 10;
     private static final int LISTEN_AFTER_MS = 1500;
