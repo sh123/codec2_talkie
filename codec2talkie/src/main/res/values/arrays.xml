@@ -487,6 +487,7 @@
         <item>IC-7100</item>
         <item>IC-7200</item>
         <item>IC-7300</item>
+        <item>X6100</item>
     </string-array>
 
     <string-array name="ports_sound_modem_rig_values">
@@ -497,6 +498,7 @@
         <item>Ic7100</item>
         <item>Ic7200</item>
         <item>Ic7300</item>
+        <item>X6100</item>
     </string-array>
 
     <string-array name="ports_sound_modem_gain_entries">
