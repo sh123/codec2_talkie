@@ -107,6 +107,8 @@ public class UsbConnectActivity extends AppCompatActivity {
         customTable.addProduct(0x10c4, 0xea60, Cp21xxSerialDriver.class);
         customTable.addProduct(0x10c4, 0xea70, Cp21xxSerialDriver.class);
         customTable.addProduct(0x10c4, 0xea71, Cp21xxSerialDriver.class);
+        // Xiegu
+        customTable.addProduct(0x1a86, 0x7523, CdcAcmSerialDriver.class);
         // FTDI
         customTable.addProduct(0x0403, 0x6001, FtdiSerialDriver.class);
         customTable.addProduct(0x0403, 0x6010, FtdiSerialDriver.class);
