@@ -18,6 +18,7 @@
     <!-- 0x1a86 / 0x?523: Qinheng CH34x (Arduino) -->
     <usb-device vendor-id="6790" product-id="21795" /> <!-- 0x5523: CH341A -->
     <usb-device vendor-id="6790" product-id="29987" /> <!-- 0x7523: CH340 -->
+    <usb-device vendor-id="6790" product-id="21970" /> <!-- 0x7523: CH343CDC  Xiegu -->
 
     <!-- CDC driver -->
     <usb-device vendor-id="5824" product-id="1155" /> <!-- 0x16C0 / 0x0483: Teensyduino  -->
@@ -34,7 +35,6 @@
     <!-- RIG CAT control -->
     <usb-device vendor-id="1155" product-id="22322" /> <!-- 0x0483 / 0x5732: STM, MCHF -->
     <usb-device vendor-id="4292" product-id="60000" /> <!-- 0x10c4 / 0xea60: CP2102/2109, iCom -->
-    <usb-device vendor-id="68454" product-id="29987" /> <!-- 0x1a86 / 0x7523: Xiegu -->
 
     <!-- Raspberry PI -->
     <usb-device vendor-id="11914" />                   <!-- 0x2E8A / ......: Raspberry -->

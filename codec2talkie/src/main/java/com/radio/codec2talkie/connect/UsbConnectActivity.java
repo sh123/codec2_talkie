@@ -98,17 +98,16 @@ public class UsbConnectActivity extends AppCompatActivity {
         customTable.addProduct(0x1b4f, 0x9204, CdcAcmSerialDriver.class);
         // Arduino Due
         customTable.addProduct(0x2341, 0x003d, CdcAcmSerialDriver.class);
-        // Arduino Uno/Nano (CH34x)
+        // Arduino Uno/Nano/Xiegu (CH34x)
         customTable.addProduct(0x1a86, 0x5523, Ch34xSerialDriver.class);
         customTable.addProduct(0x1a86, 0x7523, Ch34xSerialDriver.class);
+        customTable.addProduct(0x1a86, 0x55D2, Ch34xSerialDriver.class);
         // STM, MCHF
         customTable.addProduct(0x0483, 0x5732, CdcAcmSerialDriver.class);
         // CP2102/2109, iCom
         customTable.addProduct(0x10c4, 0xea60, Cp21xxSerialDriver.class);
         customTable.addProduct(0x10c4, 0xea70, Cp21xxSerialDriver.class);
         customTable.addProduct(0x10c4, 0xea71, Cp21xxSerialDriver.class);
-        // Xiegu
-        customTable.addProduct(0x1a86, 0x7523, CdcAcmSerialDriver.class);
         // FTDI
         customTable.addProduct(0x0403, 0x6001, FtdiSerialDriver.class);
         customTable.addProduct(0x0403, 0x6010, FtdiSerialDriver.class);
