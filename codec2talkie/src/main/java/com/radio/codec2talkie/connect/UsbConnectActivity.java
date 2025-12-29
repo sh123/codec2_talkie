@@ -93,27 +93,34 @@ public class UsbConnectActivity extends AppCompatActivity {
 
     private UsbSerialProber getCustomProber() {
         ProbeTable customTable = new ProbeTable();
-        // Spark Fun
-        customTable.addProduct(0x1b4f, 0x9203, CdcAcmSerialDriver.class);
-        customTable.addProduct(0x1b4f, 0x9204, CdcAcmSerialDriver.class);
-        // Arduino Due
-        customTable.addProduct(0x2341, 0x003d, CdcAcmSerialDriver.class);
-        // Arduino Uno/Nano/Xiegu (CH34x)
+
+        // CH34x
+
+        // Arduino Uno/Nano (CH34x)
         customTable.addProduct(0x1a86, 0x5523, Ch34xSerialDriver.class);
         customTable.addProduct(0x1a86, 0x7523, Ch34xSerialDriver.class);
-        customTable.addProduct(0x1a86, 0x55D2, Ch34xSerialDriver.class);
-        // STM, MCHF
-        customTable.addProduct(0x0483, 0x5732, CdcAcmSerialDriver.class);
-        // CP2102/2109, iCom
+
+        // CP2102/2109
+
+        // iCom
         customTable.addProduct(0x10c4, 0xea60, Cp21xxSerialDriver.class);
         customTable.addProduct(0x10c4, 0xea70, Cp21xxSerialDriver.class);
         customTable.addProduct(0x10c4, 0xea71, Cp21xxSerialDriver.class);
+
         // FTDI
         customTable.addProduct(0x0403, 0x6001, FtdiSerialDriver.class);
         customTable.addProduct(0x0403, 0x6010, FtdiSerialDriver.class);
         customTable.addProduct(0x0403, 0x6011, FtdiSerialDriver.class);
         customTable.addProduct(0x0403, 0x6014, FtdiSerialDriver.class);
         customTable.addProduct(0x0403, 0x6015, FtdiSerialDriver.class);
+
+        // CDC
+
+        // Spark Fun
+        customTable.addProduct(0x1b4f, 0x9203, CdcAcmSerialDriver.class);
+        customTable.addProduct(0x1b4f, 0x9204, CdcAcmSerialDriver.class);
+        // Arduino Due
+        customTable.addProduct(0x2341, 0x003d, CdcAcmSerialDriver.class);
         // Raspberry PI Pico
         customTable.addProduct(0x2e8a, 0x0004, CdcAcmSerialDriver.class);
         customTable.addProduct(0x2e8a, 0x0005, CdcAcmSerialDriver.class);
@@ -122,6 +129,10 @@ public class UsbConnectActivity extends AppCompatActivity {
         customTable.addProduct(0x2e8a, 0x000c, CdcAcmSerialDriver.class);
         customTable.addProduct(0x2e8a, 0x000d, CdcAcmSerialDriver.class);
         customTable.addProduct(0x2e8a, 0x000e, CdcAcmSerialDriver.class);
+        // STM, MCHF
+        customTable.addProduct(0x0483, 0x5732, CdcAcmSerialDriver.class);
+        // Xiegu
+        customTable.addProduct(0x1a86, 0x55D2, CdcAcmSerialDriver.class);
         return new UsbSerialProber(customTable);
     }
 
