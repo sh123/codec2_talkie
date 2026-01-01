@@ -3,6 +3,7 @@ package com.radio.codec2talkie.settings;
 public final class PreferenceKeys {
     public static String PORTS_TYPE="ports_type";
 
+    public static String PORTS_USB_SERIAL_NUM = "ports_usb_serial_num";
     public static String PORTS_USB_SERIAL_SPEED = "ports_usb_serial_speed";
     public static String PORTS_USB_DATA_BITS = "ports_usb_data_bits";
     public static String PORTS_USB_STOP_BITS = "ports_usb_stop_bits";

@@ -38,4 +38,7 @@
 
     <!-- Raspberry PI -->
     <usb-device vendor-id="11914" />                   <!-- 0x2E8A / ......: Raspberry -->
+
+    <!-- Espressif -->
+    <usb-device vendor-id="12378" />                   <!-- 0x303a / ......: Espressif JTAG/Serial -->
 </resources>

@@ -6,6 +6,15 @@
         app:title="@string/usb_settings_title">
 
         <ListPreference
+            app:key="ports_usb_serial_num"
+            app:title="@string/usb_serial_num_title"
+            app:entries="@array/usb_serial_num"
+            app:entryValues="@array/usb_serial_num"
+            app:defaultValue="0"
+            app:summary="%s">
+        </ListPreference>
+
+        <ListPreference
             app:key="ports_usb_serial_speed"
             app:title="@string/usb_serial_speed_title"
             app:entries="@array/usb_serial_speed"

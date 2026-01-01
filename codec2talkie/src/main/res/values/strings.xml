@@ -8,7 +8,8 @@
     <string name="ports_category_title">TNC Settings</string>
     <string name="kiss_category_title">KISS Settings</string>
 
-    <string name="usb_serial_speed_title">USB Serial Speed</string>
+    <string name="usb_serial_num_title">USB serial port number</string>
+    <string name="usb_serial_speed_title">USB serial speed</string>
     <string name="usb_bt_client_name_title">Bluetooth device</string>
     <string name="usb_bt_client_name_summary">Default Bluetooth device to connect</string>
 

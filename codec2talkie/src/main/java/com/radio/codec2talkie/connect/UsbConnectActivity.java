@@ -41,11 +41,13 @@ public class UsbConnectActivity extends AppCompatActivity {
     private final int USB_NOT_FOUND = 1;
     private final int USB_CONNECTED = 2;
 
+    private static final int USB_NUM_DEFAULT = 0;
     private static final int USB_BAUD_RATE_DEFAULT = 115200;
     private static final int USB_DATA_BITS_DEFAULT = 8;
     private static final int USB_STOP_BITS_DEFAULT = UsbSerialPort.STOPBITS_1;
     private static final int USB_PARITY_DEFAULT = UsbSerialPort.PARITY_NONE;
 
+    private int _portNum;
     private int _baudRate;
     private int _dataBits;
     private int _stopBits;
@@ -65,6 +67,7 @@ public class UsbConnectActivity extends AppCompatActivity {
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        _portNum = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_USB_SERIAL_NUM, String.valueOf(USB_NUM_DEFAULT)));
         _baudRate = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_USB_SERIAL_SPEED, String.valueOf(USB_BAUD_RATE_DEFAULT)));
         _dataBits = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_USB_DATA_BITS, String.valueOf(USB_DATA_BITS_DEFAULT)));
         _stopBits = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.PORTS_USB_STOP_BITS, String.valueOf(USB_STOP_BITS_DEFAULT)));
@@ -130,6 +133,8 @@ public class UsbConnectActivity extends AppCompatActivity {
         customTable.addProduct(0x0483, 0x5732, CdcAcmSerialDriver.class);
         // Xiegu
         customTable.addProduct(0x1a86, 0x55D2, CdcAcmSerialDriver.class);
+        // ESP32 JTAG/Serial
+        customTable.addProduct(0x303a, 0x1001, CdcAcmSerialDriver.class);
         return new UsbSerialProber(customTable);
     }
 
@@ -176,6 +181,10 @@ public class UsbConnectActivity extends AppCompatActivity {
                     for (UsbSerialPort probePort : ports) {
                         if (probePort == null) {
                             Log.w(TAG, "Usb serial port is null");
+                            continue;
+                        }
+                        if (probePort.getPortNumber() != _portNum) {
+                            Log.w(TAG, "Skipping port number, which is not selected");
                             continue;
                         }
                         try {
