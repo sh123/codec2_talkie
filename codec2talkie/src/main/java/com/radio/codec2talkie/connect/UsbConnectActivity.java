@@ -95,13 +95,11 @@ public class UsbConnectActivity extends AppCompatActivity {
         ProbeTable customTable = new ProbeTable();
 
         // CH34x
-
         // Arduino Uno/Nano (CH34x)
         customTable.addProduct(0x1a86, 0x5523, Ch34xSerialDriver.class);
         customTable.addProduct(0x1a86, 0x7523, Ch34xSerialDriver.class);
 
         // CP2102/2109
-
         // iCom
         customTable.addProduct(0x10c4, 0xea60, Cp21xxSerialDriver.class);
         customTable.addProduct(0x10c4, 0xea70, Cp21xxSerialDriver.class);
@@ -115,7 +113,6 @@ public class UsbConnectActivity extends AppCompatActivity {
         customTable.addProduct(0x0403, 0x6015, FtdiSerialDriver.class);
 
         // CDC
-
         // Spark Fun
         customTable.addProduct(0x1b4f, 0x9203, CdcAcmSerialDriver.class);
         customTable.addProduct(0x1b4f, 0x9204, CdcAcmSerialDriver.class);
@@ -161,6 +158,7 @@ public class UsbConnectActivity extends AppCompatActivity {
                     try {
                         connection = manager.openDevice(driver.getDevice());
                     } catch (SecurityException e) {
+                        //noinspection CallToPrintStackTrace
                         e.printStackTrace();
                         Log.e(TAG, "No rights to open device");
                         continue;
@@ -174,20 +172,27 @@ public class UsbConnectActivity extends AppCompatActivity {
                         Log.e(TAG, "Not enough ports");
                         continue;
                     }
-                    UsbSerialPort port = ports.get(0);
-                    if (port == null) {
-                        Log.e(TAG, "Cannot get port");
-                        continue;
+                    UsbSerialPort port = null;
+                    for (UsbSerialPort probePort : ports) {
+                        if (probePort == null) {
+                            Log.w(TAG, "Usb serial port is null");
+                            continue;
+                        }
+                        try {
+                            probePort.open(connection);
+                            probePort.setParameters(_baudRate, _dataBits, _stopBits, _parity);
+                            probePort.setDTR(_enableDtr);
+                            probePort.setRTS(_enableRts);
+                            port = probePort;
+                            break;
+                        } catch (IOException e) {
+                            //noinspection CallToPrintStackTrace
+                            e.printStackTrace();
+                            Log.w(TAG, "Cannot set port parameters for " + probePort.getPortNumber());
+                        }
                     }
-
-                    try {
-                        port.open(connection);
-                        port.setParameters(_baudRate, _dataBits, _stopBits, _parity);
-                        port.setDTR(_enableDtr);
-                        port.setRTS(_enableRts);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Log.e(TAG, "Cannot set port parameters");
+                    if (port == null) {
+                        Log.w(TAG, "Cannot find any serial ports, trying next driver");
                         continue;
                     }
                     _usbPort = port;
