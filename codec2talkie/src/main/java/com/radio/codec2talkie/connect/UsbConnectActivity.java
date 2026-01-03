@@ -101,6 +101,8 @@ public class UsbConnectActivity extends AppCompatActivity {
         // Arduino Uno/Nano (CH34x)
         customTable.addProduct(0x1a86, 0x5523, Ch34xSerialDriver.class);
         customTable.addProduct(0x1a86, 0x7523, Ch34xSerialDriver.class);
+        // Xiegu
+        customTable.addProduct(0x1a86, 0x55D2, Ch34xSerialDriver.class);
 
         // CP2102/2109
         // iCom
@@ -131,8 +133,6 @@ public class UsbConnectActivity extends AppCompatActivity {
         customTable.addProduct(0x2e8a, 0x000e, CdcAcmSerialDriver.class);
         // STM, MCHF
         customTable.addProduct(0x0483, 0x5732, CdcAcmSerialDriver.class);
-        // Xiegu
-        customTable.addProduct(0x1a86, 0x55D2, CdcAcmSerialDriver.class);
         // ESP32 JTAG/Serial
         customTable.addProduct(0x303a, 0x1001, CdcAcmSerialDriver.class);
         return new UsbSerialProber(customTable);
