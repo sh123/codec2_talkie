@@ -28,15 +28,18 @@ public class Codec2 {
     public static final int FREEDV_MODE_800XA = 5;
     public static final int FREEDV_MODE_700C = 6;
     public static final int FREEDV_MODE_700D = 7;
+    public static final int FREEDV_MODE_700E = 13;
     public static final int FREEDV_MODE_2020 = 8;
     public static final int FREEDV_MODE_2020B = 16;
-    public static final int FREEDV_MODE_700E = 13;
+    public static final int FREEDV_MODE_2020C = 17;
 
     // freedv data modes
     public static final int FREEDV_MODE_FSK_LDPC = 9;
     public static final int FREEDV_MODE_DATAC1 = 10;
     public static final int FREEDV_MODE_DATAC3 = 12;
     public static final int FREEDV_MODE_DATAC0 = 14;
+    public static final int FREEDV_MODE_DATAC4 = 18;
+    public static final int FREEDV_MODE_DATAC13 = 19;
 
     // raw codec2
     public native static long create(int mode);

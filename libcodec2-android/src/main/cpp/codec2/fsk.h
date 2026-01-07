@@ -25,12 +25,13 @@
   along with this program; if not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #ifndef __C2FSK_H
 #define __C2FSK_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <stdint.h>
 #include "comp.h"
@@ -88,6 +89,8 @@ struct FSK {
     float  ppm;               /* Estimated PPM clock offset */
     float  SNRest;            /* used for LLRs */
     float  v_est;             /* used for LLRs */
+    float  rx_sig_pow;
+    float  rx_nse_pow;
     
     /*  Parameters used by mod/demod and driving code */
     int nin;                /* Number of samples to feed the next demod cycle */
@@ -149,9 +152,9 @@ void fsk_destroy(struct FSK *fsk);
  * Modulates Nsym bits into N samples
  * 
  * struct FSK *fsk   - FSK config/state struct, set up by fsk_create
- * float fsk_out[]   - Buffer for samples of modulated FSK, fsk->Ts*(Nbits/(M>>1)) in length
+ * float fsk_out[]   - Buffer for samples of modulated FSK, fsk->Ts*(nbits/(M>>1)) in length
  * uint8_t tx_bits[] - Buffer containing Nbits unpacked bits
- * int     Nbits     - number of bits to transmit
+ * int     nbits     - number of bits to transmit
  */
 void fsk_mod(struct FSK *fsk, float fsk_out[], uint8_t tx_bits[], int nbits);
 
@@ -160,9 +163,9 @@ void fsk_mod(struct FSK *fsk, float fsk_out[], uint8_t tx_bits[], int nbits);
  * 
  * struct FSK *fsk   - FSK config/state struct, set up by fsk_create
  * float fsk_out[]   - Buffer for samples of "voltage" used to modulate an external VCO
- *                   - fsk->Ts*(Nbits/(M>>1)) in length
+ *                   - fsk->Ts*(nbits/(M>>1)) in length
  * uint8_t tx_bits[] - Buffer containing Nbits unpacked bits
- * int     Nbits     - number of bits to transmit
+ * int     nbits     - number of bits to transmit
  */
 void fsk_mod_ext_vco(struct FSK *fsk, float vco_out[], uint8_t tx_bits[], int nbits);
 
@@ -170,9 +173,9 @@ void fsk_mod_ext_vco(struct FSK *fsk, float vco_out[], uint8_t tx_bits[], int nb
  * Modulates Nsym bits into N complex samples
  * 
  * struct FSK *fsk   - FSK config/state struct, set up by fsk_create
- * comp fsk_out[]    - Buffer for samples of modulated FSK, fsk->Ts*(Nbits/(M>>1)) in length
+ * comp fsk_out[]    - Buffer for samples of modulated FSK, fsk->Ts*(nbits/(M>>1)) in length
  * uint8_t tx_bits[] - Buffer containing Nbits unpacked bits
- * int     Nbits     - number of bits to transmit
+ * int     nbits     - number of bits to transmit
  */
 void fsk_mod_c(struct FSK *fsk, COMP fsk_out[], uint8_t tx_bits[], int nbits);
 
@@ -215,8 +218,8 @@ void fsk_enable_burst_mode(struct FSK *fsk);
 /* Set freq est algorithm 0: peak 1:mask */
 void fsk_set_freq_est_alg(struct FSK *fsk, int est_type);
 
-#endif
-
 #ifdef __cplusplus
 }
+#endif
+
 #endif

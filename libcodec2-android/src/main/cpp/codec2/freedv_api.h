@@ -35,6 +35,7 @@
 #define __FREEDV_API__
 
 #include <sys/types.h>
+#include <stdbool.h>
 // This declares a single-precision (float) complex number
 #include "comp.h"
 
@@ -49,15 +50,18 @@
 #define FREEDV_MODE_800XA       5
 #define FREEDV_MODE_700C        6
 #define FREEDV_MODE_700D        7
+#define FREEDV_MODE_700E       13
 #define FREEDV_MODE_2020        8
 #define FREEDV_MODE_2020B      16
-#define FREEDV_MODE_700E       13
+#define FREEDV_MODE_2020C      17
 
 // available data modes
 #define FREEDV_MODE_FSK_LDPC    9
 #define FREEDV_MODE_DATAC1     10
 #define FREEDV_MODE_DATAC3     12
 #define FREEDV_MODE_DATAC0     14
+#define FREEDV_MODE_DATAC4     18
+#define FREEDV_MODE_DATAC13    19
 
 // Sample rates used
 #define FREEDV_FS_8000          8000
@@ -117,6 +121,9 @@
 #if !defined(FREEDV_MODE_2020B_EN)
         #define FREEDV_MODE_2020B_EN FREEDV_MODE_EN_DEFAULT
 #endif
+#if !defined(FREEDV_MODE_2020C_EN)
+        #define FREEDV_MODE_2020C_EN FREEDV_MODE_EN_DEFAULT
+#endif
 #if !defined(FREEDV_MODE_FSK_LDPC_EN)
         #define FREEDV_MODE_FSK_LDPC_EN FREEDV_MODE_EN_DEFAULT
 #endif
@@ -128,6 +135,12 @@
 #endif
 #if !defined(FREEDV_MODE_DATAC3_EN)
         #define FREEDV_MODE_DATAC3_EN FREEDV_MODE_EN_DEFAULT
+#endif
+#if !defined(FREEDV_MODE_DATAC4_EN)
+        #define FREEDV_MODE_DATAC4_EN FREEDV_MODE_EN_DEFAULT
+#endif
+#if !defined(FREEDV_MODE_DATAC13_EN)
+        #define FREEDV_MODE_DATAC13_EN FREEDV_MODE_EN_DEFAULT
 #endif
 
 #define FDV_MODE_ACTIVE(mode_name, var)  ((mode_name##_EN) == 0 ? 0: (var) == mode_name)
@@ -221,9 +234,9 @@ void freedv_set_callback_data           (struct freedv *freedv, freedv_callback_
 void freedv_set_test_frames		        (struct freedv *freedv, int test_frames);
 void freedv_set_test_frames_diversity	(struct freedv *freedv, int test_frames_diversity);
 void freedv_set_smooth_symbols		    (struct freedv *freedv, int smooth_symbols);
-void freedv_set_squelch_en		        (struct freedv *freedv, int squelch_en);
+void freedv_set_squelch_en		        (struct freedv *freedv, bool squelch_en);
 void freedv_set_snr_squelch_thresh	    (struct freedv *freedv, float snr_squelch_thresh);
-void freedv_set_clip	                (struct freedv *freedv, int val);
+void freedv_set_clip	                (struct freedv *freedv, bool val);
 void freedv_set_total_bit_errors    	(struct freedv *freedv, int val);
 void freedv_set_total_bits              (struct freedv *freedv, int val);
 void freedv_set_total_bit_errors_coded  (struct freedv *freedv, int val);
@@ -238,10 +251,9 @@ void freedv_set_sync                    (struct freedv *freedv, int sync_cmd);
 void freedv_set_verbose                 (struct freedv *freedv, int verbosity);
 void freedv_set_tx_bpf                  (struct freedv *freedv, int val);
 void freedv_set_tx_amp                  (struct freedv *freedv, float amp);
-void freedv_set_dpsk                    (struct freedv *freedv, int val);
 void freedv_set_ext_vco                 (struct freedv *f, int val);
 void freedv_set_phase_est_bandwidth_mode(struct freedv *f, int val);
-void freedv_set_eq                      (struct freedv *f, int val);
+void freedv_set_eq                      (struct freedv *f, bool val);
 void freedv_set_frames_per_burst        (struct freedv *f, int framesperburst);
 void freedv_passthrough_gain            (struct freedv *f, float g);
 int freedv_set_tuning_range             (struct freedv *freedv, float val_fmin, float val_fmax);
