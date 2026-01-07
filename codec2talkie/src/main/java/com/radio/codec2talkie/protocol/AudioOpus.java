@@ -44,7 +44,7 @@ public class AudioOpus implements Protocol {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         int bitRate = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.OPUS_BIT_RATE, "3200"));
         int complexity = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.OPUS_COMPLEXITY, "5"));
-        float pcmFrameDuration = Float.parseFloat(sharedPreferences.getString(PreferenceKeys.OPUS_FRAME_SIZE, "40"));
+        float pcmFrameDuration = Float.parseFloat(sharedPreferences.getString(PreferenceKeys.OPUS_FRAME_SIZE, "20"));
 
         _pcmFrameSize = (int)(SAMPLE_RATE / 1000 * pcmFrameDuration);
         _audioBufferSize = 10*_pcmFrameSize;

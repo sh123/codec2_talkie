@@ -27,8 +27,8 @@
 
     <string name="opus_category_title">OPUS Settings</string>
     <string name="opus_frame_size_title">PCM frame duration [ms]</string>
-    <string name="opus_bit_rate_title">Bit rate</string>
-    <string name="opus_bit_rate_summary">Bit rate from 2400 up to 512000bps, set larger frame duration below for smaller bit rates</string>
+    <string name="opus_bit_rate_title">Bit rate [bps]</string>
+    <string name="opus_bit_rate_summary">Bit rate from 1200 up to 16000bps (practical), set PCM frame duration to 20ms for lower bit rates</string>
     <string name="opus_complexity_title">Complexity</string>
 
     <string name="main_status_loopback_test">Loopback</string>

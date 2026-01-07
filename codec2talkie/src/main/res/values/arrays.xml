@@ -450,9 +450,9 @@
         <item>FreeDV 700C</item>
         <item>FreeDV 700D</item>
         <item>FreeDV 700E</item>
-        <item>FreeDV 2020</item>
+        <!--item>FreeDV 2020</item>
         <item>FreeDV 2020B</item>
-        <item>FreeDV 2020C</item>
+        <item>FreeDV 2020C</item-->
     </string-array>
 
     <string-array name="ports_sound_modem_type_values">
@@ -465,9 +465,9 @@
         <item>F6</item>
         <item>F7</item>
         <item>F13</item>
-        <item>F8</item>
+        <!--item>F8</item>
         <item>F16</item>
-        <item>F17</item>
+        <item>F17</item-->
     </string-array>
 
     <string-array name="ports_type_labels">
@@ -579,21 +579,15 @@
     </string-array>
 
     <string-array name="ports_sound_modem_freedv_data_mode_entries">
-        <item>FSK LDPC</item>
-        <item>DATAC1 980bps (FWD)</item>
-        <item>DATAC3 321bps (FWD)</item>
-        <item>DATAC0 291bps (ACK)</item>
-        <item>DATAC4 87bps (FWD)</item>
-        <item>DATAC13 64bps (ACK)</item>
+        <item>DATAC1 980bps</item>
+        <item>DATAC3 321bps</item>
+        <item>DATAC4 87bps</item>
     </string-array>
 
     <string-array name="ports_sound_modem_freedv_data_mode_values">
-        <item>9</item>
         <item>10</item>
         <item>12</item>
-        <item>14</item>
         <item>18</item>
-        <item>19</item>
     </string-array>
 
     <string-array name="ports_sound_modem_audio_source_entries">
