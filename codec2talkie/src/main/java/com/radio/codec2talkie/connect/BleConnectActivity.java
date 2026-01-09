@@ -15,7 +15,10 @@ import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
@@ -59,6 +62,7 @@ public class BleConnectActivity extends AppCompatActivity {
     private BluetoothLeScanner _btBleScanner;
     private BluetoothAdapter _btAdapter;
     private BleGattWrapper _btGatt;
+    private BluetoothDevice _device;
     private ArrayAdapter<String> _btArrayAdapter;
     private String _btSelectedName;
     private String _btDefaultName;
@@ -187,12 +191,37 @@ public class BleConnectActivity extends AppCompatActivity {
         onBtStateChanged.sendMessageDelayed(resultMsg, SCAN_PERIOD);
     }
 
+    private final BroadcastReceiver bondStateReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equals(action)) {
+                final int state = intent.getIntExtra(BluetoothDevice.EXTRA_BOND_STATE, BluetoothDevice.ERROR);
+                switch (state) {
+                    case BluetoothDevice.BOND_BONDED:
+                        _btGatt.connect(_device);
+                        unregisterReceiver(this);
+                        break;
+                    case BluetoothDevice.BOND_NONE:
+                        unregisterReceiver(this);
+                        break;
+                }
+            }
+        }
+    };
+
     private void gattConnectToBluetoothClient(String address) {
         Log.i(TAG, "connecting to  " + address);
         showProgressBar();
-        BluetoothDevice device = _btAdapter.getRemoteDevice(address);
+        _device = _btAdapter.getRemoteDevice(address);
         _btGatt = new BleGattWrapper(getApplicationContext(), onBtStateChanged);
-        _btGatt.connect(device);
+        if (_device.getBondState() == BluetoothDevice.BOND_NONE) {
+            IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+            registerReceiver(bondStateReceiver, filter);
+            _device.createBond();
+        } else {
+            _btGatt.connect(_device);
+        }
     }
 
     private final Handler onBtStateChanged = new Handler(Looper.getMainLooper()) {
