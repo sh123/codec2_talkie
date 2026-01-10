@@ -4,12 +4,9 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuCompat;
 import androidx.preference.PreferenceManager;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -63,20 +60,17 @@ import com.radio.codec2talkie.settings.SettingsActivity;
 import com.radio.codec2talkie.storage.message.group.MessageGroupActivity;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.tools.DeviceIdTools;
+import com.radio.codec2talkie.tools.PermissionsManager;
 import com.radio.codec2talkie.tools.RadioTools;
 import com.radio.codec2talkie.transport.TransportFactory;
 import com.radio.codec2talkie.connect.UsbConnectActivity;
 import com.radio.codec2talkie.connect.UsbPortHandler;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
 
     private static final String TAG = MainActivity.class.getSimpleName();
-
-    private final static int REQUEST_PERMISSIONS = 1;
 
     // S9 level at -93 dBm as per VHF Managers Handbook
     private final static int S_METER_S0_VALUE_DB = -147;
@@ -256,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         Log.i(TAG, "startTransportConnection(" +  transportType + ")");
         if (AppService.isRunning) {
             startAppService(AppService.transportType);
-        } else if (requestPermissions()) {
+        } else if (PermissionsManager.requestPermissions(this)) {
             switch (transportType) {
                 case LOOPBACK:
                     _textConnInfo.setText(R.string.main_status_loopback_test);
@@ -393,49 +387,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     protected void startMessagesActivity() {
         _messagesActivityLauncher.launch(new Intent(this, MessageGroupActivity.class));
-    }
-
-    protected boolean requestPermissions() {
-        List<String> permissionsToRequest = new LinkedList<>();
-        List<String> versionRequiredPermissions = getRequiredPermissions();
-        if (!versionRequiredPermissions.isEmpty()) {
-            for (String permission : versionRequiredPermissions) {
-                if (ContextCompat.checkSelfPermission(MainActivity.this, permission) == PackageManager.PERMISSION_DENIED) {
-                    permissionsToRequest.add(permission);
-                }
-            }
-        }
-        if (!permissionsToRequest.isEmpty()) {
-            ActivityCompat.requestPermissions(
-                    MainActivity.this,
-                    permissionsToRequest.toArray(new String[0]),
-                    REQUEST_PERMISSIONS);
-            return false;
-        }
-        return true;
-    }
-
-    @NonNull
-    private static List<String> getRequiredPermissions() {
-        List<String> versionRequiredPermissions = new LinkedList<>();
-        versionRequiredPermissions.add(Manifest.permission.BLUETOOTH);
-        versionRequiredPermissions.add(Manifest.permission.BLUETOOTH_ADMIN);
-        versionRequiredPermissions.add(Manifest.permission.RECORD_AUDIO);
-        versionRequiredPermissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        versionRequiredPermissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            versionRequiredPermissions.add(Manifest.permission.BLUETOOTH_CONNECT);
-            versionRequiredPermissions.add(Manifest.permission.BLUETOOTH_SCAN);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            versionRequiredPermissions.add(Manifest.permission.FOREGROUND_SERVICE);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            versionRequiredPermissions.add(Manifest.permission.POST_NOTIFICATIONS);
-            versionRequiredPermissions.add(Manifest.permission.NEARBY_WIFI_DEVICES);
-            versionRequiredPermissions.add(Manifest.permission.CAMERA);
-        }
-        return versionRequiredPermissions;
     }
 
     private void bindAppService() {
@@ -669,7 +620,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     @Override
     public void onBackPressed() {
-
         if (_backPressedTimestamp + BACK_EXIT_MS_DELAY > System.currentTimeMillis()) {
             exitApplication();
         } else {
@@ -718,7 +668,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_PERMISSIONS) {
+        if (requestCode == PermissionsManager.REQUEST_PERMISSIONS) {
             boolean allGranted = true;
             for (int result : grantResults) {
                 if (result != PackageManager.PERMISSION_GRANTED) {
