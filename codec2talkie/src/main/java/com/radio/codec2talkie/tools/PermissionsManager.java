@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -35,6 +36,17 @@ public class PermissionsManager {
             versionRequiredPermissions.add(Manifest.permission.CAMERA);
         }
         return versionRequiredPermissions;
+    }
+
+    public static boolean allGranted(@NonNull int[] grantResults) {
+        boolean allGranted = true;
+        for (int result : grantResults) {
+            if (result != PackageManager.PERMISSION_GRANTED) {
+                allGranted = false;
+                break;
+            }
+        }
+        return allGranted;
     }
 
     public static boolean requestPermissions(Activity activity) {
