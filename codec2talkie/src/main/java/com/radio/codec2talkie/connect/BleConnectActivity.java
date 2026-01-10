@@ -39,6 +39,7 @@ import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 
 import java.util.Arrays;
+import java.util.Set;
 
 public class BleConnectActivity extends AppCompatActivity {
     private static final String TAG = BleConnectActivity.class.getSimpleName();
@@ -169,12 +170,14 @@ public class BleConnectActivity extends AppCompatActivity {
                 super.onScanResult(callbackType, result);
                 String deviceName = result.getDevice().getName() + " | " + result.getDevice().getAddress();
                 if (_btArrayAdapter.getPosition(deviceName) == -1) {
+                    Log.i(TAG, "Found device:" + deviceName);
                     _btArrayAdapter.add(deviceName);
                 }
             }
         };
 
     private void startDevicesScan() {
+        Log.i(TAG, "Started BLE scan");
         _btArrayAdapter.clear();
 
         ScanFilter.Builder scanFilterBuilder = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(BleGattWrapper.BT_KISS_SERVICE_UUID));
@@ -224,6 +227,24 @@ public class BleConnectActivity extends AppCompatActivity {
         }
     }
 
+    private void populateBondedDevices() {
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter == null) return;
+
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        if (pairedDevices.isEmpty()) return;
+
+        for (BluetoothDevice device : pairedDevices) {
+            if (device.getType() == BluetoothDevice.DEVICE_TYPE_LE) {
+                String deviceName = device.getName() + " | " + device.getAddress();
+                if (_btArrayAdapter.getPosition(deviceName) == -1) {
+                    Log.i(TAG, "Found bonded device:" + deviceName);
+                    _btArrayAdapter.add(deviceName);
+                }
+            }
+        }
+    }
+
     private final Handler onBtStateChanged = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
@@ -238,7 +259,9 @@ public class BleConnectActivity extends AppCompatActivity {
                 }
             } else if (msg.what == BT_SCAN_COMPLETED) {
                 toastMsg = getString(R.string.bt_ble_scan_completed);
+                Log.i(TAG, "Completed BLE scan");
                 _btBleScanner.stopScan(leScanCallback);
+                populateBondedDevices();
             } else if (msg.what == BT_GATT_CONNECT_SUCCESS) {
                 toastMsg = getString(R.string.bt_le_gatt_connected);
             } else if (msg.what == BT_SERVICES_DISCOVER_FAILURE) {

@@ -89,9 +89,16 @@ public class BluetoothSettingsActivity extends AppCompatActivity {
 
             new Handler(Looper.getMainLooper()).postDelayed(() -> _btBleScanner.stopScan(leScanCallback), SCAN_PERIOD);
 
+            for (BluetoothDevice device : _btAdapter.getBondedDevices()) {
+                if (device.getType() == BluetoothDevice.DEVICE_TYPE_LE) {
+                    _btArrayAdapter.add(device.getName() + " | " + device.getAddress());
+                }
+            }
         } else {
             for (BluetoothDevice device : _btAdapter.getBondedDevices()) {
-                _btArrayAdapter.add(device.getName() + " | " + device.getAddress());
+                if (device.getType() == BluetoothDevice.DEVICE_TYPE_CLASSIC) {
+                    _btArrayAdapter.add(device.getName() + " | " + device.getAddress());
+                }
             }
         }
     }
