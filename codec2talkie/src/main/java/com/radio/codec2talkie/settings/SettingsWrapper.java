@@ -2,6 +2,7 @@ package com.radio.codec2talkie.settings;
 
 import android.content.SharedPreferences;
 
+import com.radio.codec2talkie.protocol.ciphers.ProtocolCipherFactory;
 import com.radio.codec2talkie.rigctl.RigCtlFactory;
 import com.radio.codec2talkie.transport.TransportFactory;
 
@@ -81,15 +82,11 @@ public class SettingsWrapper {
     }
 
     public static boolean isKissScramblerEnabled(SharedPreferences sharedPreferences) {
-        return sharedPreferences.getBoolean(PreferenceKeys.KISS_SCRAMBLING_ENABLED, false);
+        return ProtocolCipherFactory.isEnabled(sharedPreferences);
     }
 
     public static boolean isKissExtensionEnabled(SharedPreferences sharedPreferences) {
         return sharedPreferences.getBoolean(PreferenceKeys.KISS_EXTENSIONS_ENABLED, false);
-    }
-
-    public static String getKissScramblerKey(SharedPreferences sharedPreferences) {
-        return sharedPreferences.getString(PreferenceKeys.KISS_SCRAMBLER_KEY, "");
     }
 
     public static boolean isAprsEnabled(SharedPreferences sharedPreferences) {

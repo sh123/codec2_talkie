@@ -433,8 +433,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
 
         // scrambling
-        boolean scramblingEnabled = _sharedPreferences.getBoolean(PreferenceKeys.KISS_SCRAMBLING_ENABLED, false);
-        if (scramblingEnabled) {
+        if (SettingsWrapper.isKissScramblerEnabled(_sharedPreferences)) {
             status += getString(R.string.kiss_scrambler_label);
         }
 

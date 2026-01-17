@@ -6,6 +6,8 @@ import android.util.Log;
 
 import androidx.preference.PreferenceManager;
 
+import com.radio.codec2talkie.protocol.ciphers.ProtocolCipher;
+import com.radio.codec2talkie.protocol.ciphers.ProtocolCipherFactory;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
@@ -27,21 +29,17 @@ public class Scrambler implements Protocol {
     private static final String TAG = Scrambler.class.getSimpleName();
 
     private final Protocol _childProtocol;
-    private final String _scramblingKey;
-
-    private int _iterationsCount;
     private ProtocolCallback _parentProtocolCallback;
+    private ProtocolCipher _protocolCipher;
 
-    public Scrambler(Protocol childProtocol, String scramblingKey) {
+    public Scrambler(Protocol childProtocol) {
         _childProtocol = childProtocol;
-        _scramblingKey = scramblingKey;
     }
 
     @Override
     public void initialize(Transport transport, Context context, ProtocolCallback protocolCallback) throws IOException {
         _parentProtocolCallback = protocolCallback;
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        _iterationsCount = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.KISS_SCRAMBLER_ITERATIONS, "1000"));
+        _protocolCipher = ProtocolCipherFactory.create(context);
         _childProtocol.initialize(transport, context, _protocolCallback);
     }
 
@@ -194,53 +192,10 @@ public class Scrambler implements Protocol {
     }
 
     private byte[] scramble(byte[] srcData) {
-        ScramblingTools.ScrambledData data = null;
-        try {
-            data = ScramblingTools.scramble(_scramblingKey, srcData, _iterationsCount);
-        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeySpecException |
-                InvalidKeyException | BadPaddingException | IllegalBlockSizeException |
-                InvalidAlgorithmParameterException e) {
-
-            e.printStackTrace();
-        }
-        if (data != null) {
-            byte[] result = new byte[data.iv.length + data.salt.length + data.scrambledData.length];
-
-            System.arraycopy(data.iv, 0, result, 0, data.iv.length);
-            System.arraycopy(data.salt, 0, result, data.iv.length, data.salt.length);
-            System.arraycopy(data.scrambledData, 0, result, data.iv.length + data.salt.length, data.scrambledData.length);
-
-            return result;
-        }
-        return null;
+        return _protocolCipher.encrypt(srcData);
     }
 
     private byte[] unscramble(byte[] scrambledData) {
-        ScramblingTools.ScrambledData data = new ScramblingTools.ScrambledData();
-
-        data.iv = new byte[ScramblingTools.BLOCK_SIZE];
-        data.salt = new byte [ScramblingTools.SALT_BYTES];
-        int dataSize = scrambledData.length - ScramblingTools.BLOCK_SIZE - ScramblingTools.SALT_BYTES;
-        if (dataSize <= 0) {
-            Log.e(TAG, "Frame of wrong length " + dataSize);
-            return null;
-        }
-        data.scrambledData = new byte[dataSize];
-
-        System.arraycopy(scrambledData, 0, data.iv, 0, data.iv.length);
-        System.arraycopy(scrambledData, data.iv.length, data.salt, 0, data.salt.length);
-        System.arraycopy(scrambledData, data.iv.length + data.salt.length, data.scrambledData, 0, data.scrambledData.length);
-
-        byte[] unscrambledData;
-        try {
-            unscrambledData = ScramblingTools.unscramble(_scramblingKey, data, _iterationsCount);
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException | NoSuchPaddingException |
-                InvalidKeyException | BadPaddingException | IllegalBlockSizeException |
-                InvalidAlgorithmParameterException e) {
-
-            e.printStackTrace();
-            return null;
-        }
-        return unscrambledData;
+        return _protocolCipher.decrypt(scrambledData);
     }
 }

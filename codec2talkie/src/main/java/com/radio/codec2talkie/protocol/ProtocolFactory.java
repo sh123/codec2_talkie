@@ -67,7 +67,6 @@ public class ProtocolFactory {
 
         boolean recordingEnabled = SettingsWrapper.isCodec2RecorderEnabled(sharedPreferences);
         boolean scramblingEnabled = SettingsWrapper.isKissScramblerEnabled(sharedPreferences);
-        String scramblingKey = SettingsWrapper.getKissScramblerKey(sharedPreferences);
         boolean aprsEnabled = SettingsWrapper.isAprsEnabled(sharedPreferences);
         boolean aprsIsEnabled = SettingsWrapper.isAprsIsEnabled(sharedPreferences);
         boolean freedvEnabled = SettingsWrapper.isFreeDvSoundModemModulation(sharedPreferences);
@@ -102,7 +101,7 @@ public class ProtocolFactory {
             proto = new CustomDataPrefix(proto, sharedPreferences);
         }
         if (scramblingEnabled) {
-            proto = new Scrambler(proto, scramblingKey);
+            proto = new Scrambler(proto);
         }
         if (aprsEnabled) {
             proto = new Ax25(proto);

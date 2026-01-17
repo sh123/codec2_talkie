@@ -621,4 +621,19 @@
         <item>5</item>
         <item>6</item>
     </string-array>
+
+    <string-array name="kiss_cipher_type_values">
+        <item>disabled</item>
+        <item>Aes128Simple</item>
+        <item>Aes256Hmac</item>
+        <item>ChaChaPoly</item>
+    </string-array>
+
+    <string-array name="kiss_cipher_type_entries">
+        <item>Do not use</item>
+        <item>AES128 NOHMAC (Android 8+)</item>
+        <item>AES256 HMAC (Android 8+)</item>
+        <item>ChaCha Poly1305 (Android 9+)</item>
+    </string-array>
+
 </resources>

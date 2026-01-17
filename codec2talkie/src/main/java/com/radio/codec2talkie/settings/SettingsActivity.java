@@ -33,7 +33,6 @@ public class SettingsActivity extends AppCompatActivity
             "kiss_basic_slot_time",
             "kiss_basic_tx_delay",
             "kiss_basic_tx_tail",
-            "kiss_scrambler_iterations",
             "ports_tcp_ip_port",
             "ports_tcp_ip_retry_count",
             "ports_tcp_ip_retry_delay",

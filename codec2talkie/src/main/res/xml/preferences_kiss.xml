@@ -33,28 +33,20 @@ s
             app:defaultValue="50">
         </EditTextPreference>
 
-        <SwitchPreference
-            app:key="kiss_enable_scrambler"
-            app:title="@string/kiss_enable_scrambler_title"
-            app:summary="@string/kiss_enable_scrambler_summary"
-            app:defaultValue="false">
-        </SwitchPreference>
+        <ListPreference
+            app:key="kiss_cipher_type"
+            app:title="@string/kiss_cipher_type_title"
+            app:entries="@array/kiss_cipher_type_entries"
+            app:entryValues="@array/kiss_cipher_type_values"
+            app:defaultValue="disabled"
+            app:summary="%s">
+        </ListPreference>
 
         <EditTextPreference
-            app:key="kiss_scrambler_key"
-            app:title="@string/kiss_scrambler_key_title"
-            app:summary="@string/kiss_scrambler_key_summary"
-            app:dependency="kiss_enable_scrambler"
-            app:defaultValue="0">
+            app:key="kiss_cipher_key"
+            app:title="@string/kiss_cipher_key_title"
+            app:summary="@string/kiss_cipher_key_summary"
+            app:defaultValue="">
         </EditTextPreference>
-
-        <EditTextPreference
-            app:key="kiss_scrambler_iterations"
-            app:title="@string/kiss_scrambler_iterations_title"
-            app:summary="@string/kiss_scrambler_iterations_summary"
-            app:dependency="kiss_enable_scrambler"
-            app:defaultValue="1000">
-        </EditTextPreference>
-
     </PreferenceCategory>
 </PreferenceScreen>

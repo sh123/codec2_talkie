@@ -51,9 +51,9 @@ public final class PreferenceKeys {
     public static String KISS_BASIC_SLOT_TIME = "kiss_basic_slot_time";
     public static String KISS_BASIC_TX_DELAY = "kiss_basic_tx_delay";
     public static String KISS_BASIC_TX_TAIL = "kiss_basic_tx_tail";
-    public static String KISS_SCRAMBLING_ENABLED = "kiss_enable_scrambler";
-    public static String KISS_SCRAMBLER_KEY = "kiss_scrambler_key";
-    public static String KISS_SCRAMBLER_ITERATIONS = "kiss_scrambler_iterations";
+
+    public static String KISS_CIPHER_TYPE="kiss_cipher_type";
+    public static String KISS_CIPHER_KEY="kiss_cipher_key";
 
     public static String KISS_EXTENSIONS_ENABLED = "kiss_extensions_enable";
     public static String KISS_EXTENSIONS_RADIO_MOD = "kiss_extension_radio_mod";
