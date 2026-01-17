@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.connect;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
@@ -54,10 +55,12 @@ public class BleGattWrapper extends BluetoothGattCallback {
         _isConnected = false;
     }
 
+    @SuppressLint("MissingPermission")
     public void connect(BluetoothDevice device) {
         _gatt = device.connectGatt(_context, true, this);
     }
 
+    @SuppressLint("MissingPermission")
     public void close() {
         _gatt.close();
     }
@@ -95,6 +98,7 @@ public class BleGattWrapper extends BluetoothGattCallback {
         }
     }
 
+    @SuppressLint("MissingPermission")
     private void writeCharacteristic(BluetoothGattCharacteristic characteristic) {
         _writeBuffer.flip();
         int cntRemaining = _writeBuffer.remaining();
@@ -152,6 +156,7 @@ public class BleGattWrapper extends BluetoothGattCallback {
         }
     }
 
+    @SuppressLint("MissingPermission")
     @Override
     public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
         Message resultMsg = Message.obtain();
@@ -181,6 +186,7 @@ public class BleGattWrapper extends BluetoothGattCallback {
         _callback.sendMessage(resultMsg);
     }
 
+    @SuppressLint("MissingPermission")
     private boolean initializeCharacteristics() {
         for (BluetoothGattService service : _gatt.getServices()) {
 

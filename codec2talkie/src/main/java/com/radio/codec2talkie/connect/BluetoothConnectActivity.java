@@ -2,7 +2,7 @@ package com.radio.codec2talkie.connect;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.RequiresPermission;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -10,6 +10,7 @@ import androidx.preference.PreferenceManager;
 
 import android.Manifest;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -33,6 +34,7 @@ import android.widget.Toast;
 
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.PermissionsManager;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -87,6 +89,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
                 .setDuration(300)
                 .start();
 
+        PermissionsManager.requestPermissions(this);
         enableBluetooth();
     }
 
@@ -106,6 +109,16 @@ public class BluetoothConnectActivity extends AppCompatActivity {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             _enableBtLauncher.launch(enableBtIntent);
             Toast.makeText(getApplicationContext(), getString(R.string.bt_turned_on), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PermissionsManager.REQUEST_PERMISSIONS) {
+            if (!PermissionsManager.allGranted(grantResults)) {
+                Toast.makeText(this, R.string.permissions_denied, Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
     }
 
@@ -172,6 +185,7 @@ public class BluetoothConnectActivity extends AppCompatActivity {
     private void connectToBluetoothClient(String address) {
         showProgressBar();
         new Thread() {
+            @SuppressLint("MissingPermission")
             @Override
             public void run() {
                 BluetoothDevice btDevice = _btAdapter.getRemoteDevice(address);

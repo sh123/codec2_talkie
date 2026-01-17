@@ -16,7 +16,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -696,6 +695,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
     private final Handler onAppServiceStateChanged = new Handler(Looper.getMainLooper()) {
+        @SuppressLint("UnsafeIntentLaunch")
         @Override
         public void handleMessage(Message msg) {
             switch (AppMessage.values()[msg.what]) {

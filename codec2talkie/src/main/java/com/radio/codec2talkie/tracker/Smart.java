@@ -117,6 +117,11 @@ public class Smart implements Tracker {
         double distanceMeters = oldPosition.distanceTo(newPosition);
         long timeDifferenceSeconds = UnitTools.millisToSeconds(newPosition.timestampEpochMs - oldPosition.timestampEpochMs);
         double maxSpeedMetersPerSecond = Math.max(Math.max(distanceMeters/timeDifferenceSeconds, newPosition.speedMetersPerSecond), oldPosition.speedMetersPerSecond);
+        double speedRateSeconds = getSpeedRateSeconds(maxSpeedMetersPerSecond);
+        return timeDifferenceSeconds >= (long)speedRateSeconds;
+    }
+
+    private double getSpeedRateSeconds(double maxSpeedMetersPerSecond) {
         double maxSpeedKilometersPerSecond = UnitTools.kilometersPerSecondToMetersPerSecond(maxSpeedMetersPerSecond);
         double speedRateSeconds;
         if (maxSpeedKilometersPerSecond <= _slowSpeedKmph)
@@ -125,8 +130,7 @@ public class Smart implements Tracker {
             speedRateSeconds = _fastRateSeconds;
         else
             speedRateSeconds = (_fastRateSeconds + (_slowRateSeconds - _fastRateSeconds) * (_fastSpeedKmph - maxSpeedKilometersPerSecond) / (_fastSpeedKmph - _slowSpeedKmph));
-
-        return timeDifferenceSeconds >= (long)speedRateSeconds;
+        return speedRateSeconds;
     }
 
     private void processNewLocation(Location location) {

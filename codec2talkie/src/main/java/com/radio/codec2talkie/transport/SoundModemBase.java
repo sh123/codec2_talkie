@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.transport;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioAttributes;
@@ -73,6 +74,7 @@ public class SoundModemBase implements Runnable {
             new Thread(this).start();
     }
 
+    @SuppressLint("MissingPermission")
     private void constructSystemAudioDevices(boolean disableRx, int sampleRate, int audioSource, int audioPlaybackUsage) {
         int audioRecorderMinBufferSize = 10 * AudioRecord.getMinBufferSize(
                 sampleRate,

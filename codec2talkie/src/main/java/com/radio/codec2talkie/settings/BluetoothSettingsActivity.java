@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.settings;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.BluetoothLeScanner;
@@ -17,13 +18,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.connect.BleGattWrapper;
+import com.radio.codec2talkie.tools.PermissionsManager;
 
 import java.util.Arrays;
 
@@ -60,6 +64,7 @@ public class BluetoothSettingsActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
+        PermissionsManager.requestPermissions(this);
         populateBondedDevices();
     }
 
@@ -68,13 +73,24 @@ public class BluetoothSettingsActivity extends AppCompatActivity {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
                 super.onScanResult(callbackType, result);
-                String deviceName = result.getDevice().getName() + " | " + result.getDevice().getAddress();
+                @SuppressLint("MissingPermission") String deviceName = result.getDevice().getName() + " | " + result.getDevice().getAddress();
                 if (_btArrayAdapter.getPosition(deviceName) == -1) {
                     _btArrayAdapter.add(deviceName);
                 }
             }
         };
 
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PermissionsManager.REQUEST_PERMISSIONS) {
+            if (!PermissionsManager.allGranted(grantResults)) {
+                Toast.makeText(this, R.string.permissions_denied, Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
     private void populateBondedDevices() {
         _btArrayAdapter.clear();
 

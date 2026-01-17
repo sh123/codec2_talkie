@@ -2,11 +2,13 @@ package com.radio.codec2talkie.connect;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -35,8 +37,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.radio.codec2talkie.MainActivity;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.tools.PermissionsManager;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -97,6 +101,7 @@ public class BleConnectActivity extends AppCompatActivity {
                 .start();
 
         _btBleScanner = _btAdapter.getBluetoothLeScanner();
+        PermissionsManager.requestPermissions(this);
         enableBluetooth();
     }
 
@@ -168,7 +173,7 @@ public class BleConnectActivity extends AppCompatActivity {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
                 super.onScanResult(callbackType, result);
-                String deviceName = result.getDevice().getName() + " | " + result.getDevice().getAddress();
+                @SuppressLint("MissingPermission") String deviceName = result.getDevice().getName() + " | " + result.getDevice().getAddress();
                 if (_btArrayAdapter.getPosition(deviceName) == -1) {
                     Log.i(TAG, "Found device:" + deviceName);
                     _btArrayAdapter.add(deviceName);
@@ -176,6 +181,7 @@ public class BleConnectActivity extends AppCompatActivity {
             }
         };
 
+    @SuppressLint("MissingPermission")
     private void startDevicesScan() {
         Log.i(TAG, "Started BLE scan");
         _btArrayAdapter.clear();
@@ -213,6 +219,7 @@ public class BleConnectActivity extends AppCompatActivity {
         }
     };
 
+    @SuppressLint("MissingPermission")
     private void gattConnectToBluetoothClient(String address) {
         Log.i(TAG, "connecting to  " + address);
         showProgressBar();
@@ -227,11 +234,12 @@ public class BleConnectActivity extends AppCompatActivity {
         }
     }
 
+    @SuppressLint("MissingPermission")
     private void populateBondedDevices() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter == null) return;
 
-        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        @SuppressLint("MissingPermission") Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
         if (pairedDevices.isEmpty()) return;
 
         for (BluetoothDevice device : pairedDevices) {
@@ -246,6 +254,7 @@ public class BleConnectActivity extends AppCompatActivity {
     }
 
     private final Handler onBtStateChanged = new Handler(Looper.getMainLooper()) {
+        @SuppressLint("MissingPermission")
         @Override
         public void handleMessage(Message msg) {
             String toastMsg;
@@ -283,6 +292,16 @@ public class BleConnectActivity extends AppCompatActivity {
             showDeviceList();
         }
     };
+
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PermissionsManager.REQUEST_PERMISSIONS) {
+            if (!PermissionsManager.allGranted(grantResults)) {
+                Toast.makeText(this, R.string.permissions_denied, Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+    }
 
     private String addressFromDisplayName(String displayName) {
         return displayName.substring(displayName.length() - BtAddressLength);
