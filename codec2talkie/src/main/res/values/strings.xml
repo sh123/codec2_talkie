@@ -412,5 +412,5 @@
 
     <string name="kiss_cipher_type_title">Select cipher type</string>
     <string name="kiss_cipher_key_title">Specify cipher key</string>
-    <string name="kiss_cipher_key_summary">Any password for AES and HEX string for ChaCha - 64 characters length representing 32 bytes, e.g. 0x01,0x02,…,0x31,0x32 should be written as 0102…3132, randomly generated</string>
+    <string name="kiss_cipher_key_summary">Any password for AES and HEX string for ChaCha, 64 char string representing 32 bytes, e.g. 0x01,0x02,…,0x31,0x32 will be written as 0102…3132, randomly generated</string>
 </resources>
