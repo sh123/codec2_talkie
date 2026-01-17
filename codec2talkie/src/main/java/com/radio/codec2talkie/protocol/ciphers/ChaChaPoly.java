@@ -29,7 +29,7 @@ public class ChaChaPoly implements ProtocolCipher {
 
     public void setKey(String hexKey) {
         if (hexKey.length() != KEY_LENGTH * 2) {
-            throw new IllegalArgumentException("Key must be a 256-bit (32-byte) hex string.");
+            throw new IllegalArgumentException("Cipher is not initialized, key must be a 256-bit (32-byte) hex string.");
         }
         byte[] keyBytes = TextTools.hexStringToByteArray(hexKey);
         _key = new SecretKeySpec(keyBytes, "ChaCha20");

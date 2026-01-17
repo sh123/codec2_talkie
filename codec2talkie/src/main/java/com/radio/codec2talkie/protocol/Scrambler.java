@@ -1,28 +1,14 @@
 package com.radio.codec2talkie.protocol;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.util.Log;
-
-import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.protocol.ciphers.ProtocolCipher;
 import com.radio.codec2talkie.protocol.ciphers.ProtocolCipherFactory;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.protocol.position.Position;
-import com.radio.codec2talkie.settings.PreferenceKeys;
-import com.radio.codec2talkie.tools.ScramblingTools;
 import com.radio.codec2talkie.transport.Transport;
 
 import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 public class Scrambler implements Protocol {
 
