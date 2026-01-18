@@ -17,34 +17,39 @@ import com.radio.codec2talkie.R;
 public class SettingsActivity extends AppCompatActivity
 {
     private static final String[] _numberSettings = {
-            "codec2_tx_frame_max_size",
-            "kiss_extension_radio_frequency",
-            "aprs_location_source_gps_update_time",
-            "aprs_location_source_gps_update_distance",
-            "aprs_location_source_manual_update_time",
-            "aprs_location_source_smart_fast_speed",
-            "aprs_location_source_smart_fast_rate",
-            "aprs_location_source_smart_slow_speed",
-            "aprs_location_source_smart_slow_rate",
-            "aprs_location_source_smart_min_turn_time",
-            "aprs_location_source_smart_min_turn_angle",
-            "aprs_location_source_smart_turn_slope",
-            "kiss_basic_persistence",
-            "kiss_basic_slot_time",
-            "kiss_basic_tx_delay",
-            "kiss_basic_tx_tail",
-            "ports_tcp_ip_port",
-            "ports_tcp_ip_retry_count",
-            "ports_tcp_ip_retry_delay",
-            "ports_sound_modem_preamble",
-            "ports_sound_modem_ptt_off_delay_ms",
-            "aprs_is_tcpip_server_port",
-            "opus_bit_rate"
+            // audio
+            PreferenceKeys.CODEC2_TX_FRAME_MAX_SIZE,
+            PreferenceKeys.OPUS_BIT_RATE,
+            // tnc
+            PreferenceKeys.PORTS_TCP_IP_PORT,
+            PreferenceKeys.PORTS_TCP_IP_RETRY_COUNT,
+            PreferenceKeys.PORTS_TCP_IP_RETRY_DELAY,
+            PreferenceKeys.PORTS_SOUND_MODEM_PREAMBLE,
+            PreferenceKeys.PORTS_SOUND_MODEM_PTT_OFF_DELAY_MS,
+            // kiss
+            PreferenceKeys.KISS_EXTENSIONS_RADIO_FREQUENCY,
+            PreferenceKeys.KISS_BASIC_P,
+            PreferenceKeys.KISS_BASIC_SLOT_TIME,
+            PreferenceKeys.KISS_BASIC_TX_DELAY,
+            PreferenceKeys.KISS_BASIC_TX_TAIL,
+            // aprs
+            PreferenceKeys.APRS_LOCATION_SOURCE_GPS_UPDATE_TIME,
+            PreferenceKeys.APRS_LOCATION_SOURCE_GPS_UPDATE_DISTANCE,
+            PreferenceKeys.APRS_LOCATION_SOURCE_MANUAL_UPDATE_INTERVAL_MINUTES,
+            PreferenceKeys.APRS_LOCATION_SOURCE_SMART_FAST_RATE,
+            PreferenceKeys.APRS_LOCATION_SOURCE_SMART_FAST_SPEED,
+            PreferenceKeys.APRS_LOCATION_SOURCE_SMART_SLOW_RATE,
+            PreferenceKeys.APRS_LOCATION_SOURCE_SMART_SLOW_SPEED,
+            PreferenceKeys.APRS_LOCATION_SOURCE_SMART_MIN_TURN_ANGLE,
+            PreferenceKeys.APRS_LOCATION_SOURCE_SMART_MIN_TURN_TIME,
+            PreferenceKeys.APRS_LOCATION_SOURCE_SMART_TURN_SLOPE,
+            PreferenceKeys.APRS_IS_TCPIP_SERVER_PORT
     };
 
     private static final String[] _signedDecimalSettings = {
-            "aprs_location_source_manual_lat",
-            "aprs_location_source_manual_lon"
+            // aprs
+            PreferenceKeys.APRS_LOCATION_SOURCE_MANUAL_LAT,
+            PreferenceKeys.APRS_LOCATION_SOURCE_MANUAL_LON
     };
 
     public static void setNumberInputType(PreferenceManager preferenceManager) {
