@@ -81,7 +81,7 @@ tasks.register('compileOpus') {
                         "-DOPUS_BUILD_SHARED_LIBRARY=true",
                         "-DCMAKE_TOOLCHAIN_FILE=" + android.ndkDirectory + "/build/cmake/android.toolchain.cmake",
                         "-DANDROID_NATIVE_API_LEVEL=23", "-DANDROID_ABI=" + abi,
-                        "-DANDROID_STL=c++_shared"
+                        "-DANDROID_STL=c++_shared", "-DOPUS_DISABLE_INTRINSICS=true"
             }
 
             exec {

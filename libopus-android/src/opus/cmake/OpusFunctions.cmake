@@ -47,10 +47,12 @@ function(check_flag NAME FLAG)
 endfunction()
 
 include(CheckIncludeFile)
-# function to check if compiler supports SSE, SSE2, SSE4.1 and AVX if target
-# systems may not have SSE support then use OPUS_MAY_HAVE_SSE option if target
-# system is guaranteed to have SSE support then OPUS_PRESUME_SSE can be used to
-# skip SSE runtime check
+
+# This function determines if the compiler has support for SSE, SSE2, SSE4.1, AVX,
+# AVX2 and FMA. Should the target systems potentially lack SSE support, the
+# OPUS_MAY_HAVE_SSE option is recommended for use. If, however, the target system is
+# assured to support SSE, the OPUS_PRESUME_SSE option can be employed, thus
+# eliminating the necessity for an SSE runtime check.
 function(opus_detect_sse COMPILER_SUPPORT_SIMD)
   message(STATUS "Check SIMD support by compiler")
   check_include_file(xmmintrin.h HAVE_XMMINTRIN_H) # SSE1
@@ -111,20 +113,20 @@ function(opus_detect_sse COMPILER_SUPPORT_SIMD)
         PARENT_SCOPE)
   endif()
 
-  check_include_file(immintrin.h HAVE_IMMINTRIN_H) # AVX
+  check_include_file(immintrin.h HAVE_IMMINTRIN_H) # AVX2
   if(HAVE_IMMINTRIN_H)
     if(MSVC)
-      check_flag(AVX /arch:AVX)
+      check_flag(AVX2 /arch:AVX2)
     else()
-      check_flag(AVX -mavx)
+      check_flag(AVX2 -mavx2 -mfma -mavx)
     endif()
   else()
-    set(AVX_SUPPORTED
+    set(AVX2_SUPPORTED
         0
         PARENT_SCOPE)
   endif()
 
-  if(SSE1_SUPPORTED OR SSE2_SUPPORTED OR SSE4_1_SUPPORTED OR AVX_SUPPORTED)
+  if(SSE1_SUPPORTED OR SSE2_SUPPORTED OR SSE4_1_SUPPORTED OR AVX2_SUPPORTED)
     set(COMPILER_SUPPORT_SIMD 1 PARENT_SCOPE)
   else()
     message(STATUS "No SIMD support in compiler")
@@ -132,7 +134,7 @@ function(opus_detect_sse COMPILER_SUPPORT_SIMD)
 endfunction()
 
 function(opus_detect_neon COMPILER_SUPPORT_NEON)
-  if(CMAKE_SYSTEM_PROCESSOR MATCHES "(arm|aarch64)")
+  if(CMAKE_SYSTEM_PROCESSOR MATCHES "(arm|aarch64|ARM)")
     message(STATUS "Check NEON support by compiler")
     check_include_file(arm_neon.h HAVE_ARM_NEON_H)
     if(HAVE_ARM_NEON_H)
@@ -164,9 +166,9 @@ function(opus_supports_cpu_detection RUNTIME_CPU_CAPABILITY_DETECTION)
       endif()
     endif()
   elseif(OPUS_CPU_ARM)
-    # ARM cpu detection is implemented for Windows and anything
-    # using a Linux kernel (such as Android).
-    if (CMAKE_SYSTEM_NAME MATCHES "(Windows|Linux|Android)")
+    # ARM cpu detection is implemented for Windows, Linux, Android, FreeBSD
+    # and OpenBSD.
+    if (CMAKE_SYSTEM_NAME MATCHES "(Windows|Linux|Android|FreeBSD|OpenBSD)")
       set(RUNTIME_CPU_CAPABILITY_DETECTION 1 PARENT_SCOPE)
     endif ()
   else()
@@ -215,7 +217,7 @@ function(get_opus_sources SOURCE_GROUP MAKE_FILE SOURCES)
   if(${list_length} LESS 1)
     message(
       FATAL_ERROR
-        "No files parsed succesfully from ${SOURCE_GROUP} in ${MAKE_FILE}")
+        "No files parsed successfully from ${SOURCE_GROUP} in ${MAKE_FILE}")
   endif()
 
   # remove trailing whitespaces
