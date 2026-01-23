@@ -227,10 +227,11 @@
         app:layout_constraintEnd_toStartOf="@+id/textRssi"
         app:layout_constraintTop_toBottomOf="@+id/textStatus" />
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/frameButton"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:layout_constraintHeight_percent="0.8"
         app:layout_constraintTop_toBottomOf="@+id/codecMode"
         app:layout_constraintBottom_toTopOf="@+id/btnBar"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -238,11 +239,11 @@
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btnPtt"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="2dp"
             android:background="@drawable/btn_ptt"
             android:hapticFeedbackEnabled="false"
             android:src="@drawable/btn_ptt_touch"
@@ -254,125 +255,109 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="1:1"/>
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/btnBar"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="horizontal"
         tools:layout_editor_absoluteX="0dp"
         tools:layout_editor_absoluteY="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameButton">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frameButton"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.0">
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btnCall"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="0dp"
+            android:layout_marginTop="0dp"
             android:background="@drawable/btn_ptt"
             android:hapticFeedbackEnabled="false"
             android:text="@string/push_to_talk"
             android:textColor="#FFFFFF"
             android:textSize="24sp"
             android:src="@drawable/ic_app_action"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/btnTrack"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/btnMessages"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatImageButton
-            android:id="@+id/btnTrack"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/btn_ptt"
-            android:hapticFeedbackEnabled="false"
-            android:text="@string/push_to_talk"
-            android:textColor="#FFFFFF"
-            android:textSize="24sp"
-            android:src="@drawable/ic_app_action"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/btnMessages"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent" />
+            app:layout_constraintDimensionRatio="1:1"/>
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btnMessages"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
             android:background="@drawable/btn_ptt"
             android:hapticFeedbackEnabled="false"
             android:text="@string/push_to_talk"
             android:textColor="#FFFFFF"
             android:textSize="24sp"
             android:src="@drawable/ic_app_action"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/btnTrack"
+            app:layout_constraintLeft_toRightOf="@+id/btnCall"
+            app:layout_constraintRight_toLeftOf="@+id/btnLog"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent" />
+            app:layout_constraintDimensionRatio="1:1"/>
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btnLog"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
             android:background="@drawable/btn_ptt"
             android:hapticFeedbackEnabled="false"
             android:text="@string/push_to_talk"
             android:textColor="#FFFFFF"
             android:textSize="24sp"
             android:src="@drawable/ic_app_action"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/btnMap"
+            app:layout_constraintLeft_toRightOf="@+id/btnMessages"
+            app:layout_constraintRight_toLeftOf="@+id/btnMap"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent" />
+            app:layout_constraintDimensionRatio="1:1"/>
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btnMap"
             android:layout_width="0dp"
-            android:layout_height="50dp"
+            android:layout_height="0dp"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginTop="2dp"
             android:background="@drawable/btn_ptt"
             android:hapticFeedbackEnabled="false"
             android:text="@string/push_to_talk"
             android:textColor="#FFFFFF"
             android:textSize="24sp"
             android:src="@drawable/ic_app_action"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/btnLog"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="parent" />
-    </LinearLayout>
+            app:layout_constraintDimensionRatio="1:1"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
