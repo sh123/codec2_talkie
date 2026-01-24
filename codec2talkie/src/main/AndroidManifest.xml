@@ -73,7 +73,7 @@
             android:configChanges="orientation|screenSize" />
         <activity
             android:exported="false"
-            android:name=".storage.message.group.MessageGroupActivity"
+            android:name=".storage.message.group.MessageGroupFragment"
             android:configChanges="orientation|screenSize" />
         <activity
             android:exported="false"

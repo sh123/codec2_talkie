@@ -3,44 +3,58 @@ package com.radio.codec2talkie.storage.message.group;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.appcompat.app.ActionBar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
-import com.radio.codec2talkie.ui.AppCompatActivityWithServiceConnection;
+import com.radio.codec2talkie.ui.FragmentWithServiceConnection;
 
-public class MessageGroupActivity extends AppCompatActivityWithServiceConnection {
+public class MessageGroupFragment extends FragmentWithServiceConnection implements MenuProvider {
 
-    private static final String TAG = MessageGroupActivity.class.getSimpleName();
+    private static final String TAG = MessageGroupFragment.class.getSimpleName();
 
     private MessageGroupViewModel _messageGroupViewModel;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "onCreate()");
+    }
 
-        setContentView(R.layout.activity_message_groups_view);
-        setTitle(R.string.messages_group_view_title);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_message_groups_view, container, false);
+    }
 
-        Button sendToButton = findViewById(R.id.messages_send_to);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Log.i(TAG, "onCreateView()");
+
+        requireActivity().addMenuProvider(this, getViewLifecycleOwner());
+
+        Button sendToButton = view.findViewById(R.id.messages_send_to);
         sendToButton.setOnClickListener(v -> {
-            MessageGroupDialogSendTo dialogSendTo = new MessageGroupDialogSendTo(MessageGroupActivity.this, getService());
+            MessageGroupDialogSendTo dialogSendTo = new MessageGroupDialogSendTo(requireActivity(), getService());
             dialogSendTo.show();
         });
 
-        RecyclerView recyclerView = findViewById(R.id.message_groups_recyclerview);
+        RecyclerView recyclerView = view.findViewById(R.id.message_groups_recyclerview);
         recyclerView.setHasFixedSize(true);
 
         final MessageGroupAdapter adapter = new MessageGroupAdapter(new MessageGroupAdapter.MessageGroupDiff());
@@ -51,32 +65,32 @@ public class MessageGroupActivity extends AppCompatActivityWithServiceConnection
         });
         recyclerView.setAdapter(adapter);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
         recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
         _messageGroupViewModel = new ViewModelProvider(this).get(MessageGroupViewModel.class);
-        _messageGroupViewModel.getGroups().observe(this, adapter::submitList);
+        _messageGroupViewModel.getGroups().observe(requireActivity(), adapter::submitList);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.messages_group_menu, menu);
-        return true;
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+        menuInflater.inflate(R.menu.messages_group_menu, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        int itemId = item.getItemId();
-
-        if (itemId == android.R.id.home) {
-            finish();
-            return true;
-        } else if (itemId == R.id.messages_group_menu_clear) {
+    public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
+        int itemId = menuItem.getItemId();
+        if (itemId == R.id.messages_group_menu_clear) {
             deleteAll();
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        requireActivity().removeMenuProvider(this);
     }
 
     private void deleteAll() {
@@ -86,7 +100,7 @@ public class MessageGroupActivity extends AppCompatActivityWithServiceConnection
             }
         };
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         builder.setMessage(getString(R.string.messages_group_activity_delete_all_confirmation_title))
                 .setPositiveButton(getString(R.string.yes), deleteAllDialogClickListener)
                 .setNegativeButton(getString(R.string.no), deleteAllDialogClickListener).show();
@@ -100,7 +114,7 @@ public class MessageGroupActivity extends AppCompatActivityWithServiceConnection
         };
         String message = getString(R.string.messages_group_activity_delete_group_confirmation_title);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         builder.setMessage(String.format(message, groupName))
                 .setPositiveButton(getString(R.string.yes), deleteGroupDialogClickListener)
                 .setNegativeButton(getString(R.string.no), deleteGroupDialogClickListener).show();

@@ -57,7 +57,7 @@ import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.recorder.RecorderActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsActivity;
-import com.radio.codec2talkie.storage.message.group.MessageGroupActivity;
+import com.radio.codec2talkie.storage.message.group.MessageGroupFragment;
 import com.radio.codec2talkie.tools.AudioTools;
 import com.radio.codec2talkie.tools.DeviceIdTools;
 import com.radio.codec2talkie.tools.PermissionsManager;
@@ -86,7 +86,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private boolean _isTestMode;
     private boolean _isBleEnabled;
 
+    // fragments
     private CallFragment _callFragment;
+    private MessageGroupFragment _messageGroupFragment;
+
+    // views
     private TextView _textConnInfo;
     private TextView _textStatus;
     private TextView _textTelemetry;
@@ -110,51 +114,31 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate()");
 
+        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        setContentView(R.layout.activity_main);
+
         // title
         String appName = getResources().getString(R.string.app_name);
         setTitle(appName + " v" + BuildConfig.VERSION_NAME);
 
-        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        // states
+        _isTestMode = SettingsWrapper.isLoopbackTransport(_sharedPreferences);
+        _isBleEnabled = SettingsWrapper.isBleTransport(_sharedPreferences);
+        _isAppRestart = false;
+        _isAppExit = false;
 
-        setContentView(R.layout.activity_main);
-
+        // status labels
         _textConnInfo = findViewById(R.id.textBtName);
         _textStatus = findViewById(R.id.textStatus);
         _textTelemetry = findViewById(R.id.textTelemetry);
         _textRssi = findViewById(R.id.textRssi);
-
-        // UV bar
-        int barMaxValue = AppWorker.getAudioMaxLevel() - AppWorker.getAudioMinLevel();
-        _progressAudioLevel = findViewById(R.id.progressAudioLevel);
-        _progressAudioLevel.setMax(barMaxValue);
-        _progressAudioLevel.getProgressDrawable().setColorFilter(
-                new PorterDuffColorFilter(AudioTools.colorFromAudioLevel(AppWorker.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
+        _textCodecMode = findViewById(R.id.codecMode);
 
         // S-meter
         _progressRssi = findViewById(R.id.progressRssi);
         _progressRssi.setMax(S_METER_RANGE_DB);
         _progressRssi.getProgressDrawable().setColorFilter(
                 new PorterDuffColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN));
-
-        // setup fragments
-        if (savedInstanceState == null) {
-            _callFragment = new CallFragment();
-            loadMainFragment(_callFragment);
-        } else {
-            _callFragment = (CallFragment) getSupportFragmentManager()
-                    .findFragmentByTag(CallFragment.class.getSimpleName());
-        }
-        findViewById(R.id.btnCall).setOnClickListener(view -> loadMainFragment(_callFragment));
-
-        // codec2 mode label
-        _textCodecMode = findViewById(R.id.codecMode);
-
-        // BT/USB disconnects
-        registerReceiver(onBluetoothDisconnected, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
-        registerReceiver(onUsbDetached, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
-
-        _isTestMode = SettingsWrapper.isLoopbackTransport(_sharedPreferences);
-        _isBleEnabled = SettingsWrapper.isBleTransport(_sharedPreferences);
 
         // show/hide S-meter
         FrameLayout frameRssi = findViewById(R.id.frameRssi);
@@ -171,6 +155,31 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             frameRssi.setVisibility(View.GONE);
         }
 
+        // UV bar
+        int barMaxValue = AppWorker.getAudioMaxLevel() - AppWorker.getAudioMinLevel();
+        _progressAudioLevel = findViewById(R.id.progressAudioLevel);
+        _progressAudioLevel.setMax(barMaxValue);
+        _progressAudioLevel.getProgressDrawable().setColorFilter(
+                new PorterDuffColorFilter(AudioTools.colorFromAudioLevel(AppWorker.getAudioMinLevel()), PorterDuff.Mode.SRC_IN));
+
+        // setup fragments
+        if (savedInstanceState == null) {
+            _callFragment = new CallFragment();
+            _messageGroupFragment = new MessageGroupFragment();
+            loadMainFragment(_callFragment);
+        } else {
+            _callFragment = (CallFragment) getSupportFragmentManager()
+                    .findFragmentByTag(CallFragment.class.getSimpleName());
+            _messageGroupFragment = (MessageGroupFragment) getSupportFragmentManager()
+                    .findFragmentByTag(MessageGroupFragment.class.getSimpleName());
+        }
+        findViewById(R.id.btnCall).setOnClickListener(view -> loadMainFragment(_callFragment));
+        findViewById(R.id.btnMessages).setOnClickListener(view -> loadMainFragment(_messageGroupFragment));
+
+        // BT/USB disconnects
+        registerReceiver(onBluetoothDisconnected, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
+        registerReceiver(onUsbDetached, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
+
         // screen always on / auto turn screen on / run above app lock
         if (_sharedPreferences.getBoolean(PreferenceKeys.APP_KEEP_SCREEN_ON, false)) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -182,12 +191,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD | WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED);
         }
 
-        _isAppRestart = false;
-        _isAppExit = false;
-
         // load device id description mapping
         DeviceIdTools.loadDeviceIdMap(this);
 
+        // initiate transport connectivity
         startTransportConnection();
     }
 
@@ -400,7 +407,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             new ActivityResultContracts.StartActivityForResult(), result -> {});
 
     protected void startMessagesActivity() {
-        _messagesActivityLauncher.launch(new Intent(this, MessageGroupActivity.class));
+        _messagesActivityLauncher.launch(new Intent(this, MessageGroupFragment.class));
     }
 
     private void bindAppService() {

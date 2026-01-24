@@ -23,7 +23,6 @@ import androidx.preference.PreferenceManager;
 
 public class CallFragment extends FragmentWithServiceConnection {
 
-
     private SharedPreferences _sharedPreferences;
 
     private ImageButton _btnPtt;
@@ -106,7 +105,7 @@ public class CallFragment extends FragmentWithServiceConnection {
         super.onViewCreated(view, savedInstanceState);
 
         _btnPtt = view.findViewById(R.id.btnPtt);
-        _btnPtt.setEnabled(false);
+        _btnPtt.setEnabled(true);
         _btnPtt.setOnTouchListener(onBtnPttTouchListener);
     }
 

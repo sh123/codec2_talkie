@@ -5,7 +5,7 @@
     android:id="@+id/activity_log_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".storage.message.group.MessageGroupActivity">
+    tools:context=".storage.message.group.MessageGroupFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/message_groups_recyclerview"
