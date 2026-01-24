@@ -5,9 +5,22 @@
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
     <color name="red">#E33B3B</color>
     <color name="green">#2C7F26</color>
     <color name="grey">#808080</color>
+
+    <!-- Primary colors -->
+    <color name="light_blue">#BBDEFB</color>            <!-- Light Blue for background -->
+    <color name="dark_blue">#2196F3</color>              <!-- Darker Blue for accents -->
+    <color name="dark_gray">#212121</color>              <!-- Dark text color -->
+
+    <!-- Secondary colors -->
+    <color name="light_gray">#F5F5F5</color>             <!-- Light Gray for secondary areas -->
+    <color name="medium_gray">#B0BEC5</color>            <!-- Medium Gray for variant elements -->
+    <color name="black">#000000</color>                  <!-- Black color for text -->
+
+    <!-- Additional colors - Optional -->
+    <color name="white">#FFFFFF</color>                  <!-- White background color -->
+    <color name="cream">#FFF3E0</color>                  <!-- Optional Cream for soft UI -->
+    <color name="coral">#FFAB91</color>                  <!-- Optional Coral for accents -->
 </resources>
