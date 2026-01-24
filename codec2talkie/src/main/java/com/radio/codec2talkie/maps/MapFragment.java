@@ -12,12 +12,17 @@ import android.hardware.SensorEvent;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.core.view.MenuProvider;
+import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
 import com.radio.codec2talkie.BuildConfig;
@@ -40,8 +45,8 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.Locale;
 
-public class MapActivity extends AppCompatActivity {
-    private static final String TAG = MapActivity.class.getSimpleName();
+public class MapFragment extends Fragment implements MenuProvider {
+    private static final String TAG = MapFragment.class.getSimpleName();
 
     private static final double MAP_STARTUP_ZOOM = 5.0;
     private static final double MAP_FOLLOW_ZOOM = 14.0;
@@ -57,20 +62,27 @@ public class MapActivity extends AppCompatActivity {
     private String _positionInfo;
     private double _prevBearing = 0.0;
 
+    @Nullable
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setTitle(R.string.menu_aprs_map);
-        setContentView(R.layout.activity_map_view);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_map_view, container, false);
+    }
 
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
+    @Override
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+        menuInflater.inflate(R.menu.map_menu, menu);
+    }
 
-        Context context = getApplicationContext();
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        requireActivity().addMenuProvider(this, getViewLifecycleOwner());
+
         Configuration.getInstance().setUserAgentValue(Aprs.APRS_ID + " " + BuildConfig.VERSION_NAME);
 
         // map
-        _mapView = findViewById(R.id.map);
+        _mapView = view.findViewById(R.id.map);
         _mapView.setTileSource(TileSourceFactory.MAPNIK);
         _mapView.setMultiTouchControls(true);
 
@@ -79,11 +91,11 @@ public class MapActivity extends AppCompatActivity {
         _mapController.zoomTo(MAP_STARTUP_ZOOM);
 
         // compass
-        CompassOverlay compassOverlay = getCompassOverlay(context);
+        CompassOverlay compassOverlay = getCompassOverlay(requireActivity());
         _mapView.getOverlays().add(compassOverlay);
 
         // my location
-        _myLocationNewOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(context), _mapView) {
+        _myLocationNewOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(requireActivity()), _mapView) {
             @Override
             public void onLocationChanged(Location location, IMyLocationProvider source) {
                 super.onLocationChanged(location, source);
@@ -142,14 +154,14 @@ public class MapActivity extends AppCompatActivity {
 
         // my location overlay
         _myLocationNewOverlay.enableMyLocation();
-        _myLocationNewOverlay.runOnFirstFix(() -> runOnUiThread(() -> {
+        _myLocationNewOverlay.runOnFirstFix(() -> requireActivity().runOnUiThread(() -> {
             _mapController.setCenter(_myLocationNewOverlay.getMyLocation());
             _mapController.animateTo(_myLocationNewOverlay.getMyLocation());
         }));
         _mapView.getOverlays().add(_myLocationNewOverlay);
 
         // stations
-        _mapStations = new MapStations(context, _mapView, this);
+        _mapStations = new MapStations(requireActivity(), _mapView, this);
     }
 
     @NonNull
@@ -169,12 +181,11 @@ public class MapActivity extends AppCompatActivity {
     }
 
     public void updateMyIcon(boolean shouldFlip) {
-        Context context = getApplicationContext();
         Configuration.getInstance().setUserAgentValue(Aprs.APRS_ID + " " + BuildConfig.VERSION_NAME);
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireActivity());
 
         // my symbol
-        AprsSymbolTable aprsSymbolTable = AprsSymbolTable.getInstance(context);
+        AprsSymbolTable aprsSymbolTable = AprsSymbolTable.getInstance(requireActivity());
         String mySymbolCode = sharedPreferences.getString(PreferenceKeys.APRS_SYMBOL, "/[");
 
         Bitmap myBitmapIcon = aprsSymbolTable.bitmapFromSymbol(mySymbolCode, true);
@@ -191,19 +202,9 @@ public class MapActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.map_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onMenuItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-
-        if (itemId == android.R.id.home) {
-            finish();
-            return true;
-        } else if (itemId == R.id.map_menu_clear_cache) {
+        if (itemId == R.id.map_menu_clear_cache) {
             new Thread(() -> {
                 _mapView.getTileProvider().clearTileCache();
                 SqlTileWriter sqlTileWriter = new SqlTileWriter();
@@ -257,7 +258,6 @@ public class MapActivity extends AppCompatActivity {
             }
             return true;
         }
-
-        return super.onOptionsItemSelected(item);
+        return false;
     }
 }

@@ -50,7 +50,7 @@ import com.radio.codec2talkie.connect.BleConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothSocketHandler;
 import com.radio.codec2talkie.connect.TcpIpConnectActivity;
-import com.radio.codec2talkie.maps.MapActivity;
+import com.radio.codec2talkie.maps.MapFragment;
 import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.storage.log.LogItemFragment;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
@@ -90,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private CallFragment _callFragment;
     private MessageGroupFragment _messageGroupFragment;
     private LogItemFragment _logItemFragment;
+    private MapFragment _mapFragment;
 
     // views
     private TextView _textConnInfo;
@@ -168,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             _callFragment = new CallFragment();
             _messageGroupFragment = new MessageGroupFragment();
             _logItemFragment = new LogItemFragment();
+            _mapFragment = new MapFragment();
             loadMainFragment(_callFragment);
         } else {
             _callFragment = (CallFragment) getSupportFragmentManager()
@@ -176,10 +178,13 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     .findFragmentByTag(MessageGroupFragment.class.getSimpleName());
             _logItemFragment = (LogItemFragment) getSupportFragmentManager()
                     .findFragmentByTag(LogItemFragment.class.getSimpleName());
+            _mapFragment = (MapFragment) getSupportFragmentManager()
+                    .findFragmentByTag(MapFragment.class.getSimpleName());
         }
         findViewById(R.id.btnCall).setOnClickListener(view -> loadMainFragment(_callFragment));
         findViewById(R.id.btnMessages).setOnClickListener(view -> loadMainFragment(_messageGroupFragment));
         findViewById(R.id.btnLog).setOnClickListener(view -> loadMainFragment(_logItemFragment));
+        findViewById(R.id.btnMap).setOnClickListener(view -> loadMainFragment(_mapFragment));
 
         // BT/USB disconnects
         registerReceiver(onBluetoothDisconnected, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
@@ -391,28 +396,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         _recorderActivityLauncher.launch(new Intent(this, RecorderActivity.class));
     }
 
-    private final ActivityResultLauncher<Intent> _logViewActivityLauncher  = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> { });
-
-    protected void startLogViewActivity() {
-        _logViewActivityLauncher.launch(new Intent(this, LogItemFragment.class));
-    }
-
-    protected void startMapViewActivity() {
-        _logViewActivityLauncher.launch(new Intent(this, MapActivity.class));
-    }
     private final ActivityResultLauncher<Intent> _settingsActivityLauncher  = registerForActivityResult(
         new ActivityResultContracts.StartActivityForResult(), result -> restartApplication());
 
     protected void startSettingsActivity() {
         _settingsActivityLauncher.launch(new Intent(this, SettingsActivity.class));
-    }
-
-    private final ActivityResultLauncher<Intent> _messagesActivityLauncher  = registerForActivityResult(
-            new ActivityResultContracts.StartActivityForResult(), result -> {});
-
-    protected void startMessagesActivity() {
-        _messagesActivityLauncher.launch(new Intent(this, MessageGroupFragment.class));
     }
 
     private void bindAppService() {
@@ -593,15 +581,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 _appService.startTracking();
                 item.setTitle(R.string.menu_stop_tracking);
             }
-            return true;
-        } else if (itemId == R.id.messages) {
-            startMessagesActivity();
-            return true;
-        } else if (itemId == R.id.aprs_log) {
-            startLogViewActivity();
-            return true;
-        } else if (itemId == R.id.aprs_map) {
-            startMapViewActivity();
             return true;
         }
         return super.onOptionsItemSelected(item);

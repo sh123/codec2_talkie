@@ -73,7 +73,7 @@
             android:configChanges="orientation|screenSize" />
         <activity
             android:exported="false"
-            android:name=".maps.MapActivity"
+            android:name=".maps.MapFragment"
             android:configChanges="orientation|screenSize" />
         <activity
             android:exported="true"

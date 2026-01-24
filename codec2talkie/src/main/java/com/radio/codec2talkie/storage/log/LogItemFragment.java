@@ -60,6 +60,8 @@ public class LogItemFragment extends Fragment implements MenuProvider {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        requireActivity().addMenuProvider(this, getViewLifecycleOwner());
+
         // view models
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
         _positionItemViewModel = new ViewModelProvider(this).get(PositionItemViewModel.class);
