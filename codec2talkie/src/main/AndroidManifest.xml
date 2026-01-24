@@ -36,7 +36,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Codec2Talkie">
+        android:theme="@style/Theme.Light">
         <service android:name=".app.AppService"
             android:foregroundServiceType="location|microphone"/>
         <activity

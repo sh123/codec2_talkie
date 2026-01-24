@@ -335,7 +335,7 @@
             android:background="@drawable/btn_ptt"
             android:hapticFeedbackEnabled="false"
             android:text="@string/push_to_talk"
-            android:textColor="#FFFFFF"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="24sp"
             android:src="@drawable/baseline_map_24"
             app:layout_constraintTop_toTopOf="parent"
