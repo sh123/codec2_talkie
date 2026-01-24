@@ -28,16 +28,12 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.SystemClock;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +41,7 @@ import android.widget.Toast;
 import com.radio.codec2talkie.app.AppMessage;
 import com.radio.codec2talkie.app.AppService;
 import com.radio.codec2talkie.app.AppWorker;
+import com.radio.codec2talkie.audio.CallFragment;
 import com.radio.codec2talkie.connect.BleConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothConnectActivity;
 import com.radio.codec2talkie.connect.BluetoothSocketHandler;
@@ -85,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private boolean _isTestMode;
     private boolean _isBleEnabled;
 
+    private CallFragment _callFragment;
     private TextView _textConnInfo;
     private TextView _textStatus;
     private TextView _textTelemetry;
@@ -92,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private TextView _textRssi;
     private ProgressBar _progressAudioLevel;
     private ProgressBar _progressRssi;
-    private ImageButton _btnPtt;
     private Menu _menu;
 
     public static boolean isPaused = false;
@@ -135,11 +132,18 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         _progressRssi.getProgressDrawable().setColorFilter(
                 new PorterDuffColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN));
 
-        // PTT button
-        _btnPtt = findViewById(R.id.btnPtt);
-        _btnPtt.setEnabled(false);
-        _btnPtt.setOnTouchListener(onBtnPttTouchListener);
-
+        // initial call fragment
+        if (savedInstanceState == null) {
+            _callFragment = new CallFragment();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .setReorderingAllowed(true)
+                    .add(R.id.fragmentMain, _callFragment, CallFragment.class.getSimpleName())
+                    .commit();
+        } else {
+            _callFragment = (CallFragment) getSupportFragmentManager()
+                    .findFragmentByTag(CallFragment.class.getSimpleName());
+        }
         _textCodecMode = findViewById(R.id.codecMode);
 
         // BT/USB disconnects
@@ -223,7 +227,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         Log.i(TAG, "onResume()");
         isPaused = false;
         if (!AppService.isRunning && !_isConnecting) {
-            _btnPtt.setEnabled(false);
+            _callFragment.setEnabled(false);
             startTransportConnection();
         }
     }
@@ -402,7 +406,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         Log.i(TAG, "Starting app service processing: " + transportType.toString());
 
         ProtocolFactory.ProtocolType protocolType = ProtocolFactory.getBaseProtocolType(getApplicationContext());
-        _btnPtt.setEnabled(protocolType != ProtocolFactory.ProtocolType.KISS_PARROT);
+        _callFragment.setEnabled(protocolType != ProtocolFactory.ProtocolType.KISS_PARROT);
 
         updateStatusText(protocolType);
 
@@ -534,8 +538,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
 
         if (itemId == R.id.preferences) {
@@ -553,16 +556,13 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 _appService.stopRunning();
             }
             return true;
-        }
-        else if (itemId == R.id.exit) {
+        } else if (itemId == R.id.exit) {
             exitApplication();
             return true;
-        }
-        else if (itemId == R.id.send_position) {
+        } else if (itemId == R.id.send_position) {
             _appService.sendPosition();
             return true;
-        }
-        else if (itemId == R.id.start_tracking) {
+        } else if (itemId == R.id.start_tracking) {
             if (_appService.isTracking()) {
                 _appService.stopTracking();
                 item.setTitle(R.string.menu_start_tracking);
@@ -571,51 +571,21 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 item.setTitle(R.string.menu_stop_tracking);
             }
             return true;
-        }
-        else if (itemId == R.id.messages) {
+        } else if (itemId == R.id.messages) {
             startMessagesActivity();
             return true;
-        }
-        else if (itemId == R.id.aprs_log) {
+        } else if (itemId == R.id.aprs_log) {
             startLogViewActivity();
             return true;
-        }
-        else if (itemId == R.id.aprs_map) {
+        } else if (itemId == R.id.aprs_map) {
             startMapViewActivity();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            // headset hardware ptt cannot be used for long press
-            case KeyEvent.KEYCODE_HEADSETHOOK:
-                if (_btnPtt.isPressed()) {
-                    _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                            SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
-                } else {
-                    _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                            SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
-                }
-                return true;
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-            case KeyEvent.KEYCODE_VOLUME_UP:
-                if (_sharedPreferences.getBoolean(PreferenceKeys.APP_VOLUME_PTT, false)) {
-                    _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                            SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
-                    return true;
-                }
-                break;
-            case KeyEvent.KEYCODE_TV_DATA_SERVICE:
-                _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                        SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 0, 0, 0));
-                return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
-
+    /** @noinspection deprecation*/
+    @SuppressLint("MissingSuperCall")
     @Override
     public void onBackPressed() {
         if (_backPressedTimestamp + BACK_EXIT_MS_DELAY > System.currentTimeMillis()) {
@@ -625,43 +595,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
         _backPressedTimestamp = System.currentTimeMillis();
     }
-
-    @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-            case KeyEvent.KEYCODE_VOLUME_UP:
-                if (_sharedPreferences.getBoolean(PreferenceKeys.APP_VOLUME_PTT, false)) {
-                    _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                            SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
-                    return true;
-                }
-                break;
-            case KeyEvent.KEYCODE_TV_DATA_SERVICE:
-                _btnPtt.dispatchTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                        SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, 0, 0, 0));
-                return true;
-        }
-        return super.onKeyUp(keyCode, event);
-    }
-
-    private final View.OnTouchListener onBtnPttTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    if (_appService != null)
-                        _appService.startTransmit();
-                    break;
-                case MotionEvent.ACTION_UP:
-                    v.performClick();
-                    if (_appService != null)
-                        _appService.startReceive();
-                    break;
-            }
-            return false;
-        }
-    };
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -696,20 +629,19 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private final Handler onAppServiceStateChanged = new Handler(Looper.getMainLooper()) {
         @SuppressLint("UnsafeIntentLaunch")
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(@NonNull Message msg) {
+            _callFragment.onServiceMessage(msg);
+
             switch (AppMessage.values()[msg.what]) {
                 case EV_CONNECTED:
                     Log.i(TAG, "EV_CONNECTED");
                     updateMenuItemsAndStatusText();
                     _isConnecting = false;
-                    _btnPtt.setEnabled(true);
                     Toast.makeText(getBaseContext(), R.string.processor_connected, Toast.LENGTH_SHORT).show();
                     break;
                 case EV_DISCONNECTED:
                     Log.i(TAG, "EV_DISCONNECTED");
                     updateMenuItemsAndStatusText();
-                    _btnPtt.setImageResource(R.drawable.btn_ptt_stop);
-                    _btnPtt.setEnabled(false);
                     // app restart, stop app service and restart ourselves
                     if (_isAppRestart) {
                         Log.i(TAG, "App restart");
@@ -731,17 +663,17 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     }
                     break;
                 case EV_LISTENING:
-                    _btnPtt.setImageResource(R.drawable.btn_ptt_touch);
                     _textStatus.setText("");
                     break;
                 case EV_TRANSMITTED_VOICE:
+                case EV_VOICE_RECEIVED:
                     if (msg.obj != null) {
                         _textStatus.setText((String) msg.obj);
                     }
-                    _btnPtt.setImageResource(R.drawable.btn_ptt_mic);
                     break;
                 case EV_RECEIVING:
-                    _btnPtt.setImageResource(R.drawable.btn_ptt_listen);
+                case EV_RX_ERROR:
+                case EV_TX_ERROR:
                     break;
                 case EV_TEXT_MESSAGE_RECEIVED:
                 case EV_DATA_RECEIVED:
@@ -750,14 +682,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         String note = (String)msg.obj;
                         _textStatus.setText(note.split(":")[0]);
                     }
-                    _btnPtt.setImageResource(R.drawable.btn_ptt_letter);
-                    break;
-                case EV_VOICE_RECEIVED:
-                    if (msg.obj != null) {
-                        _textStatus.setText((String) msg.obj);
-                    }
-                    //_btnPtt.setText(R.string.main_status_voice_received);
-                    _btnPtt.setImageResource(R.drawable.btn_ptt_listen);
                     break;
                 case EV_RX_RADIO_LEVEL:
                     if (msg.arg1 == 0 && msg.arg2 == 0) {
@@ -786,12 +710,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 case EV_TX_LEVEL:
                     _progressAudioLevel.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(AudioTools.colorFromAudioLevel(msg.arg1), PorterDuff.Mode.SRC_IN));
                     _progressAudioLevel.setProgress(msg.arg1 - AppWorker.getAudioMinLevel());
-                    break;
-                case EV_RX_ERROR:
-                    _btnPtt.setImageResource(R.drawable.btn_ptt_err_rx);
-                    break;
-                case EV_TX_ERROR:
-                    _btnPtt.setImageResource(R.drawable.btn_ptt_err_tx);
                     break;
                 case EV_STARTED_TRACKING:
                 case EV_STOPPED_TRACKING:

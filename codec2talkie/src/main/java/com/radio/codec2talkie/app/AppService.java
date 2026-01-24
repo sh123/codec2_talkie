@@ -54,6 +54,7 @@ public class AppService extends Service {
 
     private final int SERVICE_NOTIFICATION_ID = 1;
     private final int VOICE_NOTIFICATION_ID = 2;
+    /** @noinspection FieldCanBeLocal*/
     private final int MESSAGE_NOTIFICATION_ID = 3;
 
     private AppWorker _appWorker;

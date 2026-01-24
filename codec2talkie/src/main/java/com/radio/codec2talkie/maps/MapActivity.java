@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
@@ -78,17 +79,7 @@ public class MapActivity extends AppCompatActivity {
         _mapController.zoomTo(MAP_STARTUP_ZOOM);
 
         // compass
-        InternalCompassOrientationProvider compassOrientationProvider = new InternalCompassOrientationProvider(context) {
-            @Override
-            public void onSensorChanged(SensorEvent sensorEvent) {
-                if (_rotateMap) {
-                    _mapView.setMapOrientation(-sensorEvent.values[0]);
-                }
-                super.onSensorChanged(sensorEvent);
-            }
-        };
-        CompassOverlay compassOverlay = new CompassOverlay(context, compassOrientationProvider, _mapView);
-        compassOverlay.enableCompass();
+        CompassOverlay compassOverlay = getCompassOverlay(context);
         _mapView.getOverlays().add(compassOverlay);
 
         // my location
@@ -159,6 +150,22 @@ public class MapActivity extends AppCompatActivity {
 
         // stations
         _mapStations = new MapStations(context, _mapView, this);
+    }
+
+    @NonNull
+    private CompassOverlay getCompassOverlay(Context context) {
+        InternalCompassOrientationProvider compassOrientationProvider = new InternalCompassOrientationProvider(context) {
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                if (_rotateMap) {
+                    _mapView.setMapOrientation(-sensorEvent.values[0]);
+                }
+                super.onSensorChanged(sensorEvent);
+            }
+        };
+        CompassOverlay compassOverlay = new CompassOverlay(context, compassOrientationProvider, _mapView);
+        compassOverlay.enableCompass();
+        return compassOverlay;
     }
 
     public void updateMyIcon(boolean shouldFlip) {
