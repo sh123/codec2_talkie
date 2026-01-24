@@ -72,10 +72,6 @@
             android:name=".storage.message.MessageItemActivity"
             android:configChanges="orientation|screenSize" />
         <activity
-            android:exported="false"
-            android:name=".maps.MapFragment"
-            android:configChanges="orientation|screenSize" />
-        <activity
             android:exported="true"
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize">
