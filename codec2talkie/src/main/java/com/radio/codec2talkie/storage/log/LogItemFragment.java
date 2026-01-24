@@ -1,16 +1,21 @@
 package com.radio.codec2talkie.storage.log;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
-import androidx.appcompat.app.ActionBar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuProvider;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -24,8 +29,11 @@ import com.radio.codec2talkie.storage.station.StationItemViewModel;
 
 import java.util.List;
 
-public class LogItemActivity extends AppCompatActivity {
-    private static final String TAG = LogItemActivity.class.getSimpleName();
+public class LogItemFragment extends Fragment implements MenuProvider {
+    /** @noinspection unused*/
+    private static final String TAG = LogItemFragment.class.getSimpleName();
+
+    private static final String ARG_DATA = "arg_data";
 
     private String _stationName;
     private LogItemViewModel _logItemViewModel;
@@ -35,19 +43,22 @@ public class LogItemActivity extends AppCompatActivity {
     private LiveData<List<LogItem>> _logItemLiveData;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_log_view);
-
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
-
-        // get station name to decide if filtering should be enabled
-        Bundle bundle = getIntent().getExtras();
-        _stationName = null;
-        if (bundle != null) {
-            _stationName = (String)bundle.get("stationName");
+        if (getArguments() != null) {
+            _stationName = getArguments().getString(ARG_DATA);
         }
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_log_view, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         // view models
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
@@ -55,50 +66,40 @@ public class LogItemActivity extends AppCompatActivity {
         _stationItemViewModel = new ViewModelProvider(this).get(StationItemViewModel.class);
 
         // log items
-        RecyclerView logItemRecyclerView = findViewById(R.id.log_item_recyclerview);
+        RecyclerView logItemRecyclerView = view.findViewById(R.id.log_item_recyclerview);
         logItemRecyclerView.setHasFixedSize(true);
 
         // log lines list adapter
-        final LogItemAdapter adapter = new LogItemAdapter(new LogItemAdapter.LogItemDiff(), _stationName == null);
+        final LogItemAdapter adapter = new LogItemAdapter(new LogItemAdapter.LogItemDiff(), requireActivity(), _stationName == null);
         logItemRecyclerView.setAdapter(adapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireActivity());
         linearLayoutManager.setReverseLayout(true);
         logItemRecyclerView.setLayoutManager(linearLayoutManager);
         logItemRecyclerView.addItemDecoration(new DividerItemDecoration(logItemRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
         // stations
-        RecyclerView stationsRecyclerView = findViewById(R.id.log_item_group_recyclerview);
+        RecyclerView stationsRecyclerView = view.findViewById(R.id.log_item_group_recyclerview);
         stationsRecyclerView.setHasFixedSize(true);
 
         // stations adapter
-        final StationItemAdapter stationsAdapter = new StationItemAdapter(new StationItemAdapter.StationItemDiff());
-        stationsAdapter.setClickListener(v -> {
-            TextView itemView = v.findViewById(R.id.log_view_group_item_title);
-            _logItemLiveData.removeObservers(this);
-            _stationName = itemView.getText().toString();
-            _logItemLiveData = _logItemViewModel.getData(_stationName);
-            _logItemLiveData.observe(this, adapter::submitList);
-            setTitle(_stationName);
-        });
+        final StationItemAdapter stationsAdapter = getStationItemAdapter(adapter);
         stationsRecyclerView.setAdapter(stationsAdapter);
-        LinearLayoutManager linearLayoutManagerStations = new LinearLayoutManager(this);
+        LinearLayoutManager linearLayoutManagerStations = new LinearLayoutManager(requireActivity());
         stationsRecyclerView.setLayoutManager(linearLayoutManagerStations);
         stationsRecyclerView.addItemDecoration(new DividerItemDecoration(stationsRecyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
-        _stationItemViewModel.getAllStationItems(false).observe(this, stationsAdapter::submitList);
+        _stationItemViewModel.getAllStationItems(false).observe(requireActivity(), stationsAdapter::submitList);
 
         // launch with filter if station name is provided
         if (_stationName == null) {
             stationsRecyclerView.setVisibility(View.GONE);
-            findViewById(R.id.log_item_textview).setVisibility(View.GONE);
-            findViewById(R.id.log_item_group_textview).setVisibility(View.GONE);
+            view.findViewById(R.id.log_item_textview).setVisibility(View.GONE);
+            view.findViewById(R.id.log_item_group_textview).setVisibility(View.GONE);
             _logItemLiveData = _logItemViewModel.getAllData();
-            _logItemLiveData.observe(this, adapter::submitList);
-            setTitle(R.string.aprs_log_view_title);
+            _logItemLiveData.observe(requireActivity(), adapter::submitList);
         } else {
             _logItemLiveData = _logItemViewModel.getData(_stationName);
-            _logItemLiveData.observe(this, adapter::submitList);
-            setTitle(_stationName);
+            _logItemLiveData.observe(requireActivity(), adapter::submitList);
         }
 
         // register live scroll
@@ -115,29 +116,36 @@ public class LogItemActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.log_view_menu, menu);
-        return true;
+    @NonNull
+    private StationItemAdapter getStationItemAdapter(LogItemAdapter adapter) {
+        final StationItemAdapter stationsAdapter = new StationItemAdapter(new StationItemAdapter.StationItemDiff());
+        stationsAdapter.setClickListener(v -> {
+            TextView itemView = v.findViewById(R.id.log_view_group_item_title);
+            _logItemLiveData.removeObservers(this);
+            _stationName = itemView.getText().toString();
+            _logItemLiveData = _logItemViewModel.getData(_stationName);
+            _logItemLiveData.observe(requireActivity(), adapter::submitList);
+        });
+        return stationsAdapter;
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
+        menuInflater.inflate(R.menu.log_view_menu, menu);
+    }
+
+    @Override
+    public void onPrepareMenu(@NonNull Menu menu) {
         if (_stationName != null) {
             menu.findItem(R.id.log_view_menu_stations).setVisible(false);
         }
-        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
+    public boolean onMenuItemSelected(MenuItem item) {
         int itemId = item.getItemId();
 
-        if (itemId == android.R.id.home) {
-            finish();
-            return true;
-        }  else if (itemId == R.id.log_view_menu_clear_all) {
+        if (itemId == R.id.log_view_menu_clear_all) {
             deleteLogItems(-1);
             return true;
         }  else if (itemId == R.id.log_view_menu_clear_1h) {
@@ -153,12 +161,26 @@ public class LogItemActivity extends AppCompatActivity {
             deleteLogItems(24*7);
             return true;
         } else if (itemId == R.id.log_view_menu_stations) {
-            Intent logItemIntent = new Intent(this, LogItemActivity.class);
-            logItemIntent.putExtra("stationName", getString(R.string.log_view_station_history));
-            startActivity(logItemIntent);
+            restartLogItemFragment(getString(R.string.log_view_station_history));
             return true;
         }
-        return super.onOptionsItemSelected(item);
+        return false;
+    }
+
+    public static LogItemFragment newInstance(String data) {
+        LogItemFragment fragment = new LogItemFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_DATA, data);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    private void restartLogItemFragment(String newData) {
+        LogItemFragment newFragment = newInstance(newData);
+        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragmentMain, newFragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     private void deleteLogItems(int hours) {
@@ -177,7 +199,7 @@ public class LogItemActivity extends AppCompatActivity {
             alertMessage = getString(R.string.log_item_activity_delete_group_title);
             alertMessage = String.format(alertMessage, _stationName);
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
         builder.setMessage(alertMessage)
                 .setPositiveButton(getString(R.string.yes), deleteAllDialogClickListener)
                 .setNegativeButton(getString(R.string.no), deleteAllDialogClickListener).show();

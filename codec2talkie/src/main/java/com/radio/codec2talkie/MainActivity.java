@@ -52,7 +52,7 @@ import com.radio.codec2talkie.connect.BluetoothSocketHandler;
 import com.radio.codec2talkie.connect.TcpIpConnectActivity;
 import com.radio.codec2talkie.maps.MapActivity;
 import com.radio.codec2talkie.settings.SettingsWrapper;
-import com.radio.codec2talkie.storage.log.LogItemActivity;
+import com.radio.codec2talkie.storage.log.LogItemFragment;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.recorder.RecorderActivity;
 import com.radio.codec2talkie.settings.PreferenceKeys;
@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     // fragments
     private CallFragment _callFragment;
     private MessageGroupFragment _messageGroupFragment;
+    private LogItemFragment _logItemFragment;
 
     // views
     private TextView _textConnInfo;
@@ -166,15 +167,19 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         if (savedInstanceState == null) {
             _callFragment = new CallFragment();
             _messageGroupFragment = new MessageGroupFragment();
+            _logItemFragment = new LogItemFragment();
             loadMainFragment(_callFragment);
         } else {
             _callFragment = (CallFragment) getSupportFragmentManager()
                     .findFragmentByTag(CallFragment.class.getSimpleName());
             _messageGroupFragment = (MessageGroupFragment) getSupportFragmentManager()
                     .findFragmentByTag(MessageGroupFragment.class.getSimpleName());
+            _logItemFragment = (LogItemFragment) getSupportFragmentManager()
+                    .findFragmentByTag(LogItemFragment.class.getSimpleName());
         }
         findViewById(R.id.btnCall).setOnClickListener(view -> loadMainFragment(_callFragment));
         findViewById(R.id.btnMessages).setOnClickListener(view -> loadMainFragment(_messageGroupFragment));
+        findViewById(R.id.btnLog).setOnClickListener(view -> loadMainFragment(_logItemFragment));
 
         // BT/USB disconnects
         registerReceiver(onBluetoothDisconnected, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
@@ -390,7 +395,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             new ActivityResultContracts.StartActivityForResult(), result -> { });
 
     protected void startLogViewActivity() {
-        _logViewActivityLauncher.launch(new Intent(this, LogItemActivity.class));
+        _logViewActivityLauncher.launch(new Intent(this, LogItemFragment.class));
     }
 
     protected void startMapViewActivity() {

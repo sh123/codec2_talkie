@@ -5,7 +5,7 @@
     android:id="@+id/activity_log_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".storage.log.LogItemActivity">
+    tools:context=".storage.log.LogItemFragment">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/log_item_group_textview"

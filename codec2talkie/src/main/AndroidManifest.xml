@@ -69,14 +69,6 @@
             android:configChanges="orientation|screenSize" />
         <activity
             android:exported="false"
-            android:name=".storage.log.LogItemActivity"
-            android:configChanges="orientation|screenSize" />
-        <activity
-            android:exported="false"
-            android:name=".storage.message.group.MessageGroupFragment"
-            android:configChanges="orientation|screenSize" />
-        <activity
-            android:exported="false"
             android:name=".storage.message.MessageItemActivity"
             android:configChanges="orientation|screenSize" />
         <activity
