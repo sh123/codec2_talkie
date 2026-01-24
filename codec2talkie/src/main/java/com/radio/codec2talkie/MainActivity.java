@@ -5,6 +5,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceManager;
 
 import android.annotation.SuppressLint;
@@ -37,6 +39,8 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
 
 import com.radio.codec2talkie.app.AppMessage;
 import com.radio.codec2talkie.app.AppService;
@@ -132,18 +136,17 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         _progressRssi.getProgressDrawable().setColorFilter(
                 new PorterDuffColorFilter(Color.GRAY, PorterDuff.Mode.SRC_IN));
 
-        // initial call fragment
+        // setup fragments
         if (savedInstanceState == null) {
             _callFragment = new CallFragment();
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setReorderingAllowed(true)
-                    .add(R.id.fragmentMain, _callFragment, CallFragment.class.getSimpleName())
-                    .commit();
+            loadMainFragment(_callFragment);
         } else {
             _callFragment = (CallFragment) getSupportFragmentManager()
                     .findFragmentByTag(CallFragment.class.getSimpleName());
         }
+        findViewById(R.id.btnCall).setOnClickListener(view -> loadMainFragment(_callFragment));
+
+        // codec2 mode label
         _textCodecMode = findViewById(R.id.codecMode);
 
         // BT/USB disconnects
@@ -186,6 +189,14 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         DeviceIdTools.loadDeviceIdMap(this);
 
         startTransportConnection();
+    }
+
+    private void loadMainFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentMain, fragment, fragment.getClass().getSimpleName());
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
     @Override
