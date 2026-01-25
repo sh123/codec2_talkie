@@ -187,7 +187,6 @@ public class CallFragment extends FragmentWithServiceConnection {
                     getService().startReceive();
                 break;
         }
-        _btnPtt.invalidate();
         return false;
     };
 }
