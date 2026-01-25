@@ -9,6 +9,7 @@
         <item name="colorSecondary">@color/light_gray</item>         <!-- Light gray for secondary areas -->
         <item name="colorSecondaryVariant">@color/dark_gray</item>   <!-- Darker gray for variants -->
         <item name="colorOnSecondary">@color/black</item>           <!-- Black for contrast -->
+        <!-- Buttons -->
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->

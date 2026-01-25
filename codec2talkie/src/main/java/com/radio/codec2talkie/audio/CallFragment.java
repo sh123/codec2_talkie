@@ -6,7 +6,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.SystemClock;
-import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -25,9 +24,6 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 public class CallFragment extends FragmentWithServiceConnection {
-
-    private static final int StrokeWidthDp = 5;
-
     private SharedPreferences _sharedPreferences;
 
     private ImageButton _btnPtt;
@@ -168,7 +164,7 @@ public class CallFragment extends FragmentWithServiceConnection {
 
     private void setStrokeColor(int color) {
         GradientDrawable gradientDrawable = (GradientDrawable) _btnPtt.getBackground();
-        int strokeWidthPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, StrokeWidthDp, getResources().getDisplayMetrics());
+        int strokeWidthPx = (int) getResources().getDimension(R.dimen.button_stroke);
         gradientDrawable.setStroke(strokeWidthPx, ContextCompat.getColor(requireContext(), color));
         _btnPtt.invalidate();
     }
