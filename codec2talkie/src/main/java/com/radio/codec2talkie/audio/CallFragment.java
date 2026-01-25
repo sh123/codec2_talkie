@@ -2,9 +2,11 @@ package com.radio.codec2talkie.audio;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Message;
 import android.os.SystemClock;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -19,9 +21,12 @@ import com.radio.codec2talkie.ui.FragmentWithServiceConnection;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 public class CallFragment extends FragmentWithServiceConnection {
+
+    private static final int StrokeWidthDp = 5;
 
     private SharedPreferences _sharedPreferences;
 
@@ -59,28 +64,34 @@ public class CallFragment extends FragmentWithServiceConnection {
     public void onServiceMessage(Message msg) {
         switch (AppMessage.values()[msg.what]) {
             case EV_CONNECTED:
+                setStrokeColor(R.color.dark_blue);
                 _btnPtt.setEnabled(true);
                 break;
             case EV_DISCONNECTED:
+                setStrokeColor(R.color.black);
                 _btnPtt.setImageResource(R.drawable.btn_ptt_stop);
                 _btnPtt.setEnabled(false);
                 break;
             case EV_LISTENING:
+                setStrokeColor(R.color.dark_blue);
                 _btnPtt.setImageResource(R.drawable.btn_ptt_touch);
                 break;
             case EV_TRANSMITTED_VOICE:
+                setStrokeColor(R.color.red);
                 _btnPtt.setImageResource(R.drawable.btn_ptt_mic);
                 break;
             case EV_RECEIVING:
+                setStrokeColor(R.color.green);
                 _btnPtt.setImageResource(R.drawable.btn_ptt_listen);
                 break;
             case EV_TEXT_MESSAGE_RECEIVED:
             case EV_DATA_RECEIVED:
             case EV_POSITION_RECEIVED:
+                setStrokeColor(R.color.green);
                 _btnPtt.setImageResource(R.drawable.btn_ptt_letter);
                 break;
             case EV_VOICE_RECEIVED:
-                //_btnPtt.setText(R.string.main_status_voice_received);
+                setStrokeColor(R.color.green);
                 _btnPtt.setImageResource(R.drawable.btn_ptt_listen);
                 break;
             case EV_RX_RADIO_LEVEL:
@@ -155,18 +166,28 @@ public class CallFragment extends FragmentWithServiceConnection {
         return false;
     }
 
+    private void setStrokeColor(int color) {
+        GradientDrawable gradientDrawable = (GradientDrawable) _btnPtt.getBackground();
+        int strokeWidthPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, StrokeWidthDp, getResources().getDisplayMetrics());
+        gradientDrawable.setStroke(strokeWidthPx, ContextCompat.getColor(requireContext(), color));
+        _btnPtt.invalidate();
+    }
+
     private final View.OnTouchListener onBtnPttTouchListener = (v, event) -> {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
+                setStrokeColor(R.color.red);
                 if (getService() != null)
                     getService().startTransmit();
                 break;
             case MotionEvent.ACTION_UP:
+                setStrokeColor(R.color.dark_blue);
                 v.performClick();
                 if (getService() != null)
                     getService().startReceive();
                 break;
         }
+        _btnPtt.invalidate();
         return false;
     };
 }
