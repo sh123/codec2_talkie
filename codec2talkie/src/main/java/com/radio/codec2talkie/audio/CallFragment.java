@@ -69,7 +69,7 @@ public class CallFragment extends FragmentWithServiceConnection {
                 _btnPtt.setEnabled(false);
                 break;
             case EV_LISTENING:
-                setStrokeColor(R.color.dark_blue);
+                setStrokeColor(R.color.dark_gray);
                 _btnPtt.setImageResource(R.drawable.btn_ptt_touch);
                 break;
             case EV_TRANSMITTED_VOICE:
@@ -177,7 +177,7 @@ public class CallFragment extends FragmentWithServiceConnection {
                     getService().startTransmit();
                 break;
             case MotionEvent.ACTION_UP:
-                setStrokeColor(R.color.dark_blue);
+                setStrokeColor(R.color.dark_gray);
                 v.performClick();
                 if (getService() != null)
                     getService().startReceive();

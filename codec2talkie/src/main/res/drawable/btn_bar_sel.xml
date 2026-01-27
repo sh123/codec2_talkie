@@ -2,5 +2,5 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
     <solid android:color="@color/btn_bar_sel_selector" />
     <corners android:radius="1000dp"/>
-    <stroke android:width="@dimen/button_stroke" android:color="?attr/colorPrimaryVariant"/>
+    <stroke android:width="@dimen/button_stroke" android:color="?attr/colorOnPrimary"/>
 </shape>
