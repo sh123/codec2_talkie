@@ -304,7 +304,7 @@ public class AppWorker extends Thread {
 
         @Override
         protected void onReceiveCompressedAudio(String src, String dst, byte[] audioFrame) {
-            throw new UnsupportedOperationException();
+            Log.w(TAG, "onReceiveCompressedAudio is not supported");
         }
 
         @Override
@@ -352,7 +352,7 @@ public class AppWorker extends Thread {
 
         @Override
         protected void onTransmitCompressedAudio(String src, String dst, byte[] frame) {
-            throw new UnsupportedOperationException();
+            Log.w(TAG, "onTransmitCompressedAudio is not supported");
         }
 
         @Override

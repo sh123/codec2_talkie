@@ -122,9 +122,17 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         setContentView(R.layout.activity_main);
 
-        // menu button
+        // action bar button
         ImageButton buttonMenu = findViewById(R.id.btnMenu);
         buttonMenu.setOnClickListener(this::showMainPopupMenu);
+        ImageButton buttonSettings = findViewById(R.id.btnSettings);
+        buttonSettings.setOnClickListener(v -> {
+            if (_appService != null && _appService.isTracking())
+                _appService.stopTracking();
+            startSettingsActivity();
+        });
+        ImageButton buttonTracking = findViewById(R.id.btnTracking);
+        buttonTracking.setOnClickListener(this::showTrackingMenu);
 
         // states
         _isTestMode = SettingsWrapper.isLoopbackTransport(_sharedPreferences);
@@ -196,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         findViewById(R.id.btnLog).setOnClickListener(view -> loadMainFragment(_logItemFragment));
         findViewById(R.id.btnMap).setOnClickListener(view -> loadMainFragment(_mapFragment));
 
-        // BT/USB disconnects
+        // BT/USB disconnect callbacks
         registerReceiver(onBluetoothDisconnected, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
         registerReceiver(onUsbDetached, new IntentFilter(UsbManager.ACTION_USB_DEVICE_DETACHED));
 
@@ -214,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         // load device id description mapping
         DeviceIdTools.loadDeviceIdMap(this);
 
-        // initiate transport connectivity
+        // initiate transport connection
         startTransportConnection();
     }
 
@@ -536,15 +544,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
     }
 
-    private void showMainPopupMenu(View view) {
+    private void showTrackingMenu(View view) {
         PopupMenu popup = new PopupMenu(this, view);
         MenuInflater inflater = popup.getMenuInflater();
         Menu menu = popup.getMenu();
-        inflater.inflate(R.menu.main_menu, menu);
-
-        // show hide aprs group
-        boolean isAprsEnabled = SettingsWrapper.isAprsEnabled(_sharedPreferences);
-        menu.setGroupVisible(R.id.group_aprs, isAprsEnabled);
+        inflater.inflate(R.menu.tracking_menu, menu);
 
         // adjust start/stop state
         if (AppService.isRunning && _appService != null) {
@@ -555,17 +559,38 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 item.setTitle(R.string.menu_start_tracking);
             }
         }
+
+        popup.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.send_position) {
+                _appService.sendPosition();
+                return true;
+            } else if (itemId == R.id.start_tracking) {
+                if (_appService.isTracking()) {
+                    _appService.stopTracking();
+                    item.setTitle(R.string.menu_start_tracking);
+                } else {
+                    _appService.startTracking();
+                    item.setTitle(R.string.menu_stop_tracking);
+                }
+                return true;
+            }
+            return false;
+        });
+        popup.show();
+    }
+
+    private void showMainPopupMenu(View view) {
+        PopupMenu popup = new PopupMenu(this, view);
+        MenuInflater inflater = popup.getMenuInflater();
+        Menu menu = popup.getMenu();
+        inflater.inflate(R.menu.main_menu, menu);
+
         MenuCompat.setGroupDividerEnabled(menu, true);
 
         popup.setOnMenuItemClickListener(item -> {
             int itemId = item.getItemId();
 
-            if (itemId == R.id.preferences) {
-                if (_appService != null && _appService.isTracking())
-                    _appService.stopTracking();
-                startSettingsActivity();
-                return true;
-            }
             if (itemId == R.id.recorder) {
                 startRecorderActivity();
                 return true;
@@ -577,18 +602,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 return true;
             } else if (itemId == R.id.exit) {
                 exitApplication();
-                return true;
-            } else if (itemId == R.id.send_position) {
-                _appService.sendPosition();
-                return true;
-            } else if (itemId == R.id.start_tracking) {
-                if (_appService.isTracking()) {
-                    _appService.stopTracking();
-                    item.setTitle(R.string.menu_start_tracking);
-                } else {
-                    _appService.startTracking();
-                    item.setTitle(R.string.menu_stop_tracking);
-                }
                 return true;
             }
             return false;

@@ -194,7 +194,7 @@ public class AudioCodec2FrameAggregator implements Protocol {
 
     @Override
     public void sendPosition(Position position) {
-        throw new UnsupportedOperationException();
+        Log.w(TAG, "sendPosition is not supported");
     }
 
     @Override

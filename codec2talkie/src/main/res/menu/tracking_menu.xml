@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/group_aprs">
+        <item
+            android:id="@+id/send_position"
+            android:title="@string/menu_send_position" />
+        <item
+            android:id="@+id/start_tracking"
+            android:title="@string/menu_start_tracking" />
+    </group>
+</menu>

@@ -1,25 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:id="@+id/group_aprs">
-        <item
-            android:id="@+id/send_position"
-            android:title="@string/menu_send_position" />
-        <item
-            android:id="@+id/start_tracking"
-            android:title="@string/menu_start_tracking" />
-    </group>
     <group android:id="@+id/group_main">
-        <item
-            android:id="@+id/recorder"
-            android:title="@string/menu_recorder" />
         <item
             android:id="@+id/reconnect"
             android:title="@string/menu_reconnect" />
-    </group>
-    <group android:id="@+id/group_settings">
         <item
-            android:id="@+id/preferences"
-            android:title="@string/menu_settings" />
+            android:id="@+id/recorder"
+            android:title="@string/menu_recorder" />
     </group>
     <group android:id="@+id/group_exit">
         <item
