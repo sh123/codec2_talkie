@@ -122,6 +122,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         setContentView(R.layout.activity_main);
 
+        // Hide default action bar
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+
         // action bar button
         ImageButton buttonMenu = findViewById(R.id.btnMenu);
         buttonMenu.setOnClickListener(this::showMainPopupMenu);
