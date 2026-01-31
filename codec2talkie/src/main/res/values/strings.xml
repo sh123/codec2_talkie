@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Codec2Talkie</string>
-    <string name="push_to_talk">PUSH TO TALK</string>
+    <string name="push_to_talk">Push to talk</string>
 
     <string name="menu_settings">Settings</string>
     <string name="menu_exit">Exit</string>
@@ -413,4 +413,12 @@
     <string name="kiss_cipher_type_title">Select cipher type</string>
     <string name="kiss_cipher_key_title">Specify cipher key</string>
     <string name="kiss_cipher_key_summary">Any password for AES and HEX string for ChaCha, 64 char string representing 32 bytes, e.g. 0x01,0x02,…,0x31,0x32 will be written as 0102…3132, randomly generated</string>
+    <string name="btn_menu_desc">Main menu</string>
+    <string name="btn_settings_desc">Application settings</string>
+    <string name="btn_tracking_desc">Position tracking menu</string>
+    <string name="btn_call_desc">Push to talk</string>
+    <string name="btn_log_desc">Log history</string>
+    <string name="btn_map_desc">Show live map</string>
+    <string name="btn_messages_text">Messages</string>
+    <string name="btn_messages_desc">Conversations</string>
 </resources>
