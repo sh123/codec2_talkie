@@ -138,15 +138,16 @@
     <FrameLayout
         android:id="@+id/frameRssi"
         android:layout_width="0dp"
-        android:layout_height="20dp"
+        android:layout_height="14dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/codecMode">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:orientation="horizontal">
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
 
             <TextView
                 android:id="@+id/textViewRssi0"
@@ -279,25 +280,26 @@
                 tools:ignore="HardcodedText" />
         </LinearLayout>
 
-        <ProgressBar
-            android:id="@+id/progressRssi"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_marginTop="12dp"
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewRssi0"/>
     </FrameLayout>
+
+    <ProgressBar
+        android:id="@+id/progressRssi"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_marginTop="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/frameRssi"/>
 
     <ProgressBar
         android:id="@+id/progressAudioLevel"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="0dp"
-        android:layout_height="11dp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="10dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameRssi" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressRssi" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragmentMain"
