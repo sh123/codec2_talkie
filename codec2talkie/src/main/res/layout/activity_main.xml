@@ -312,7 +312,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/progressAudioLevel"
         app:layout_constraintBottom_toTopOf="@+id/btnBar"
-        app:layout_constraintHeight_percent="0.8"
+        app:layout_constraintHeight_percent="0.78"
         app:layout_constraintHorizontal_bias="0.0" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
