@@ -52,23 +52,23 @@ public class AudioTools {
         if (SettingsWrapper.isFreeDvSoundModemModulation(sharedPreferences)) {
             switch (SettingsWrapper.getFreeDvSoundModemModulation(sharedPreferences)) {
                 case Codec2.FREEDV_MODE_700C:
-                    return "700C";
+                    return "700c";
                 case Codec2.FREEDV_MODE_700D:
-                    return "700D";
+                    return "700d";
                 case Codec2.FREEDV_MODE_700E:
-                    return "700E";
+                    return "700e";
                 case Codec2.FREEDV_MODE_1600:
                     return "1600";
                 case Codec2.FREEDV_MODE_800XA:
-                    return "800XA";
+                    return "800xa";
                 case Codec2.FREEDV_MODE_2020:
                     return "2020";
                 case Codec2.FREEDV_MODE_2020B:
-                    return "2020B";
+                    return "2020b";
                 case Codec2.FREEDV_MODE_2400A:
-                    return "2400A";
+                    return "2400a";
                 case Codec2.FREEDV_MODE_2400B:
-                    return "2400B";
+                    return "2400b";
                 default:
                     return null;
             }
@@ -91,16 +91,16 @@ public class AudioTools {
         String speedModeInfo;
         if (SettingsWrapper.isCodec2Enabled(sharedPreferences)) {
             String codec2ModeName = sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, resources.getStringArray(R.array.codec2_modes)[0]);
-            speedModeInfo = "C2: " + AudioTools.extractCodec2Speed(codec2ModeName);
+            speedModeInfo = AudioTools.extractCodec2Speed(codec2ModeName) + "/c2";
         } else {
             int speed = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.OPUS_BIT_RATE, "3200"));
-            speedModeInfo = "OPUS: " + speed;
+            speedModeInfo = speed + "/op";
         }
 
         // radio speed
         int radioSpeedBps = RadioTools.getRadioSpeed(sharedPreferences);
         if (radioSpeedBps > 0) {
-            speedModeInfo = "RF: " + radioSpeedBps + ", " + speedModeInfo;
+            speedModeInfo = radioSpeedBps + "/" + speedModeInfo;
         }
         return speedModeInfo;
     }

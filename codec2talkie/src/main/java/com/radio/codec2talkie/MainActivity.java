@@ -32,10 +32,13 @@ import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -93,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private MapFragment _mapFragment;
 
     // views
+    private TextView _textTitle;
     private TextView _textConnInfo;
     private TextView _textStatus;
     private TextView _textTelemetry;
@@ -100,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private TextView _textRssi;
     private ProgressBar _progressAudioLevel;
     private ProgressBar _progressRssi;
-    private Menu _menu;
 
     public static boolean isPaused = false;
     private boolean _isConnecting = false;
@@ -110,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private long _backPressedTimestamp;
 
-    @SuppressLint("ClickableViewAccessibility")
+    @SuppressLint({"ClickableViewAccessibility", "SetTextI18n"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,9 +122,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         setContentView(R.layout.activity_main);
 
-        // title
-        String appName = getResources().getString(R.string.app_name);
-        setTitle(appName + " v" + BuildConfig.VERSION_NAME);
+        // menu button
+        ImageButton buttonMenu = findViewById(R.id.btnMenu);
+        buttonMenu.setOnClickListener(this::showMainPopupMenu);
 
         // states
         _isTestMode = SettingsWrapper.isLoopbackTransport(_sharedPreferences);
@@ -130,11 +133,18 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         _isAppExit = false;
 
         // status labels
+        _textTitle = findViewById(R.id.textTitle);
         _textConnInfo = findViewById(R.id.textBtName);
         _textStatus = findViewById(R.id.textStatus);
         _textTelemetry = findViewById(R.id.textTelemetry);
         _textRssi = findViewById(R.id.textRssi);
         _textCodecMode = findViewById(R.id.codecMode);
+
+        // title
+        String appName = getResources().getString(R.string.app_name);
+        String title = appName + " v" + BuildConfig.VERSION_NAME;
+        setTitle(title);
+        _textTitle.setText(title);
 
         // S-meter
         _progressRssi = findViewById(R.id.progressRssi);
@@ -496,7 +506,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         status = status.isEmpty() ? protocolType.toString() : protocolType.toString() + " " + status;
 
-        String statusLine = AudioTools.getSpeedStatusText(_sharedPreferences, getResources()) + ", " + status;
+        String statusLine = AudioTools.getSpeedStatusText(_sharedPreferences, getResources()) + "/" + status;
         _textCodecMode.setText(statusLine);
     }
 
@@ -520,70 +530,70 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         }
     };
 
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        boolean isAprsEnabled = SettingsWrapper.isAprsEnabled(_sharedPreferences);
-        menu.setGroupVisible(R.id.group_aprs, isAprsEnabled);
-        return true;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuCompat.setGroupDividerEnabled(menu, true);
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        _menu = menu;
-        updateMenuItemsAndStatusText();
-        return true;
-    }
-
-    private void updateMenuItemsAndStatusText() {
-        if (AppService.isRunning & _menu != null && _appService != null) {
-            MenuItem item = _menu.findItem(R.id.start_tracking);
-            if (_appService.isTracking()) {
-                item.setTitle(R.string.menu_stop_tracking);
-            } else {
-                item.setTitle(R.string.menu_start_tracking);
-            }
+    private void updateStatusText() {
+        if (AppService.isRunning && _appService != null) {
             updateStatusText(ProtocolFactory.getBaseProtocolType(getApplicationContext()));
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
+    private void showMainPopupMenu(View view) {
+        PopupMenu popup = new PopupMenu(this, view);
+        MenuInflater inflater = popup.getMenuInflater();
+        Menu menu = popup.getMenu();
+        inflater.inflate(R.menu.main_menu, menu);
 
-        if (itemId == R.id.preferences) {
-            if (_appService != null && _appService.isTracking())
-                _appService.stopTracking();
-            startSettingsActivity();
-            return true;
-        }
-        if (itemId == R.id.recorder) {
-            startRecorderActivity();
-            return true;
-        }
-        if (itemId == R.id.reconnect) {
-            if (_appService != null) {
-                _appService.stopRunning();
-            }
-            return true;
-        } else if (itemId == R.id.exit) {
-            exitApplication();
-            return true;
-        } else if (itemId == R.id.send_position) {
-            _appService.sendPosition();
-            return true;
-        } else if (itemId == R.id.start_tracking) {
+        // show hide aprs group
+        boolean isAprsEnabled = SettingsWrapper.isAprsEnabled(_sharedPreferences);
+        menu.setGroupVisible(R.id.group_aprs, isAprsEnabled);
+
+        // adjust start/stop state
+        if (AppService.isRunning && _appService != null) {
+            MenuItem item = menu.findItem(R.id.start_tracking);
             if (_appService.isTracking()) {
-                _appService.stopTracking();
-                item.setTitle(R.string.menu_start_tracking);
-            } else {
-                _appService.startTracking();
                 item.setTitle(R.string.menu_stop_tracking);
+            } else {
+                item.setTitle(R.string.menu_start_tracking);
             }
-            return true;
         }
-        return super.onOptionsItemSelected(item);
+        MenuCompat.setGroupDividerEnabled(menu, true);
+
+        popup.setOnMenuItemClickListener(item -> {
+            int itemId = item.getItemId();
+
+            if (itemId == R.id.preferences) {
+                if (_appService != null && _appService.isTracking())
+                    _appService.stopTracking();
+                startSettingsActivity();
+                return true;
+            }
+            if (itemId == R.id.recorder) {
+                startRecorderActivity();
+                return true;
+            }
+            if (itemId == R.id.reconnect) {
+                if (_appService != null) {
+                    _appService.stopRunning();
+                }
+                return true;
+            } else if (itemId == R.id.exit) {
+                exitApplication();
+                return true;
+            } else if (itemId == R.id.send_position) {
+                _appService.sendPosition();
+                return true;
+            } else if (itemId == R.id.start_tracking) {
+                if (_appService.isTracking()) {
+                    _appService.stopTracking();
+                    item.setTitle(R.string.menu_start_tracking);
+                } else {
+                    _appService.startTracking();
+                    item.setTitle(R.string.menu_stop_tracking);
+                }
+                return true;
+            }
+            return false;
+        });
+        popup.show();
     }
 
     /** @noinspection deprecation*/
@@ -618,7 +628,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         _appService = ((AppService.AppServiceBinder)service).getService();
         if (AppService.isRunning) {
             _textConnInfo.setText(_appService.getTransportName());
-            updateMenuItemsAndStatusText();
+            updateStatusText();
         }
     }
 
@@ -637,13 +647,13 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             switch (AppMessage.values()[msg.what]) {
                 case EV_CONNECTED:
                     Log.i(TAG, "EV_CONNECTED");
-                    updateMenuItemsAndStatusText();
+                    updateStatusText();
                     _isConnecting = false;
                     Toast.makeText(getBaseContext(), R.string.processor_connected, Toast.LENGTH_SHORT).show();
                     break;
                 case EV_DISCONNECTED:
                     Log.i(TAG, "EV_DISCONNECTED");
-                    updateMenuItemsAndStatusText();
+                    updateStatusText();
                     // app restart, stop app service and restart ourselves
                     if (_isAppRestart) {
                         Log.i(TAG, "App restart");
@@ -692,7 +702,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         _progressRssi.setProgress(0);
                     } else if (msg.arg1 == 0) {
                         double snr = (double)msg.arg2 / 100.0;
-                        _textRssi.setText(String.format(Locale.getDefault(), "%2.2f", (double)msg.arg2 / 100.0));
+                        _textRssi.setText(String.format(Locale.getDefault(), "%2.2f/", (double)msg.arg2 / 100.0));
                         _progressRssi.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN));
                         _progressRssi.setProgress((int) ((-110.0 + snr) - S_METER_S0_VALUE_DB));
                     } else {

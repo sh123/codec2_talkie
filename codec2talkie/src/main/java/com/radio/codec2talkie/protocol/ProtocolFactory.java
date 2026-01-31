@@ -11,12 +11,12 @@ import com.radio.codec2talkie.settings.SettingsWrapper;
 public class ProtocolFactory {
 
     public enum ProtocolType {
-        RAW("RAW"),
-        HDLC("HDLC"),
-        KISS("KISS"),
-        KISS_BUFFERED("KISS BUF"),
-        KISS_PARROT("KISS RPT"),
-        FREEDV("FREEDV");
+        RAW("raw"),
+        HDLC("hdlc"),
+        KISS("kiss"),
+        KISS_BUFFERED("kiss/b"),
+        KISS_PARROT("kiss/r"),
+        FREEDV("freedv");
 
         private final String _name;
 
