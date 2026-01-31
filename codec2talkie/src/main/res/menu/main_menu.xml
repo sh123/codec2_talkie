@@ -1,14 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:id="@+id/group_main">
-        <item
-            android:id="@+id/reconnect"
-            android:title="@string/menu_reconnect" />
+    <group android:id="@+id/group_call">
         <item
             android:id="@+id/recorder"
             android:title="@string/menu_recorder" />
     </group>
+    <group android:id="@+id/group_messages">
+        <item
+            android:id="@+id/messages_group_menu_clear"
+            android:title="@string/messages_group_menu_clear_title" />
+    </group>
+    <group android:id="@+id/group_log">
+        <item
+            android:id="@+id/log_view_menu_stations"
+            android:title="@string/log_view_menu_stations" />
+        <item
+            android:id="@+id/log_view_menu_clear"
+            android:title="@string/log_view_menu_clear_title">
+            <menu>
+                <item
+                    android:id="@+id/log_view_menu_clear_1h"
+                    android:title="@string/log_view_menu_clear_1h" />
+                <item
+                    android:id="@+id/log_view_menu_clear_12h"
+                    android:title="@string/log_view_menu_clear_12h" />
+                <item
+                    android:id="@+id/log_view_menu_clear_1d"
+                    android:title="@string/log_view_menu_clear_1d" />
+                <item
+                    android:id="@+id/log_view_menu_clear_7d"
+                    android:title="@string/log_view_menu_clear_7d" />
+                <item
+                    android:id="@+id/log_view_menu_clear_all"
+                    android:title="@string/log_view_menu_clear_all" />
+            </menu>
+        </item>
+    </group>
+    <group android:id="@+id/group_map">
+        <item
+            android:id="@+id/map_menu_move_map"
+            android:title="@string/map_menu_move_map"
+            android:checkable="true"
+            android:checked="false"/>
+        <item
+            android:id="@+id/map_menu_rotate_map"
+            android:title="@string/map_menu_rotate_map"
+            android:checkable="true"
+            android:checked="false"/>
+        <item
+            android:id="@+id/map_menu_show_range"
+            android:title="@string/map_menu_show_range"
+            android:checkable="true"
+            android:checked="false"/>
+        <item
+            android:id="@+id/map_menu_show_moving"
+            android:title="@string/map_menu_show_moving"
+            android:checkable="true"
+            android:checked="false"/>
+        <item
+            android:id="@+id/map_menu_clear_cache"
+            android:title="@string/map_menu_clear_cache_title" />
+    </group>
     <group android:id="@+id/group_exit">
+        <item
+            android:id="@+id/reconnect"
+            android:title="@string/menu_reconnect" />
         <item
             android:id="@+id/exit"
             android:title="@string/menu_exit" />

@@ -8,6 +8,8 @@ import android.os.Message;
 import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import android.widget.ImageButton;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.app.AppMessage;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.ui.FragmentMenuHandler;
 import com.radio.codec2talkie.ui.FragmentWithServiceConnection;
 
 import androidx.annotation.NonNull;
@@ -23,7 +26,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
-public class CallFragment extends FragmentWithServiceConnection {
+public class CallFragment extends FragmentWithServiceConnection implements FragmentMenuHandler {
     private SharedPreferences _sharedPreferences;
 
     private ImageButton _btnPtt;
@@ -185,4 +188,13 @@ public class CallFragment extends FragmentWithServiceConnection {
         }
         return false;
     };
+
+    @Override
+    public boolean handleMenuItemClick(MenuItem item) {
+        return false;
+    }
+
+    @Override
+    public void handleMenuCreation(Menu menu) {
+    }
 }

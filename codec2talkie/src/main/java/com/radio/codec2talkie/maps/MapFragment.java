@@ -14,14 +14,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 
@@ -31,6 +29,7 @@ import com.radio.codec2talkie.protocol.Aprs;
 import com.radio.codec2talkie.protocol.aprs.tools.AprsSymbolTable;
 import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.tools.UnitTools;
+import com.radio.codec2talkie.ui.FragmentMenuHandler;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
@@ -45,7 +44,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.Locale;
 
-public class MapFragment extends Fragment implements MenuProvider {
+public class MapFragment extends Fragment implements FragmentMenuHandler {
     private static final String TAG = MapFragment.class.getSimpleName();
 
     private static final double MAP_STARTUP_ZOOM = 5.0;
@@ -58,6 +57,8 @@ public class MapFragment extends Fragment implements MenuProvider {
     private MapStations _mapStations;
     private boolean _rotateMap = false;
     private boolean _shouldFollowLocation = false;
+    private boolean _showMoving = false;
+    private boolean _showCircles = false;
 
     private String _positionInfo;
     private double _prevBearing = 0.0;
@@ -69,15 +70,8 @@ public class MapFragment extends Fragment implements MenuProvider {
     }
 
     @Override
-    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-        menuInflater.inflate(R.menu.map_menu, menu);
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        requireActivity().addMenuProvider(this, getViewLifecycleOwner());
 
         Configuration.getInstance().setUserAgentValue(Aprs.APRS_ID + " " + BuildConfig.VERSION_NAME);
 
@@ -202,7 +196,7 @@ public class MapFragment extends Fragment implements MenuProvider {
     }
 
     @Override
-    public boolean onMenuItemSelected(MenuItem item) {
+    public boolean handleMenuItemClick(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.map_menu_clear_cache) {
             new Thread(() -> {
@@ -226,24 +220,25 @@ public class MapFragment extends Fragment implements MenuProvider {
             }
             return true;
         } else if (itemId == R.id.map_menu_show_range) {
-            boolean showCircles = false;
             if (item.isChecked()) {
+                _showCircles = false;
                 item.setChecked(false);
             } else {
                 item.setChecked(true);
-                showCircles = true;
+                _showCircles = true;
             }
-            _mapStations.showRangeCircles(showCircles);
+            item.setChecked(_showCircles);
+            _mapStations.showRangeCircles(_showCircles);
             return true;
         } else if (itemId == R.id.map_menu_show_moving) {
-            boolean showMoving = false;
             if (item.isChecked()) {
+                _showMoving = false;
                 item.setChecked(false);
             } else {
                 item.setChecked(true);
-                showMoving = true;
+                _showMoving = true;
             }
-            _mapStations.showMovingStations(showMoving);
+            _mapStations.showMovingStations(_showMoving);
             return true;
         } else if (itemId == R.id.map_menu_move_map) {
             if (item.isChecked()) {
@@ -259,5 +254,25 @@ public class MapFragment extends Fragment implements MenuProvider {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void handleMenuCreation(Menu menu) {
+        MenuItem itemRotateMap = menu.findItem(R.id.map_menu_rotate_map);
+        if (itemRotateMap != null) {
+            itemRotateMap.setChecked(_rotateMap);
+        }
+        MenuItem itemShowRange = menu.findItem(R.id.map_menu_show_range);
+        if (itemShowRange != null) {
+            itemShowRange.setChecked(_showCircles);
+        }
+        MenuItem itemShowMoving = menu.findItem(R.id.map_menu_show_moving);
+        if (itemShowMoving != null) {
+            itemShowMoving.setChecked(_showMoving);
+        }
+        MenuItem itemMoveMap = menu.findItem(R.id.map_menu_move_map);
+        if (itemMoveMap != null) {
+            itemMoveMap.setChecked(_shouldFollowLocation);
+        }
     }
 }

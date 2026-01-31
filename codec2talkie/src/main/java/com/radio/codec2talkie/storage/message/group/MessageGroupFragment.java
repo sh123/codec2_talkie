@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +14,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.MenuProvider;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.ui.FragmentMenuHandler;
 import com.radio.codec2talkie.ui.FragmentWithServiceConnection;
 
-public class MessageGroupFragment extends FragmentWithServiceConnection implements MenuProvider {
+public class MessageGroupFragment extends FragmentWithServiceConnection implements FragmentMenuHandler {
 
     private static final String TAG = MessageGroupFragment.class.getSimpleName();
 
@@ -45,8 +44,6 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Log.i(TAG, "onCreateView()");
-
-        requireActivity().addMenuProvider(this, getViewLifecycleOwner());
 
         Button sendToButton = view.findViewById(R.id.messages_send_to);
         sendToButton.setOnClickListener(v -> {
@@ -73,24 +70,8 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
     }
 
     @Override
-    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-        menuInflater.inflate(R.menu.messages_group_menu, menu);
-    }
-
-    @Override
-    public boolean onMenuItemSelected(@NonNull MenuItem menuItem) {
-        int itemId = menuItem.getItemId();
-        if (itemId == R.id.messages_group_menu_clear) {
-            deleteAll();
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public void onDestroy() {
         super.onDestroy();
-        requireActivity().removeMenuProvider(this);
     }
 
     private void deleteAll() {
@@ -118,5 +99,19 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
         builder.setMessage(String.format(message, groupName))
                 .setPositiveButton(getString(R.string.yes), deleteGroupDialogClickListener)
                 .setNegativeButton(getString(R.string.no), deleteGroupDialogClickListener).show();
+    }
+
+    @Override
+    public boolean handleMenuItemClick(MenuItem menuItem) {
+        int itemId = menuItem.getItemId();
+        if (itemId == R.id.messages_group_menu_clear) {
+            deleteAll();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void handleMenuCreation(Menu menu) {
     }
 }

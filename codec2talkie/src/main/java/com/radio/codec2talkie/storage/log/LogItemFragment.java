@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.MenuProvider;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LiveData;
@@ -26,10 +24,11 @@ import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.storage.station.StationItemAdapter;
 import com.radio.codec2talkie.storage.position.PositionItemViewModel;
 import com.radio.codec2talkie.storage.station.StationItemViewModel;
+import com.radio.codec2talkie.ui.FragmentMenuHandler;
 
 import java.util.List;
 
-public class LogItemFragment extends Fragment implements MenuProvider {
+public class LogItemFragment extends Fragment implements FragmentMenuHandler {
     /** @noinspection unused*/
     private static final String TAG = LogItemFragment.class.getSimpleName();
 
@@ -59,8 +58,6 @@ public class LogItemFragment extends Fragment implements MenuProvider {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        requireActivity().addMenuProvider(this, getViewLifecycleOwner());
 
         // view models
         _logItemViewModel = new ViewModelProvider(this).get(LogItemViewModel.class);
@@ -131,44 +128,6 @@ public class LogItemFragment extends Fragment implements MenuProvider {
         return stationsAdapter;
     }
 
-    @Override
-    public void onCreateMenu(@NonNull Menu menu, @NonNull MenuInflater menuInflater) {
-        menuInflater.inflate(R.menu.log_view_menu, menu);
-    }
-
-    @Override
-    public void onPrepareMenu(@NonNull Menu menu) {
-        if (_stationName != null) {
-            menu.findItem(R.id.log_view_menu_stations).setVisible(false);
-        }
-    }
-
-    @Override
-    public boolean onMenuItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-
-        if (itemId == R.id.log_view_menu_clear_all) {
-            deleteLogItems(-1);
-            return true;
-        }  else if (itemId == R.id.log_view_menu_clear_1h) {
-            deleteLogItems(1);
-            return true;
-        }  else if (itemId == R.id.log_view_menu_clear_12h) {
-            deleteLogItems(12);
-            return true;
-        }  else if (itemId == R.id.log_view_menu_clear_1d) {
-            deleteLogItems(24);
-            return true;
-        }  else if (itemId == R.id.log_view_menu_clear_7d) {
-            deleteLogItems(24*7);
-            return true;
-        } else if (itemId == R.id.log_view_menu_stations) {
-            restartLogItemFragment(getString(R.string.log_view_station_history));
-            return true;
-        }
-        return false;
-    }
-
     public static LogItemFragment newInstance(String data) {
         LogItemFragment fragment = new LogItemFragment();
         Bundle args = new Bundle();
@@ -205,5 +164,35 @@ public class LogItemFragment extends Fragment implements MenuProvider {
         builder.setMessage(alertMessage)
                 .setPositiveButton(getString(R.string.yes), deleteAllDialogClickListener)
                 .setNegativeButton(getString(R.string.no), deleteAllDialogClickListener).show();
+    }
+
+    @Override
+    public boolean handleMenuItemClick(MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.log_view_menu_clear_all) {
+            deleteLogItems(-1);
+            return true;
+        }  else if (itemId == R.id.log_view_menu_clear_1h) {
+            deleteLogItems(1);
+            return true;
+        }  else if (itemId == R.id.log_view_menu_clear_12h) {
+            deleteLogItems(12);
+            return true;
+        }  else if (itemId == R.id.log_view_menu_clear_1d) {
+            deleteLogItems(24);
+            return true;
+        }  else if (itemId == R.id.log_view_menu_clear_7d) {
+            deleteLogItems(24*7);
+            return true;
+        } else if (itemId == R.id.log_view_menu_stations) {
+            restartLogItemFragment(getString(R.string.log_view_station_history));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void handleMenuCreation(Menu menu) {
     }
 }

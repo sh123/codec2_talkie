@@ -68,6 +68,7 @@ import com.radio.codec2talkie.tools.RadioTools;
 import com.radio.codec2talkie.transport.TransportFactory;
 import com.radio.codec2talkie.connect.UsbConnectActivity;
 import com.radio.codec2talkie.connect.UsbPortHandler;
+import com.radio.codec2talkie.ui.FragmentMenuHandler;
 
 import java.util.Locale;
 
@@ -90,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     private boolean _isBleEnabled;
 
     // fragments
+    private FragmentMenuHandler _activeFragment;
     private CallFragment _callFragment;
     private MessageGroupFragment _messageGroupFragment;
     private LogItemFragment _logItemFragment;
@@ -232,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
     private void loadMainFragment(Fragment fragment) {
+        _activeFragment = (FragmentMenuHandler)fragment;
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentMain, fragment, fragment.getClass().getSimpleName());
@@ -587,10 +590,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     private void showMainPopupMenu(View view) {
         PopupMenu popup = new PopupMenu(this, view);
-        MenuInflater inflater = popup.getMenuInflater();
-        Menu menu = popup.getMenu();
-        inflater.inflate(R.menu.main_menu, menu);
-
+        Menu menu = getMenu(popup);
         MenuCompat.setGroupDividerEnabled(menu, true);
 
         popup.setOnMenuItemClickListener(item -> {
@@ -609,9 +609,25 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 exitApplication();
                 return true;
             }
+            if (_activeFragment != null)
+                return _activeFragment.handleMenuItemClick(item);
             return false;
         });
         popup.show();
+    }
+
+    private Menu getMenu(PopupMenu popup) {
+        MenuInflater inflater = popup.getMenuInflater();
+        Menu menu = popup.getMenu();
+        inflater.inflate(R.menu.main_menu, menu);
+        if (_activeFragment != null) {
+            _activeFragment.handleMenuCreation(menu);
+            menu.setGroupVisible(R.id.group_call, _activeFragment instanceof CallFragment);
+            menu.setGroupVisible(R.id.group_messages, _activeFragment instanceof MessageGroupFragment);
+            menu.setGroupVisible(R.id.group_log, _activeFragment instanceof LogItemFragment);
+            menu.setGroupVisible(R.id.group_map, _activeFragment instanceof MapFragment);
+        }
+        return menu;
     }
 
     /** @noinspection deprecation*/
