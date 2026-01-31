@@ -17,6 +17,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class Manual implements Tracker {
+    private Context _context;
+
     private boolean _isTracking = false;
 
     private TrackerCallback _trackerCallback;
@@ -32,6 +34,8 @@ public class Manual implements Tracker {
 
     @Override
     public void initialize(Context context, TrackerCallback trackerCallback) {
+        _context = context;
+
         _trackerCallback  = trackerCallback;
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
@@ -39,9 +43,6 @@ public class Manual implements Tracker {
         _longitude = Double.parseDouble(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_MANUAL_LON, "0.0"));
         _updateIntervalMinutes = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.APRS_LOCATION_SOURCE_MANUAL_UPDATE_INTERVAL_MINUTES, "5"));
         _autoSendEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_LOCATION_SOURCE_MANUAL_AUTO_SEND, true);
-
-        PowerManager powerManager = (PowerManager) context.getSystemService(POWER_SERVICE);
-        _serviceWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "App::Tracker");
     }
 
     @Override
@@ -59,6 +60,10 @@ public class Manual implements Tracker {
     @SuppressLint("WakelockTimeout")
     @Override
     public void startTracking() {
+        if (_serviceWakeLock == null) {
+            PowerManager powerManager = (PowerManager)_context.getSystemService(POWER_SERVICE);
+            _serviceWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "App::Tracker");
+        }
         _serviceWakeLock.acquire();
         sendPosition();
         restartTracking();
