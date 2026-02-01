@@ -195,7 +195,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             _messageGroupFragment = new MessageGroupFragment();
             _logItemFragment = new LogItemFragment();
             _mapFragment = new MapFragment();
-            loadMainFragment(_callFragment);
         } else {
             _callFragment = (CallFragment) getSupportFragmentManager()
                     .findFragmentByTag(CallFragment.class.getSimpleName());
@@ -205,6 +204,9 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     .findFragmentByTag(LogItemFragment.class.getSimpleName());
             _mapFragment = (MapFragment) getSupportFragmentManager()
                     .findFragmentByTag(MapFragment.class.getSimpleName());
+        }
+        if (_activeFragment == null) {
+            loadMainFragment(_callFragment);
         }
         findViewById(R.id.btnCall).setOnClickListener(view -> loadMainFragment(_callFragment));
         findViewById(R.id.btnMessages).setOnClickListener(view -> loadMainFragment(_messageGroupFragment));
