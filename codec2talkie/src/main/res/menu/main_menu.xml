@@ -61,10 +61,12 @@
             android:id="@+id/map_menu_clear_cache"
             android:title="@string/map_menu_clear_cache_title" />
     </group>
+    <group android:id="@+id/group_tnc">
+    <item
+        android:id="@+id/reconnect"
+        android:title="@string/menu_reconnect" />
+    </group>
     <group android:id="@+id/group_exit">
-        <item
-            android:id="@+id/reconnect"
-            android:title="@string/menu_reconnect" />
         <item
             android:id="@+id/exit"
             android:title="@string/menu_exit" />

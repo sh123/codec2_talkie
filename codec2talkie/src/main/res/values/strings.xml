@@ -310,14 +310,14 @@
     <string name="main_status_data_received">PROCESSING</string>
     <string name="app_no_cpu_sleep_title">[Advanced] Do not allow CPU sleep</string>
     <string name="app_no_cpu_sleep_summary">Prevent CPU from sleeping, hold global wake lock, will drain battery!</string>
-    <string name="message_groups_send_to_btn_title">Send message to…</string>
+    <string name="message_groups_send_to_btn_title">Create conversation</string>
     <string name="messages_group_view_title">Groups</string>
     <string name="message_send_btn_title">Send</string>
     <string name="send_message_to_target_edit_callsign">Callsign</string>
     <string name="send_message_to_message_edit_text">Message text</string>
     <string name="send_message_to_btn_ok_text">Send</string>
     <string name="send_message_to_btn_cancel_text">Cancel</string>
-    <string name="activity_send_message_to_title">Send message to…</string>
+    <string name="activity_send_message_to_title">Create conversation</string>
     <string name="messages_view_title">Messages</string>
     <string name="app_notifications_text_title">Incoming message</string>
     <string name="app_notifications_text_summary">Click to open and read message</string>
