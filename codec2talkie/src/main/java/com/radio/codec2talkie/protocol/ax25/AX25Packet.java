@@ -98,7 +98,7 @@ public class AX25Packet {
     }
 
     public byte[] toTextBinary() {
-        byte[] packetContent = toString().getBytes(StandardCharsets.ISO_8859_1);
+        byte[] packetContent = convertToString(false).getBytes(StandardCharsets.ISO_8859_1);
         // lora aprs prefix 0x3c,0xff,0x01
         ByteBuffer textPacketBuffer = ByteBuffer.allocateDirect(packetContent.length + 3);
         textPacketBuffer.put((byte)0x3c).put((byte)0xff).put((byte)0x01);
@@ -182,13 +182,21 @@ public class AX25Packet {
 
     @NonNull
     public String toString() {
+        return convertToString(true);
+    }
+
+    @NonNull
+    private String convertToString(boolean useDebug) {
         String path = digipath == null ? "" : digipath;
         if (!path.isEmpty())
             path = "," + path;
         String info = DebugTools.bytesToDebugString(rawData);
         if (!isAudio) {
-            info = DebugTools.bytesToDebugString(TextTools.stripNulls(rawData));
-            //info = new String(TextTools.stripNulls(rawData), StandardCharsets.ISO_8859_1);
+            if (useDebug) {
+                info = DebugTools.bytesToDebugString(TextTools.stripNulls(rawData));
+            } else {
+                info = new String(TextTools.stripNulls(rawData), StandardCharsets.ISO_8859_1);
+            }
         }
         return String.format("%s>%s%s:%s", src, dst, path, info);
     }
