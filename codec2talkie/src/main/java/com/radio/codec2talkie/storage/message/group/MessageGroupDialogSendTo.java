@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.storage.message.group;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +25,7 @@ public class MessageGroupDialogSendTo extends AlertDialog implements View.OnClic
         _appService = appService;
     }
 
+    @SuppressLint("MissingSuperCall")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTitle(getContext().getString(R.string.activity_send_message_to_title));
