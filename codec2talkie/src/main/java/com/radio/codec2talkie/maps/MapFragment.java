@@ -103,12 +103,8 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
                 );
 
                 double currentBearing = location.getBearing();
-
-                if (_prevBearing > 180 && currentBearing <= 180)
-                    updateMyIcon(false);
-                else if (_prevBearing <= 180 && currentBearing > 180)
-                    updateMyIcon(true);
-
+                boolean shouldFlip = (currentBearing > 90f && currentBearing < 270f);
+                updateMyIcon(shouldFlip);
                 _prevBearing = currentBearing;
             }
 
@@ -164,7 +160,13 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
                 if (_rotateMap) {
-                    _mapView.setMapOrientation(-sensorEvent.values[0]);
+                    // normalize azimuth into [0, 360)
+                    float azimuth = sensorEvent.values[0];
+                    float azimuthNorm = (azimuth % 360f + 360f) % 360f;
+                    // map orientation = -azimuth (normalized to [0,360))
+                    float mapOrientation = (360f - azimuthNorm) % 360f;
+
+                    _mapView.setMapOrientation(mapOrientation);
                 }
                 super.onSensorChanged(sensorEvent);
             }
