@@ -738,11 +738,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                         _progressRssi.setProgress(0);
                     } else if (msg.arg1 == 0) {
                         double snr = (double)msg.arg2 / 100.0;
-                        _textRssi.setText(String.format(Locale.getDefault(), "%2.2f•", (double)msg.arg2 / 100.0));
+                        _textRssi.setText(String.format(Locale.getDefault(), "%2.2f/", (double)msg.arg2 / 100.0));
                         _progressRssi.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN));
                         _progressRssi.setProgress((int) ((-110.0 + snr) - S_METER_S0_VALUE_DB));
                     } else {
-                        _textRssi.setText(String.format(Locale.getDefault(), "%3d•%2.2f•", msg.arg1, (double)msg.arg2 / 100.0));
+                        _textRssi.setText(String.format(Locale.getDefault(), "%3d/%2.2f/", msg.arg1, (double)msg.arg2 / 100.0));
                         _progressRssi.getProgressDrawable().setColorFilter(new PorterDuffColorFilter(Color.GREEN, PorterDuff.Mode.SRC_IN));
                         _progressRssi.setProgress(msg.arg1 - S_METER_S0_VALUE_DB);
                     }
