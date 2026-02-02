@@ -61,7 +61,6 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
     private boolean _showCircles = false;
 
     private String _positionInfo;
-    private double _prevBearing = 0.0;
 
     @Nullable
     @Override
@@ -105,7 +104,6 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
                 double currentBearing = location.getBearing();
                 boolean shouldFlip = (currentBearing > 90f && currentBearing < 270f);
                 updateMyIcon(shouldFlip);
-                _prevBearing = currentBearing;
             }
 
             @Override
