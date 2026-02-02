@@ -91,16 +91,16 @@ public class AudioTools {
         String speedModeInfo;
         if (SettingsWrapper.isCodec2Enabled(sharedPreferences)) {
             String codec2ModeName = sharedPreferences.getString(PreferenceKeys.CODEC2_MODE, resources.getStringArray(R.array.codec2_modes)[0]);
-            speedModeInfo = AudioTools.extractCodec2Speed(codec2ModeName) + "/c2";
+            speedModeInfo = AudioTools.extractCodec2Speed(codec2ModeName) + "•c2";
         } else {
             int speed = Integer.parseInt(sharedPreferences.getString(PreferenceKeys.OPUS_BIT_RATE, "3200"));
-            speedModeInfo = speed + "/op";
+            speedModeInfo = speed + "•op";
         }
 
         // radio speed
         int radioSpeedBps = RadioTools.getRadioSpeed(sharedPreferences);
         if (radioSpeedBps > 0) {
-            speedModeInfo = radioSpeedBps + "/" + speedModeInfo;
+            speedModeInfo = radioSpeedBps + "•" + speedModeInfo;
         }
         return speedModeInfo;
     }

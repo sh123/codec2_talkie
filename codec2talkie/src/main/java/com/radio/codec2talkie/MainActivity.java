@@ -524,7 +524,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         status = status.isEmpty() ? protocolType.toString() : protocolType.toString() + " " + status;
 
-        String statusLine = AudioTools.getSpeedStatusText(_sharedPreferences, getResources()) + "/" + status;
+        String statusLine = AudioTools.getSpeedStatusText(_sharedPreferences, getResources()) + "•" + status;
         _textCodecMode.setText(statusLine);
     }
 
