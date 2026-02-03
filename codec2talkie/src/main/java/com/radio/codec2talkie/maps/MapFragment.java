@@ -192,7 +192,9 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
             myBitmapIcon = Bitmap.createBitmap(myBitmapIcon, 0, 0, myBitmapIcon.getWidth(), myBitmapIcon.getHeight(), matrix, true);
         }
         _myLocationNewOverlay.setDirectionIcon(myBitmapIcon);
+        _myLocationNewOverlay.setDirectionAnchor(0.5f, 0.5f);
         _myLocationNewOverlay.setPersonIcon(myBitmapIcon);
+        _myLocationNewOverlay.setPersonAnchor(0.5f, 0.5f);
     }
 
     @Override
