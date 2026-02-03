@@ -185,7 +185,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
         Bitmap myBitmapIcon = aprsSymbolTable.bitmapFromSymbol(mySymbolCode, true);
         if (AprsSymbolTable.needsRotation(mySymbolCode)) {
             Matrix matrix = new Matrix();
-            matrix.postRotate(-90);
+            matrix.postRotate(-90, myBitmapIcon.getWidth() / 2f, myBitmapIcon.getHeight() / 2f);
             if (shouldFlip) {
                 matrix.postScale(-1, 1, myBitmapIcon.getWidth() / 2f, myBitmapIcon.getHeight() / 2f);
             }
