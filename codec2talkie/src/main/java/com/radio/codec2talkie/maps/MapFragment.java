@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +34,9 @@ import com.radio.codec2talkie.ui.FragmentMenuHandler;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.events.MapListener;
+import org.osmdroid.events.ScrollEvent;
+import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.modules.SqlTileWriter;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.views.MapView;
@@ -53,6 +57,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
     private MapView _mapView;
     private IMapController _mapController;
     private MyLocationNewOverlay _myLocationNewOverlay;
+    private TextView _locationInfoTextView;
 
     private MapStations _mapStations;
     private boolean _rotateMap = false;
@@ -71,8 +76,10 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         Configuration.getInstance().setUserAgentValue(Aprs.APRS_ID + " " + BuildConfig.VERSION_NAME);
+
+        // location info label
+        _locationInfoTextView = view.findViewById(R.id.location_info);
 
         // map
         _mapView = view.findViewById(R.id.map);
@@ -110,30 +117,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
             public void draw(Canvas pCanvas, MapView pMapView, boolean pShadow) {
                 super.draw(pCanvas, pMapView, pShadow);
                 if (_positionInfo == null || !_shouldFollowLocation) return;
-
-                // create paint
-                Paint paint = new Paint();
-                paint.setStyle(Paint.Style.FILL);
-                paint.setTextSize(24);
-
-                // query bounds from text
-                Rect bounds = new Rect();
-                paint.getTextBounds(_positionInfo, 0, _positionInfo.length(), bounds);
-
-                // draw background
-                paint.setColor(Color.WHITE);
-                paint.setAlpha(200);
-                pCanvas.drawRect(pCanvas.getWidth() - bounds.width(),
-                        0,
-                        pCanvas.getWidth(),
-                        bounds.height(),
-                        paint);
-
-                // draw text
-                paint.setColor(Color.BLACK);
-                paint.setAlpha(255);
-                paint.setFlags(Paint.ANTI_ALIAS_FLAG);
-                pCanvas.drawText(_positionInfo, pCanvas.getWidth() - bounds.width(), bounds.height(), paint);
+                _locationInfoTextView.setText(_positionInfo);
             }
         };
 
@@ -152,6 +136,23 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
         _mapStations = new MapStations(requireActivity(), _mapView, this);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        _myLocationNewOverlay.enableMyLocation();
+
+        if (_shouldFollowLocation) {
+            _myLocationNewOverlay.enableFollowLocation();
+            _mapController.setZoom(MAP_FOLLOW_ZOOM);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        _myLocationNewOverlay.disableMyLocation();
+    }
+
     @NonNull
     private CompassOverlay getCompassOverlay(Context context) {
         InternalCompassOrientationProvider compassOrientationProvider = new InternalCompassOrientationProvider(context) {
@@ -163,7 +164,6 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
                     float azimuthNorm = (azimuth % 360f + 360f) % 360f;
                     // map orientation = -azimuth (normalized to [0,360))
                     float mapOrientation = (360f - azimuthNorm) % 360f;
-
                     _mapView.setMapOrientation(mapOrientation);
                 }
                 super.onSensorChanged(sensorEvent);
