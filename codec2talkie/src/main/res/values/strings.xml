@@ -120,7 +120,7 @@
     <string name="app_keep_screen_on_summary">Prevent screen switching off when app is active</string>
     <string name="menu_recorder">Recorder</string>
     <string name="recorder_menu_play_all">Play all</string>
-    <string name="recorder_menu_delete_all">Delete all</string>
+    <string name="recorder_menu_delete_all">Delete all recordings</string>
     <string name="recorder_remove_all_confirmation_message">Remove all recordings from %1$s?</string>
     <string name="recorder_remove_all_confirmation_title">Remove confirmation</string>
     <string name="ok">OK</string>
@@ -321,7 +321,7 @@
     <string name="messages_view_title">Messages</string>
     <string name="app_notifications_text_title">Incoming message</string>
     <string name="app_notifications_text_summary">Click to open and read message</string>
-    <string name="messages_group_menu_clear_title">Delete all</string>
+    <string name="messages_group_menu_clear_title">Delete all conversations</string>
     <string name="messages_group_activity_delete_all_confirmation_title">This will remove all conversations. Are you sure?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
