@@ -4,10 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.hardware.SensorEvent;
 import android.location.Location;
 import android.os.Bundle;
@@ -34,9 +31,6 @@ import com.radio.codec2talkie.ui.FragmentMenuHandler;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
-import org.osmdroid.events.MapListener;
-import org.osmdroid.events.ScrollEvent;
-import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.modules.SqlTileWriter;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.views.MapView;
@@ -129,6 +123,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
         _myLocationNewOverlay.runOnFirstFix(() -> requireActivity().runOnUiThread(() -> {
             _mapController.setCenter(_myLocationNewOverlay.getMyLocation());
             _mapController.animateTo(_myLocationNewOverlay.getMyLocation());
+            _mapController.zoomTo(MAP_FOLLOW_ZOOM);
         }));
         _mapView.getOverlays().add(_myLocationNewOverlay);
 
@@ -252,6 +247,8 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
                 item.setChecked(true);
                 _shouldFollowLocation = true;
                 _myLocationNewOverlay.enableFollowLocation();
+                _mapController.setCenter(_myLocationNewOverlay.getMyLocation());
+                _mapController.animateTo(_myLocationNewOverlay.getMyLocation());
                 _mapController.zoomTo(MAP_FOLLOW_ZOOM);
             }
             return true;
