@@ -245,6 +245,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
                 item.setChecked(false);
                 _shouldFollowLocation = false;
                 _myLocationNewOverlay.disableFollowLocation();
+                _locationInfoTextView.setText("");
             } else {
                 item.setChecked(true);
                 _shouldFollowLocation = true;
