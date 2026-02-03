@@ -2,6 +2,7 @@ package com.radio.codec2talkie.storage.message.group;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.app.AppService;
 import com.radio.codec2talkie.protocol.message.TextMessage;
+import com.radio.codec2talkie.storage.message.MessageItemActivity;
 
 import java.util.Locale;
 
@@ -53,6 +55,10 @@ public class MessageGroupDialogSendTo extends AlertDialog implements View.OnClic
             textMessage.ackId = 0;
             _appService.sendTextMessage(textMessage);
             dismiss();
+
+            Intent messagesIntent = new Intent(v.getContext(), MessageItemActivity.class);
+            messagesIntent.putExtra("groupName", targetEdit.getText().toString());
+            v.getContext().startActivity(messagesIntent);
         }  else if (id == R.id.send_message_to_btn_cancel) {
             dismiss();
         }
