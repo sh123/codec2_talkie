@@ -1,7 +1,6 @@
 package com.radio.codec2talkie.storage.message;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -14,13 +13,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
-import com.radio.codec2talkie.app.AppService;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.ui.AppCompatActivityWithServiceConnection;
+
+import java.util.Objects;
 
 public class MessageItemActivity extends AppCompatActivityWithServiceConnection implements View.OnClickListener {
 
     private MessageItemViewModel _messageViewModel;
+    private RecyclerView _recyclerView;
+    private MessageItemAdapter _adapter;
+    private LinearLayoutManager _layoutManager;
 
     private String _groupName;
 
@@ -34,24 +37,36 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
-        RecyclerView recyclerView = findViewById(R.id.message_recyclerview);
-        recyclerView.setHasFixedSize(true);
-        final MessageItemAdapter adapter = new MessageItemAdapter(new MessageItemAdapter.MessageItemDiff());
-        recyclerView.setAdapter(adapter);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        linearLayoutManager.setStackFromEnd(true);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL));
+        _recyclerView = findViewById(R.id.message_recyclerview);
+        _recyclerView.setHasFixedSize(true);
+        _adapter = new MessageItemAdapter(new MessageItemAdapter.MessageItemDiff());
+        _recyclerView.setAdapter(_adapter);
 
-        _groupName = (String) getIntent().getExtras().get("groupName");
+        _layoutManager = new LinearLayoutManager(this);
+        _layoutManager.setStackFromEnd(true);
+        _recyclerView.setLayoutManager(_layoutManager);
+        _recyclerView.addItemDecoration(new DividerItemDecoration(_recyclerView.getContext(), DividerItemDecoration.VERTICAL));
+
+        _groupName = (String) Objects.requireNonNull(getIntent().getExtras()).get("groupName");
         _messageViewModel = new ViewModelProvider(this).get(MessageItemViewModel.class);
-        _messageViewModel.getMessages(_groupName).observe(this, adapter::submitList);
+        _messageViewModel.getMessages(_groupName).observe(this, messages -> _adapter.submitList(messages, () -> {
+            if (shouldAutoScroll()) {
+                _recyclerView.scrollToPosition(_adapter.getItemCount() - 1);
+            }
+        }));
 
         setTitle(String.format("%s to %s", getString(R.string.messages_view_title), _groupName));
 
         Button sendButton = findViewById(R.id.messages_send);
         assert sendButton != null;
         sendButton.setOnClickListener(this);
+    }
+
+    private boolean shouldAutoScroll() {
+        int lastVisible = _layoutManager.findLastCompletelyVisibleItemPosition();
+        int itemCount = _adapter.getItemCount();
+        if (itemCount == 0) return true;
+        return lastVisible == RecyclerView.NO_POSITION || lastVisible >= itemCount - 3;
     }
 
     @Override

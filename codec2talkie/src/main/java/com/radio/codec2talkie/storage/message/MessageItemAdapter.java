@@ -6,10 +6,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 
+import java.util.List;
+import java.util.Objects;
+
 public class MessageItemAdapter extends ListAdapter<MessageItem, MessageItemHolder> {
 
     public MessageItemAdapter(@NonNull DiffUtil.ItemCallback<MessageItem> diffCallback) {
         super(diffCallback);
+        //setHasStableIds(true);
     }
 
     @NonNull
@@ -19,7 +23,7 @@ public class MessageItemAdapter extends ListAdapter<MessageItem, MessageItemHold
     }
 
     @Override
-    public void onBindViewHolder(MessageItemHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MessageItemHolder holder, int position) {
         MessageItem current = getItem(position);
         holder.bind(current.getTimestampEpoch(), current.getSrcCallsign(), current.getMessage(), current.getIsTransmit());
     }
@@ -28,12 +32,25 @@ public class MessageItemAdapter extends ListAdapter<MessageItem, MessageItemHold
 
         @Override
         public boolean areItemsTheSame(@NonNull MessageItem oldItem, @NonNull MessageItem newItem) {
-            return oldItem == newItem;
+            if (oldItem.getId() != 0 && newItem.getId() != 0) {
+                return oldItem.getId() == newItem.getId();
+            }
+            return Objects.equals(oldItem.getSrcCallsign(), newItem.getSrcCallsign())
+                    && oldItem.getIsTransmit() == newItem.getIsTransmit()
+                    && Objects.equals(oldItem.getDstCallsign(), newItem.getDstCallsign())
+                    && oldItem.getTimestampEpoch() == newItem.getTimestampEpoch()
+                    && oldItem.getAckId() == newItem.getAckId()
+                    && Objects.equals(oldItem.getMessage(), newItem.getMessage());
         }
 
         @Override
         public boolean areContentsTheSame(@NonNull MessageItem oldItem, @NonNull MessageItem newItem) {
-            return oldItem.getMessage().equals(newItem.getMessage());
+            return Objects.equals(oldItem.getMessage(), newItem.getMessage())
+                    && Objects.equals(oldItem.getSrcCallsign(), newItem.getSrcCallsign())
+                    && oldItem.getTimestampEpoch() == newItem.getTimestampEpoch()
+                    && oldItem.getIsTransmit() == newItem.getIsTransmit()
+                    && oldItem.getAckId() == newItem.getAckId()
+                    && oldItem.getIsAcknowledged() == newItem.getIsAcknowledged();
         }
     }
 }
