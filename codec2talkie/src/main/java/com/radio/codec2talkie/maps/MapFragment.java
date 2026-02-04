@@ -60,6 +60,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
     private MapView _mapView;
     private IMapController _mapController;
     private MyLocationNewOverlay _myLocationNewOverlay;
+    private CompassOverlay _compassOverlay;
     private TextView _locationInfoTextView;
 
     private final Handler _handler = new Handler(Looper.getMainLooper());
@@ -104,8 +105,8 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
         _mapController.zoomTo(_zoomLevel);
 
         // compass
-        CompassOverlay compassOverlay = getCompassOverlay(requireActivity());
-        _mapView.getOverlays().add(compassOverlay);
+        _compassOverlay = getCompassOverlay(requireActivity());
+        _mapView.getOverlays().add(_compassOverlay);
 
         // my location
         _myLocationNewOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(requireActivity()), _mapView) {
@@ -211,16 +212,17 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
         _mapView.onResume();
         _myLocationNewOverlay.onResume();
         _myLocationNewOverlay.enableMyLocation();
-
         if (_shouldFollowLocation) {
             _myLocationNewOverlay.enableFollowLocation();
             _mapController.setZoom(MAP_FOLLOW_ZOOM);
         }
+        _compassOverlay.enableCompass();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        _compassOverlay.disableCompass();
         _myLocationNewOverlay.disableMyLocation();
         _myLocationNewOverlay.onPause();
         _mapView.onPause();
@@ -231,7 +233,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
         InternalCompassOrientationProvider compassOrientationProvider = new InternalCompassOrientationProvider(context) {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                if (_rotateMap) {
+                if (_rotateMap && sensorEvent.values.length > 0) {
                     // normalize azimuth into [0, 360)
                     float azimuth = sensorEvent.values[0];
                     float azimuthNorm = (azimuth % 360f + 360f) % 360f;
