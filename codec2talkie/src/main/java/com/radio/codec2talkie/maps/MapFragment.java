@@ -55,7 +55,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
     private static final int AUTO_RESUME_FOLLOW_LOCATION_MS = 2000;
     private static final int AUTO_RESUME_CHECK_TRIGGER_MS = 250;
 
-    private static final float MAP_FOLLOW_ZOOM = 16.0f;
+    private static final float MAP_FOLLOW_ZOOM = 18.0f;
 
     private MapView _mapView;
     private IMapController _mapController;
