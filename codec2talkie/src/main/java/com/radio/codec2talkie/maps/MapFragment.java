@@ -171,7 +171,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
                     if (location.hasSpeed() && location.getSpeed() > 0)
                         _mapView.setMapOrientation((float)currentBearing);
                 } else {
-                    boolean shouldFlip = (currentBearing > 90f && currentBearing < 270f);
+                    boolean shouldFlip = (currentBearing > 180f && currentBearing < 360f);
                     updateMyIcon(shouldFlip);
                 }
             }
