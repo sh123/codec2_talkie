@@ -19,19 +19,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/send_message_to_message_edit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:hint="@string/send_message_to_message_edit_text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/send_message_to_target_edit" />
-
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/send_message_to_btn_ok"
         android:layout_width="wrap_content"
@@ -42,7 +29,7 @@
         android:textAllCaps="false"
         app:layout_constraintEnd_toStartOf="@+id/send_message_to_btn_cancel"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/send_message_to_message_edit" />
+        app:layout_constraintTop_toBottomOf="@+id/send_message_to_target_edit" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/send_message_to_btn_cancel"
@@ -54,6 +41,6 @@
         android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/send_message_to_btn_ok"
-        app:layout_constraintTop_toBottomOf="@+id/send_message_to_message_edit" />
+        app:layout_constraintTop_toBottomOf="@+id/send_message_to_target_edit" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

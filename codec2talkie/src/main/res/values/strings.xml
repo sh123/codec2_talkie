@@ -315,7 +315,7 @@
     <string name="message_send_btn_title">Send</string>
     <string name="send_message_to_target_edit_callsign">Callsign</string>
     <string name="send_message_to_message_edit_text">Message text</string>
-    <string name="send_message_to_btn_ok_text">Send</string>
+    <string name="send_message_to_btn_ok_text">Create</string>
     <string name="send_message_to_btn_cancel_text">Cancel</string>
     <string name="activity_send_message_to_title">Create conversation</string>
     <string name="messages_view_title">Messages</string>

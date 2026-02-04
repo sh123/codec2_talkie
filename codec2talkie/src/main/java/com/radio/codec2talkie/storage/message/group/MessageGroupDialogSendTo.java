@@ -46,16 +46,8 @@ public class MessageGroupDialogSendTo extends AlertDialog implements View.OnClic
         int id = v.getId();
         if (id == R.id.send_message_to_btn_ok) {
             EditText targetEdit = findViewById(R.id.send_message_to_target_edit);
-            EditText messageEdit = findViewById(R.id.send_message_to_message_edit);
             assert targetEdit != null;
-            assert messageEdit != null;
-            TextMessage textMessage = new TextMessage();
-            textMessage.dst = targetEdit.getText().toString().toUpperCase(Locale.ROOT);
-            textMessage.text = messageEdit.getText().toString();
-            textMessage.ackId = 0;
-            _appService.sendTextMessage(textMessage);
             dismiss();
-
             Intent messagesIntent = new Intent(v.getContext(), MessageItemActivity.class);
             messagesIntent.putExtra("groupName", targetEdit.getText().toString());
             v.getContext().startActivity(messagesIntent);
