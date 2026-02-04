@@ -403,7 +403,7 @@
     <string name="log_view_menu_clear_7d">Older than 7 days</string>
     <string name="log_view_menu_clear_all">Clear all</string>
     <string name="log_item_activity_delete_hours_title">This will remove everything older than %d hours. Are you sure?</string>
-    <string name="map_menu_rotate_map">Rotate map with compass</string>
+    <string name="map_menu_rotate_map">Rotate map with bearing</string>
     <string name="map_menu_show_range">Show range circles</string>
     <string name="map_menu_show_moving">Show moving stations</string>
     <string name="aprs_text_packets_enable_title">Enable text packets</string>

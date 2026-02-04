@@ -109,31 +109,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
         _mapView.getOverlays().add(_compassOverlay);
 
         // my location
-        _myLocationNewOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(requireActivity()), _mapView) {
-            @Override
-            public void onLocationChanged(Location location, IMyLocationProvider source) {
-                super.onLocationChanged(location, source);
-                _positionInfo = String.format(Locale.US, "%dkm/h, %d°, %dm, %s, %f, %f",
-                        UnitTools.metersPerSecondToKilometersPerHour((int)location.getSpeed()),
-                        (int)location.getBearing(),
-                        (int)location.getAltitude(),
-                        UnitTools.decimalToMaidenhead(location.getLatitude(), location.getLongitude()),
-                        location.getLatitude(),
-                        location.getLongitude()
-                );
-
-                double currentBearing = location.getBearing();
-                boolean shouldFlip = (currentBearing > 90f && currentBearing < 270f);
-                updateMyIcon(shouldFlip);
-            }
-
-            @Override
-            public void draw(Canvas pCanvas, MapView pMapView, boolean pShadow) {
-                super.draw(pCanvas, pMapView, pShadow);
-                if (_positionInfo == null || !_shouldFollowLocation) return;
-                _locationInfoTextView.setText(_positionInfo);
-            }
-        };
+        _myLocationNewOverlay = getLocationOverlay();
 
         // set own icon
         updateMyIcon(false);
@@ -156,8 +132,10 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
             }
             _mapController.zoomTo(_zoomLevel);
         }));
-
         _mapView.getOverlays().add(_myLocationNewOverlay);
+
+
+        // delayed user interaction for map follow updates
         _mapView.addMapListener(new DelayedMapListener(new MapListener() {
             @Override public boolean onScroll(ScrollEvent event) {
                 onUserInteraction();
@@ -171,6 +149,64 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
 
         // stations
         _mapStations = new MapStations(requireActivity(), _mapView, this);
+    }
+
+    @NonNull
+    private MyLocationNewOverlay getLocationOverlay() {
+         return new MyLocationNewOverlay(new GpsMyLocationProvider(requireActivity()), _mapView) {
+            @Override
+            public void onLocationChanged(Location location, IMyLocationProvider source) {
+                super.onLocationChanged(location, source);
+                _positionInfo = String.format(Locale.US, "%dkm/h, %d°, %dm, %s, %f, %f",
+                        UnitTools.metersPerSecondToKilometersPerHour((int)location.getSpeed()),
+                        (int)location.getBearing(),
+                        (int)location.getAltitude(),
+                        UnitTools.decimalToMaidenhead(location.getLatitude(), location.getLongitude()),
+                        location.getLatitude(),
+                        location.getLongitude()
+                );
+
+                double currentBearing = location.getBearing();
+                if (_rotateMap) {
+                    if (location.hasSpeed() && location.getSpeed() > 0)
+                        _mapView.setMapOrientation((float)currentBearing);
+                } else {
+                    boolean shouldFlip = (currentBearing > 90f && currentBearing < 270f);
+                    updateMyIcon(shouldFlip);
+                }
+            }
+
+            @Override
+            public void draw(Canvas pCanvas, MapView pMapView, boolean pShadow) {
+                super.draw(pCanvas, pMapView, pShadow);
+                if (_positionInfo == null || !_shouldFollowLocation) return;
+                _locationInfoTextView.setText(_positionInfo);
+            }
+        };
+    }
+
+    @NonNull
+    private CompassOverlay getCompassOverlay(Context context) {
+        InternalCompassOrientationProvider compassOrientationProvider = new InternalCompassOrientationProvider(context) {
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+                if (_rotateMap && sensorEvent.values.length > 0) {
+                    Location lastLocation = _myLocationNewOverlay.getLastFix();
+                    if (lastLocation == null || lastLocation.getSpeed() == 0) {
+                        // normalize azimuth into [0, 360)
+                        float azimuth = sensorEvent.values[0];
+                        float azimuthNorm = (azimuth % 360f + 360f) % 360f;
+                        // map orientation = -azimuth (normalized to [0,360))
+                        float mapOrientation = (360f - azimuthNorm) % 360f;
+                        _mapView.setMapOrientation(mapOrientation);
+                    }
+                }
+                super.onSensorChanged(sensorEvent);
+            }
+        };
+        CompassOverlay compassOverlay = new CompassOverlay(context, compassOrientationProvider, _mapView);
+        compassOverlay.enableCompass();
+        return compassOverlay;
     }
 
     private void loadSettings() {
@@ -226,27 +262,6 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
         _myLocationNewOverlay.disableMyLocation();
         _myLocationNewOverlay.onPause();
         _mapView.onPause();
-    }
-
-    @NonNull
-    private CompassOverlay getCompassOverlay(Context context) {
-        InternalCompassOrientationProvider compassOrientationProvider = new InternalCompassOrientationProvider(context) {
-            @Override
-            public void onSensorChanged(SensorEvent sensorEvent) {
-                if (_rotateMap && sensorEvent.values.length > 0) {
-                    // normalize azimuth into [0, 360)
-                    float azimuth = sensorEvent.values[0];
-                    float azimuthNorm = (azimuth % 360f + 360f) % 360f;
-                    // map orientation = -azimuth (normalized to [0,360))
-                    float mapOrientation = (360f - azimuthNorm) % 360f;
-                    _mapView.setMapOrientation(mapOrientation);
-                }
-                super.onSensorChanged(sensorEvent);
-            }
-        };
-        CompassOverlay compassOverlay = new CompassOverlay(context, compassOrientationProvider, _mapView);
-        compassOverlay.enableCompass();
-        return compassOverlay;
     }
 
     public void updateMyIcon(boolean shouldFlip) {
