@@ -55,8 +55,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
     private static final int AUTO_RESUME_FOLLOW_LOCATION_MS = 2000;
     private static final int AUTO_RESUME_CHECK_TRIGGER_MS = 250;
 
-    private static final double MAP_STARTUP_ZOOM = 9.0;
-    private static final double MAP_FOLLOW_ZOOM = 16.0;
+    private static final float MAP_FOLLOW_ZOOM = 16.0f;
 
     private MapView _mapView;
     private IMapController _mapController;
@@ -67,10 +66,13 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
     private final Runnable _autoResumeRunnable = this::resumeFollow;
 
     private MapStations _mapStations;
-    private boolean _rotateMap = false;
+
+    private SharedPreferences _sharedPreferences;
     private boolean _shouldFollowLocation = false;
+    private boolean _rotateMap = false;
     private boolean _showMoving = false;
     private boolean _showCircles = false;
+    private float _zoomLevel = MAP_FOLLOW_ZOOM;
 
     private String _positionInfo;
 
@@ -85,6 +87,10 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
         super.onViewCreated(view, savedInstanceState);
         Configuration.getInstance().setUserAgentValue(Aprs.APRS_ID + " " + BuildConfig.VERSION_NAME);
 
+        // config
+        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireActivity());
+        loadSettings();
+
         // location info label
         _locationInfoTextView = view.findViewById(R.id.location_info);
 
@@ -95,7 +101,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
 
         // controller
         _mapController = _mapView.getController();
-        _mapController.zoomTo(MAP_STARTUP_ZOOM);
+        _mapController.zoomTo(_zoomLevel);
 
         // compass
         CompassOverlay compassOverlay = getCompassOverlay(requireActivity());
@@ -136,7 +142,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
         _myLocationNewOverlay.setEnableAutoStop(true);
         if (_shouldFollowLocation) {
             _myLocationNewOverlay.enableFollowLocation();
-            _mapController.setZoom(MAP_FOLLOW_ZOOM);
+            _mapController.setZoom(_zoomLevel);
         }
         _myLocationNewOverlay.runOnFirstFix(() -> requireActivity().runOnUiThread(() -> {
             GeoPoint myLocation = _myLocationNewOverlay.getMyLocation();
@@ -147,7 +153,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
             if (_shouldFollowLocation) {
                 _myLocationNewOverlay.enableFollowLocation();
             }
-            _mapController.zoomTo(MAP_FOLLOW_ZOOM);
+            _mapController.zoomTo(_zoomLevel);
         }));
 
         _mapView.getOverlays().add(_myLocationNewOverlay);
@@ -166,11 +172,30 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
         _mapStations = new MapStations(requireActivity(), _mapView, this);
     }
 
+    private void loadSettings() {
+        _shouldFollowLocation = _sharedPreferences.getBoolean(PreferenceKeys.APRS_MAP_MOVE_WITH_POSITION, false);
+        _rotateMap = _sharedPreferences.getBoolean(PreferenceKeys.APRS_MAP_ROTATE_WITH_COMPASS, false);
+        _showMoving = _sharedPreferences.getBoolean(PreferenceKeys.APRS_MAP_SHOW_MOVING_STATIONS, false);
+        _showCircles = _sharedPreferences.getBoolean(PreferenceKeys.APRS_MAP_SHOW_RANGE_CIRCLES, false);
+        _zoomLevel = _sharedPreferences.getFloat(PreferenceKeys.APRS_MAP_ZOOM_LEVEL, MAP_FOLLOW_ZOOM);
+    }
+
+    private void saveSettings() {
+        SharedPreferences.Editor editor = _sharedPreferences.edit();
+        editor.putBoolean(PreferenceKeys.APRS_MAP_MOVE_WITH_POSITION, _shouldFollowLocation);
+        editor.putBoolean(PreferenceKeys.APRS_MAP_ROTATE_WITH_COMPASS, _rotateMap);
+        editor.putBoolean(PreferenceKeys.APRS_MAP_SHOW_MOVING_STATIONS, _showMoving);
+        editor.putBoolean(PreferenceKeys.APRS_MAP_SHOW_RANGE_CIRCLES, _showCircles);
+        editor.putFloat(PreferenceKeys.APRS_MAP_ZOOM_LEVEL, (float)_mapView.getZoomLevelDouble());
+        editor.apply();
+    }
+
     private void onUserInteraction() {
         if (_shouldFollowLocation && AUTO_RESUME_FOLLOW_LOCATION_MS > 0) {
             _handler.removeCallbacks(_autoResumeRunnable);
             _handler.postDelayed(_autoResumeRunnable, AUTO_RESUME_FOLLOW_LOCATION_MS);
         }
+        saveSettings();
     }
 
     private void resumeFollow() {
@@ -268,6 +293,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
                 item.setChecked(true);
                 _rotateMap = true;
             }
+            saveSettings();
             return true;
         } else if (itemId == R.id.map_menu_show_range) {
             if (item.isChecked()) {
@@ -279,6 +305,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
             }
             item.setChecked(_showCircles);
             _mapStations.showRangeCircles(_showCircles);
+            saveSettings();
             return true;
         } else if (itemId == R.id.map_menu_show_moving) {
             if (item.isChecked()) {
@@ -289,6 +316,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
                 _showMoving = true;
             }
             _mapStations.showMovingStations(_showMoving);
+            saveSettings();
             return true;
         } else if (itemId == R.id.map_menu_move_map) {
             if (item.isChecked()) {
@@ -302,8 +330,9 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
                 _myLocationNewOverlay.enableFollowLocation();
                 _mapController.setCenter(_myLocationNewOverlay.getMyLocation());
                 _mapController.animateTo(_myLocationNewOverlay.getMyLocation());
-                _mapController.zoomTo(MAP_FOLLOW_ZOOM);
+                _mapController.zoomTo(_zoomLevel);
             }
+            saveSettings();
             return true;
         }
         return false;
