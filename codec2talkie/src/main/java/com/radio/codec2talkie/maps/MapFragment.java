@@ -8,6 +8,8 @@ import android.graphics.Matrix;
 import android.hardware.SensorEvent;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,8 +33,13 @@ import com.radio.codec2talkie.ui.FragmentMenuHandler;
 
 import org.osmdroid.api.IMapController;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.events.DelayedMapListener;
+import org.osmdroid.events.MapListener;
+import org.osmdroid.events.ScrollEvent;
+import org.osmdroid.events.ZoomEvent;
 import org.osmdroid.tileprovider.modules.SqlTileWriter;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.compass.CompassOverlay;
 import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider;
@@ -45,13 +52,19 @@ import java.util.Locale;
 public class MapFragment extends Fragment implements FragmentMenuHandler {
     private static final String TAG = MapFragment.class.getSimpleName();
 
-    private static final double MAP_STARTUP_ZOOM = 5.0;
-    private static final double MAP_FOLLOW_ZOOM = 14.0;
+    private static final int AUTO_RESUME_FOLLOW_LOCATION_MS = 2000;
+    private static final int AUTO_RESUME_CHECK_TRIGGER_MS = 250;
+
+    private static final double MAP_STARTUP_ZOOM = 9.0;
+    private static final double MAP_FOLLOW_ZOOM = 16.0;
 
     private MapView _mapView;
     private IMapController _mapController;
     private MyLocationNewOverlay _myLocationNewOverlay;
     private TextView _locationInfoTextView;
+
+    private final Handler _handler = new Handler(Looper.getMainLooper());
+    private final Runnable _autoResumeRunnable = this::resumeFollow;
 
     private MapStations _mapStations;
     private boolean _rotateMap = false;
@@ -120,20 +133,58 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
 
         // my location overlay
         _myLocationNewOverlay.enableMyLocation();
+        _myLocationNewOverlay.setEnableAutoStop(true);
+        if (_shouldFollowLocation) {
+            _myLocationNewOverlay.enableFollowLocation();
+            _mapController.setZoom(MAP_FOLLOW_ZOOM);
+        }
         _myLocationNewOverlay.runOnFirstFix(() -> requireActivity().runOnUiThread(() -> {
-            _mapController.setCenter(_myLocationNewOverlay.getMyLocation());
-            _mapController.animateTo(_myLocationNewOverlay.getMyLocation());
+            GeoPoint myLocation = _myLocationNewOverlay.getMyLocation();
+            if (myLocation != null) {
+                _mapController.setCenter(_myLocationNewOverlay.getMyLocation());
+                _mapController.animateTo(_myLocationNewOverlay.getMyLocation());
+            }
+            if (_shouldFollowLocation) {
+                _myLocationNewOverlay.enableFollowLocation();
+            }
             _mapController.zoomTo(MAP_FOLLOW_ZOOM);
         }));
+
         _mapView.getOverlays().add(_myLocationNewOverlay);
+        _mapView.addMapListener(new DelayedMapListener(new MapListener() {
+            @Override public boolean onScroll(ScrollEvent event) {
+                onUserInteraction();
+                return false;
+            }
+            @Override public boolean onZoom(ZoomEvent event) {
+                onUserInteraction();
+                return false;
+            }
+        }, AUTO_RESUME_CHECK_TRIGGER_MS));
 
         // stations
         _mapStations = new MapStations(requireActivity(), _mapView, this);
     }
 
+    private void onUserInteraction() {
+        if (_shouldFollowLocation && AUTO_RESUME_FOLLOW_LOCATION_MS > 0) {
+            _handler.removeCallbacks(_autoResumeRunnable);
+            _handler.postDelayed(_autoResumeRunnable, AUTO_RESUME_FOLLOW_LOCATION_MS);
+        }
+    }
+
+    private void resumeFollow() {
+        _handler.removeCallbacks(_autoResumeRunnable);
+        GeoPoint last = _myLocationNewOverlay.getMyLocation();
+        if (last != null) _mapController.animateTo(last);
+        _myLocationNewOverlay.enableFollowLocation();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
+        _mapView.onResume();
+        _myLocationNewOverlay.onResume();
         _myLocationNewOverlay.enableMyLocation();
 
         if (_shouldFollowLocation) {
@@ -146,6 +197,8 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
     public void onPause() {
         super.onPause();
         _myLocationNewOverlay.disableMyLocation();
+        _myLocationNewOverlay.onPause();
+        _mapView.onPause();
     }
 
     @NonNull
