@@ -47,7 +47,7 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
 
         Button sendToButton = view.findViewById(R.id.messages_send_to);
         sendToButton.setOnClickListener(v -> {
-            MessageGroupDialogSendTo dialogSendTo = new MessageGroupDialogSendTo(requireActivity(), getService());
+            MessageGroupDialogSendTo dialogSendTo = new MessageGroupDialogSendTo(requireActivity());
             dialogSendTo.show();
         });
 

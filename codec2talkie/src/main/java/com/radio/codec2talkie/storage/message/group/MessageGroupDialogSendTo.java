@@ -20,11 +20,8 @@ import java.util.Locale;
 
 public class MessageGroupDialogSendTo extends AlertDialog implements View.OnClickListener {
 
-    private final AppService _appService;
-
-    public MessageGroupDialogSendTo(@NonNull Context context, AppService appService) {
+    public MessageGroupDialogSendTo(@NonNull Context context) {
         super(context);
-        _appService = appService;
     }
 
     @SuppressLint("MissingSuperCall")
