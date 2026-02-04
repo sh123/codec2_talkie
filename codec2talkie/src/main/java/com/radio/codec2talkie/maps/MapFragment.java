@@ -56,6 +56,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
     private static final int AUTO_RESUME_CHECK_TRIGGER_MS = 250;
 
     private static final float MAP_FOLLOW_ZOOM = 18.0f;
+    private static final float MAP_MAX_ZOOM = 20.0f;
 
     private MapView _mapView;
     private IMapController _mapController;
@@ -350,6 +351,9 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
                 _mapController.zoomTo(_zoomLevel);
             }
             saveSettings();
+            return true;
+        } else if (itemId == R.id.map_menu_zoom_max) {
+            _mapController.zoomTo(MAP_MAX_ZOOM);
             return true;
         }
         return false;

@@ -421,4 +421,5 @@
     <string name="btn_map_desc">Show live map</string>
     <string name="btn_messages_text">Messages</string>
     <string name="btn_messages_desc">Conversations</string>
+    <string name="map_menu_zoom_max">Maximum zoom</string>
 </resources>

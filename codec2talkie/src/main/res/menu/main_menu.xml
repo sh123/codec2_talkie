@@ -41,6 +41,9 @@
     </group>
     <group android:id="@+id/group_map">
         <item
+            android:id="@+id/map_menu_zoom_max"
+            android:title="@string/map_menu_zoom_max"/>
+        <item
             android:id="@+id/map_menu_move_map"
             android:title="@string/map_menu_move_map"
             android:checkable="true"
