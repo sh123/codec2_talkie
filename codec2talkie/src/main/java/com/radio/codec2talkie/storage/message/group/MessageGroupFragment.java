@@ -108,6 +108,11 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
             deleteAll();
             return true;
         }
+        else if (itemId == R.id.messages_group_menu_add) {
+            MessageGroupDialogSendTo dialogSendTo = new MessageGroupDialogSendTo(requireActivity());
+            dialogSendTo.show();
+            return true;
+        }
         return false;
     }
 

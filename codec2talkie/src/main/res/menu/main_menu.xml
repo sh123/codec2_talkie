@@ -7,6 +7,9 @@
     </group>
     <group android:id="@+id/group_messages">
         <item
+            android:id="@+id/messages_group_menu_add"
+            android:title="@string/message_groups_send_to_btn_title" />
+        <item
             android:id="@+id/messages_group_menu_clear"
             android:title="@string/messages_group_menu_clear_title" />
     </group>
