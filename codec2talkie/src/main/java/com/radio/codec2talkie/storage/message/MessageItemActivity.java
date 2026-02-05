@@ -55,7 +55,7 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
             }
         }));
 
-        setTitle(String.format("%s to %s", getString(R.string.messages_view_title), _groupName));
+        setTitle(String.format(_groupName));
 
         Button sendButton = findViewById(R.id.messages_send);
         assert sendButton != null;

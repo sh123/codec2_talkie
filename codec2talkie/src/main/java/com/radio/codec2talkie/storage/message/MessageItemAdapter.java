@@ -25,7 +25,7 @@ public class MessageItemAdapter extends ListAdapter<MessageItem, MessageItemHold
     @Override
     public void onBindViewHolder(@NonNull MessageItemHolder holder, int position) {
         MessageItem current = getItem(position);
-        holder.bind(current.getTimestampEpoch(), current.getSrcCallsign(), current.getMessage(), current.getIsTransmit());
+        holder.bind(current.getTimestampEpoch(), current.getSrcCallsign(), current.getDstCallsign(), current.getMessage());
     }
 
     static class MessageItemDiff extends DiffUtil.ItemCallback<MessageItem> {
