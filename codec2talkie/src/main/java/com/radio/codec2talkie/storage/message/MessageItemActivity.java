@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.storage.message;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -8,14 +9,17 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.message.TextMessage;
+import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.ui.AppCompatActivityWithServiceConnection;
 
+import java.util.Locale;
 import java.util.Objects;
 
 public class MessageItemActivity extends AppCompatActivityWithServiceConnection implements View.OnClickListener {
@@ -26,6 +30,7 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
     private LinearLayoutManager _layoutManager;
 
     private String _groupName;
+    private String _targetCallSign;
 
     public static boolean isPaused = false;
 
@@ -59,7 +64,28 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
 
         Button sendButton = findViewById(R.id.messages_send);
         assert sendButton != null;
+
+        _targetCallSign = getTargetCallsign(_groupName);
+        if (_targetCallSign == null)
+            sendButton.setEnabled(false);
+
         sendButton.setOnClickListener(this);
+    }
+
+    private String getTargetCallsign(String groupName) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String myCallsign = sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "N0CALL").toUpperCase(Locale.ROOT);
+        String[] callSigns = _groupName.split("/");
+        if (callSigns.length == 1) return _groupName;
+        if (callSigns.length == 2) {
+            if (callSigns[0].equals(myCallsign)) {
+                return callSigns[1];
+            } else if (callSigns[1].equals(myCallsign)) {
+                return callSigns[0];
+            }
+            return null;
+        }
+        return null;
     }
 
     private boolean shouldAutoScroll() {
@@ -88,7 +114,7 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
             EditText messageEdit = findViewById(R.id.messages_edit);
             assert messageEdit != null;
             TextMessage textMessage = new TextMessage();
-            textMessage.dst = _groupName;
+            textMessage.dst = _targetCallSign;
             textMessage.text = messageEdit.getText().toString();
             textMessage.ackId = 0;
             getService().sendTextMessage(textMessage);
