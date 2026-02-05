@@ -25,7 +25,7 @@ public class AX25Callsign {
 
     public void fromString(String inputCallsignWithSsid) {
         isValid = false;
-        if (inputCallsignWithSsid == null) return;
+        if (inputCallsignWithSsid == null || inputCallsignWithSsid.isEmpty()) return;
         // WIDE1*
         String callsignWithSsid = inputCallsignWithSsid.replace("*", "");
         // ABCDEF-XX
@@ -70,7 +70,7 @@ public class AX25Callsign {
         isLast = (lastByte & 0x01) == 1;
         ssid = (lastByte >>> 1) & 0x0f;
 
-        if (callsign.length() == 0) return;
+        if (callsign.isEmpty()) return;
         isValid = true;
     }
 

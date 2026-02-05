@@ -4,11 +4,12 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(indices = {@Index(value = {"id", "srcCallsign", "dstCallsign", "ackId"}, unique = true)})
+@Entity(indices = {@Index(value = {"id", "groupId", "srcCallsign", "dstCallsign", "ackId"}, unique = true)})
 public class MessageItem {
 
     @PrimaryKey(autoGenerate = true)
     private long id;
+    private String groupId;
     private long timestampEpoch;
     private String srcCallsign;
     private String dstCallsign;
@@ -21,6 +22,10 @@ public class MessageItem {
 
     public long getId() {
         return id;
+    }
+
+    public String getGroupId() {
+        return groupId;
     }
 
     public long getTimestampEpoch() {
@@ -47,6 +52,10 @@ public class MessageItem {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
     }
 
     public void setRetryCnt(int retryCnt) { this.retryCnt = retryCnt; }

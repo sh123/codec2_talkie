@@ -14,17 +14,17 @@ public interface MessageItemDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertMessageItem(MessageItem messageItem);
 
-    @Query("SELECT dstCallsign FROM MessageItem GROUP BY dstCallsign")
+    @Query("SELECT groupId FROM MessageItem GROUP BY groupId")
     LiveData<List<String>> getGroups();
 
     @Query("SELECT * FROM MessageItem ORDER BY timestampEpoch ASC")
     LiveData<List<MessageItem>> getAllMessageItems();
 
-    @Query("SELECT * FROM MessageItem WHERE dstCallsign = :dstCallsign ORDER BY timestampEpoch ASC")
-    LiveData<List<MessageItem>> getMessageItems(String dstCallsign);
+    @Query("SELECT * FROM MessageItem WHERE groupId = :groupId ORDER BY timestampEpoch ASC")
+    LiveData<List<MessageItem>> getMessageItems(String groupId);
 
-    @Query("DELETE FROM MessageItem WHERE dstCallsign = :dstCallsign")
-    void deleteMessageItems(String dstCallsign);
+    @Query("DELETE FROM MessageItem WHERE groupId = :groupId")
+    void deleteMessageItems(String groupId);
 
     @Query("DELETE FROM MessageItem")
     void deleteAllMessageItems();
