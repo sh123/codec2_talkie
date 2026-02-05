@@ -169,8 +169,10 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
 
                 double currentBearing = location.getBearing();
                 if (_rotateMap) {
-                    if (location.hasSpeed() && location.getSpeed() > 0)
-                        _mapView.setMapOrientation((float)currentBearing);
+                    if (location.hasSpeed() && location.getSpeed() > 0) {
+                        float mapOrientation = (360f - (float)currentBearing) % 360f;
+                        _mapView.setMapOrientation(mapOrientation);
+                    }
                 } else {
                     boolean shouldFlip = (currentBearing > 180f && currentBearing < 360f);
                     updateMyIcon(shouldFlip);
