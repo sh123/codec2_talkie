@@ -48,6 +48,11 @@ public class TextMessage {
         return isSrcUser ? dst : src;
     }
 
+    public static boolean isMultiParty(String groupName) {
+        String[] callSigns = groupName.split("/");
+        return callSigns.length == 1;
+    }
+
     public static String getTargetCallsign(Context context, String groupName) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String myCallsign = sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "N0CALL").toUpperCase(Locale.ROOT);
