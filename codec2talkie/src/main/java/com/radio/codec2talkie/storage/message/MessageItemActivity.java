@@ -29,7 +29,6 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
     private MessageItemAdapter _adapter;
     private LinearLayoutManager _layoutManager;
 
-    private String _groupName;
     private String _targetCallSign;
 
     public static boolean isPaused = false;
@@ -52,40 +51,26 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
         _recyclerView.setLayoutManager(_layoutManager);
         _recyclerView.addItemDecoration(new DividerItemDecoration(_recyclerView.getContext(), DividerItemDecoration.VERTICAL));
 
-        _groupName = (String) Objects.requireNonNull(getIntent().getExtras()).get("groupName");
+        String groupName = (String) Objects.requireNonNull(getIntent().getExtras()).get("groupName");
+        assert groupName != null;
+
         _messageViewModel = new ViewModelProvider(this).get(MessageItemViewModel.class);
-        _messageViewModel.getMessages(_groupName).observe(this, messages -> _adapter.submitList(messages, () -> {
+        _messageViewModel.getMessages(groupName).observe(this, messages -> _adapter.submitList(messages, () -> {
             if (shouldAutoScroll()) {
                 _recyclerView.scrollToPosition(_adapter.getItemCount() - 1);
             }
         }));
 
-        setTitle(String.format(_groupName));
+        setTitle(groupName);
 
         Button sendButton = findViewById(R.id.messages_send);
         assert sendButton != null;
 
-        _targetCallSign = getTargetCallsign(_groupName);
+        _targetCallSign = TextMessage.getTargetCallsign(this, groupName);
         if (_targetCallSign == null)
             sendButton.setEnabled(false);
 
         sendButton.setOnClickListener(this);
-    }
-
-    private String getTargetCallsign(String groupName) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String myCallsign = sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "N0CALL").toUpperCase(Locale.ROOT);
-        String[] callSigns = groupName.split("/");
-        if (callSigns.length == 1) return groupName;
-        if (callSigns.length == 2) {
-            if (callSigns[0].equals(myCallsign)) {
-                return callSigns[1];
-            } else if (callSigns[1].equals(myCallsign)) {
-                return callSigns[0];
-            }
-            return null;
-        }
-        return null;
     }
 
     private boolean shouldAutoScroll() {

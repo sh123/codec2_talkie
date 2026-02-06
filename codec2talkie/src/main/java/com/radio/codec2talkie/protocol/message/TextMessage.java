@@ -1,5 +1,11 @@
 package com.radio.codec2talkie.protocol.message;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import androidx.preference.PreferenceManager;
+
+import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.storage.message.MessageItem;
 
 import java.util.Locale;
@@ -40,6 +46,22 @@ public class TextMessage {
         }
         // one is group just user group callsign
         return isSrcUser ? dst : src;
+    }
+
+    public static String getTargetCallsign(Context context, String groupName) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        String myCallsign = sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "N0CALL").toUpperCase(Locale.ROOT);
+        String[] callSigns = groupName.split("/");
+        if (callSigns.length == 1) return groupName;
+        if (callSigns.length == 2) {
+            if (callSigns[0].equals(myCallsign)) {
+                return callSigns[1];
+            } else if (callSigns[1].equals(myCallsign)) {
+                return callSigns[0];
+            }
+            return null;
+        }
+        return null;
     }
 
     public boolean isAck() {

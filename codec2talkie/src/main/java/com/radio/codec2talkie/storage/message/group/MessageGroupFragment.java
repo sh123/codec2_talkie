@@ -88,6 +88,10 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
     }
 
     private void deleteGroup(String groupName) {
+        if (groupName == null) {
+            Log.e(TAG, "Cannot delete group, it is null");
+            return;
+        }
         DialogInterface.OnClickListener deleteGroupDialogClickListener = (dialog, which) -> {
             if (which == DialogInterface.BUTTON_POSITIVE) {
                 _messageGroupViewModel.deleteGroup(groupName);
