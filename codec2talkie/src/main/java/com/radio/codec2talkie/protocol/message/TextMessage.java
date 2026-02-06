@@ -9,7 +9,7 @@ public class TextMessage {
     public String dst;
     public String digipath;
     public String text;
-    public Integer ackId;
+    public String ackId;
 
     public MessageItem toMessageItem(boolean isTransmit) {
         MessageItem messageItem = new MessageItem();
@@ -45,13 +45,13 @@ public class TextMessage {
     public boolean isAck() {
         return this.text != null &&
                 this.text.toLowerCase(Locale.ROOT).equals("ack") &&
-                this.ackId > 0;
+                this.ackId != null;
     }
 
     public boolean isRej() {
         return this.text != null &&
                 this.text.toLowerCase(Locale.ROOT).equals("rej") &&
-                this.ackId > 0;
+                this.ackId != null;
     }
 
     public boolean isAutoReply() {

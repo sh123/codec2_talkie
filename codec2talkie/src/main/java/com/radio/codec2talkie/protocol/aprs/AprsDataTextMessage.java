@@ -15,7 +15,7 @@ public class AprsDataTextMessage implements AprsData {
     public String dstCallsign;
     public String digipath;
     public String textMessage;
-    public Integer ackId;
+    public String ackId;
 
     private boolean _isValid;
 
@@ -82,25 +82,27 @@ public class AprsDataTextMessage implements AprsData {
         String stringMessage = new String(message, StandardCharsets.UTF_8);
 
         // ack/rej message
-        this.ackId = 0;
-        Pattern p = Pattern.compile("^(ack|rej)(\n+){1,5}$", Pattern.DOTALL);
+        this.ackId = null;
+        Pattern p = Pattern.compile("^(ack|rej)([A-Za-z0-9]{1,5})$", Pattern.DOTALL);
         Matcher m = p.matcher(stringMessage);
         if (m.find()) {
             String type = m.group(1);
             if (type != null) {
+                this.textMessage = m.group(1);
                 String ackIdStr = m.group(2);
-                if (ackIdStr != null)
-                    this.ackId = Integer.parseInt(ackIdStr);
+                if (ackIdStr != null) {
+                    this.ackId = ackIdStr;
+                }
             }
         } else {
             // message requires acknowledge {xxxxx (for auto ack)
-            p = Pattern.compile("^(.+)[{](\\d+){1,5}$", Pattern.DOTALL);
+            p = Pattern.compile("^(.+)[{]([A-Za-z0-9]{1,5})$", Pattern.DOTALL);
             m = p.matcher(stringMessage);
             if (m.find()) {
                 this.textMessage = m.group(1);
                 String ackNumStr = m.group(2);
                 if (ackNumStr != null)
-                    this.ackId = Integer.parseInt(ackNumStr);
+                    this.ackId = ackNumStr;
             } else {
                 this.textMessage = stringMessage;
             }
@@ -113,8 +115,8 @@ public class AprsDataTextMessage implements AprsData {
 
     @Override
     public byte[] toBinary() {
-        return (ackId > 0)
-                ? String.format(Locale.US, ":%-9s:%s{%d", dstCallsign, textMessage, ackId).getBytes(StandardCharsets.UTF_8)
+        return (ackId != null)
+                ? String.format(Locale.US, ":%-9s:%s{%s", dstCallsign, textMessage, ackId).getBytes(StandardCharsets.UTF_8)
                 : String.format(":%-9s:%s", dstCallsign, textMessage).getBytes(StandardCharsets.UTF_8);
     }
 

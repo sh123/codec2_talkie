@@ -116,7 +116,7 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
             TextMessage textMessage = new TextMessage();
             textMessage.dst = _targetCallSign;
             textMessage.text = messageEdit.getText().toString();
-            textMessage.ackId = 0;
+            textMessage.ackId = null;
             getService().sendTextMessage(textMessage);
             messageEdit.setText("");
         }

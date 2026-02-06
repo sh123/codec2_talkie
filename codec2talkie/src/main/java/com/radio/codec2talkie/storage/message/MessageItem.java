@@ -16,7 +16,7 @@ public class MessageItem {
     private String message;
     private boolean needsAck;
     private boolean isAcknowledged;
-    private int ackId;
+    private String ackId;
     private int retryCnt;
     private boolean isTransmit;
 
@@ -42,7 +42,7 @@ public class MessageItem {
 
     public boolean getNeedsAck() { return needsAck; }
 
-    public int getAckId() { return ackId; }
+    public String getAckId() { return ackId; }
 
     public int getRetryCnt() { return this.retryCnt; }
 
@@ -74,7 +74,7 @@ public class MessageItem {
 
     public void setNeedsAck(boolean needsAck) { this.needsAck = needsAck; }
 
-    public void setAckId(int ackId) { this.ackId = ackId; }
+    public void setAckId(String ackId) { this.ackId = ackId; }
 
     public void setIsTransmit(boolean isTransmit) { this.isTransmit = isTransmit; }
 
