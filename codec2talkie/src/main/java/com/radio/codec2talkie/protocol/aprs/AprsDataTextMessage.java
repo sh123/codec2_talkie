@@ -63,14 +63,14 @@ public class AprsDataTextMessage implements AprsData {
     public void fromBinary(String srcCallsign, String dstCallsign, String digipath, byte[] infoData) {
         _isValid = false;
         if (infoData.length < 10) return;
-        this.digipath = digipath;
-        this.srcCallsign = srcCallsign;
+        this.digipath = digipath.toUpperCase();
+        this.srcCallsign = srcCallsign.toUpperCase();
         ByteBuffer buffer = ByteBuffer.wrap(infoData);
 
         // callsign, trim ending spaces
         byte[] callsign = new byte[9];
         buffer.get(callsign);
-        this.dstCallsign = new String(callsign).replaceAll("\\s+$", "");
+        this.dstCallsign = new String(callsign).replaceAll("\\s+$", "").toUpperCase();
 
         // ':' separator
         byte b = buffer.get();
