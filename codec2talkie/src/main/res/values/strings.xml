@@ -260,16 +260,16 @@
     <string name="aprs_privacy_altitude_title">Send altitude</string>
     <string name="aprs_privacy_altitude_summary">Include altitude in position reports</string>
 
-    <string name="aprs_label">&#127757;</string>
-    <string name="aprsis_label">&#128682;</string>
+    <string name="aprs_label">Ⓐ</string>
+    <string name="aprsis_label">Ⓘ</string>
 
     <string name="menu_messages">Messages</string>
     <string name="menu_start_tracking">Start tracking</string>
     <string name="menu_stop_tracking">Stop tracking</string>
     <string name="menu_send_position">Send position</string>
 
-    <string name="voax25_label">&#9742;</string>
-    <string name="text_packets_label">&#128276;</string>
+    <string name="voax25_label">Ⓥ</string>
+    <string name="text_packets_label">Ⓞ</string>
 
     <string name="menu_aprs_log">View log</string>
 
@@ -306,7 +306,7 @@
     <string name="app_turn_screen_on_summary">Turn screen ON automatically on incoming transmissions</string>
     <string name="aprs_digirepeater_enable_title">Enable digirepeater</string>
     <string name="aprs_digirepeater_enable_summary">Incoming APRS packets will received and digirepeated</string>
-    <string name="digirepeater_label">&#128257;</string>
+    <string name="digirepeater_label">Ⓧ</string>
     <string name="main_status_data_received">PROCESSING</string>
     <string name="app_no_cpu_sleep_title">[Advanced] Do not allow CPU sleep</string>
     <string name="app_no_cpu_sleep_summary">Prevent CPU from sleeping, hold global wake lock, will drain battery!</string>
@@ -423,4 +423,7 @@
     <string name="btn_messages_text">Messages</string>
     <string name="btn_messages_desc">Conversations</string>
     <string name="map_menu_zoom_max">Zoom in to maximum</string>
+    <string name="aprsis_label_rx_gate">Ⓡ</string>
+    <string name="aprsis_label_tx_gate">Ⓣ</string>
+    <string name="aprsis_label_self">Ⓢ</string>
 </resources>

@@ -496,7 +496,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             if (voax25Enabled) {
                 status += getString(R.string.voax25_label);
             }
-
             // Lora aprs text packets
             boolean textPacketsEnabled = SettingsWrapper.isTextPacketsEnabled(_sharedPreferences);
             if (textPacketsEnabled) {
@@ -507,11 +506,25 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             if (isDigirepeaterEnabled) {
                 status += getString(R.string.digirepeater_label);
             }
-
             // APRSIS
             boolean aprsisEnabled = SettingsWrapper.isAprsIsEnabled(_sharedPreferences);
             if (aprsisEnabled) {
                 status += getString(R.string.aprsis_label);
+            }
+            // APRSIS rx gate
+            boolean aprsisRxEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_RX_GATE, false);
+            if (aprsisRxEnabled) {
+                status += getString(R.string.aprsis_label_rx_gate);
+            }
+            // APRSIS tx gate
+            boolean aprsisTxEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_TX_GATE, false);
+            if (aprsisTxEnabled) {
+                status += getString(R.string.aprsis_label_tx_gate);
+            }
+            // APRSIS my tx
+            boolean aprsisSelfEnabled = _sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_SELF, false);
+            if (aprsisSelfEnabled) {
+                status += getString(R.string.aprsis_label_self);
             }
         }
 
