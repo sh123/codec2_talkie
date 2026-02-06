@@ -22,6 +22,16 @@ public interface MessageItemDao {
     @Query("SELECT * FROM MessageItem ORDER BY timestampEpoch ASC")
     LiveData<List<MessageItem>> getAllMessageItems();
 
+    @Query("SELECT * FROM MessageItem " +
+           "WHERE groupId = :groupId " +
+           "AND timestampEpoch IN (" +
+           "SELECT MAX(timestampEpoch) FROM MessageItem " +
+           "WHERE groupId = :groupId " +
+           "GROUP BY message, srcCallsign) " +
+           "ORDER BY timestampEpoch ASC " +
+           "LIMIT :limit")
+    LiveData<List<MessageItem>> getBulletinMessageItems(String groupId, int limit);
+
     @Query("SELECT * FROM MessageItem WHERE groupId = :groupId ORDER BY timestampEpoch ASC")
     LiveData<List<MessageItem>> getMessageItems(String groupId);
 

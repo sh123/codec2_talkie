@@ -59,7 +59,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
 
     private static final float MAP_FOLLOW_ZOOM = 18.0f;
     private static final float MAP_MAX_ZOOM = 20.0f;
-    private static final int MAP_ANIMATION_DURATION_MS=500;
+    private static final int MAP_ANIMATION_DURATION_MS=1000;
 
     private MapView _mapView;
     private IMapController _mapController;

@@ -4,11 +4,14 @@ import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 
+import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.storage.AppDatabase;
 
 import java.util.List;
 
 public class MessageItemRepository {
+
+    private final static int BULLETIN_LIMIT = 16;
 
     private final MessageItemDao _messageItemDao;
     private LiveData<List<MessageItem>> _messages;
@@ -26,7 +29,9 @@ public class MessageItemRepository {
 
     public LiveData<List<MessageItem>> getMessages(String groupName) {
         if (_messages == null)
-            _messages = _messageItemDao.getMessageItems(groupName);
+            _messages = TextMessage.isBulletin(groupName)
+                ? _messageItemDao.getBulletinMessageItems(groupName, BULLETIN_LIMIT)
+                : _messageItemDao.getMessageItems(groupName);
         return _messages;
     }
 

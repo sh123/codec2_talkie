@@ -28,6 +28,9 @@ public class TextMessage {
         messageItem.setAckId(this.ackId);
         messageItem.setIsAcknowledged(false);
         messageItem.setRetryCnt(0);
+        // bulletin messages do not require ack
+        if (isBulletin(this.dst))
+            messageItem.setAckId(null);
         return messageItem;
     }
 
@@ -79,8 +82,10 @@ public class TextMessage {
         return callSigns.length == 1;
     }
 
-    public boolean isBulletin() {
-        return src.toLowerCase().startsWith("bln") || dst.toLowerCase().startsWith("bln");
+    public static boolean isBulletin(String groupName) {
+        return groupName.toLowerCase().startsWith("bln") ||
+                groupName.toLowerCase().startsWith("bom") ||
+                groupName.toLowerCase().startsWith("nws");
     }
 
     public boolean isAck() {
