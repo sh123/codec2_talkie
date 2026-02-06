@@ -15,12 +15,12 @@ public class AX25Callsign {
     public AX25Callsign() {}
 
     public AX25Callsign(String callsign, String ssid) {
-        this.callsign = callsign;
+        this.callsign = callsign.toUpperCase();
         this.ssid = Integer.parseInt(ssid);
     }
 
     public static String formatCallsign(String callsign, String ssid) {
-        return String.format("%s-%s", callsign, ssid);
+        return String.format("%s-%s", callsign.toUpperCase(), ssid);
     }
 
     public void fromString(String inputCallsignWithSsid) {
@@ -33,13 +33,13 @@ public class AX25Callsign {
         int delimiterIndex = callsignWithSsid.indexOf('-');
         // ABCDEF-
         if (delimiterIndex != -1 && delimiterIndex == callsignWithSsid.length() - 1) return;
-        callsign = callsignWithSsid;
+        callsign = callsignWithSsid.toUpperCase();
         ssid = 0;
         if (delimiterIndex == -1) {
             // ABCDEF
             if (callsign.length() >= CallsignMaxSize) return;
         } else {
-            callsign = callsignWithSsid.substring(0, delimiterIndex);
+            callsign = callsignWithSsid.substring(0, delimiterIndex).toUpperCase();
             try {
                 ssid = Integer.parseInt(callsignWithSsid.substring(delimiterIndex + 1));
             } catch(NumberFormatException e) {
@@ -65,7 +65,7 @@ public class AX25Callsign {
                 buffer.append(c);
             }
         }
-        callsign = buffer.toString();
+        callsign = buffer.toString().toUpperCase();
         byte lastByte = data[data.length - 1];
         isLast = (lastByte & 0x01) == 1;
         ssid = (lastByte >>> 1) & 0x0f;
@@ -76,7 +76,7 @@ public class AX25Callsign {
 
     @NonNull
     public String toString() {
-        String callsignPlusSsid = callsign;
+        String callsignPlusSsid = callsign.toUpperCase();
         if (ssid == 0) {
              if (isWide())
                 callsignPlusSsid += "*";
