@@ -75,8 +75,8 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
     private String getTargetCallsign(String groupName) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         String myCallsign = sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "N0CALL").toUpperCase(Locale.ROOT);
-        String[] callSigns = _groupName.split("/");
-        if (callSigns.length == 1) return _groupName;
+        String[] callSigns = groupName.split("/");
+        if (callSigns.length == 1) return groupName;
         if (callSigns.length == 2) {
             if (callSigns[0].equals(myCallsign)) {
                 return callSigns[1];
