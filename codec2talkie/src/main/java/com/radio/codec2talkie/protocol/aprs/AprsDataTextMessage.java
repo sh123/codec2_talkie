@@ -83,7 +83,7 @@ public class AprsDataTextMessage implements AprsData {
 
         // ack/rej message
         this.ackId = null;
-        Pattern p = Pattern.compile("^(ack|rej)([A-Za-z0-9}]{1,5})?$", Pattern.DOTALL);
+        Pattern p = Pattern.compile("^(ack|rej)([A-Za-z0-9}]{1,5})[}]?$", Pattern.DOTALL);
         Matcher m = p.matcher(stringMessage);
         if (m.find()) {
             String type = m.group(1);
@@ -96,7 +96,7 @@ public class AprsDataTextMessage implements AprsData {
             }
         } else {
             // message requires acknowledge {xxxxx (for auto ack)
-            p = Pattern.compile("^(.+)[{]([A-Za-z0-9}]{1,5})$", Pattern.DOTALL);
+            p = Pattern.compile("^(.+)[{]([A-Za-z0-9}]{1,5})[}]?$", Pattern.DOTALL);
             m = p.matcher(stringMessage);
             if (m.find()) {
                 this.textMessage = m.group(1);

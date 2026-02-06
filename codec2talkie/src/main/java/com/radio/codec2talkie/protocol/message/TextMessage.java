@@ -40,17 +40,22 @@ public class TextMessage {
         String userRegex = "^[A-Za-z0-9]{1,2}[0-9]+[A-Za-z]{1,4}+(-[A-Za-z0-9]+)?$";
         boolean isSrcUser = src.matches(userRegex);
         boolean isDstUser = dst.matches(userRegex);
-        // both are user call signs
+        // both are user call signs, create 1-1 chat
         if (isSrcUser && isDstUser) {
             return src.compareTo(dst) < 0 ? src + "/" + dst : dst + "/" + src;
         }
-        // one is group just user group callsign
-        return isSrcUser ? dst : src;
-    }
+        // one is group and another is user, use group
+        if (isSrcUser) return dst;
+        if (isDstUser) return src;
 
-    public static boolean isMultiParty(String groupName) {
-        String[] callSigns = groupName.split("/");
-        return callSigns.length == 1;
+        // bulletins have priority, use bulletin group
+        boolean isSrcBln = src.toLowerCase().startsWith("bln");
+        boolean isDstBln = dst.toLowerCase().startsWith("bln");
+        if (isSrcBln) return src;
+        if (isDstBln) return dst;
+
+        // if both are groups use destination group
+        return dst;
     }
 
     public static String getTargetCallsign(Context context, String groupName) {
@@ -67,6 +72,15 @@ public class TextMessage {
             return null;
         }
         return null;
+    }
+
+    public static boolean isMultiParty(String groupName) {
+        String[] callSigns = groupName.split("/");
+        return callSigns.length == 1;
+    }
+
+    public boolean isBulletin() {
+        return src.toLowerCase().startsWith("bln") || dst.toLowerCase().startsWith("bln");
     }
 
     public boolean isAck() {
