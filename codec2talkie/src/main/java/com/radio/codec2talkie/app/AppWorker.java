@@ -34,6 +34,7 @@ import com.radio.codec2talkie.protocol.Protocol;
 import com.radio.codec2talkie.protocol.ProtocolFactory;
 import com.radio.codec2talkie.protocol.position.Position;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.storage.message.MessageItem;
 import com.radio.codec2talkie.storage.message.MessageItemRepository;
 import com.radio.codec2talkie.storage.position.PositionItemRepository;
 import com.radio.codec2talkie.storage.station.StationItemRepository;
@@ -312,11 +313,14 @@ public class AppWorker extends Thread {
             String note = (textMessage.src == null ? "UNK" : textMessage.src) + "→" +
                     (textMessage.dst == null ? "UNK" : textMessage.dst);
             sendStatusUpdate(AppMessage.EV_TEXT_MESSAGE_RECEIVED, note + ": " + textMessage.text);
-            //noinspection StatementWithEmptyBody
+
+            MessageItem messageItem = textMessage.toMessageItem(false);
+            // mark source message as acked
             if (textMessage.isAutoReply()) {
-                // TODO, acknowledge or reject message with the given (src, dst, ackId)
+                _messageItemRepository.ackMessageItem(messageItem);
+            // insert new incoming message
             } else {
-                _messageItemRepository.insertMessageItem(textMessage.toMessageItem(false));
+                _messageItemRepository.insertMessageItem(messageItem);
             }
             Log.i(TAG, "message received: " + textMessage.text);
         }

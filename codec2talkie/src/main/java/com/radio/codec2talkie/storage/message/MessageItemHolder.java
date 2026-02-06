@@ -21,10 +21,15 @@ public class MessageItemHolder extends RecyclerView.ViewHolder {
         _messageItemViewMessage = itemView.findViewById(R.id.message_item_message);
     }
 
-    public void bind(long timestamp, String srcCallsign, String dstCallsign, String text) {
-        _messageItemViewTitle.setText(String.format("%s %s",
+    public void bind(long timestamp, String srcCallsign, String dstCallsign, String text, String ackId, boolean isAcknowledged) {
+        String title = String.format("%s %s",
                 DateTools.epochToIso8601(timestamp),
-                srcCallsign + "→" + dstCallsign));
+                srcCallsign + "→" + dstCallsign);
+        if (ackId != null) {
+            title += " ";
+            title += isAcknowledged ? "✓" : "⟳";
+        }
+        _messageItemViewTitle.setText(title);
         _messageItemViewMessage.setText(text);
     }
 

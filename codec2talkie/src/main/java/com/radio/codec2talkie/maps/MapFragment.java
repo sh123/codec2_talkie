@@ -71,7 +71,8 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
 
     private SharedPreferences _sharedPreferences;
     private boolean _shouldFollowLocation = false;
-    private boolean _rotateMap = false;
+    private boolean _rotateMapGps = false;
+    private boolean _rotateMapCompass = false;
     private boolean _showMoving = false;
     private boolean _showCircles = false;
     private float _zoomLevel = MAP_FOLLOW_ZOOM;
@@ -168,7 +169,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
                 );
 
                 double currentBearing = location.getBearing();
-                if (_rotateMap) {
+                if (_rotateMapGps) {
                     if (location.hasSpeed() && location.getSpeed() > 0) {
                         float mapOrientation = (360f - (float)currentBearing) % 360f;
                         _mapView.setMapOrientation(mapOrientation);
@@ -193,9 +194,9 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
         InternalCompassOrientationProvider compassOrientationProvider = new InternalCompassOrientationProvider(context) {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
-                if (_rotateMap && sensorEvent.values.length > 0) {
+                if (_rotateMapCompass && sensorEvent.values.length > 0) {
                     Location lastLocation = _myLocationNewOverlay.getLastFix();
-                    if (lastLocation == null || lastLocation.getSpeed() == 0) {
+                    if (lastLocation == null || lastLocation.getSpeed() == 0 || !_rotateMapGps) {
                         // normalize azimuth into [0, 360)
                         float azimuth = sensorEvent.values[0];
                         float azimuthNorm = (azimuth % 360f + 360f) % 360f;
@@ -214,7 +215,8 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
 
     private void loadSettings() {
         _shouldFollowLocation = _sharedPreferences.getBoolean(PreferenceKeys.APRS_MAP_MOVE_WITH_POSITION, false);
-        _rotateMap = _sharedPreferences.getBoolean(PreferenceKeys.APRS_MAP_ROTATE_WITH_COMPASS, false);
+        _rotateMapGps = _sharedPreferences.getBoolean(PreferenceKeys.APRS_MAP_ROTATE_WITH_GPS, false);
+        _rotateMapCompass = _sharedPreferences.getBoolean(PreferenceKeys.APRS_MAP_ROTATE_WITH_COMPASS, false);
         _showMoving = _sharedPreferences.getBoolean(PreferenceKeys.APRS_MAP_SHOW_MOVING_STATIONS, false);
         _showCircles = _sharedPreferences.getBoolean(PreferenceKeys.APRS_MAP_SHOW_RANGE_CIRCLES, false);
         _zoomLevel = _sharedPreferences.getFloat(PreferenceKeys.APRS_MAP_ZOOM_LEVEL, MAP_FOLLOW_ZOOM);
@@ -223,7 +225,8 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
     private void saveSettings() {
         SharedPreferences.Editor editor = _sharedPreferences.edit();
         editor.putBoolean(PreferenceKeys.APRS_MAP_MOVE_WITH_POSITION, _shouldFollowLocation);
-        editor.putBoolean(PreferenceKeys.APRS_MAP_ROTATE_WITH_COMPASS, _rotateMap);
+        editor.putBoolean(PreferenceKeys.APRS_MAP_ROTATE_WITH_GPS, _rotateMapGps);
+        editor.putBoolean(PreferenceKeys.APRS_MAP_ROTATE_WITH_COMPASS, _rotateMapCompass);
         editor.putBoolean(PreferenceKeys.APRS_MAP_SHOW_MOVING_STATIONS, _showMoving);
         editor.putBoolean(PreferenceKeys.APRS_MAP_SHOW_RANGE_CIRCLES, _showCircles);
         editor.putFloat(PreferenceKeys.APRS_MAP_ZOOM_LEVEL, (float)_mapView.getZoomLevelDouble());
@@ -307,11 +310,22 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
         } else if (itemId == R.id.map_menu_rotate_map) {
             if (item.isChecked()) {
                 item.setChecked(false);
-                _rotateMap = false;
+                _rotateMapGps = false;
                 _mapView.setMapOrientation(0);
             } else {
                 item.setChecked(true);
-                _rotateMap = true;
+                _rotateMapGps = true;
+            }
+            saveSettings();
+            return true;
+        } else if (itemId == R.id.map_menu_rotate_map_compass) {
+            if (item.isChecked()) {
+                item.setChecked(false);
+                _rotateMapCompass = false;
+                _mapView.setMapOrientation(0);
+            } else {
+                item.setChecked(true);
+                _rotateMapCompass = true;
             }
             saveSettings();
             return true;
@@ -365,7 +379,11 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
     public void handleMenuCreation(Menu menu) {
         MenuItem itemRotateMap = menu.findItem(R.id.map_menu_rotate_map);
         if (itemRotateMap != null) {
-            itemRotateMap.setChecked(_rotateMap);
+            itemRotateMap.setChecked(_rotateMapGps);
+        }
+        MenuItem itemRotateMapCompass = menu.findItem(R.id.map_menu_rotate_map_compass);
+        if (itemRotateMapCompass != null) {
+            itemRotateMapCompass.setChecked(_rotateMapCompass);
         }
         MenuItem itemShowRange = menu.findItem(R.id.map_menu_show_range);
         if (itemShowRange != null) {

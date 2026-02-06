@@ -54,6 +54,11 @@
             android:checkable="true"
             android:checked="false"/>
         <item
+            android:id="@+id/map_menu_rotate_map_compass"
+            android:title="@string/map_menu_rotate_map_compass"
+            android:checkable="true"
+            android:checked="false"/>
+        <item
             android:id="@+id/map_menu_show_range"
             android:title="@string/map_menu_show_range"
             android:checkable="true"

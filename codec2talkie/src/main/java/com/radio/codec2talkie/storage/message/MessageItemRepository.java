@@ -30,6 +30,13 @@ public class MessageItemRepository {
         return _messages;
     }
 
+    public void ackMessageItem(MessageItem messageItem) {
+        String src = messageItem.getSrcCallsign();
+        String dst = messageItem.getDstCallsign();
+        String ackId = messageItem.getAckId();
+        AppDatabase.getDatabaseExecutor().execute(() -> _messageItemDao.ackMessageItem(dst, src, ackId));
+    }
+
     public void insertMessageItem(MessageItem messageItem) {
         AppDatabase.getDatabaseExecutor().execute(() -> _messageItemDao.insertMessageItem(messageItem));
     }

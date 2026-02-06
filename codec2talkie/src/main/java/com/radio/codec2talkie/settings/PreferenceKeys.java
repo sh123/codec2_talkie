@@ -126,6 +126,7 @@ public final class PreferenceKeys {
     public static String APRS_MAP_ZOOM_LEVEL="aprs_map_zoom_level";
     public static String APRS_MAP_MOVE_WITH_POSITION="aprs_map_move_with_position";
     public static String APRS_MAP_ROTATE_WITH_COMPASS="aprs_map_rotate_with_compass";
+    public static String APRS_MAP_ROTATE_WITH_GPS="aprs_map_rotate_with_gps";
     public static String APRS_MAP_SHOW_RANGE_CIRCLES="aprs_map_show_range_circles";
     public static String APRS_MAP_SHOW_MOVING_STATIONS="aprs_map_show_moving_stations";
 }

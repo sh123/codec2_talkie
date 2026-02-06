@@ -54,8 +54,8 @@ public class TextMessage {
         if (isSrcBln) return src;
         if (isDstBln) return dst;
 
-        // if both are groups use destination group
-        return dst;
+        // both are groups
+        return src.compareTo(dst) < 0 ? src : dst;
     }
 
     public static String getTargetCallsign(Context context, String groupName) {

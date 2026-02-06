@@ -25,7 +25,8 @@ public class MessageItemAdapter extends ListAdapter<MessageItem, MessageItemHold
     @Override
     public void onBindViewHolder(@NonNull MessageItemHolder holder, int position) {
         MessageItem current = getItem(position);
-        holder.bind(current.getTimestampEpoch(), current.getSrcCallsign(), current.getDstCallsign(), current.getMessage());
+        holder.bind(current.getTimestampEpoch(), current.getSrcCallsign(), current.getDstCallsign(),
+                current.getMessage(), current.getAckId(), current.getIsAcknowledged());
     }
 
     static class MessageItemDiff extends DiffUtil.ItemCallback<MessageItem> {
@@ -39,7 +40,7 @@ public class MessageItemAdapter extends ListAdapter<MessageItem, MessageItemHold
                     && oldItem.getIsTransmit() == newItem.getIsTransmit()
                     && Objects.equals(oldItem.getDstCallsign(), newItem.getDstCallsign())
                     && oldItem.getTimestampEpoch() == newItem.getTimestampEpoch()
-                    && oldItem.getAckId() == newItem.getAckId()
+                    && Objects.equals(oldItem.getAckId(), newItem.getAckId())
                     && Objects.equals(oldItem.getMessage(), newItem.getMessage());
         }
 
@@ -49,7 +50,7 @@ public class MessageItemAdapter extends ListAdapter<MessageItem, MessageItemHold
                     && Objects.equals(oldItem.getSrcCallsign(), newItem.getSrcCallsign())
                     && oldItem.getTimestampEpoch() == newItem.getTimestampEpoch()
                     && oldItem.getIsTransmit() == newItem.getIsTransmit()
-                    && oldItem.getAckId() == newItem.getAckId()
+                    && Objects.equals(oldItem.getAckId(), newItem.getAckId())
                     && oldItem.getIsAcknowledged() == newItem.getIsAcknowledged();
         }
     }

@@ -26,6 +26,12 @@ public interface MessageItemDao {
     @Query("DELETE FROM MessageItem WHERE groupId = :groupId")
     void deleteMessageItems(String groupId);
 
+    @Query("UPDATE MessageItem SET isAcknowledged = 1 " +
+           "WHERE srcCallsign = :srcCallsign " +
+           "AND dstCallsign = :dstCallsign " +
+           "AND ackId = :ackId")
+    void ackMessageItem(String srcCallsign, String dstCallsign, String ackId);
+
     @Query("DELETE FROM MessageItem")
     void deleteAllMessageItems();
 }
