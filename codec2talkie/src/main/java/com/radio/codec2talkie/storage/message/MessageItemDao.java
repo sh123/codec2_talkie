@@ -5,6 +5,8 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Transaction;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -22,6 +24,24 @@ public interface MessageItemDao {
 
     @Query("SELECT * FROM MessageItem WHERE groupId = :groupId ORDER BY timestampEpoch ASC")
     LiveData<List<MessageItem>> getMessageItems(String groupId);
+
+    @Transaction
+    default void upsertMessageItem(MessageItem messageItem) {
+        MessageItem existingItem = getMessageItem(messageItem.getGroupId(), messageItem.getAckId());
+        if (existingItem != null) {
+            existingItem.setRetryCnt(existingItem.getRetryCnt() + 1);
+            //existingItem.setTimestampEpoch(messageItem.getTimestampEpoch());
+            updateMessageItem(existingItem);
+        } else {
+            insertMessageItem(messageItem);
+        }
+    }
+
+    @Update
+    void updateMessageItem(MessageItem messageItem);
+
+    @Query("SELECT * FROM MessageItem WHERE groupId = :groupId AND ackId = :ackId LIMIT 1")
+    MessageItem getMessageItem(String groupId, String ackId);
 
     @Query("DELETE FROM MessageItem WHERE groupId = :groupId")
     void deleteMessageItems(String groupId);

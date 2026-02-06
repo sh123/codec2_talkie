@@ -37,6 +37,10 @@ public class MessageItemRepository {
         AppDatabase.getDatabaseExecutor().execute(() -> _messageItemDao.ackMessageItem(dst, src, ackId));
     }
 
+    public void upsertMessageItem(MessageItem messageItem) {
+        AppDatabase.getDatabaseExecutor().execute(() -> _messageItemDao.upsertMessageItem(messageItem));
+    }
+
     public void insertMessageItem(MessageItem messageItem) {
         AppDatabase.getDatabaseExecutor().execute(() -> _messageItemDao.insertMessageItem(messageItem));
     }

@@ -320,7 +320,7 @@ public class AppWorker extends Thread {
                 _messageItemRepository.ackMessageItem(messageItem);
             // insert new incoming message
             } else {
-                _messageItemRepository.insertMessageItem(messageItem);
+                _messageItemRepository.upsertMessageItem(messageItem);
             }
             Log.i(TAG, "message received: " + textMessage.text);
         }
