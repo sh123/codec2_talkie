@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.maps;
 
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -16,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -57,6 +59,7 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
 
     private static final float MAP_FOLLOW_ZOOM = 18.0f;
     private static final float MAP_MAX_ZOOM = 20.0f;
+    private static final int MAP_ANIMATION_DURATION_MS=500;
 
     private MapView _mapView;
     private IMapController _mapController;
@@ -168,11 +171,13 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
                         location.getLongitude()
                 );
 
+                if (!location.hasBearing()) return;
                 double currentBearing = location.getBearing();
                 if (_rotateMapGps) {
-                    if (location.hasSpeed() && location.getSpeed() > 0) {
+                    boolean shouldRotate = (location.hasSpeed() && location.getSpeed() > 0) || !_rotateMapCompass;
+                    if (shouldRotate) {
                         float mapOrientation = (360f - (float)currentBearing) % 360f;
-                        _mapView.setMapOrientation(mapOrientation);
+                        rotateMapSmoothly(mapOrientation);
                     }
                 } else {
                     boolean shouldFlip = (currentBearing > 180f && currentBearing < 360f);
@@ -211,6 +216,24 @@ public class MapFragment extends Fragment implements FragmentMenuHandler {
         CompassOverlay compassOverlay = new CompassOverlay(context, compassOrientationProvider, _mapView);
         compassOverlay.enableCompass();
         return compassOverlay;
+    }
+
+    public void rotateMapSmoothly(float targetOrientation) {
+        float currentOrientation = _mapView.getMapOrientation();
+        float delta = targetOrientation - currentOrientation;
+        if (delta > 180) {
+            delta -= 360;
+        } else if (delta < -180) {
+            delta += 360;
+        }
+        ValueAnimator animator = ValueAnimator.ofFloat(currentOrientation, currentOrientation + delta);
+        animator.setDuration(MAP_ANIMATION_DURATION_MS);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.addUpdateListener(animation -> {
+            float animatedValue = (float) animation.getAnimatedValue();
+            _mapView.setMapOrientation(animatedValue);
+        });
+        animator.start();
     }
 
     private void loadSettings() {
