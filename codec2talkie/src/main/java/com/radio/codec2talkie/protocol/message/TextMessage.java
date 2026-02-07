@@ -5,7 +5,8 @@ import android.content.SharedPreferences;
 
 import androidx.preference.PreferenceManager;
 
-import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.protocol.ax25.AX25Callsign;
+import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.storage.message.MessageItem;
 
 import java.util.Locale;
@@ -19,7 +20,7 @@ public class TextMessage {
 
     public MessageItem toMessageItem(boolean isTransmit) {
         MessageItem messageItem = new MessageItem();
-        messageItem.setGroupId(buildGroupId());
+        messageItem.setGroupId(generateGroupId(this.src, this.dst));
         messageItem.setTimestampEpoch(System.currentTimeMillis());
         messageItem.setIsTransmit(isTransmit);
         messageItem.setSrcCallsign(this.src);
@@ -34,15 +35,14 @@ public class TextMessage {
         return messageItem;
     }
 
-    public String buildGroupId() {
+    public static String generateGroupId(String src, String dst) {
         // null checks
         if (src == null && dst == null) return "";
         if (src == null) return dst;
         if (dst == null) return src;
         // find out who has user call sign
-        String userRegex = "^[A-Za-z0-9]{1,2}[0-9]+[A-Za-z]{1,4}+(-[A-Za-z0-9]+)?$";
-        boolean isSrcUser = src.matches(userRegex);
-        boolean isDstUser = dst.matches(userRegex);
+        boolean isSrcUser = AX25Callsign.isValidUserCallsign(src);
+        boolean isDstUser = AX25Callsign.isValidUserCallsign(dst);
         // both are user call signs, create 1-1 chat
         if (isSrcUser && isDstUser) {
             return src.compareTo(dst) < 0 ? src + "/" + dst : dst + "/" + src;
@@ -63,13 +63,12 @@ public class TextMessage {
 
     public static String getTargetCallsign(Context context, String groupName) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String myCallsign = sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "N0CALL").toUpperCase(Locale.ROOT);
         String[] callSigns = groupName.split("/");
         if (callSigns.length == 1) return groupName;
         if (callSigns.length == 2) {
-            if (callSigns[0].equals(myCallsign)) {
+            if (SettingsWrapper.isMyCallsign(sharedPreferences, callSigns[0])) {
                 return callSigns[1];
-            } else if (callSigns[1].equals(myCallsign)) {
+            } else if (SettingsWrapper.isMyCallsign(sharedPreferences, callSigns[1])) {
                 return callSigns[0];
             }
             return null;

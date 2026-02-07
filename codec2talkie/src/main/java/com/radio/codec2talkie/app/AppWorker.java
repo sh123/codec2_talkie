@@ -367,6 +367,7 @@ public class AppWorker extends Thread {
             if (!textMessage.isAutoReply()) {
                 _messageItemRepository.insertMessageItem(textMessage.toMessageItem(true));
             }
+            Log.i(TAG, "message sent: " + textMessage.text);
         }
 
         @Override

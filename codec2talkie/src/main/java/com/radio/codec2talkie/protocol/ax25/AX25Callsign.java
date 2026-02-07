@@ -23,6 +23,11 @@ public class AX25Callsign {
         return String.format("%s-%s", callsign.toUpperCase(), ssid);
     }
 
+    public static boolean isValidUserCallsign(String callsign) {
+        String userRegex = "^[A-Za-z0-9]{1,2}[0-9]+[A-Za-z]{1,4}+(-[A-Za-z0-9]+)?$";
+        return callsign.matches(userRegex);
+    }
+
     public void fromString(String inputCallsignWithSsid) {
         isValid = false;
         if (inputCallsignWithSsid == null || inputCallsignWithSsid.isEmpty()) return;

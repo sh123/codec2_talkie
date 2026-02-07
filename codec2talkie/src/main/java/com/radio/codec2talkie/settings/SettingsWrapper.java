@@ -2,6 +2,7 @@ package com.radio.codec2talkie.settings;
 
 import android.content.SharedPreferences;
 
+import com.radio.codec2talkie.protocol.ax25.AX25Callsign;
 import com.radio.codec2talkie.protocol.ciphers.ProtocolCipherFactory;
 import com.radio.codec2talkie.rigctl.RigCtlFactory;
 import com.radio.codec2talkie.transport.TransportFactory;
@@ -104,5 +105,22 @@ public class SettingsWrapper {
 
     public static boolean isAprsIsEnabled(SharedPreferences sharedPreferences) {
         return sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE, false);
+    }
+
+    public static String getMyCallsign(SharedPreferences sharedPreferences) {
+        return sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "N0CALL").toUpperCase();
+    }
+
+    public static String getMyCallsignWithSsid(SharedPreferences sharedPreferences) {
+        String callsign = getMyCallsign(sharedPreferences);
+        String ssid = sharedPreferences.getString(PreferenceKeys.AX25_SSID, "0");
+        if (ssid.equals("0")) return callsign;
+        return AX25Callsign.formatCallsign(callsign, ssid);
+    }
+
+    public static boolean isMyCallsign(SharedPreferences sharedPreferences, String otherCallsign) {
+        String myCallsign = getMyCallsign(sharedPreferences);
+        String pattern = "^" + myCallsign + "(-[A-Za-z0-9]{1,2})?$";
+        return otherCallsign.matches(pattern);
     }
 }

@@ -39,9 +39,7 @@ public class Ax25 implements Protocol {
         _parentProtocolCallback = protocolCallback;
         _childProtocol.initialize(transport, context, _protocolCallback);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        _myCallsign = AX25Callsign.formatCallsign(
-                sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "NOCALL").toUpperCase(),
-                sharedPreferences.getString(PreferenceKeys.AX25_SSID, "0"));
+        _myCallsign = SettingsWrapper.getMyCallsignWithSsid(sharedPreferences);
         // NOTE, may need to pass through sendData/sendAudio
         _digipath = sharedPreferences.getString(PreferenceKeys.AX25_DIGIPATH, "").toUpperCase();
         _isVoax25Enabled = SettingsWrapper.isVoax25Enabled(sharedPreferences);

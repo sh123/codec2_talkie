@@ -54,9 +54,7 @@ public class Aprs implements Protocol {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         _isVoax25Enabled = SettingsWrapper.isVoax25Enabled(sharedPreferences);
 
-        _srcCallsign = AX25Callsign.formatCallsign(
-                sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "NOCALL").toUpperCase(),
-                sharedPreferences.getString(PreferenceKeys.AX25_SSID, "0"));
+        _srcCallsign = SettingsWrapper.getMyCallsignWithSsid(sharedPreferences);
         _dstCallsign = APRS_ID;
 
         _symbolCode = sharedPreferences.getString(PreferenceKeys.APRS_SYMBOL, "/[");

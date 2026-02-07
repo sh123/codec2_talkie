@@ -94,7 +94,7 @@ public class AprsIs implements Protocol, Runnable {
         _isRxGateEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_RX_GATE, false);
         _isTxGateEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_TX_GATE, false);
         _isSelfEnabled = sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_ENABLE_SELF, false);
-        _callsign = sharedPreferences.getString(PreferenceKeys.AX25_CALLSIGN, "N0CALL").toUpperCase(Locale.ROOT);
+        _callsign = SettingsWrapper.getMyCallsign(sharedPreferences);
         _digipath = sharedPreferences.getString(PreferenceKeys.AX25_DIGIPATH, "").toUpperCase();
         _ssid = sharedPreferences.getString(PreferenceKeys.AX25_SSID, "0");
         _passcode = sharedPreferences.getString(PreferenceKeys.APRS_IS_CODE, "");
