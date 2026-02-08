@@ -96,7 +96,7 @@ public class AprsDataTextMessage implements AprsData {
             }
         } else {
             // message requires acknowledge {xxxxx (for auto ack)
-            p = Pattern.compile("^(.+)[{]([A-Za-z0-9}]{1,5})[}]?$", Pattern.DOTALL);
+            p = Pattern.compile("^(.*)[{]([A-Za-z0-9}]{1,5})[}]?$", Pattern.DOTALL);
             m = p.matcher(stringMessage);
             if (m.find()) {
                 this.textMessage = m.group(1);
