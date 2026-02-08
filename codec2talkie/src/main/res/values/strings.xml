@@ -426,4 +426,5 @@
     <string name="aprsis_label_rx_gate">Ⓡ</string>
     <string name="aprsis_label_tx_gate">Ⓣ</string>
     <string name="aprsis_label_self">Ⓢ</string>
+    <string name="messages_group_menu_ack_enable">Enable message ack</string>
 </resources>

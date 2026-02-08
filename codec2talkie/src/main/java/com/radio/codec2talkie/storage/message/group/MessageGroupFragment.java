@@ -1,6 +1,7 @@
 package com.radio.codec2talkie.storage.message.group;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -20,6 +22,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
+import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.ui.FragmentMenuHandler;
 import com.radio.codec2talkie.ui.FragmentWithServiceConnection;
 
@@ -29,6 +33,9 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
 
     private MessageGroupViewModel _messageGroupViewModel;
 
+    private SharedPreferences _sharedPreferences;
+    private boolean _isAckEnabled;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +44,8 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireActivity());
+        _isAckEnabled = SettingsWrapper.isMessageAckEnabled(_sharedPreferences);
         return inflater.inflate(R.layout.activity_message_groups_view, container, false);
     }
 
@@ -117,10 +126,31 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
             dialogSendTo.show();
             return true;
         }
+        else if (itemId == R.id.messages_group_menu_ack_enable) {
+            if (menuItem.isChecked()) {
+                menuItem.setChecked(false);
+                _isAckEnabled = false;
+            } else {
+                menuItem.setChecked(true);
+                _isAckEnabled = true;
+            }
+            saveSettings();
+            return true;
+        }
         return false;
+    }
+
+    public void saveSettings() {
+        SharedPreferences.Editor editor = _sharedPreferences.edit();
+        editor.putBoolean(PreferenceKeys.APRS_IS_MSG_ACK_ENABLED, _isAckEnabled);
+        editor.apply();
     }
 
     @Override
     public void handleMenuCreation(Menu menu) {
+        MenuItem itemRotateMapCompass = menu.findItem(R.id.messages_group_menu_ack_enable);
+        if (itemRotateMapCompass != null) {
+            itemRotateMapCompass.setChecked(_isAckEnabled);
+        }
     }
 }

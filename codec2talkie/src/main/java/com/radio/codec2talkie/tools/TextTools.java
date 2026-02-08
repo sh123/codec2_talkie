@@ -3,6 +3,7 @@ package com.radio.codec2talkie.tools;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.security.SecureRandom;
 import java.util.Arrays;
 
 public class TextTools {
@@ -63,5 +64,22 @@ public class TextTools {
                     + Character.digit(s.charAt(i+1), 16));
         }
         return data;
+    }
+
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+            "abcdefghijklmnopqrstuvwxyz" +
+            "0123456789";
+
+    // Method to generate a random string of specified length
+    public static String generateRandomString(int length) {
+        SecureRandom random = new SecureRandom();
+        StringBuilder randomString = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(CHARACTERS.length());
+            randomString.append(CHARACTERS.charAt(index));
+        }
+
+        return randomString.toString();
     }
 }

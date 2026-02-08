@@ -12,6 +12,11 @@
         <item
             android:id="@+id/messages_group_menu_clear"
             android:title="@string/messages_group_menu_clear_title" />
+        <item
+            android:id="@+id/messages_group_menu_ack_enable"
+            android:title="@string/messages_group_menu_ack_enable"
+            android:checkable="true"
+            android:checked="false"/>
     </group>
     <group android:id="@+id/group_log">
         <item

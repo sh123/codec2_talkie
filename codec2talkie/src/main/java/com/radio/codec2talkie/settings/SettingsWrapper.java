@@ -123,4 +123,8 @@ public class SettingsWrapper {
         String pattern = "^" + myCallsign + "(-[A-Za-z0-9]{1,2})?$";
         return otherCallsign.matches(pattern);
     }
+
+    public static boolean isMessageAckEnabled(SharedPreferences sharedPreferences) {
+        return sharedPreferences.getBoolean(PreferenceKeys.APRS_IS_MSG_ACK_ENABLED, false);
+    }
 }
