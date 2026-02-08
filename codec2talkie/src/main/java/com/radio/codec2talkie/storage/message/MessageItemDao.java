@@ -40,7 +40,8 @@ public interface MessageItemDao {
         // handle same message retries
         String ackId = messageItem.getAckId();
         if (ackId != null) {
-            MessageItem existingItem = getMessageItem(messageItem.getGroupId(), messageItem.getAckId());
+            MessageItem existingItem = getMessageItem(messageItem.getGroupId(),
+                    messageItem.getSrcCallsign(), messageItem.getDstCallsign(), messageItem.getAckId());
             if (existingItem != null) {
                 existingItem.setRetryCnt(existingItem.getRetryCnt() + 1);
                 //existingItem.setTimestampEpoch(messageItem.getTimestampEpoch());
@@ -54,8 +55,12 @@ public interface MessageItemDao {
     @Update
     void updateMessageItem(MessageItem messageItem);
 
-    @Query("SELECT * FROM MessageItem WHERE groupId = :groupId AND ackId = :ackId LIMIT 1")
-    MessageItem getMessageItem(String groupId, String ackId);
+    @Query("SELECT * FROM MessageItem " +
+            "WHERE groupId = :groupId " +
+            "AND srcCallsign = :srcCallsign " +
+            "AND dstCallsign = :dstCallsign " +
+            "AND ackId = :ackId LIMIT 1")
+    MessageItem getMessageItem(String groupId, String srcCallsign, String dstCallsign, String ackId);
 
     @Query("DELETE FROM MessageItem WHERE groupId = :groupId")
     void deleteMessageItems(String groupId);

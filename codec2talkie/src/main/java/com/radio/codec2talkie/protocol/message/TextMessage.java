@@ -35,6 +35,15 @@ public class TextMessage {
         return messageItem;
     }
 
+    public TextMessage getAckMessage() {
+        TextMessage textMessage = new TextMessage();
+        textMessage.src = dst;
+        textMessage.dst = src;
+        textMessage.text = "ack";
+        textMessage.ackId = ackId;
+        return textMessage;
+    }
+
     public static String generateGroupId(String src, String dst) {
         // null checks
         if (src == null && dst == null) return "";
@@ -59,6 +68,13 @@ public class TextMessage {
 
         // both are groups
         return src.compareTo(dst) < 0 ? src : dst;
+    }
+
+    public boolean shouldAcknowledge(Context context) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean isForMe = SettingsWrapper.isMyCallsign(sharedPreferences, dst);
+        boolean isAckEnabled = SettingsWrapper.isMessageAckEnabled(sharedPreferences);
+        return isForMe && isAckEnabled;
     }
 
     public static String getTargetCallsign(Context context, String groupName) {

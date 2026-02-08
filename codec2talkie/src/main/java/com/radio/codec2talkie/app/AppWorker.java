@@ -321,6 +321,10 @@ public class AppWorker extends Thread {
             // insert new incoming message
             } else {
                 _messageItemRepository.upsertMessageItem(messageItem);
+                if (textMessage.shouldAcknowledge(_context)) {
+                    sendTextMessage(textMessage.getAckMessage());
+                    _messageItemRepository.ackMessageItem(messageItem);
+                }
             }
             Log.i(TAG, "message received: " + textMessage.text);
         }

@@ -17,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.settings.PreferenceKeys;
+import com.radio.codec2talkie.settings.SettingsWrapper;
+import com.radio.codec2talkie.tools.TextTools;
 import com.radio.codec2talkie.ui.AppCompatActivityWithServiceConnection;
 
 import java.util.Locale;
@@ -24,13 +26,13 @@ import java.util.Objects;
 
 public class MessageItemActivity extends AppCompatActivityWithServiceConnection implements View.OnClickListener {
 
+    private static final int ACK_LENGTH = 5;
     private MessageItemViewModel _messageViewModel;
     private RecyclerView _recyclerView;
     private MessageItemAdapter _adapter;
     private LinearLayoutManager _layoutManager;
-
     private String _targetCallSign;
-
+    private SharedPreferences _sharedPreferences;
     public static boolean isPaused = false;
 
     @Override
@@ -40,6 +42,8 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
         setContentView(R.layout.activity_message_view);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
+
+        _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         _recyclerView = findViewById(R.id.message_recyclerview);
         _recyclerView.setHasFixedSize(true);
@@ -101,7 +105,9 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
             TextMessage textMessage = new TextMessage();
             textMessage.dst = _targetCallSign;
             textMessage.text = messageEdit.getText().toString();
-            textMessage.ackId = null;
+            textMessage.ackId = SettingsWrapper.isMessageAckEnabled(_sharedPreferences)
+                    ? TextTools.generateRandomString(ACK_LENGTH)
+                    : null;
             getService().sendTextMessage(textMessage);
             messageEdit.setText("");
         }
