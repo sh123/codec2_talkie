@@ -2,10 +2,13 @@ package com.radio.codec2talkie.storage.message;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.lifecycle.ViewModelProvider;
@@ -27,12 +30,16 @@ import java.util.Objects;
 public class MessageItemActivity extends AppCompatActivityWithServiceConnection implements View.OnClickListener {
 
     private static final int ACK_LENGTH = 5;
+    private static final int MAX_MESSAGE_LEN = 67;
+
     private MessageItemViewModel _messageViewModel;
     private RecyclerView _recyclerView;
     private MessageItemAdapter _adapter;
     private LinearLayoutManager _layoutManager;
     private String _targetCallSign;
     private SharedPreferences _sharedPreferences;
+    private TextView _textViewCharCount;
+    private EditText _textEdit;
     public static boolean isPaused = false;
 
     @Override
@@ -44,6 +51,23 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
         if (actionBar != null) actionBar.setDisplayHomeAsUpEnabled(true);
 
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+        _textViewCharCount = findViewById(R.id.messages_char_count);
+
+        _textEdit = findViewById(R.id.messages_edit);
+        _textEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                updateCharCount();
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+        updateCharCount();
 
         _recyclerView = findViewById(R.id.message_recyclerview);
         _recyclerView.setHasFixedSize(true);
@@ -77,6 +101,11 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
         sendButton.setOnClickListener(this);
     }
 
+    private void updateCharCount() {
+        int currentLength = _textEdit.length();
+        _textViewCharCount.setText(String.format(Locale.ROOT, "%d/%d", currentLength, MAX_MESSAGE_LEN));
+    }
+
     private boolean shouldAutoScroll() {
         int lastVisible = _layoutManager.findLastCompletelyVisibleItemPosition();
         int itemCount = _adapter.getItemCount();
@@ -100,16 +129,14 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.messages_send) {
-            EditText messageEdit = findViewById(R.id.messages_edit);
-            assert messageEdit != null;
             TextMessage textMessage = new TextMessage();
             textMessage.dst = _targetCallSign;
-            textMessage.text = messageEdit.getText().toString();
+            textMessage.text = _textEdit.getText().toString();
             textMessage.ackId = SettingsWrapper.isMessageAckEnabled(_sharedPreferences)
                     ? TextTools.generateRandomString(ACK_LENGTH)
                     : null;
             getService().sendTextMessage(textMessage);
-            messageEdit.setText("");
+            _textEdit.setText("");
         }
     }
 
