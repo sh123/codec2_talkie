@@ -383,9 +383,9 @@
     <string name="aprs_is_enable_rx_gate_summary">Radio packets will be forwarded to APRS-IS</string>
     <string name="aprs_is_enable_tx_gate_summary">APRS-IS packets will be forwarded to radio</string>
     <string name="aprs_is_radius_title">Neighbour radius</string>
-    <string name="aprs_is_radius_summary">Receive APRS-IS packets from stations in this radius (km)</string>
+    <string name="aprs_is_radius_summary">Receive APRS-IS packets from stations in this radius (km) from my last  position known by the server, set to 0 to disable</string>
     <string name="aprs_is_filter_title">Packet filter</string>
-    <string name="aprs_is_filter_summary">Filter for incoming APRS-IS packets</string>
+    <string name="aprs_is_filter_summary">Filter for incoming APRS-IS packets, https://www.aprs-is.net/javAPRSFilter.aspx</string>
     <string name="aprs_is_enable_title">Enable APRS-IS</string>
     <string name="aprs_is_enable_summary">Enable APRS-IS internet gateway</string>
     <string name="aprsis_connected">APRS-IS connected</string>
