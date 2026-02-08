@@ -72,9 +72,9 @@ public class TextMessage {
 
     public boolean shouldAcknowledge(Context context) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean isForMe = SettingsWrapper.isMyCallsign(sharedPreferences, dst);
+        String myCallsign = SettingsWrapper.getMyCallsignWithSsid(sharedPreferences);
         boolean isAckEnabled = SettingsWrapper.isMessageAckEnabled(sharedPreferences);
-        return isForMe && isAckEnabled;
+        return myCallsign.equals(dst) && isAckEnabled;
     }
 
     public static String getTargetCallsign(Context context, String groupName) {
