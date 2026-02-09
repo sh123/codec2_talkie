@@ -3,6 +3,8 @@ package com.radio.codec2talkie.storage.message.group;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -10,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.preference.PreferenceManager;
@@ -33,6 +36,8 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
 
     private MessageGroupViewModel _messageGroupViewModel;
 
+    private EditText _editTextFilter;
+
     private SharedPreferences _sharedPreferences;
     private boolean _isAckEnabled;
 
@@ -54,12 +59,6 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
         super.onViewCreated(view, savedInstanceState);
         Log.i(TAG, "onCreateView()");
 
-        Button sendToButton = view.findViewById(R.id.messages_send_to);
-        sendToButton.setOnClickListener(v -> {
-            MessageGroupDialogSendTo dialogSendTo = new MessageGroupDialogSendTo(requireActivity());
-            dialogSendTo.show();
-        });
-
         RecyclerView recyclerView = view.findViewById(R.id.message_groups_recyclerview);
         recyclerView.setHasFixedSize(true);
 
@@ -76,6 +75,20 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
 
         _messageGroupViewModel = new ViewModelProvider(this).get(MessageGroupViewModel.class);
         _messageGroupViewModel.getGroups().observe(requireActivity(), adapter::submitList);
+
+        _editTextFilter = view.findViewById(R.id.message_groups_filter);
+        _editTextFilter.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                _messageGroupViewModel.getFilteredGroups(s.toString()).observe(requireActivity(), adapter::submitList);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
     }
 
     @Override

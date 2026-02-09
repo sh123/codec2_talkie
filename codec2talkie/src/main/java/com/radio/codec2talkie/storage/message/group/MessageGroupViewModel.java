@@ -13,7 +13,7 @@ import java.util.List;
 public class MessageGroupViewModel extends AndroidViewModel {
 
     private final MessageItemRepository _messageItemRepository;
-    private final LiveData<List<String>> _messageGroups;
+    private LiveData<List<String>> _messageGroups;
 
     public MessageGroupViewModel(@NonNull Application application) {
         super(application);
@@ -22,6 +22,11 @@ public class MessageGroupViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<String>> getGroups() {
+        return _messageGroups;
+    }
+
+    public LiveData<List<String>> getFilteredGroups(String substring) {
+        _messageGroups = _messageItemRepository.getFilteredGroups(substring);
         return _messageGroups;
     }
 

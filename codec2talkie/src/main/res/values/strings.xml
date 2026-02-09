@@ -428,4 +428,5 @@
     <string name="aprsis_label_self">Ⓢ</string>
     <string name="messages_group_menu_ack_enable">Enable message ack</string>
     <string name="messages_edit_hint">Type a message…</string>
+    <string name="message_groups_filter_hint">Type to filter…</string>
 </resources>

@@ -16,10 +16,17 @@ public interface MessageItemDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     void insertMessageItem(MessageItem messageItem);
 
-    @Query("SELECT groupId FROM MessageItem GROUP BY groupId")
+    @Query("SELECT DISTINCT groupId FROM MessageItem " +
+            "ORDER BY groupId ASC")
     LiveData<List<String>> getGroups();
 
-    @Query("SELECT * FROM MessageItem ORDER BY timestampEpoch ASC")
+    @Query("SELECT DISTINCT groupId FROM MessageItem " +
+           "WHERE groupId LIKE :query " +
+           "ORDER BY groupId ASC")
+    LiveData<List<String>> getFilteredGroups(String query);
+
+    @Query("SELECT * FROM MessageItem " +
+           "ORDER BY timestampEpoch ASC")
     LiveData<List<MessageItem>> getAllMessageItems();
 
     @Query("SELECT * FROM MessageItem " +
@@ -32,7 +39,9 @@ public interface MessageItemDao {
            "LIMIT :limit")
     LiveData<List<MessageItem>> getBulletinMessageItems(String groupId, int limit);
 
-    @Query("SELECT * FROM MessageItem WHERE groupId = :groupId ORDER BY timestampEpoch ASC")
+    @Query("SELECT * FROM MessageItem " +
+           "WHERE groupId = :groupId " +
+           "ORDER BY timestampEpoch ASC")
     LiveData<List<MessageItem>> getMessageItems(String groupId);
 
     @Transaction

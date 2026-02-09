@@ -13,23 +13,22 @@
         android:layout_height="0dp"
         android:padding="4dp"
         android:scrollbars="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/messages_send_to"
+        app:layout_constraintBottom_toTopOf="@+id/message_groups_filter"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/activity_message_groups_view_item" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/messages_send_to"
+    <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/message_groups_filter"
         android:layout_width="0dp"
+        android:maxLength="32"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/message_groups_send_to_btn_title"
-        android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:hint="@string/message_groups_filter_hint"
+        android:inputType="textCapCharacters"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/message_groups_recyclerview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
