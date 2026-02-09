@@ -1,5 +1,6 @@
 package com.radio.codec2talkie.storage.message.group;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -54,6 +56,7 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
         return inflater.inflate(R.layout.activity_message_groups_view, container, false);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -77,17 +80,34 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
         _messageGroupViewModel.getGroups().observe(requireActivity(), adapter::submitList);
 
         _editTextFilter = view.findViewById(R.id.message_groups_filter);
+        _editTextFilter.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
         _editTextFilter.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 0) {
+                    _editTextFilter.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.baseline_clear_24, 0);
+                } else {
+                    _editTextFilter.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+                }
                 _messageGroupViewModel.getFilteredGroups(s.toString()).observe(requireActivity(), adapter::submitList);
             }
 
             @Override
             public void afterTextChanged(Editable s) {}
+        });
+        _editTextFilter.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                if (_editTextFilter.getCompoundDrawables()[2] != null) {
+                    if (event.getRawX() >= (_editTextFilter.getRight() - _editTextFilter.getCompoundDrawables()[2].getBounds().width())) {
+                        _editTextFilter.setText("");
+                        return true;
+                    }
+                }
+            }
+            return false;
         });
     }
 
