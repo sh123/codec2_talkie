@@ -25,8 +25,10 @@
         android:layout_width="0dp"
         android:maxLength="67"
         android:layout_height="wrap_content"
+        android:hint="@string/messages_edit_hint"
         app:layout_constraintEnd_toStartOf="@+id/messages_send"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintWidth_percent="0.82"
         app:layout_constraintTop_toBottomOf="@+id/message_recyclerview" />
 
     <TextView
@@ -42,14 +44,28 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/messages_edit" />
 
-    <androidx.appcompat.widget.AppCompatButton
+    <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/messages_send"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginEnd="2dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
         android:text="@string/message_send_btn_title"
         android:textAllCaps="false"
+        android:hapticFeedbackEnabled="false"
+        android:background="@drawable/btn_bar_sel"
+        android:contentDescription="@string/message_send_btn_title"
+        android:textColor="?attr/colorOnSecondary"
+        android:textSize="24sp"
+        android:src="@drawable/baseline_arrow_forward_ios_24"
+        android:tint="?attr/colorOnSecondary"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintWidth_percent="0.18"
+        app:layout_constraintTop_toBottomOf="@+id/message_recyclerview"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

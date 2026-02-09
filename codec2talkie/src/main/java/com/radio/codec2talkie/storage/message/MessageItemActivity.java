@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.ActionBar;
@@ -91,7 +92,7 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
 
         setTitle(groupName);
 
-        Button sendButton = findViewById(R.id.messages_send);
+        ImageButton sendButton = findViewById(R.id.messages_send);
         assert sendButton != null;
 
         _targetCallSign = TextMessage.getTargetCallsign(this, groupName);
