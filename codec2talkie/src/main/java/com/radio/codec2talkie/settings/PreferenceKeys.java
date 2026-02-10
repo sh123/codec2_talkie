@@ -123,6 +123,7 @@ public final class PreferenceKeys {
     public static String APRS_IS_RADIUS = "aprs_is_radius";
     public static String APRS_IS_FILTER = "aprs_is_filter";
     public static String APRS_IS_MSG_ACK_ENABLED = "aprs_is_msg_ack_enabled";
+    public static String APRS_IS_MSG_RETRY_CNT = "aprs_is_msg_retry_ctn";
 
     public static String APRS_MAP_ZOOM_LEVEL="aprs_map_zoom_level";
     public static String APRS_MAP_MOVE_WITH_POSITION="aprs_map_move_with_position";

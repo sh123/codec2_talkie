@@ -17,6 +17,27 @@
             android:title="@string/messages_group_menu_ack_enable"
             android:checkable="true"
             android:checked="false"/>
+        <item
+            android:id="@+id/messages_group_menu_msg_retry_cnt"
+            android:title="@string/messages_group_menu_msg_retry_cnt_title">
+            <menu>
+                <item
+                    android:id="@+id/messages_group_menu_msg_retry_cnt_1"
+                    android:title="@string/messages_group_menu_msg_retry_cnt_1_title"
+                    android:checkable="true"
+                    android:checked="false"/>
+                <item
+                    android:id="@+id/messages_group_menu_msg_retry_cnt_3"
+                    android:title="@string/messages_group_menu_msg_retry_cnt_3_title"
+                    android:checkable="true"
+                    android:checked="false"/>
+                <item
+                    android:id="@+id/messages_group_menu_msg_retry_cnt_5"
+                    android:title="@string/messages_group_menu_msg_retry_cnt_5_title"
+                    android:checkable="true"
+                    android:checked="false"/>
+            </menu>
+        </item>
     </group>
     <group android:id="@+id/group_log">
         <item

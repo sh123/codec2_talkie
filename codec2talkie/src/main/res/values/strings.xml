@@ -429,4 +429,8 @@
     <string name="messages_group_menu_ack_enable">Enable message ack</string>
     <string name="messages_edit_hint">Type a message…</string>
     <string name="message_groups_filter_hint">Type to filter…</string>
+    <string name="messages_group_menu_msg_retry_cnt_title">Message retries</string>
+    <string name="messages_group_menu_msg_retry_cnt_1_title">1</string>
+    <string name="messages_group_menu_msg_retry_cnt_3_title">3</string>
+    <string name="messages_group_menu_msg_retry_cnt_5_title">5</string>
 </resources>

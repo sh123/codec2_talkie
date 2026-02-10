@@ -42,6 +42,7 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
 
     private SharedPreferences _sharedPreferences;
     private boolean _isAckEnabled;
+    private long _msgRetryCount;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -53,6 +54,7 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         _sharedPreferences = PreferenceManager.getDefaultSharedPreferences(requireActivity());
         _isAckEnabled = SettingsWrapper.isMessageAckEnabled(_sharedPreferences);
+        _msgRetryCount = _sharedPreferences.getLong(PreferenceKeys.APRS_IS_MSG_RETRY_CNT, 3);
         return inflater.inflate(R.layout.activity_message_groups_view, container, false);
     }
 
@@ -170,12 +172,28 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
             saveSettings();
             return true;
         }
+        else if (itemId == R.id.messages_group_menu_msg_retry_cnt_1) {
+            _msgRetryCount = 1;
+            saveSettings();
+            return true;
+        }
+        else if (itemId == R.id.messages_group_menu_msg_retry_cnt_3) {
+            _msgRetryCount = 3;
+            saveSettings();
+            return true;
+        }
+        else if (itemId == R.id.messages_group_menu_msg_retry_cnt_5) {
+            _msgRetryCount = 5;
+            saveSettings();
+            return true;
+        }
         return false;
     }
 
     public void saveSettings() {
         SharedPreferences.Editor editor = _sharedPreferences.edit();
         editor.putBoolean(PreferenceKeys.APRS_IS_MSG_ACK_ENABLED, _isAckEnabled);
+        editor.putLong(PreferenceKeys.APRS_IS_MSG_RETRY_CNT, _msgRetryCount);
         editor.apply();
     }
 
@@ -184,6 +202,18 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
         MenuItem itemRotateMapCompass = menu.findItem(R.id.messages_group_menu_ack_enable);
         if (itemRotateMapCompass != null) {
             itemRotateMapCompass.setChecked(_isAckEnabled);
+        }
+        MenuItem itemRetryCnt1 = menu.findItem(R.id.messages_group_menu_msg_retry_cnt_1);
+        if (itemRetryCnt1 != null && _msgRetryCount == 1) {
+            itemRetryCnt1.setChecked(true);
+        }
+        MenuItem itemRetryCnt3 = menu.findItem(R.id.messages_group_menu_msg_retry_cnt_3);
+        if (itemRetryCnt3 != null && _msgRetryCount == 3) {
+            itemRetryCnt3.setChecked(true);
+        }
+        MenuItem itemRetryCnt5 = menu.findItem(R.id.messages_group_menu_msg_retry_cnt_5);
+        if (itemRetryCnt5 != null && _msgRetryCount == 5) {
+            itemRetryCnt5.setChecked(true);
         }
     }
 }
