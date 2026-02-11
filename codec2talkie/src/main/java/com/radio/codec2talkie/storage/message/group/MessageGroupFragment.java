@@ -187,6 +187,11 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
             saveSettings();
             return true;
         }
+        else if (itemId == R.id.messages_group_menu_msg_retry_cnt_7) {
+            _msgRetryCount = 7;
+            saveSettings();
+            return true;
+        }
         return false;
     }
 
@@ -214,6 +219,10 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
         MenuItem itemRetryCnt5 = menu.findItem(R.id.messages_group_menu_msg_retry_cnt_5);
         if (itemRetryCnt5 != null && _msgRetryCount == 5) {
             itemRetryCnt5.setChecked(true);
+        }
+        MenuItem itemRetryCnt7 = menu.findItem(R.id.messages_group_menu_msg_retry_cnt_7);
+        if (itemRetryCnt7 != null && _msgRetryCount == 7) {
+            itemRetryCnt7.setChecked(true);
         }
     }
 }

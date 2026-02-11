@@ -36,6 +36,11 @@
                     android:title="@string/messages_group_menu_msg_retry_cnt_5_title"
                     android:checkable="true"
                     android:checked="false"/>
+                <item
+                    android:id="@+id/messages_group_menu_msg_retry_cnt_7"
+                    android:title="@string/messages_group_menu_msg_retry_cnt_7_title"
+                    android:checkable="true"
+                    android:checked="false"/>
             </menu>
         </item>
     </group>
