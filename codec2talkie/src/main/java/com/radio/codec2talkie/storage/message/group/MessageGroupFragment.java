@@ -192,7 +192,36 @@ public class MessageGroupFragment extends FragmentWithServiceConnection implemen
             saveSettings();
             return true;
         }
+        else if (itemId == R.id.messages_group_menu_msg_clear_1h) {
+            deleteMsgItems(1);
+            return true;
+        }
+        else if (itemId == R.id.messages_group_menu_msg_clear_12h) {
+            deleteMsgItems(12);
+            return true;
+        }
+        else if (itemId == R.id.messages_group_menu_msg_clear_1d) {
+            deleteMsgItems(24);
+            return true;
+        }
+        else if (itemId == R.id.messages_group_menu_msg_clear_7d) {
+            deleteMsgItems(24 * 7);
+            return true;
+        }
         return false;
+    }
+
+    private void deleteMsgItems(int hours) {
+        DialogInterface.OnClickListener deleteAllDialogClickListener = (dialog, which) -> {
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                _messageGroupViewModel.deleteOlderThanHours(hours);
+            }
+        };
+        String alertMessage = String.format(getString(R.string.log_item_activity_delete_hours_title), hours);
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity());
+        builder.setMessage(alertMessage)
+                .setPositiveButton(getString(R.string.yes), deleteAllDialogClickListener)
+                .setNegativeButton(getString(R.string.no), deleteAllDialogClickListener).show();
     }
 
     public void saveSettings() {

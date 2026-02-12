@@ -30,6 +30,10 @@ public class MessageGroupViewModel extends AndroidViewModel {
         return _messageGroups;
     }
 
+    public void deleteOlderThanHours(int hours) {
+        _messageItemRepository.deleteOlderThanHours(hours);
+    }
+
     public void deleteAll() {
         _messageItemRepository.deleteAllMessageItems();
     }

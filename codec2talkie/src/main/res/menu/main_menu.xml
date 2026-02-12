@@ -43,6 +43,24 @@
                     android:checked="false"/>
             </menu>
         </item>
+        <item
+            android:id="@+id/messages_group_menu_msg_clear"
+            android:title="@string/messages_group_menu_msg_clear_title">
+            <menu>
+                <item
+                    android:id="@+id/messages_group_menu_msg_clear_1h"
+                    android:title="@string/log_view_menu_clear_1h" />
+                <item
+                    android:id="@+id/messages_group_menu_msg_clear_12h"
+                    android:title="@string/log_view_menu_clear_12h" />
+                <item
+                    android:id="@+id/messages_group_menu_msg_clear_1d"
+                    android:title="@string/log_view_menu_clear_1d" />
+                <item
+                    android:id="@+id/messages_group_menu_msg_clear_7d"
+                    android:title="@string/log_view_menu_clear_7d" />
+            </menu>
+        </item>
     </group>
     <group android:id="@+id/group_log">
         <item

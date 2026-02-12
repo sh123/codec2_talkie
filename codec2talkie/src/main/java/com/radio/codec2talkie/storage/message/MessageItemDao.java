@@ -82,4 +82,7 @@ public interface MessageItemDao {
 
     @Query("DELETE FROM MessageItem")
     void deleteAllMessageItems();
+
+    @Query("DELETE FROM MessageItem WHERE timestampEpoch < :timestampEpoch")
+    void deleteLogItemsOlderThanTimestamp(long timestampEpoch);
 }

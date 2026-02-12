@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 
 import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.storage.AppDatabase;
+import com.radio.codec2talkie.tools.DateTools;
 
 import java.util.List;
 
@@ -56,6 +57,10 @@ public class MessageItemRepository {
 
     public void deleteAllMessageItems() {
         AppDatabase.getDatabaseExecutor().execute(_messageItemDao::deleteAllMessageItems);
+    }
+
+    public void deleteOlderThanHours(int hours) {
+        AppDatabase.getDatabaseExecutor().execute(() -> _messageItemDao.deleteLogItemsOlderThanTimestamp(DateTools.currentTimestampMinusHours(hours)));
     }
 
     public void deleteGroup(String groupName) {

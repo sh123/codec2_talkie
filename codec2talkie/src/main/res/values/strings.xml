@@ -402,7 +402,7 @@
     <string name="log_view_menu_clear_1d">Older than 1 day</string>
     <string name="log_view_menu_clear_7d">Older than 7 days</string>
     <string name="log_view_menu_clear_all">Clear all</string>
-    <string name="log_item_activity_delete_hours_title">This will remove everything older than %d hours. Are you sure?</string>
+    <string name="log_item_activity_delete_hours_title">This will remove everything older than %d hour(s). Are you sure?</string>
     <string name="map_menu_rotate_map">Rotate map with GPS</string>
     <string name="map_menu_rotate_map_compass">Rotate maps with compass</string>
     <string name="map_menu_show_range">Show range circles</string>
@@ -434,4 +434,5 @@
     <string name="messages_group_menu_msg_retry_cnt_3_title">3</string>
     <string name="messages_group_menu_msg_retry_cnt_5_title">5</string>
     <string name="messages_group_menu_msg_retry_cnt_7_title">7</string>
+    <string name="messages_group_menu_msg_clear_title">Remove messages</string>
 </resources>
