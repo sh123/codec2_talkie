@@ -129,12 +129,14 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.messages_send) {
+            boolean isMessageAckEnabled = SettingsWrapper.isMessageAckEnabled(_sharedPreferences);
             TextMessage textMessage = new TextMessage();
             textMessage.dst = _targetCallSign;
             textMessage.text = _textEdit.getText().toString();
-            textMessage.ackId = SettingsWrapper.isMessageAckEnabled(_sharedPreferences)
+            textMessage.ackId = isMessageAckEnabled
                     ? TextTools.generateRandomString(ACK_LENGTH)
                     : null;
+            textMessage.needsAck = isMessageAckEnabled;
             getService().sendTextMessage(textMessage);
             _textEdit.setText("");
         }

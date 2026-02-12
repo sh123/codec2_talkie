@@ -17,6 +17,7 @@ public class TextMessage {
     public String digipath;
     public String text;
     public String ackId;
+    public boolean needsAck;
 
     public MessageItem toMessageItem(boolean isTransmit) {
         MessageItem messageItem = new MessageItem();
@@ -29,6 +30,7 @@ public class TextMessage {
         messageItem.setAckId(this.ackId);
         messageItem.setIsAcknowledged(false);
         messageItem.setRetryCnt(0);
+        messageItem.setNeedsAck(needsAck);
         // bulletin messages do not require ack
         if (isBulletin(this.dst))
             messageItem.setAckId(null);
@@ -41,6 +43,7 @@ public class TextMessage {
         textMessage.dst = src;
         textMessage.text = "ack";
         textMessage.ackId = ackId;
+        textMessage.needsAck = false;
         return textMessage;
     }
 
