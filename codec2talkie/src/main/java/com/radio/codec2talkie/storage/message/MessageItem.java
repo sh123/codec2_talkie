@@ -4,9 +4,15 @@ import androidx.room.Entity;
 import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(indices = {@Index(value = {"id", "groupId", "srcCallsign", "dstCallsign", "ackId"}, unique = true)})
+@Entity(indices = {@Index(value = {
+        "id",
+        "groupId",
+        "srcCallsign",
+        "dstCallsign",
+        "ackId",
+        "isAcknowledged",
+        "needsAck"}, unique = true)})
 public class MessageItem {
-
     @PrimaryKey(autoGenerate = true)
     private long id;
     private String groupId;
