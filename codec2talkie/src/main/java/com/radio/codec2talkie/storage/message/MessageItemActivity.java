@@ -6,7 +6,6 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -20,11 +19,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.radio.codec2talkie.R;
 import com.radio.codec2talkie.protocol.message.TextMessage;
-import com.radio.codec2talkie.settings.PreferenceKeys;
 import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.tools.TextTools;
 import com.radio.codec2talkie.ui.AppCompatActivityWithServiceConnection;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -103,7 +102,7 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
     }
 
     private void updateCharCount() {
-        int currentLength = _textEdit.length();
+        int currentLength = _textEdit.getText().toString().getBytes(StandardCharsets.UTF_8).length;
         _textViewCharCount.setText(String.format(Locale.ROOT, "%d/%d", currentLength, MAX_MESSAGE_LEN));
     }
 
