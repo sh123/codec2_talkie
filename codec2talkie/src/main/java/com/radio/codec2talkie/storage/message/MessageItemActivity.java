@@ -136,7 +136,7 @@ public class MessageItemActivity extends AppCompatActivityWithServiceConnection 
             textMessage.ackId = isMessageAckEnabled
                     ? TextTools.generateRandomString(ACK_LENGTH)
                     : null;
-            textMessage.needsAck = isMessageAckEnabled;
+            textMessage.needsRetry = isMessageAckEnabled;
             getService().sendTextMessage(textMessage);
             _textEdit.setText("");
         }

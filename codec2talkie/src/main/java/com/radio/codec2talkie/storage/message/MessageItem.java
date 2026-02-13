@@ -11,7 +11,7 @@ import androidx.room.PrimaryKey;
         "dstCallsign",
         "ackId",
         "isAcknowledged",
-        "needsAck"}, unique = true)})
+        "needsRetry"}, unique = true)})
 public class MessageItem {
     @PrimaryKey(autoGenerate = true)
     private long id;
@@ -20,7 +20,7 @@ public class MessageItem {
     private String srcCallsign;
     private String dstCallsign;
     private String message;
-    private boolean needsAck;
+    private boolean needsRetry;
     private boolean isAcknowledged;
     private String ackId;
     private int retryCnt;
@@ -46,7 +46,7 @@ public class MessageItem {
 
     public String getMessage() { return message; }
 
-    public boolean getNeedsAck() { return needsAck; }
+    public boolean getNeedsRetry() { return needsRetry; }
 
     public String getAckId() { return ackId; }
 
@@ -78,7 +78,7 @@ public class MessageItem {
 
     public void setMessage(String message) { this.message = message; }
 
-    public void setNeedsAck(boolean needsAck) { this.needsAck = needsAck; }
+    public void setNeedsRetry(boolean needsRetry) { this.needsRetry = needsRetry; }
 
     public void setAckId(String ackId) { this.ackId = ackId; }
 

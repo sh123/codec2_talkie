@@ -56,7 +56,7 @@ public class AprsDataTextMessage implements AprsData {
         textMessage.digipath = this.digipath;
         textMessage.text = this.textMessage;
         textMessage.ackId = this.ackId;
-        textMessage.needsAck = false;
+        textMessage.needsRetry = false;
         return textMessage;
     }
 
