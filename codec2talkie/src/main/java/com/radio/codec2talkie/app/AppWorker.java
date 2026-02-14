@@ -322,6 +322,7 @@ public class AppWorker extends Thread {
             } else {
                 _messageItemRepository.upsertMessageItem(messageItem);
                 if (textMessage.shouldAcknowledge(_context)) {
+                    // TODO, may need additional ack retries
                     sendTextMessage(textMessage.getAckMessage());
                     _messageItemRepository.ackMessageItem(messageItem);
                 }
