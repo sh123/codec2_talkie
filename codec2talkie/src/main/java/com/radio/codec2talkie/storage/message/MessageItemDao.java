@@ -46,14 +46,12 @@ public interface MessageItemDao {
 
     @Transaction
     default void upsertMessageItem(MessageItem messageItem) {
-        // handle same message retries
         String ackId = messageItem.getAckId();
         if (ackId != null) {
             MessageItem existingItem = getMessageItem(messageItem.getGroupId(),
                     messageItem.getSrcCallsign(), messageItem.getDstCallsign(), messageItem.getAckId());
             if (existingItem != null) {
                 existingItem.setRetryCnt(existingItem.getRetryCnt() + 1);
-                //existingItem.setTimestampEpoch(messageItem.getTimestampEpoch());
                 updateMessageItem(existingItem);
                 return;
             }

@@ -8,6 +8,7 @@ import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.storage.AppDatabase;
 import com.radio.codec2talkie.tools.DateTools;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class MessageItemRepository {
@@ -38,6 +39,10 @@ public class MessageItemRepository {
                 ? _messageItemDao.getBulletinMessageItems(groupName, BULLETIN_LIMIT)
                 : _messageItemDao.getMessageItems(groupName);
         return _messages;
+    }
+
+    public List<MessageItem> getMessagesToRetry(long maxRetryCount) {
+        return new LinkedList<MessageItem>();
     }
 
     public void ackMessageItem(MessageItem messageItem) {

@@ -37,6 +37,16 @@ public class TextMessage {
         return messageItem;
     }
 
+    public static TextMessage fromMessageItem(MessageItem messageItem) {
+        TextMessage textMessage = new TextMessage();
+        textMessage.src = messageItem.getSrcCallsign();
+        textMessage.dst = messageItem.getDstCallsign();
+        textMessage.text = messageItem.getMessage();
+        textMessage.ackId = messageItem.getAckId();
+        textMessage.needsRetry = messageItem.getNeedsRetry();
+        return textMessage;
+    }
+
     public TextMessage getAckMessage() {
         TextMessage textMessage = new TextMessage();
         textMessage.src = dst;

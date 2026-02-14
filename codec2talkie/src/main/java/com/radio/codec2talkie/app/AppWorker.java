@@ -27,6 +27,7 @@ import java.util.TimerTask;
 
 import com.radio.codec2talkie.protocol.aprs.tools.AprsIsData;
 import com.radio.codec2talkie.protocol.message.TextMessage;
+import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.storage.log.LogItem;
 import com.radio.codec2talkie.storage.log.LogItemRepository;
 import com.radio.codec2talkie.protocol.ProtocolCallback;
@@ -57,6 +58,7 @@ public class AppWorker extends Thread {
     private static final int AUDIO_HIGH_CUTOFF_FREQUENCY_HZ = 3400;
 
     private static final int PROCESS_INTERVAL_MS = 10;
+    private static final int MESSAGE_RETRY_INTERVAL_MS = 30000;
     private static final int LISTEN_AFTER_MS = 1500;
 
     private boolean _needTransmission = false;
@@ -78,6 +80,7 @@ public class AppWorker extends Thread {
     private final Handler _onWorkerStateChanged;
     private Handler _onMessageReceived;
     private final Timer _processPeriodicTimer;
+    private final Timer _messageRetryPeriodicTimer;
 
     // listen timer
     private Timer _listenTimer;
@@ -109,6 +112,7 @@ public class AppWorker extends Thread {
         _protocol = ProtocolFactory.create(context);
 
         _processPeriodicTimer = new Timer();
+        _messageRetryPeriodicTimer = new Timer();
 
         int audioSource = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.APP_AUDIO_SOURCE, "6"));
         int audioDestination = Integer.parseInt(_sharedPreferences.getString(PreferenceKeys.APP_AUDIO_DESTINATION, "1"));
@@ -322,8 +326,9 @@ public class AppWorker extends Thread {
             } else {
                 _messageItemRepository.upsertMessageItem(messageItem);
                 if (textMessage.shouldAcknowledge(_context)) {
-                    // TODO, may need additional ack retries
-                    sendTextMessage(textMessage.getAckMessage());
+                    TextMessage ackMessage = textMessage.getAckMessage();
+                    ackMessage.needsRetry = SettingsWrapper.isMessageAckEnabled(_sharedPreferences);
+                    sendTextMessage(ackMessage);
                     _messageItemRepository.ackMessageItem(messageItem);
                 }
             }
@@ -370,7 +375,8 @@ public class AppWorker extends Thread {
                     (textMessage.dst == null ? "UNK" : textMessage.dst);
             sendStatusUpdate(AppMessage.EV_TEXT_MESSAGE_TRANSMITTED, note);
             if (!textMessage.isAutoReply()) {
-                _messageItemRepository.insertMessageItem(textMessage.toMessageItem(true));
+                MessageItem messageItem = textMessage.toMessageItem(true);
+                _messageItemRepository.upsertMessageItem(messageItem);
             }
             Log.i(TAG, "message sent: " + textMessage.text);
         }
@@ -523,51 +529,51 @@ public class AppWorker extends Thread {
         Log.i(TAG, "quitProcessing()");
         _processPeriodicTimer.cancel();
         _processPeriodicTimer.purge();
+        _messageRetryPeriodicTimer.cancel();
+        _messageRetryPeriodicTimer.purge();
         Objects.requireNonNull(Looper.myLooper()).quitSafely();
     }
 
     private void onWorkerIncomingMessage(Message msg) {
-        switch (AppMessage.values()[msg.what]) {
-            case CMD_PROCESS:
-                try {
+        try {
+            switch (AppMessage.values()[msg.what]) {
+                case CMD_PROCESS:
                     processRxTx();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    break;
+                case CMD_QUIT:
                     quitProcessing();
-                }
-                break;
-            case CMD_QUIT:
-                quitProcessing();
-                break;
-            case CMD_SEND_LOCATION_TO_TNC:
-                try {
-                    _protocol.sendPosition((Position)msg.obj);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    quitProcessing();
-                }
-                break;
-            case CMD_SEND_MESSAGE:
-                TextMessage textMessage = (TextMessage) msg.obj;
-                try {
+                    break;
+                case CMD_SEND_LOCATION_TO_TNC:
+                    _protocol.sendPosition((Position) msg.obj);
+                    break;
+                case CMD_SEND_MESSAGE:
+                    TextMessage textMessage = (TextMessage) msg.obj;
                     _protocol.sendTextMessage(textMessage);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    quitProcessing();
-                }
-                break;
-            default:
-                break;
+                    break;
+                case CMD_RETRY_MESSAGE:
+                    long maxRetryCount = _sharedPreferences.getLong(PreferenceKeys.APRS_IS_MSG_RETRY_CNT, 1);
+                    for (MessageItem retryMessageItem : _messageItemRepository.getMessagesToRetry(maxRetryCount)) {
+                        _protocol.sendTextMessage(TextMessage.fromMessageItem(retryMessageItem));
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            quitProcessing();
         }
     }
 
     private void startWorkerMessageHandler() {
+        // message handler
         _onMessageReceived = new Handler(Objects.requireNonNull(Looper.myLooper())) {
             @Override
             public void handleMessage(@NonNull Message msg) {
                 onWorkerIncomingMessage(msg);
             }
         };
+        // periodic audio processing
         _processPeriodicTimer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -576,6 +582,17 @@ public class AppWorker extends Thread {
                 _onMessageReceived.sendMessage(msg);
             }
         }, 0, PROCESS_INTERVAL_MS);
+        // periodic message retries if enabled
+        if (SettingsWrapper.isMessageAckEnabled(_sharedPreferences)) {
+            _messageRetryPeriodicTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    Message msg = new Message();
+                    msg.what = AppMessage.CMD_RETRY_MESSAGE.toInt();
+                    _onMessageReceived.sendMessage(msg);
+                }
+            }, 0, MESSAGE_RETRY_INTERVAL_MS);
+        }
     }
 
     @Override
