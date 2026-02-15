@@ -61,6 +61,8 @@ public class AppWorker extends Thread {
     private static final int MESSAGE_RETRY_INTERVAL_MS = 30000;
     private static final int LISTEN_AFTER_MS = 1500;
 
+    private static final long MSG_RETRY_INTERVAL_MS = 45000;
+
     private boolean _needTransmission = false;
     private AppMessage _currentStatus = AppMessage.EV_DISCONNECTED;
 
@@ -554,7 +556,7 @@ public class AppWorker extends Thread {
                 case CMD_RETRY_MESSAGE:
                     long maxRetryCount = _sharedPreferences.getLong(PreferenceKeys.APRS_IS_MSG_RETRY_CNT, 1);
                     Log.i(TAG, "Retrying message sending");
-                    for (MessageItem retryMessageItem : _messageItemRepository.getMessagesToRetry(maxRetryCount)) {
+                    for (MessageItem retryMessageItem : _messageItemRepository.getMessagesToRetry(maxRetryCount, MSG_RETRY_INTERVAL_MS)) {
                         _protocol.sendTextMessage(TextMessage.fromMessageItem(retryMessageItem));
                     }
                     break;

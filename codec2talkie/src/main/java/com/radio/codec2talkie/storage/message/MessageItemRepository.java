@@ -42,15 +42,22 @@ public class MessageItemRepository {
         return _messages;
     }
 
-    public List<MessageItem> getMessagesToRetry(long maxRetryCount) {
+    public List<MessageItem> getMessagesToRetry(long maxRetryCount, long retryIntervalMs) {
         List<MessageItem> resultMessageItems = new LinkedList<>();
         List<MessageItem> messageItems = _messageItemDao.getMessageItemsForRetrySync();
+        long currentTime = System.currentTimeMillis();
         if (messageItems == null)
             return resultMessageItems;
         for (MessageItem messageItem : messageItems) {
+            long epochTimestamp = messageItem.getTimestampEpoch();
+            if (currentTime - epochTimestamp < retryIntervalMs) {
+                continue;
+            }
+            // maximum count is hit, no more retries
             if (messageItem.getRetryCnt() + 1 > maxRetryCount) {
                 messageItem.setNeedsRetry(false);
                 updateMessageItem(messageItem);
+            // needs retry
             } else {
                 resultMessageItems.add(messageItem);
             }
