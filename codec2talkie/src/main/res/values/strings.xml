@@ -426,7 +426,7 @@
     <string name="aprsis_label_rx_gate">Ⓡ</string>
     <string name="aprsis_label_tx_gate">Ⓣ</string>
     <string name="aprsis_label_self">Ⓢ</string>
-    <string name="messages_group_menu_ack_enable">Enable message ack</string>
+    <string name="messages_group_menu_ack_enable">Enable retry/ack</string>
     <string name="messages_edit_hint">Type a message…</string>
     <string name="message_groups_filter_hint">Type to filter…</string>
     <string name="messages_group_menu_msg_retry_cnt_title">Message retries</string>

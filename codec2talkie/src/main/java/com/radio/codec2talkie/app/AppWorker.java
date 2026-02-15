@@ -323,8 +323,9 @@ public class AppWorker extends Thread {
             if (textMessage.isAutoReply()) {
                 _messageItemRepository.ackMessageItem(messageItem);
             // insert new incoming message
-            } else {
+            } else if (!SettingsWrapper.isMyCallsign(_sharedPreferences, textMessage.src)) {
                 _messageItemRepository.upsertMessageItem(messageItem);
+                // ack text message if needed
                 if (textMessage.shouldAcknowledge(_context)) {
                     TextMessage ackMessage = textMessage.getAckMessage();
                     ackMessage.needsRetry = SettingsWrapper.isMessageAckEnabled(_sharedPreferences);
@@ -552,6 +553,7 @@ public class AppWorker extends Thread {
                     break;
                 case CMD_RETRY_MESSAGE:
                     long maxRetryCount = _sharedPreferences.getLong(PreferenceKeys.APRS_IS_MSG_RETRY_CNT, 1);
+                    Log.i(TAG, "Retrying message sending");
                     for (MessageItem retryMessageItem : _messageItemRepository.getMessagesToRetry(maxRetryCount)) {
                         _protocol.sendTextMessage(TextMessage.fromMessageItem(retryMessageItem));
                     }

@@ -50,6 +50,8 @@ public class MessageItemAdapter extends ListAdapter<MessageItem, MessageItemHold
                     && Objects.equals(oldItem.getSrcCallsign(), newItem.getSrcCallsign())
                     && oldItem.getTimestampEpoch() == newItem.getTimestampEpoch()
                     && oldItem.getIsTransmit() == newItem.getIsTransmit()
+                    && oldItem.getRetryCnt() == newItem.getRetryCnt()
+                    && oldItem.getNeedsRetry() == newItem.getNeedsRetry()
                     && Objects.equals(oldItem.getAckId(), newItem.getAckId())
                     && oldItem.getIsAcknowledged() == newItem.getIsAcknowledged();
         }

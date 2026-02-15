@@ -2,6 +2,7 @@ package com.radio.codec2talkie.storage.message;
 
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
@@ -44,6 +45,11 @@ public interface MessageItemDao {
            "ORDER BY timestampEpoch ASC")
     LiveData<List<MessageItem>> getMessageItems(String groupId);
 
+    @Query("SELECT * FROM MessageItem " +
+            "WHERE needsRetry = 1 " +
+            "ORDER BY timestampEpoch ASC")
+    List<MessageItem> getMessageItemsForRetrySync();
+
     @Transaction
     default void upsertMessageItem(MessageItem messageItem) {
         String ackId = messageItem.getAckId();
@@ -52,6 +58,7 @@ public interface MessageItemDao {
                     messageItem.getSrcCallsign(), messageItem.getDstCallsign(), messageItem.getAckId());
             if (existingItem != null) {
                 existingItem.setRetryCnt(existingItem.getRetryCnt() + 1);
+                existingItem.setNeedsRetry(messageItem.getNeedsRetry());
                 updateMessageItem(existingItem);
                 return;
             }
@@ -80,6 +87,9 @@ public interface MessageItemDao {
 
     @Query("DELETE FROM MessageItem")
     void deleteAllMessageItems();
+
+    @Delete
+    void deleteMessageItem(MessageItem messageItem);
 
     @Query("DELETE FROM MessageItem WHERE timestampEpoch < :timestampEpoch")
     void deleteLogItemsOlderThanTimestamp(long timestampEpoch);

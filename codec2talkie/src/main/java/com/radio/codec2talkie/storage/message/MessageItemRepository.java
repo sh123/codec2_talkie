@@ -1,6 +1,7 @@
 package com.radio.codec2talkie.storage.message;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
@@ -42,7 +43,19 @@ public class MessageItemRepository {
     }
 
     public List<MessageItem> getMessagesToRetry(long maxRetryCount) {
-        return new LinkedList<MessageItem>();
+        List<MessageItem> resultMessageItems = new LinkedList<>();
+        List<MessageItem> messageItems = _messageItemDao.getMessageItemsForRetrySync();
+        if (messageItems == null)
+            return resultMessageItems;
+        for (MessageItem messageItem : messageItems) {
+            if (messageItem.getRetryCnt() + 1 > maxRetryCount) {
+                messageItem.setNeedsRetry(false);
+                updateMessageItem(messageItem);
+            } else {
+                resultMessageItems.add(messageItem);
+            }
+        }
+        return resultMessageItems;
     }
 
     public void ackMessageItem(MessageItem messageItem) {
@@ -50,6 +63,10 @@ public class MessageItemRepository {
         String dst = messageItem.getDstCallsign();
         String ackId = messageItem.getAckId();
         AppDatabase.getDatabaseExecutor().execute(() -> _messageItemDao.ackMessageItem(dst, src, ackId));
+    }
+
+    public void updateMessageItem(MessageItem messageItem) {
+        AppDatabase.getDatabaseExecutor().execute(() -> _messageItemDao.updateMessageItem(messageItem));
     }
 
     public void upsertMessageItem(MessageItem messageItem) {
