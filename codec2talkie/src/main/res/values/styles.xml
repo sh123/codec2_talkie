@@ -113,4 +113,12 @@
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
         <item name="android:maxLines">1</item>
     </style>
+    <style name="main_status">
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
 </resources>
