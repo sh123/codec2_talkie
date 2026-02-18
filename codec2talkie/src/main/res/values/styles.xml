@@ -124,4 +124,15 @@
     <style name="main_rssi_letter">
         <item name="android:textSize">12sp</item>
     </style>
+    <style name="ptt_btn">
+        <item name="android:layout_marginStart">2dp</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginEnd">2dp</item>
+        <item name="android:background">@drawable/btn_ptt</item>
+        <item name="android:src">@drawable/btn_ptt_touch</item>
+        <item name="android:hapticFeedbackEnabled">false</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:tint">?attr/colorOnSecondary</item>
+    </style>
 </resources>
