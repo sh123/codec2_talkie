@@ -15,9 +15,7 @@
 
     <TextView
         android:id="@+id/textViewConnectingBt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        style="@style/tnc_connectivity_status_txt"
         android:text="@string/bt_connecting"
         app:layout_constraintBottom_toTopOf="@+id/progressBarBt"
         app:layout_constraintEnd_toEndOf="parent"
@@ -25,9 +23,7 @@
 
     <ProgressBar
         android:id="@+id/progressBarBt"
-        style="@style/Widget.AppCompat.ProgressBar"
-        android:layout_width="138dp"
-        android:layout_height="123dp"
+        style="@style/tnc_connectivity_progress_bar"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

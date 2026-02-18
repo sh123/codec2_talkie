@@ -49,4 +49,13 @@
         <item name="android:textColor">@color/dark_gray</item>
         <item name="android:textSize">16sp</item>
     </style>
+    <style name="tnc_connectivity_progress_bar" parent="Base.Widget.AppCompat.ProgressBar">
+        <item name="android:layout_width">138dp</item>
+        <item name="android:layout_height">123dp</item>
+    </style>
+    <style name="tnc_connectivity_status_txt">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">16dp</item>
+    </style>
 </resources>
