@@ -314,7 +314,7 @@
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btnCall"
-            style="@style/main_fragment_selection_button"
+            style="@style/common_round_button"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="@string/push_to_talk"
@@ -329,7 +329,7 @@
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btnMessages"
-            style="@style/main_fragment_selection_button"
+            style="@style/common_round_button"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="@string/btn_messages_text"
@@ -344,7 +344,7 @@
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btnLog"
-            style="@style/main_fragment_selection_button"
+            style="@style/common_round_button"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="@string/btn_log_desc"
@@ -359,7 +359,7 @@
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btnMap"
-            style="@style/main_fragment_selection_button"
+            style="@style/common_round_button"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="@string/btn_map_desc"
