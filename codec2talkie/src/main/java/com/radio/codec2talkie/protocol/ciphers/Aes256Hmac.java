@@ -20,7 +20,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 
 public class Aes256Hmac implements ProtocolCipher {
-    private static final String TAG = Aes128Simple.class.getSimpleName();
+    private static final String TAG = Aes256Hmac.class.getSimpleName();
 
     public static final int SALT_SIZE_BYTES = 16;
     public static final int IV_SIZE_BYTES = 16;

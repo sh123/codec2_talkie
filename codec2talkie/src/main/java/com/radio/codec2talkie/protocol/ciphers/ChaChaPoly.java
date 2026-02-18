@@ -19,7 +19,7 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 public class ChaChaPoly implements ProtocolCipher {
-    private static final String TAG = Aes128Simple.class.getSimpleName();
+    private static final String TAG = ChaChaPoly.class.getSimpleName();
     private static final String CRYPTO_ALGORITHM = "ChaCha20-Poly1305";
     private static final int TAG_LENGTH = 16;
     private static final int IV_LENGTH = 12;
