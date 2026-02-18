@@ -67,7 +67,14 @@
     <style name="generic_btn">
         <item name="android:layout_marginStart">16dp</item>
         <item name="android:layout_marginTop">16dp</item>
-        <item name="android:text">@string/send_message_to_btn_ok_text</item>
+        <item name="android:layout_marginBottom">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
         <item name="android:textAllCaps">false</item>
+    </style>
+    <style name="map_location_info">
+        <item name="android:padding">0dp</item>
+        <item name="android:background">#80FFFFFF</item>
+        <item name="android:textColor">#000000</item>
+        <item name="android:textSize">12sp</item>
     </style>
 </resources>
