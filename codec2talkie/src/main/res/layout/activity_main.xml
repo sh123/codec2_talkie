@@ -62,40 +62,25 @@
 
             <TextView
                 android:id="@+id/textTitle"
+                style="@style/main_bar_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textColor="?attr/colorSecondary"
-                android:textSize="20sp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/textBtName"
+                style="@style/main_bar_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="0dp"
-                android:layout_marginTop="0dp"
-                android:textColor="?attr/colorSecondary"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:textSize="14sp"
-                android:ellipsize="end"
-                android:maxLines="1"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textTitle" />
 
             <TextView
                 android:id="@+id/textTelemetry"
+                style="@style/main_bar_telemetry"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="0dp"
-                android:layout_marginEnd="4dp"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="?attr/colorSecondary"
-                android:textAppearance="@style/TextAppearance.AppCompat.Small"
-                android:maxLines="1"
                 app:layout_constraintEnd_toStartOf="@+id/btnTracking"
                 app:layout_constraintTop_toBottomOf="@+id/textTitle" />
 

@@ -89,4 +89,28 @@
         <item name="android:textSize">24sp</item>
         <item name="android:tint">?attr/colorOnSecondary</item>
     </style>
+    <style name="main_bar_title">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Large</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="main_bar_info">
+        <item name="android:layout_marginStart">0dp</item>
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+    <style name="main_bar_telemetry">
+        <item name="android:layout_marginTop">0dp</item>
+        <item name="android:layout_marginEnd">4dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Small</item>
+        <item name="android:maxLines">1</item>
+    </style>
 </resources>
