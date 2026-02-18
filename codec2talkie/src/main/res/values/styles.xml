@@ -121,4 +121,7 @@
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
     </style>
+    <style name="main_rssi_letter">
+        <item name="android:textSize">12sp</item>
+    </style>
 </resources>
