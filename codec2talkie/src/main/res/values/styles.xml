@@ -58,4 +58,16 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginBottom">16dp</item>
     </style>
+    <style name="callsign_edit">
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:layout_marginEnd">16dp</item>
+        <item name="android:inputType">textCapCharacters</item>
+    </style>
+    <style name="generic_btn">
+        <item name="android:layout_marginStart">16dp</item>
+        <item name="android:layout_marginTop">16dp</item>
+        <item name="android:text">@string/send_message_to_btn_ok_text</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
 </resources>

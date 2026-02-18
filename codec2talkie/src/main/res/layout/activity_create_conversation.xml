@@ -7,13 +7,10 @@
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/send_message_to_target_edit"
+        style="@style/callsign_edit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
         android:hint="@string/send_message_to_target_edit_callsign"
-        android:inputType="textCapCharacters"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,24 +18,20 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/send_message_to_btn_ok"
+        style="@style/generic_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:text="@string/send_message_to_btn_ok_text"
-        android:textAllCaps="false"
         app:layout_constraintEnd_toStartOf="@+id/send_message_to_btn_cancel"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/send_message_to_target_edit" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/send_message_to_btn_cancel"
+        style="@style/generic_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
         android:text="@string/send_message_to_btn_cancel_text"
-        android:textAllCaps="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/send_message_to_btn_ok"
         app:layout_constraintTop_toBottomOf="@+id/send_message_to_target_edit" />

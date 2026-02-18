@@ -18,8 +18,6 @@ import com.radio.codec2talkie.protocol.message.TextMessage;
 import com.radio.codec2talkie.settings.SettingsWrapper;
 import com.radio.codec2talkie.storage.message.MessageItemActivity;
 
-import java.util.Locale;
-
 public class MessageGroupDialogSendTo extends AlertDialog implements View.OnClickListener {
 
     private SharedPreferences _sharedPreferences;
@@ -33,7 +31,7 @@ public class MessageGroupDialogSendTo extends AlertDialog implements View.OnClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTitle(getContext().getString(R.string.activity_send_message_to_title));
-        setContentView(R.layout.activity_send_message_to);
+        setContentView(R.layout.activity_create_conversation);
 
         Button sendButton = findViewById(R.id.send_message_to_btn_ok);
         assert sendButton != null;
