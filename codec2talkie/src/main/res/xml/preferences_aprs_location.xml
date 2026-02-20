@@ -146,5 +146,4 @@
             app:defaultValue="240">
         </EditTextPreference>
     </PreferenceCategory>
-
 </PreferenceScreen>

@@ -31,7 +31,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintDimensionRatio="1:1"
-                app:tint="?attr/colorSecondary"
+                app:tint="?attr/colorOnPrimary"
                 android:background="?attr/colorPrimary"/>
 
             <ImageButton
@@ -44,7 +44,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintDimensionRatio="1:1"
-                app:tint="?attr/colorSecondary"
+                app:tint="?attr/colorOnPrimary"
                 android:background="?attr/colorPrimary"/>
 
             <ImageButton
@@ -57,7 +57,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintDimensionRatio="1:1"
-                app:tint="?attr/colorSecondary"
+                app:tint="?attr/colorOnPrimary"
                 android:background="?attr/colorPrimary"/>
 
             <TextView

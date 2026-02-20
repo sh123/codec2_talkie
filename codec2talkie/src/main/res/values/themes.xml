@@ -2,16 +2,16 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
         <!-- Primary brand color -->
-        <item name="colorPrimary">@color/dark_gray</item>           <!-- Light blue for background -->
-        <item name="colorPrimaryVariant">@color/dark_gray</item>     <!-- Darker shade for accents -->
-        <item name="colorOnPrimary">@color/dark_gray</item>         <!-- Dark text on light blue -->
+        <item name="colorPrimary">@color/dark_gray</item>
+        <item name="colorPrimaryVariant">@color/medium_gray</item>
+        <item name="colorOnPrimary">@color/light_gray</item>
         <!-- Secondary brand color -->
-        <item name="colorSecondary">@color/light_gray</item>         <!-- Light gray for secondary areas -->
-        <item name="colorSecondaryVariant">@color/medium_gray</item>   <!-- Darker gray for variants -->
-        <item name="colorOnSecondary">@color/black</item>           <!-- Black for contrast -->
+        <item name="colorSecondary">@color/light_gray</item>
+        <item name="colorSecondaryVariant">@color/dark_gray</item>
+        <item name="colorOnSecondary">@color/black</item>
         <!-- Buttons -->
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:fitsSystemWindows">true</item>

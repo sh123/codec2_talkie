@@ -46,7 +46,6 @@
             app:summary="@string/ports_sound_modem_loopback_summary"
             app:defaultValue="false">
         </SwitchPreference>
-
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -68,7 +67,6 @@
             app:summary="@string/ports_sound_modem_ptt_off_delay_ms_summary"
             app:defaultValue="1000">
         </EditTextPreference>
-
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -90,37 +88,36 @@
             app:defaultValue="10000"
             app:summary="%s">
         </ListPreference>
-
     </PreferenceCategory>
 
     <PreferenceCategory
         app:key="ports_sound_modem_category_freedv"
         app:title="@string/sound_modem_category_freedv_title">
+
+        <ListPreference
+            app:key="ports_sound_modem_freedv_data_mode"
+            app:title="@string/ports_sound_modem_freedv_data_title"
+            app:entries="@array/ports_sound_modem_freedv_data_mode_entries"
+            app:entryValues="@array/ports_sound_modem_freedv_data_mode_values"
+            app:summary="%s"
+            app:defaultValue="12">
+        </ListPreference>
+
+        <SwitchPreference
+            app:key="ports_sound_modem_freedv_enable_squelch"
+            app:title="@string/ports_sound_modem_freedv_enable_squelch_title"
+            app:summary="@string/ports_sound_modem_freedv_enable_squelch_summary"
+            app:defaultValue="true">
+        </SwitchPreference>
+
+        <ListPreference
+            app:key="ports_sound_modem_freedv_squelch_snr"
+            app:title="@string/ports_sound_modem_freedv_squelch_snr_title"
+            app:entries="@array/ports_sound_modem_freedv_squelch_snr_entries"
+            app:entryValues="@array/ports_sound_modem_freedv_squelch_snr_values"
+            app:summary="%s"
+            app:dependency="ports_sound_modem_freedv_enable_squelch"
+            app:defaultValue="0.0">
+        </ListPreference>
     </PreferenceCategory>
-
-    <ListPreference
-        app:key="ports_sound_modem_freedv_data_mode"
-        app:title="@string/ports_sound_modem_freedv_data_title"
-        app:entries="@array/ports_sound_modem_freedv_data_mode_entries"
-        app:entryValues="@array/ports_sound_modem_freedv_data_mode_values"
-        app:summary="%s"
-        app:defaultValue="12">
-    </ListPreference>
-
-    <SwitchPreference
-        app:key="ports_sound_modem_freedv_enable_squelch"
-        app:title="@string/ports_sound_modem_freedv_enable_squelch_title"
-        app:summary="@string/ports_sound_modem_freedv_enable_squelch_summary"
-        app:defaultValue="true">
-    </SwitchPreference>
-
-    <ListPreference
-        app:key="ports_sound_modem_freedv_squelch_snr"
-        app:title="@string/ports_sound_modem_freedv_squelch_snr_title"
-        app:entries="@array/ports_sound_modem_freedv_squelch_snr_entries"
-        app:entryValues="@array/ports_sound_modem_freedv_squelch_snr_values"
-        app:summary="%s"
-        app:dependency="ports_sound_modem_freedv_enable_squelch"
-        app:defaultValue="0.0">
-    </ListPreference>
 </PreferenceScreen>

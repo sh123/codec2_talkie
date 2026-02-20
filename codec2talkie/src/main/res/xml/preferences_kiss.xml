@@ -11,7 +11,7 @@
             app:summary="@string/kiss_basic_p_summary"
             app:defaultValue="255">
         </EditTextPreference>
-s
+
         <EditTextPreference
             app:key="kiss_basic_slot_time"
             app:title="@string/kiss_basic_slot_time_title"

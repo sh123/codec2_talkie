@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <PreferenceCategory
         app:key="kiss_extensions_radio_category"
         app:title="@string/kiss_extensions_radio_control_title">
@@ -47,96 +48,97 @@
             app:defaultValue="0">
         </ListPreference>
 
-        <PreferenceCategory
-            app:key="kiss_extensions_radio_category_lora"
-            app:title="@string/kiss_extensions_radio_category_lora_title">
+    </PreferenceCategory>
 
-            <ListPreference
-                app:key="kiss_extension_radio_bandwidth"
-                app:title="@string/kiss_extensions_radio_bandwidth_title"
-                app:entries="@array/lora_bandwidths"
-                app:entryValues="@array/lora_bandwidths"
-                app:defaultValue="125000"
-                app:summary="%s">
-            </ListPreference>
+    <PreferenceCategory
+        app:key="kiss_extensions_radio_category_lora"
+        app:title="@string/kiss_extensions_radio_category_lora_title">
 
-            <ListPreference
-                app:key="kiss_extension_radio_sf"
-                app:title="@string/kiss_extensions_radio_sf_title"
-                app:summary="%s"
-                app:entries="@array/lora_spreading_factors"
-                app:entryValues="@array/lora_spreading_factors"
-                app:defaultValue="7">
-            </ListPreference>
+        <ListPreference
+            app:key="kiss_extension_radio_bandwidth"
+            app:title="@string/kiss_extensions_radio_bandwidth_title"
+            app:entries="@array/lora_bandwidths"
+            app:entryValues="@array/lora_bandwidths"
+            app:defaultValue="125000"
+            app:summary="%s">
+        </ListPreference>
 
-            <ListPreference
-                app:key="kiss_extension_radio_cr"
-                app:title="@string/kiss_extensions_radio_cr_title"
-                app:summary="%s"
-                app:entries="@array/lora_coding_rates"
-                app:entryValues="@array/lora_coding_rates"
-                app:defaultValue="6">
-            </ListPreference>
+        <ListPreference
+            app:key="kiss_extension_radio_sf"
+            app:title="@string/kiss_extensions_radio_sf_title"
+            app:summary="%s"
+            app:entries="@array/lora_spreading_factors"
+            app:entryValues="@array/lora_spreading_factors"
+            app:defaultValue="7">
+        </ListPreference>
 
-            <EditTextPreference
-                app:key="kiss_extension_radio_sync"
-                app:title="@string/kiss_extensions_radio_sync_title"
-                app:summary="@string/kiss_extensions_radio_sync_summary"
-                app:useSimpleSummaryProvider="true"
-                app:defaultValue="34">
-            </EditTextPreference>
+        <ListPreference
+            app:key="kiss_extension_radio_cr"
+            app:title="@string/kiss_extensions_radio_cr_title"
+            app:summary="%s"
+            app:entries="@array/lora_coding_rates"
+            app:entryValues="@array/lora_coding_rates"
+            app:defaultValue="6">
+        </ListPreference>
 
-            <CheckBoxPreference
-                app:key="kiss_extension_radio_crc"
-                app:title="@string/kiss_extensions_radio_crc_title"
-                app:summary="@string/kiss_extensions_radio_crc_summary"
-                app:defaultValue="true">
-            </CheckBoxPreference>
+        <EditTextPreference
+            app:key="kiss_extension_radio_sync"
+            app:title="@string/kiss_extensions_radio_sync_title"
+            app:summary="@string/kiss_extensions_radio_sync_summary"
+            app:useSimpleSummaryProvider="true"
+            app:defaultValue="34">
+        </EditTextPreference>
 
-        </PreferenceCategory>
-
-        <PreferenceCategory
-            app:key="kiss_extensions_radio_category_fsk"
-            app:title="@string/kiss_extensions_radio_category_fsk_title">
-
-            <EditTextPreference
-                app:key="kiss_extension_radio_fsk_bit_rate"
-                app:title="@string/kiss_extension_radio_fsk_bit_rate_title"
-                app:useSimpleSummaryProvider="true"
-                app:summary="@string/kiss_extension_radio_fsk_bit_rate_summary"
-                app:defaultValue="4800">
-            </EditTextPreference>
-
-            <EditTextPreference
-                app:key="kiss_extension_radio_fsk_freq_dev"
-                app:title="@string/kiss_extension_radio_fsk_freq_dev_title"
-                app:useSimpleSummaryProvider="true"
-                app:summary="@string/kiss_extension_radio_fsk_freq_dev_summary"
-                app:defaultValue="1200">
-            </EditTextPreference>
-
-            <ListPreference
-                app:key="kiss_extension_radio_fsk_rx_bw"
-                app:title="@string/kiss_extension_radio_fsk_rx_bw_title"
-                app:entries="@array/fsk_rx_bw_entries"
-                app:entryValues="@array/fsk_rx_bw_values"
-                app:summary="%s"
-                app:defaultValue="9700">
-            </ListPreference>
-
-        </PreferenceCategory>
-
-        <PreferenceCategory
-            app:key="kiss_extensions_radio_category_other"
-            app:title="@string/kiss_extensions_radio_category_other_title">
-
-            <Preference
-                app:key="kiss_extension_reboot"
-                app:title="@string/kiss_extension_reboot_title"
-                app:summary="@string/kiss_extension_reboot_summary">
-            </Preference>
-
-        </PreferenceCategory>
+        <CheckBoxPreference
+            app:key="kiss_extension_radio_crc"
+            app:title="@string/kiss_extensions_radio_crc_title"
+            app:summary="@string/kiss_extensions_radio_crc_summary"
+            app:defaultValue="true">
+        </CheckBoxPreference>
 
     </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="kiss_extensions_radio_category_fsk"
+        app:title="@string/kiss_extensions_radio_category_fsk_title">
+
+        <EditTextPreference
+            app:key="kiss_extension_radio_fsk_bit_rate"
+            app:title="@string/kiss_extension_radio_fsk_bit_rate_title"
+            app:useSimpleSummaryProvider="true"
+            app:summary="@string/kiss_extension_radio_fsk_bit_rate_summary"
+            app:defaultValue="4800">
+        </EditTextPreference>
+
+        <EditTextPreference
+            app:key="kiss_extension_radio_fsk_freq_dev"
+            app:title="@string/kiss_extension_radio_fsk_freq_dev_title"
+            app:useSimpleSummaryProvider="true"
+            app:summary="@string/kiss_extension_radio_fsk_freq_dev_summary"
+            app:defaultValue="1200">
+        </EditTextPreference>
+
+        <ListPreference
+            app:key="kiss_extension_radio_fsk_rx_bw"
+            app:title="@string/kiss_extension_radio_fsk_rx_bw_title"
+            app:entries="@array/fsk_rx_bw_entries"
+            app:entryValues="@array/fsk_rx_bw_values"
+            app:summary="%s"
+            app:defaultValue="9700">
+        </ListPreference>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        app:key="kiss_extensions_radio_category_other"
+        app:title="@string/kiss_extensions_radio_category_other_title">
+
+        <Preference
+            app:key="kiss_extension_reboot"
+            app:title="@string/kiss_extension_reboot_title"
+            app:summary="@string/kiss_extension_reboot_summary">
+        </Preference>
+
+    </PreferenceCategory>
+
 </PreferenceScreen>
