@@ -435,4 +435,5 @@
     <string name="messages_group_menu_msg_retry_cnt_5_title">5</string>
     <string name="messages_group_menu_msg_retry_cnt_7_title">7</string>
     <string name="messages_group_menu_msg_clear_title">Remove messages</string>
+    <string name="app_theme_title">Application theme</string>
 </resources>

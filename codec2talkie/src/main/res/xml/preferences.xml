@@ -6,6 +6,15 @@
         app:title="@string/app_category_title">
 
         <ListPreference
+            app:key="app_theme"
+            app:title="@string/app_theme_title"
+            app:entries="@array/app_theme_entries"
+            app:entryValues="@array/app_theme_values"
+            app:defaultValue="system"
+            app:summary="%s">
+        </ListPreference>
+
+        <ListPreference
             app:key="app_audio_source"
             app:title="@string/app_audio_source_title"
             app:entries="@array/ports_sound_modem_audio_source_entries"

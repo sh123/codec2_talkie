@@ -636,4 +636,16 @@
         <item>ChaCha Poly1305 (Android 9+)</item>
     </string-array>
 
+    <string-array name="app_theme_entries">
+        <item>Use system</item>
+        <item>Light</item>
+        <item>Dark</item>
+    </string-array>
+
+    <string-array name="app_theme_values">
+        <item>system</item>
+        <item>light</item>
+        <item>dark</item>
+    </string-array>
+
 </resources>

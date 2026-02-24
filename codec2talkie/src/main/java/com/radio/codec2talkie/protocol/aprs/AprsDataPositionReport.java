@@ -69,6 +69,7 @@ public class AprsDataPositionReport implements AprsData {
         _position.comment = "";
         _position.deviceIdDescription = "";
         _position.privacyLevel = 0;
+        if (infoData.length == 0) return;
         if ((infoData[0] == '/' || infoData[0] == '\\') && fromCompressedBinary(infoData)) {
             _position.isCompressed = true;
             _isValid = true;
