@@ -99,7 +99,8 @@ What you can do with this app:
   - FreeDV official UI: https://github.com/drowe67/freedv-gui
   - Codec2 iOS wrapper: https://github.com/Beartooth/codec2-ios
 - Other interesting projects:
-  - LoRa mesh text GPS communicator: https://github.com/meshtastic/Meshtastic-device
+  - LoRa mesh text GPS communicator: https://github.com/meshtastic/firmware
+  - MeshCore communicator: https://github.com/meshcore-dev/MeshCore
 
 # Prototypes used with this application
  - ESP32 LoRa Bluetooth headless APRS modem (no screen and external controls): https://github.com/sh123/esp32_loraprs
