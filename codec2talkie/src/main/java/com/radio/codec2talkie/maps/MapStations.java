@@ -75,7 +75,7 @@ public class MapStations {
         _stationItemLiveData = _stationItemViewModel.getAllStationItems(movingOnly);
         // FIXME, room livedata sends all list if one item changed event with distinctUntilChanged
         _stationItemLiveData.observe((LifecycleOwner) _owner, allStations -> {
-            Log.i(TAG, "add stations " + allStations.size());
+            int cntUpdated = 0;
             for (StationItem station : allStations) {
                 //Log.i(TAG, "new position " + station.getSrcCallsign() + ">" +
                 //        station.getDstCallsign() + " " + station.getLatitude() + " " + station.getLongitude());
@@ -84,11 +84,13 @@ public class MapStations {
                 try {
                     if (addStationPositionIcon(station)) {
                         addRangeCircle(station);
+                        cntUpdated++;
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
+            Log.i(TAG, "update stations " + cntUpdated + "/" + allStations.size());
         });
     }
 
